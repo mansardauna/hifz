@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Poppins, DM_Sans, Amiri } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -25,13 +25,32 @@ const amiri = Amiri({
   display: 'swap',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#047857',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: 'Hifz - The White-Label LMS & Website Builder for Quran Academies',
+  title: 'Hifz - Sanad-Verified Quran & Arabic Academy Platform',
   description:
-    'The premier SaaS LMS and visual website builder engineered for Quran institutes, Madrasahs, and Arabic tutors. White-label custom subdomains, real GrapesJS canvas, Uthmani Tajweed reader, audio homework grading, and direct tuition payments.',
-  keywords: ['Hifz', 'Quran LMS', 'Madrasah SaaS', 'GrapesJS Builder', 'Tajweed LMS', 'Islamic Institute Software'],
+    'The premier SaaS LMS and visual website builder engineered for Quran institutes, Madrasahs, and Arabic tutors. Custom subdomains, real GrapesJS canvas, Uthmani Tajweed reader, audio homework grading, and direct tuition payments.',
+  keywords: ['Hifz', 'Quran LMS', 'Madrasah SaaS', 'GrapesJS Builder', 'Tajweed LMS', 'Islamic Institute Software', 'PWA'],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    title: 'Hifz',
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    icon: '/icons/icon.svg',
+    shortcut: '/icons/icon.svg',
+    apple: '/icons/icon.svg',
+  },
   openGraph: {
-    title: 'Hifz - The White-Label LMS & Website Builder for Quran Academies',
+    title: 'Hifz - Sanad-Verified Quran & Arabic Academy Platform',
     description: 'Launch your branded online Quran academy with custom subdomains, GrapesJS visual builder, and automated tuition billing.',
     siteName: 'Hifz',
     type: 'website',
