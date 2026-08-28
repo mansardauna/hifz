@@ -381,7 +381,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     onAddToast({
       type: 'success',
       title: 'Published to Live Site!',
-      message: `Your custom GrapesJS layout is now active on ${tenant.subdomain}.hifz.app`,
+      message: `Your custom GrapesJS layout is now active on /${tenant.subdomain}`,
     });
   };
 

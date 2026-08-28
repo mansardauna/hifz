@@ -38,7 +38,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     const host = window.location.hostname;
     const parts = host.split('.');
-    if (parts.length > 2 && parts[0] !== 'www') {
+    if (parts.length > 2 && parts[0] !== 'www' && !host.endsWith('.vercel.app')) {
       const detectedSubdomain = parts[0];
       if (MOCK_TENANTS[detectedSubdomain]) {
         setCurrentSubdomain(detectedSubdomain);

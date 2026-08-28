@@ -20,12 +20,13 @@ export default async function middleware(req: NextRequest) {
   // Extract hostname without port
   const currentHost = rawHost.replace(/:\d+$/, '').toLowerCase();
 
-  // Root domains that should serve the SaaS platform landing page directly
+  // Root domains that should serve the platform directly on main domain paths
   const isRootHost =
     currentHost === 'localhost' ||
     currentHost === '127.0.0.1' ||
     currentHost === 'hifz.app' ||
-    currentHost === 'www.hifz.app';
+    currentHost === 'www.hifz.app' ||
+    currentHost.endsWith('.vercel.app');
 
   if (isRootHost) {
     return NextResponse.next();
