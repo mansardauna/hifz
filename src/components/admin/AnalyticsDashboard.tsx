@@ -89,8 +89,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
             variant="secondary"
             size="sm"
             onClick={() => onOpenUpgradeModal?.()}
-            leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-300" />}
-            className="whitespace-nowrap"
+            className="whitespace-nowrap font-bold"
           >
             Upgrade to Growth
           </Button>

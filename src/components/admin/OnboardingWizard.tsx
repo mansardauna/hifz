@@ -95,8 +95,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
       onAddToast({
         type: 'success',
-        title: 'Academy Setup Completed! 🎉',
-        message: `${academyName} is now fully configured and live at ${tenant.subdomain}.hifz.app.`,
+        title: 'Academy Setup Completed!',
+        message: `${academyName} is now fully configured and live at ${tenant.subdomain}.techmadrasah.app.`,
       });
       onComplete();
     }

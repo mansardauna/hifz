@@ -234,7 +234,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                     onClick={() => handleSelectPlan(plan.id)}
                     leftIcon={isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : undefined}
                   >
-                    {isCurrent ? 'Current Plan' : isLoading ? 'Redirecting...' : `Upgrade with Stripe`}
+                    {isCurrent ? 'Current Plan' : isLoading ? 'Redirecting...' : 'Upgrade'}
                   </Button>
                 </div>
               </div>

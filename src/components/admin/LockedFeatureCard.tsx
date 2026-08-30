@@ -58,7 +58,6 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
           variant="primary"
           size="sm"
           onClick={onUpgrade}
-          leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-300" />}
           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
         >
           Upgrade to {requiredPlan === 'enterprise' ? 'Enterprise' : 'Growth'}

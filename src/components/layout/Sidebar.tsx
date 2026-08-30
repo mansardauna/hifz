@@ -171,9 +171,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {plan !== 'enterprise' && onOpenUpgrade && (
                 <button
                   onClick={onOpenUpgrade}
-                  className="w-full mt-1 py-1 px-2 bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  className="w-full mt-1 py-1 px-2 bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold rounded flex items-center justify-center transition-colors cursor-pointer"
                 >
-                  <Sparkles className="w-3 h-3 text-amber-300" />
                   <span>Upgrade Plan</span>
                 </button>
               )}

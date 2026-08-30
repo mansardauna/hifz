@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SaasLandingPage } from '../src/views/SaasLandingPage';
+import { PlatformLandingPage } from '../src/views/marketing/PlatformLandingPage';
 import { useRouter } from 'next/navigation';
 
 export default function RootHomePage() {
@@ -19,7 +19,7 @@ export default function RootHomePage() {
   };
 
   return (
-    <SaasLandingPage
+    <PlatformLandingPage
       onNavigateToAuth={handleNavigateToAuth}
       onNavigateToDemo={handleNavigateToDemo}
     />

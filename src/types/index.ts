@@ -207,7 +207,7 @@ export interface Lead {
   country: string;
   courseInterest: string;
   preferredSchedule: string;
-  priorHifzLevel: string;
+  priorHifzLevel?: string;
   arabicLevel?: string;
   status: LeadStatus;
   paymentStatus: PaymentStatus;

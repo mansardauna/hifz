@@ -1,15 +1,16 @@
-import { TenantConfig, Course, Lead, Surah, RecitationSubmission } from '../types';
+import { TenantConfig, Course, Lead, Surah, RecitationSubmission, TenantNiche } from '../types';
 
 export const MOCK_TENANTS: Record<string, TenantConfig> = {
   'hifz-academy': {
     id: 'tenant-hifz',
     name: 'Hifz Quran Academy',
-    nameAr: 'أكاديمية حفظ للقرآن الكريم والقراءات',
-    tagline: 'Systematic Quran Memorization, Sanad Verification & Daily Oral Recitation',
-    taglineAr: 'حفظ كتاب الله بالسند المتصل وتعلّم أحكام التجويد الميسرة',
+    nameAr: 'أكاديمية حفظ للقرآن الكريم',
+    tagline: 'Mastering Sacred Quranic Memorization & Tajweed with Verified Sanad Teachers',
+    taglineAr: 'حفظ وتثبيت القرآن الكريم بالسند المتصل وأحكام التجويد المتقنة',
     subdomain: 'hifz-academy',
     logoUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=150&q=80',
     faviconUrl: '📖',
+    niche: 'quran',
     theme: {
       primaryColor: '#059669',
       primaryHover: '#047857',
@@ -21,44 +22,49 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
       borderRadius: '0.5rem',
       fontFamily: 'Poppins',
     },
-    defaultDirection: 'rtl',
-    heroBadgeText: 'Certified Sanad Reciters • 114 Surahs Audio Reader Active',
-    heroBadgeTextAr: 'نخبة من المجازين بالسند المتصل • قارئ السور التفاعلي نشط',
-    aboutText: 'Hifz Quran Academy provides global students with rigorous 1-on-1 recitation correction, continuous audio looping, and verified Sanad chains.',
-    aboutTextAr: 'تهدف أكاديمية حفظ إلى تقديم تعليم قرآني متميز وتخريج حفظة متقنين لكتاب الله تعالى.',
+    defaultDirection: 'ltr',
+    heroBadgeText: 'Spring 2026 Admissions Open • 114 Surahs Uthmani Reader & Live Audio Looper',
+    heroBadgeTextAr: 'فتح باب القبول لعام ٢٠٢٦ • المصحف الشريف المرتل وحلقات التسميع المباشرة',
+    aboutText: 'Hifz Quran Academy empowers students worldwide to memorize the Holy Quran with authentic Tajweed rules, Sanad certifications, and interactive recitation grading.',
+    aboutTextAr: 'أكاديمية رائدة في تعليم وتحفيظ القرآن الكريم عن بعد وفق أعلى معايير الإتقان بالسند المتصل.',
     contactEmail: 'admissions@hifz-academy.com',
-    contactPhone: '+966 50 888 1234',
+    contactPhone: '+1 (555) 234-5678',
     admissionsOpen: true,
     pageBlocks: [],
     customFormFields: [
-      { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Tariq Mansoor', width: 'half', order: 1 },
+      { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
       { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 }
     ],
     pricingPlans: [
       {
-        id: 'plan-hifz-core',
-        name: 'Hifz & Tajweed Mastery',
-        nameAr: 'مسار الحفظ والتجويد المتقن',
-        description: '3 sessions per week with certified Sanad Qari and audio looper homework',
-        descriptionAr: 'ثلاث حصص أسبوعياً للحفظ المنهجي والمراجعة',
-        priceMonthly: 89,
-        priceYearly: 890,
+        id: 'plan-tajweed',
+        name: 'Foundational Tajweed Track',
+        nameAr: 'مسار التجويد والتأسيس',
+        description: '2 sessions per week of oral recitation correction & Makharij rules',
+        descriptionAr: 'حصتان أسبوعياً لتصحيح المخارج وأحكام التجويد النظرية والعملية',
+        priceMonthly: 65,
+        priceYearly: 650,
         currency: 'USD',
-        features: ['3 Live 1-on-1 Sessions Weekly', 'Audio Homework Submissions', '114 Surah Uthmani Reader', 'Sanad Khatmah Certification']
+        features: ['114 Surah Uthmani Reader Access', 'Interactive Tajweed Token Highlights', 'Audio Reciter Looper (Alafasy, Husary, Minshawi)', 'Weekly Oral Recitation Feedback']
+      },
+      {
+        id: 'plan-hifz',
+        name: 'Intensive Hifz Program',
+        nameAr: 'برنامج التحفيظ المكثف',
+        description: 'Daily revision halaqahs (Muraja\'ah) & systematic memorization tracking',
+        descriptionAr: 'متابعة يومية للحفظ الجديد والمراجعة الصغرى والكبرى مع المشايخ المجازين',
+        priceMonthly: 140,
+        priceYearly: 1400,
+        currency: 'USD',
+        features: ['Daily Live WebRTC Video Halaqahs', 'Individual Surah Check-ins', 'Recitation Audio Recording Submissions', 'Sanad Tracking Dashboard', 'Official Graduation Certificate']
       }
     ],
     paymentGateways: [
       {
         provider: 'stripe',
         enabled: true,
-        publishableKey: 'pk_live_hifz_stripe',
-        liveMode: true
-      },
-      {
-        provider: 'moyasar',
-        enabled: true,
-        publishableKey: 'pk_live_hifz_moyasar',
-        liveMode: true
+        publishableKey: 'pk_test_51TFgt1RPXkQKup3MmIls7ogQPZTdZfbeRkFaKYNugljgX3svXSgy8wgNaRs8TmUP9UmA1Nh0dHV5xUni1aLBiSA400Gvkz2tZ9',
+        liveMode: false
       }
     ]
   },
@@ -66,11 +72,12 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     id: 'tenant-code',
     name: 'Code Academy Bootcamp',
     nameAr: 'أكاديمية البرمجة والتقنية',
-    tagline: 'Modern Web Engineering, Interactive Browser Sandboxes & Mentorship',
-    taglineAr: 'تعلّم هندسة البرمجيات وبيئات التطوير السحابية مع نخبة المهندسين',
+    tagline: 'Become a Professional Software Engineer with Live Interactive Browser Sandboxes',
+    taglineAr: 'تعلّم هندسة البرمجيات وتطوير الويب عبر بيئات برمجية سحابية مباشرة',
     subdomain: 'code-academy',
     logoUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=150&q=80',
     faviconUrl: '💻',
+    niche: 'coding',
     theme: {
       primaryColor: '#2563eb',
       primaryHover: '#1d4ed8',
@@ -118,13 +125,14 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
   },
   'al-furqan': {
     id: 'tenant-1',
-    name: 'Al-Furqan Quran Academy',
-    nameAr: 'أكاديمية الفرقان للقرآن الكريم',
-    tagline: 'Preserving Sacred Quranic Knowledge through Authentic Memorization & Tajweed',
-    taglineAr: 'حفظ كتاب الله بالسند المتصل وتعلّم أحكام التجويد الميسرة',
+    name: 'Al-Furqan Islamic School',
+    nameAr: 'مدرسة الفرقان الإسلامية',
+    tagline: 'Comprehensive Islamic Curriculum & Classical Arabic Studies',
+    taglineAr: 'منهاج إسلامي متكامل ودراسات في اللغة العربية والعلوم الشرعية',
     subdomain: 'al-furqan',
     logoUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=150&q=80',
     faviconUrl: '📖',
+    niche: 'general',
     theme: {
       primaryColor: '#0d9488',
       primaryHover: '#0f766e',
@@ -137,47 +145,35 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
       fontFamily: 'Poppins',
     },
     defaultDirection: 'rtl',
-    heroBadgeText: 'Spring 2026 Admissions Open for Hifz & Tajweed Program',
-    heroBadgeTextAr: 'باب التسجيل مفتوح لبرنامج الحفظ والتجويد لعام ٢٠٢٦',
-    aboutText: 'Al-Furqan Quran Academy is dedicated to providing high-quality Quranic education to students of all ages across the globe with certified Sanad teachers.',
-    aboutTextAr: 'تسعى أكاديمية الفرقان لتقديم تعليم قرآني متميز على يد نخبة من المعلمين والمعلمات المجازين بالسند المتصل إلى رسول الله صلى الله عليه وسلم.',
+    heroBadgeText: 'Spring 2026 Admissions Open for Islamic Studies Program',
+    heroBadgeTextAr: 'باب التسجيل مفتوح لبرنامج الدراسات الإسلامية لعام ٢٠٢٦',
+    aboutText: 'Al-Furqan Islamic School provides comprehensive Islamic education, ethics, and classical knowledge for youth and adults.',
+    aboutTextAr: 'تسعى مدرسة الفرقان لتقديم تعليم إسلامي متميز يشمل الفقه والعقيدة والسيرة النبوية.',
     contactEmail: 'admissions@alfurqan-academy.com',
     contactPhone: '+966 50 123 4567',
     admissionsOpen: true,
     pageBlocks: [],
     customFormFields: [
-      { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
-      { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 }
+      { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 }
     ],
     pricingPlans: [
       {
-        id: 'plan-tajweed',
-        name: 'Foundational Tajweed Track',
-        nameAr: 'مسار التجويد والتأسيس',
-        description: '2 sessions per week of oral recitation correction & Makharij rules',
-        descriptionAr: 'حصتان أسبوعياً لتصحيح المخارج وأحكام التجويد النظرية والعملية',
-        priceMonthly: 65,
-        priceYearly: 650,
+        id: 'plan-fiqh',
+        name: 'Islamic Studies Core Track',
+        nameAr: 'مسار الدراسات الإسلامية',
+        description: 'Weekly structured lessons in Fiqh, Hadith, and Seerah',
+        descriptionAr: 'دروس أسبوعية منتظمة في الفقه والحديث الشريف والسيرة النبوية',
+        priceMonthly: 55,
+        priceYearly: 550,
         currency: 'USD',
-        features: [
-          '2 Live 1-on-1 Sessions Weekly',
-          'Daily Recitation Homework Grading',
-          'Tuhfat al-Atfal Certificate',
-          'Student Quran Viewer Access'
-        ]
+        features: ['Weekly Live Classes', 'Downloadable Course Workbooks', 'Quarterly Assessment Tests']
       }
     ],
     paymentGateways: [
       {
         provider: 'stripe',
         enabled: true,
-        publishableKey: 'pk_live_51M4xxxAlFurqanKey',
-        liveMode: true
-      },
-      {
-        provider: 'moyasar',
-        enabled: true,
-        publishableKey: 'pk_live_moyasar_alfurqan',
+        publishableKey: 'pk_live_alfurqan_stripe',
         liveMode: true
       }
     ]
@@ -186,14 +182,15 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     id: 'tenant-2',
     name: 'Bayyinah Classical Arabic Institute',
     nameAr: 'معهد البينة للغة العربية والعلوم الشرعية',
-    tagline: 'Unlock the Beauty of the Quranic Language from Classical Grammar to Eloquence',
+    tagline: 'Unlock the Beauty of the Arabic Language from Classical Grammar to Eloquence',
     taglineAr: 'فهم لغة القرآن الكريم من البلاغة إلى النحو والصرف',
     subdomain: 'bayyinah-arabic',
     logoUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=150&q=80',
     faviconUrl: '✒️',
+    niche: 'language',
     theme: {
-      primaryColor: '#059669',
-      primaryHover: '#047857',
+      primaryColor: '#7c3aed',
+      primaryHover: '#6d28d9',
       secondaryColor: '#ca8a04',
       accentColor: '#4f46e5',
       backgroundColor: '#f8fafc',
@@ -203,10 +200,10 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
       fontFamily: 'Poppins',
     },
     defaultDirection: 'ltr',
-    heroBadgeText: 'Classical Arabic Grammar & Quranic Vocabulary Certification',
-    heroBadgeTextAr: 'دبلوم النحو العربي ولغة القرآن الكريم',
-    aboutText: 'Bayyinah Institute empowers students worldwide to understand the Quran directly in its original Arabic syntax and eloquence without reliance on translation.',
-    aboutTextAr: 'يهدف معهد البينة إلى تمكين الطلاب من فهم القرآن الكريم بلغته الأصلية وتذوق بلاغته وإعجازه.',
+    heroBadgeText: 'Classical Arabic Grammar & Syntax Certification',
+    heroBadgeTextAr: 'دبلوم النحو العربي وقواعد الإعراب',
+    aboutText: 'Bayyinah Institute empowers students worldwide to understand classical Arabic syntax, Nahw, Sarf, and Balaghah.',
+    aboutTextAr: 'يهدف معهد البينة إلى تمكين الطلاب من فهم اللغة العربية الفصحى وتذوق بلاغتها وإعرابها.',
     contactEmail: 'info@bayyinah-institute.edu',
     contactPhone: '+1 (800) 555-0199',
     admissionsOpen: true,
@@ -219,8 +216,8 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
         id: 'plan-arabic-core',
         name: 'Classical Grammar Track',
         nameAr: 'مسار النحو التطبيقي',
-        description: 'Syntax & morphology applied directly to short surahs',
-        descriptionAr: 'شرح وتطبيق قواعد الآجرومية في إعراب سور القرآن الكريم',
+        description: 'Syntax & morphology applied directly to classical texts',
+        descriptionAr: 'شرح وتطبيق قواعد الآجرومية وشذا العرف في فن الصرف',
         priceMonthly: 85,
         priceYearly: 850,
         currency: 'USD',
@@ -238,14 +235,18 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
   }
 };
 
+// Aliases
+export const MOCK_TENANT = MOCK_TENANTS['hifz-academy'];
+
 export const MOCK_COURSES: Course[] = [
+  // 1. Hifz Quran Academy Courses
   {
-    id: 'course-1',
-    tenantId: 'tenant-1',
+    id: 'course-hifz-1',
+    tenantId: 'tenant-hifz',
     title: 'Foundations of Tajweed & Recitation (Tuhfat al-Atfal)',
     titleAr: 'تيسير التجويد شرح تحفة الأطفال',
     description: 'Learn fundamental Tajweed rules including Nun Sakinah, Tanween, Meem Sakinah, and Madd elongation with live oral correction.',
-    descriptionAr: 'دورة متكاملة لدراسة أحكام أحكام النون الساكنة والتنوين والميم الساكنة والمدود مع التدريب العملي.',
+    descriptionAr: 'دورة متكاملة لدراسة أحكام النون الساكنة والتنوين والميم الساكنة والمدود مع التدريب العملي.',
     level: 'Beginner',
     instructorName: 'Shaykh Ahmad Al-Mansoor',
     instructorNameAr: 'الشيخ أحمد المنصور',
@@ -268,6 +269,136 @@ export const MOCK_COURSES: Course[] = [
             tajweedRule: 'Ghunnah (غُنَّة) - Nasalization duration of 2 Harakat on Noon and Meem Mushaddadah.',
             audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3',
             completed: true,
+          },
+          {
+            id: 'les-2',
+            title: 'Lesson 1.2: Ahkam Al-Nun Al-Sakinah (Idhhar, Idgham, Iqlab, Ikhfa)',
+            titleAr: 'الدرس ١,٢: أحكام النون الساكنة والتنوين',
+            durationMinutes: 50,
+            tajweedRule: 'Idgham with Ghunnah (إدغام بغنة) for letters (ي, ن, م, و).',
+            audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/2.mp3',
+            completed: false,
+          }
+        ]
+      }
+    ]
+  },
+
+  // 2. Code Academy Bootcamp Courses (100% Pure Software Tech)
+  {
+    id: 'course-code-1',
+    tenantId: 'tenant-code',
+    title: 'Full-Stack TypeScript & React 19 Mastery',
+    titleAr: 'مسار الاحتراف في تايب سكريبت ورياكت ١٩',
+    description: 'Master modern frontend architecture, hooks, server components, and Tailwind CSS with real-time sandbox execution.',
+    descriptionAr: 'برنامج تدريبي متقدم لتطوير واجهات الويب الحديثة باستخدام تايب سكريبت ونكست جي إس.',
+    level: 'Intermediate',
+    instructorName: 'Sarah Jenkins (Senior Frontend Architect)',
+    instructorNameAr: 'سارة جينكينز (كبير مهندسي الواجهات)',
+    durationWeeks: 10,
+    sessionsPerWeek: 4,
+    price: 129,
+    enrolledStudentsCount: 512,
+    imageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
+    modules: [
+      {
+        id: 'mod-code-1',
+        title: 'Module 1: Modern TypeScript Fundamentals & Generics',
+        titleAr: 'الوحدة الأولى: أساسيات تايب سكريبت والأنواع العامة',
+        lessons: [
+          {
+            id: 'les-code-1',
+            title: 'Lesson 1.1: Strict Type Safety & Custom Utility Types',
+            titleAr: 'الدرس ١,١: التحقق الصارم من الأنواع ودوال المساعدة',
+            durationMinutes: 60,
+            completed: true,
+          },
+          {
+            id: 'les-code-2',
+            title: 'Lesson 1.2: React 19 Actions & Server State Management',
+            titleAr: 'الدرس ١,٢: إدارة الحالة وإجراءات الخادم في رياكت ١٩',
+            durationMinutes: 75,
+            completed: false,
+          }
+        ]
+      },
+      {
+        id: 'mod-code-2',
+        title: 'Module 2: REST & GraphQL API Integration with PostgreSQL',
+        titleAr: 'الوحدة الثانية: ربط واجهات برمجة التطبيقات وقواعد البيانات',
+        lessons: [
+          {
+            id: 'les-code-3',
+            title: 'Lesson 2.1: Prisma ORM Schema Design & Migrations',
+            titleAr: 'الدرس ٢,١: تصميم قواعد البيانات باستخدام بريزما',
+            durationMinutes: 90,
+            completed: false,
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'course-code-2',
+    tenantId: 'tenant-code',
+    title: 'Python Algorithms, Data Structures & System Design',
+    titleAr: 'هياكل البيانات والخوارزميات بلغة بايثون',
+    description: 'Solve coding interview challenges, binary trees, dynamic programming, and scalable backend services.',
+    descriptionAr: 'حل تحديات المقابلات التقنية والبرمجة الديناميكية وتصميم النظم.',
+    level: 'Advanced',
+    instructorName: 'David Chen (Ex-Google Principal Engineer)',
+    instructorNameAr: 'ديفيد تشن (مهندس أول سابق في جوجل)',
+    durationWeeks: 8,
+    sessionsPerWeek: 3,
+    price: 99,
+    enrolledStudentsCount: 420,
+    imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80',
+    modules: [
+      {
+        id: 'mod-py-1',
+        title: 'Module 1: Asymptotic Complexity & Dynamic Programming',
+        titleAr: 'الوحدة الأولى: تحليل تعقيد الخوارزميات والبرمجة الديناميكية',
+        lessons: [
+          {
+            id: 'les-py-1',
+            title: 'Lesson 1.1: Big-O Space/Time Analysis & Memoization',
+            titleAr: 'الدرس ١,١: تحليل التعقيد الزمني والمكاني',
+            durationMinutes: 60,
+            completed: true,
+          }
+        ]
+      }
+    ]
+  },
+
+  // 3. Bayyinah Classical Arabic Courses
+  {
+    id: 'course-bayyinah-1',
+    tenantId: 'tenant-2',
+    title: 'Classical Arabic Grammar: Al-Ajrumiyyah Applied',
+    titleAr: 'شرح الآجرومية في النحو التطبيقي',
+    description: 'Deep dive into Arabic sentence syntax, Marfoo\'at, Mansoobat, and parsing (I\'rab).',
+    descriptionAr: 'دراسة شاملة لقواعد الإعراب والمرفوعات والمنصوبات والمجرورات في كلام العرب.',
+    level: 'Intermediate',
+    instructorName: 'Ustadh Nouman Ali',
+    instructorNameAr: 'الأستاذ نعمان علي',
+    durationWeeks: 14,
+    sessionsPerWeek: 3,
+    price: 85,
+    enrolledStudentsCount: 290,
+    imageUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80',
+    modules: [
+      {
+        id: 'mod-arabic-1',
+        title: 'Module 1: Kalam Definition & Parts of Speech (Ism, Fi\'l, Harf)',
+        titleAr: 'الوحدة الأولى: تعريف الكلام وأقسامه الثلاثة',
+        lessons: [
+          {
+            id: 'les-arabic-1',
+            title: 'Lesson 1.1: Signs of Nouns and Verbal Conjugations',
+            titleAr: 'الدرس ١,١: علامات الاسم وتصريفات الأفعال',
+            durationMinutes: 50,
+            completed: true,
           }
         ]
       }
@@ -278,13 +409,13 @@ export const MOCK_COURSES: Course[] = [
 export const MOCK_LEADS: Lead[] = [
   {
     id: 'lead-101',
-    tenantId: 'tenant-1',
+    tenantId: 'tenant-hifz',
     studentName: 'Youssef El-Amrani',
     email: 'youssef.amrani@gmail.com',
     phone: '+1 (555) 234-5678',
     country: 'United States',
     courseInterest: 'Foundations of Tajweed & Recitation (Tuhfat al-Atfal)',
-    preferredSchedule: 'Evening (Isha-Night)',
+    preferredSchedule: 'Evening',
     priorHifzLevel: '6 - 15 Juz',
     arabicLevel: 'Intermediate',
     status: 'New',
@@ -313,99 +444,38 @@ export const MOCK_LEADS: Lead[] = [
     ],
   },
   {
-    id: 'lead-102',
-    tenantId: 'tenant-1',
-    studentName: 'Amina Bint Tariq',
-    email: 'amina.tariq@yahoo.com',
-    phone: '+44 7700 900077',
-    country: 'United Kingdom',
-    courseInterest: 'Foundations of Tajweed & Recitation (Tuhfat al-Atfal)',
-    preferredSchedule: 'Afternoon (Asr-Maghrib)',
-    priorHifzLevel: '1 - 5 Juz',
-    arabicLevel: 'Beginner',
-    status: 'Under Review',
-    createdAt: '2026-08-25T11:15:00Z',
-    updatedAt: '2026-08-25T15:20:00Z',
-    notes: 'Applied for evening classes. Requires parent contact for scheduling.',
-    assessmentScore: 72,
-    selectedPlanId: 'plan-hifz',
-    planName: 'Intensive Hifz Program',
-    planPrice: 140,
-    paymentStatus: 'Pending',
-    billingCycle: 'mo',
-    paymentGateway: 'bank_transfer',
-  },
-  {
-    id: 'lead-103',
-    tenantId: 'tenant-1',
-    studentName: 'Bilal Farooq',
-    email: 'bilal.farooq@outlook.com',
-    phone: '+971 50 987 6543',
-    country: 'United Arab Emirates',
-    courseInterest: 'Full Hifz Intensive Track',
-    preferredSchedule: 'Morning (Fajr-Zuhr)',
-    priorHifzLevel: '16 - 29 Juz',
-    arabicLevel: 'Advanced',
-    status: 'Interview',
-    createdAt: '2026-08-24T09:45:00Z',
-    updatedAt: '2026-08-24T14:00:00Z',
-    notes: 'Passed initial audio evaluation. Scheduled oral interview for Friday 4 PM.',
-    assessmentScore: 95,
-    selectedPlanId: 'plan-ijazah',
-    planName: 'Qira\'at & Ijazah Specialization',
-    planPrice: 240,
-    paymentStatus: 'Paid',
-    billingCycle: 'mo',
-    paymentGateway: 'moyasar',
-    invoices: [
-      {
-        id: 'inv-103',
-        invoiceNumber: 'INV-2026-074',
-        planName: 'Qira\'at & Ijazah Specialization',
-        amount: 240,
-        currency: 'USD',
-        status: 'Paid',
-        issuedAt: '2026-08-24 09:48',
-        paidAt: '2026-08-24 09:50',
-        gateway: 'moyasar',
-      }
-    ],
-  },
-  {
-    id: 'lead-104',
-    tenantId: 'tenant-1',
-    studentName: 'Zeynab Hassan',
-    email: 'z.hassan@edu.org',
-    phone: '+1 (555) 876-5432',
-    country: 'Canada',
-    courseInterest: 'Quranic Arabic Grammar',
-    preferredSchedule: 'Evening (Isha-Night)',
-    priorHifzLevel: 'Complete Quran (30 Juz)',
-    arabicLevel: 'Intermediate',
+    id: 'lead-code-1',
+    tenantId: 'tenant-code',
+    studentName: 'Alex Mercer',
+    email: 'alex.mercer@techdev.io',
+    phone: '+1 (415) 555-0182',
+    country: 'United States',
+    courseInterest: 'Full-Stack TypeScript & React 19 Mastery',
+    preferredSchedule: 'Weekend Intensive',
     status: 'Admitted',
-    createdAt: '2026-08-22T16:20:00Z',
-    updatedAt: '2026-08-23T11:05:00Z',
-    notes: 'Admitted into Cohort B. Tuition payment confirmed.',
-    assessmentScore: 92,
-    selectedPlanId: 'plan-hifz',
-    planName: 'Intensive Hifz Program',
-    planPrice: 140,
+    createdAt: '2026-08-28T10:00:00Z',
+    updatedAt: '2026-08-28T10:15:00Z',
+    notes: 'Enrolled in full cohort. Sandbox environment provisioned.',
+    assessmentScore: 94,
+    selectedPlanId: 'plan-code-pro',
+    planName: 'Full-Stack Web Immersion',
+    planPrice: 129,
     paymentStatus: 'Paid',
-    billingCycle: 'yr',
+    billingCycle: 'mo',
     paymentGateway: 'stripe',
     invoices: [
       {
-        id: 'inv-104',
-        invoiceNumber: 'INV-2026-042',
-        planName: 'Intensive Hifz Program',
-        amount: 1400,
+        id: 'inv-code-1',
+        invoiceNumber: 'INV-CODE-001',
+        planName: 'Full-Stack Web Immersion',
+        amount: 129,
         currency: 'USD',
         status: 'Paid',
-        issuedAt: '2026-08-22 16:22',
-        paidAt: '2026-08-22 16:25',
+        issuedAt: '2026-08-28 10:05',
+        paidAt: '2026-08-28 10:06',
         gateway: 'stripe',
       }
-    ],
+    ]
   }
 ];
 
@@ -481,9 +551,9 @@ export const MOCK_ANALYTICS = {
     { month: 'Aug', leads: 124, enrolled: 89 }
   ],
   juzDistribution: [
-    { range: 'Juz 1 - 5', students: 35 },
-    { range: 'Juz 6 - 15', students: 28 },
-    { range: 'Juz 16 - 29', students: 16 },
-    { range: 'Juz 30 (Complete)', students: 10 }
+    { range: 'Foundations', students: 38 },
+    { range: 'Level 1-2', students: 24 },
+    { range: 'Level 3-4', students: 16 },
+    { range: 'Advanced Capstone', students: 11 }
   ]
 };
