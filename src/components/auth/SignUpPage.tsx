@@ -14,7 +14,8 @@ import {
   BookOpen,
   Sparkles,
   ShieldCheck,
-  GraduationCap
+  GraduationCap,
+  Terminal
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AuthHeroIllustration } from '../illustrations/Illustrations2D';
@@ -33,7 +34,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
-  const [selectedSubdomain, setSelectedSubdomain] = useState<string>(tenant.subdomain);
+  const [selectedSubdomain, setSelectedSubdomain] = useState<string>(tenant.subdomain || 'hifz-academy');
   const [role, setRole] = useState<UserRole>('student');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -85,9 +86,9 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
 
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold">
-            <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <span className="font-extrabold text-slate-900 text-sm">Hifz OS</span>
+          <span className="font-extrabold text-slate-900 text-sm">TechMadrasah</span>
         </div>
 
         <button
@@ -116,7 +117,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
               </h2>
 
               <p className="text-xs text-slate-400 leading-relaxed">
-                Enroll in online courses, stream live Uthmani verses with recitation looping, and submit audio homework directly to certified instructors.
+                Enroll in online courses, stream live Uthmani verses or coding exercises, and submit homework directly to certified instructors.
               </p>
             </div>
 
@@ -154,7 +155,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                 onChange={(e) => setSelectedSubdomain(e.target.value)}
                 options={Object.values(MOCK_TENANTS).map((t) => ({
                   value: t.subdomain,
-                  label: `${t.name} (${t.subdomain}.hifz.app)`,
+                  label: `${t.name} (${t.subdomain}.techmadrasah.app)`,
                 }))}
               />
 
@@ -237,7 +238,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
 
       {/* Footer */}
       <footer className="py-4 text-center text-xs text-slate-400">
-        © 2026 Hifz LMS Inc. • Multitenant Educational Platform
+        © 2026 TechMadrasah Inc. • White-Label Educational Platform
       </footer>
     </div>
   );

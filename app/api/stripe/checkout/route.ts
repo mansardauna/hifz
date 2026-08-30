@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
             currency: currency.toLowerCase(),
             product_data: {
               name: finalName,
-              description: `Hifz LMS Platform Subscription for ${academySubdomain}.hifz.app`,
+              description: `TechMadrasah SaaS Platform Subscription for ${academySubdomain}.techmadrasah.app`,
             },
             unit_amount: Math.round(finalAmount * 100),
             recurring: {

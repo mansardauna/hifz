@@ -213,7 +213,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   placeholder="myname"
                 />
                 <span className="px-3 bg-slate-100 text-slate-500 text-xs font-mono border-l border-slate-200 py-2">
-                  .hifz.app
+                  .techmadrasah.app
                 </span>
               </div>
             </div>

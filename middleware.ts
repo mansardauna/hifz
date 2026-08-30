@@ -24,6 +24,8 @@ export default async function middleware(req: NextRequest) {
   const isRootHost =
     currentHost === 'localhost' ||
     currentHost === '127.0.0.1' ||
+    currentHost === 'techmadrasah.app' ||
+    currentHost === 'www.techmadrasah.app' ||
     currentHost === 'hifz.app' ||
     currentHost === 'www.hifz.app' ||
     currentHost.endsWith('.vercel.app');
@@ -34,9 +36,11 @@ export default async function middleware(req: NextRequest) {
 
   let subdomain: string | null = null;
 
-  // 1. Standard RFC 6761 subdomain: e.g. al-furqan.localhost, bayyinah.localhost, al-furqan.hifz.app
+  // 1. Standard RFC 6761 subdomain: e.g. hifz-academy.techmadrasah.app, code-academy.techmadrasah.app
   if (currentHost.endsWith('.localhost')) {
     subdomain = currentHost.replace('.localhost', '');
+  } else if (currentHost.endsWith('.techmadrasah.app')) {
+    subdomain = currentHost.replace('.techmadrasah.app', '');
   } else if (currentHost.endsWith('.hifz.app')) {
     subdomain = currentHost.replace('.hifz.app', '');
   } else if (currentHost.startsWith('localhost.') || currentHost.startsWith('127.0.0.1.')) {

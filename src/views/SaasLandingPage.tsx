@@ -20,7 +20,9 @@ import {
   Zap,
   ExternalLink,
   Laptop,
-  CheckCircle2
+  CheckCircle2,
+  Terminal,
+  Building
 } from 'lucide-react';
 import { Button, Card, Badge, Input } from '../components/ui';
 import {
@@ -47,22 +49,61 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
     message: '',
   });
 
+  const liveAcademies = [
+    {
+      id: 'hifz-academy',
+      name: 'Hifz Quran Academy',
+      subdomain: 'hifz-academy.techmadrasah.app',
+      specialty: 'Quran & Tajweed',
+      desc: '114 Surahs Uthmani reader, authentic audio looper, and Sanad tracking.',
+      icon: <BookOpen className="w-5 h-5 text-emerald-600" />,
+      tagColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    },
+    {
+      id: 'code-academy',
+      name: 'Code Academy Bootcamp',
+      subdomain: 'code-academy.techmadrasah.app',
+      specialty: 'Software & Tech',
+      desc: 'In-browser coding sandbox with live JavaScript & Python execution.',
+      icon: <Code2 className="w-5 h-5 text-blue-600" />,
+      tagColor: 'bg-blue-50 text-blue-700 border-blue-200',
+    },
+    {
+      id: 'al-furqan',
+      name: 'Al-Furqan Islamic School',
+      subdomain: 'al-furqan.techmadrasah.app',
+      specialty: 'Madrasah & Sanad',
+      desc: 'Structured Hifz revision halaqahs and certified oral evaluation.',
+      icon: <Award className="w-5 h-5 text-teal-600" />,
+      tagColor: 'bg-teal-50 text-teal-700 border-teal-200',
+    },
+    {
+      id: 'bayyinah-arabic',
+      name: 'Bayyinah Classical Arabic',
+      subdomain: 'arabic.bayyinah.com',
+      specialty: 'Arabic Language',
+      desc: 'Custom domain white-label with classical grammar & syntax drills.',
+      icon: <Globe className="w-5 h-5 text-purple-600" />,
+      tagColor: 'bg-purple-50 text-purple-700 border-purple-200',
+    },
+  ];
+
   const faqs = [
     {
-      q: 'How does the multi-tenant architecture work?',
-      a: 'Every registered academy receives full data isolation, dedicated subdomains (e.g. your-academy.hifz.app), custom domain support, and private student and instructor databases.',
+      q: 'How does TechMadrasah provide white-label branding?',
+      a: 'TechMadrasah provides complete turn-key infrastructure. Your academy runs under your own custom domain (e.g. learn.youracademy.com) or subdomain (*.techmadrasah.app) with your brand colors, custom logos, isolated student databases, and dedicated merchant gateways.',
     },
     {
-      q: 'Can students access live video classrooms directly in the browser?',
-      a: 'Yes! Powered by LiveKit Cloud WebRTC SFU, students and teachers join HD video sessions and collaborative whiteboards directly in their web or mobile browser with 0 installations.',
+      q: 'Can students access real live WebRTC video classrooms in the browser?',
+      a: 'Yes! Powered by LiveKit Cloud WebRTC SFU, teachers and students connect with real camera, microphone, screen sharing, and interactive whiteboards with zero software installation required.',
     },
     {
-      q: 'Which learning specialties and plugins are supported?',
-      a: 'The platform features modular workspaces for Quran & Tajweed studies (all 114 Surahs with authentic audio streaming), Coding & Tech sandboxes (interactive browser code execution), and General LMS tracks.',
+      q: 'Which learning plugins and tracks are available?',
+      a: 'TechMadrasah includes modular workspaces for Quran & Tajweed academies (all 114 Surahs with Mishary/Husary/Minshawi audio looper), Coding & Tech bootcamps (interactive browser sandboxes), and General multidisciplinary schools.',
     },
     {
-      q: 'How are tuition payments collected?',
-      a: 'Academies connect their own merchant gateways (Flutterwave, Paystack, Stripe, Moyasar, or Direct Bank Wire) to receive 100% of student tuition payments directly into their own bank accounts.',
+      q: 'How are student tuition fees collected?',
+      a: 'Academies connect their own merchant gateways (Flutterwave, Paystack, Stripe, Moyasar, or Direct Bank Wire). 100% of student tuition deposits directly into your bank account with zero platform commission.',
     },
   ];
 
@@ -74,34 +115,34 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
-      {/* 1. Header Navigation (Ultra-Responsive & Aesthetic) */}
+      {/* 1. Header Navigation */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200/80 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
           {/* Logo Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs ring-1 ring-slate-800">
-              <BookOpen className="w-4 h-4 text-emerald-400" />
+              <Terminal className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-extrabold text-slate-900 tracking-tight leading-none">
-                  Hifz OS
+                  TechMadrasah
                 </span>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase tracking-wider">
-                  Cloud
+                  White-Label OS
                 </span>
               </div>
               <span className="text-[10px] text-slate-500 font-medium tracking-wide uppercase block">
-                Multi-Tenant Academy Platform
+                Multi-Tenant Academy Infrastructure
               </span>
             </div>
           </div>
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1 rounded-full border border-slate-200/60 text-xs font-semibold text-slate-600">
-            <a href="#features" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Features</a>
-            <a href="#modules" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Specialties</a>
-            <a href="#network" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Architecture</a>
+            <a href="#demos" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Live Academies</a>
+            <a href="#specialties" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Specialties</a>
+            <a href="#architecture" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">White-Label Engine</a>
             <a href="#pricing" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Pricing</a>
             <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">FAQ</a>
           </nav>
@@ -117,7 +158,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               onClick={() => onNavigateToAuth('create-academy')}
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
             >
-              Launch Academy
+              Launch Your Academy
             </Button>
           </div>
 
@@ -136,25 +177,25 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
           <div className="md:hidden bg-white/95 backdrop-blur-lg border-b border-slate-200 px-5 py-5 space-y-4 text-xs font-semibold shadow-lg animate-in slide-in-from-top-2 duration-200">
             <div className="grid grid-cols-2 gap-2">
               <a
-                href="#features"
+                href="#demos"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2.5 rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 text-center font-medium"
               >
-                Features
+                Live Academies
               </a>
               <a
-                href="#modules"
+                href="#specialties"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2.5 rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 text-center font-medium"
               >
                 Specialties
               </a>
               <a
-                href="#network"
+                href="#architecture"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2.5 rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 text-center font-medium"
               >
-                Architecture
+                White-Label
               </a>
               <a
                 href="#pricing"
@@ -175,7 +216,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   onNavigateToAuth('login');
                 }}
               >
-                Sign In to Account
+                Sign In to Portal
               </Button>
               <Button
                 variant="primary"
@@ -186,32 +227,31 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   onNavigateToAuth('create-academy');
                 }}
               >
-                Launch Your Academy Free
+                Launch White-Label Academy
               </Button>
             </div>
           </div>
         )}
       </header>
 
-      {/* 2. Hero Section with 2D Dashboard Illustration */}
+      {/* 2. Hero Section */}
       <section className="relative pt-12 pb-20 sm:pt-20 sm:pb-28 px-4 sm:px-8 max-w-7xl mx-auto overflow-hidden">
-        {/* Subtle Background Radial Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-gradient-to-b from-emerald-100/40 via-sky-100/20 to-transparent blur-3xl pointer-events-none -z-10" />
 
         <div className="text-center max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-700 text-xs font-semibold shadow-xs">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-            <span className="font-bold text-slate-900">v2.4 Live</span>
+            <span className="font-bold text-slate-900">TechMadrasah Engine</span>
             <span className="text-slate-300">•</span>
-            <span>Complete Multi-Tenant Educational Operating System</span>
+            <span>Complete White-Label SaaS for Online Academies</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
-            Launch and scale your online madrasah with complete autonomy
+            The White-Label Educational Operating System for Modern Academies
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Multi-tenant routing with custom domains, authentic 114 Surah Quran API with live reciter looper, WebRTC video classrooms, collaborative whiteboards, and autonomous tuition processing.
+            TechMadrasah powers Quranic madrasahs, coding bootcamps, and language institutes with custom domains, real WebRTC video classrooms, browser coding sandboxes, and autonomous tuition billing.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -222,24 +262,23 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all"
             >
-              Launch Your Academy Free
+              Launch Your White-Label Academy
             </Button>
             <Button
               variant="outline"
               size="lg"
-              onClick={() => onNavigateToDemo('dar-alquran')}
+              onClick={() => onNavigateToDemo('hifz-academy')}
               leftIcon={<Sparkles className="w-4 h-4 text-emerald-600" />}
               className="w-full sm:w-auto bg-white"
             >
-              Explore Live Demo Academy
+              Explore Hifz Quran Academy Demo
             </Button>
           </div>
 
-          {/* Trust Badges */}
           <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-semibold text-slate-500">
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Full Data Isolation</span>
+              <span>Full Multi-Tenant Isolation</span>
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -247,29 +286,27 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>No Platform Commission on Tuition</span>
+              <span>0% Platform Commission on Tuition</span>
             </div>
           </div>
         </div>
 
-        {/* 2D Vector Dashboard Graphic */}
+        {/* 2D Vector Graphic */}
         <div className="mt-12 sm:mt-16 max-w-5xl mx-auto relative">
           <div className="rounded-2xl p-2 sm:p-3 bg-white/70 backdrop-blur-md border border-slate-200 shadow-2xl shadow-slate-200/50">
             <HeroDashboardIllustration className="w-full h-auto rounded-xl shadow-xs" />
           </div>
 
-          {/* Floating Metric Pill 1 */}
           <div className="hidden lg:flex items-center gap-3 absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 rounded-xl shadow-xl">
             <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
               <Mic className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-900 leading-tight">Live Reciter Looper</p>
+              <p className="text-[11px] font-bold text-slate-900 leading-tight">Live Quran Audio Looper</p>
               <p className="text-[10px] text-slate-500">Mishary • Husary • Minshawi • Basit</p>
             </div>
           </div>
 
-          {/* Floating Metric Pill 2 */}
           <div className="hidden lg:flex items-center gap-3 absolute -top-6 -right-6 bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 rounded-xl shadow-xl">
             <div className="w-9 h-9 rounded-lg bg-slate-900 text-emerald-400 flex items-center justify-center font-bold">
               <Video className="w-4 h-4" />
@@ -282,183 +319,235 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 3. Multi-Niche Visual Specialties */}
-      <section id="modules" className="py-20 px-4 sm:px-8 bg-white border-y border-slate-200">
+      {/* 3. Live Sample Academies Powered by TechMadrasah */}
+      <section id="demos" className="py-20 px-4 sm:px-8 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <Badge variant="default">Specialized LMS Workspaces</Badge>
+            <Badge variant="success">White-Label Client Showcase</Badge>
             <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Built for Quranic, Tech, and Multidisciplinary Academies
+              Live Academies Powered by TechMadrasah
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Each institution configures its niche workspace with tailored tools, student dashboards, and evaluation engines.
+              Click any live academy below to preview their isolated white-label portal, courses, and interactive tools.
             </p>
           </div>
 
-          {/* Specialty Selector Tabs */}
-          <div className="flex justify-center">
-            <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold gap-1">
-              <button
-                onClick={() => setSelectedSpecialty('quran')}
-                className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                  selectedSpecialty === 'quran'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {liveAcademies.map((academy) => (
+              <Card
+                key={academy.id}
+                className="flex flex-col justify-between hover:border-slate-400 hover:shadow-lg transition-all cursor-pointer p-5 space-y-4"
+                onClick={() => onNavigateToDemo(academy.id)}
               >
-                <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Quran & Tajweed Madrasah</span>
-              </button>
-              <button
-                onClick={() => setSelectedSpecialty('coding')}
-                className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                  selectedSpecialty === 'coding'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <Code2 className="w-3.5 h-3.5 text-blue-600" />
-                <span>Coding & Tech Academy</span>
-              </button>
-              <button
-                onClick={() => setSelectedSpecialty('general')}
-                className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                  selectedSpecialty === 'general'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <Globe className="w-3.5 h-3.5 text-purple-600" />
-                <span>General Language School</span>
-              </button>
-            </div>
-          </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                      {academy.icon}
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${academy.tagColor}`}>
+                      {academy.specialty}
+                    </span>
+                  </div>
 
-          {/* Specialty Preview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {selectedSpecialty === 'quran' && (
-              <>
-                <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                    <BookOpen className="w-4 h-4" />
+                  <div>
+                    <h3 className="font-extrabold text-sm text-slate-900">{academy.name}</h3>
+                    <p className="text-[11px] text-slate-500 font-mono mt-0.5">{academy.subdomain}</p>
                   </div>
-                  <h3 className="font-bold text-sm text-slate-900">Live 114 Surah Reader</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Full Uthmani script calligraphy with Sahih English translations dynamically loaded from AlQuran API.
-                  </p>
-                </Card>
-                <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                    <Mic className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Verse Audio Looper</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Continuous recitation player supporting Alafasy, Husary, Minshawi, and Abdul Basit with auto-progression.
-                  </p>
-                </Card>
-                <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                    <Award className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Sanad Ijazah Tracking</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Track student Hifz revision loops, Juz milestones, and verified Sanad chain certifications.
-                  </p>
-                </Card>
-              </>
-            )}
 
-            {selectedSpecialty === 'coding' && (
-              <>
-                <Card className="space-y-3 border-blue-200 bg-blue-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                    <Code2 className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Browser Code Sandbox</h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Interactive in-browser code editor with instant JavaScript, Python, and HTML/CSS execution.
+                    {academy.desc}
                   </p>
-                </Card>
-                <Card className="space-y-3 border-blue-200 bg-blue-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                    <Laptop className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Automated Unit Test Grading</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Instant feedback on coding homework submissions with automated test assert evaluation.
-                  </p>
-                </Card>
-                <Card className="space-y-3 border-blue-200 bg-blue-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                    <Video className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Pair-Programming Classroom</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Live collaborative editor alongside video chat and real-time screen sharing for mentors.
-                  </p>
-                </Card>
-              </>
-            )}
+                </div>
 
-            {selectedSpecialty === 'general' && (
-              <>
-                <Card className="space-y-3 border-purple-200 bg-purple-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                    <Globe className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Multilingual LMS Tracks</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Arabic, English, French, and Urdu curriculum modules with RTL and LTR layout toggles.
-                  </p>
-                </Card>
-                <Card className="space-y-3 border-purple-200 bg-purple-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                    <Palette className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">GrapesJS Page Builder</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Visual drag-and-drop page builder with ready-to-use landing page templates for student admissions.
-                  </p>
-                </Card>
-                <Card className="space-y-3 border-purple-200 bg-purple-50/20">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                    <CreditCard className="w-4 h-4" />
-                  </div>
-                  <h3 className="font-bold text-sm text-slate-900">Direct Merchant Gateways</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Connect Flutterwave, Paystack, Stripe, and Moyasar to accept payments in any local currency.
-                  </p>
-                </Card>
-              </>
-            )}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700">
+                  <span>Enter Academy</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </div>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 4. Multi-Tenant Architecture Section */}
-      <section id="network" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-12">
+      {/* 4. Multi-Niche Visual Specialties */}
+      <section id="specialties" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <Badge variant="default">Enterprise Cloud Infrastructure</Badge>
+          <Badge variant="default">Modular LMS Workspaces</Badge>
           <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-            Independent Multitenancy with Complete Isolation
+            Tailored Engines for Every Educational Specialty
           </h2>
           <p className="text-xs sm:text-sm text-slate-600">
-            Each academy functions as an autonomous, self-contained educational portal with dedicated domain middleware.
+            Each academy enables specialized plugin modules tailored to their curriculum and student demographic.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <MultiTenantNetworkIllustration className="w-full h-auto" />
+        {/* Specialty Selector Tabs */}
+        <div className="flex justify-center">
+          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold gap-1">
+            <button
+              onClick={() => setSelectedSpecialty('quran')}
+              className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                selectedSpecialty === 'quran'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Hifz Quran Madrasah</span>
+            </button>
+            <button
+              onClick={() => setSelectedSpecialty('coding')}
+              className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                selectedSpecialty === 'coding'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Code2 className="w-3.5 h-3.5 text-blue-600" />
+              <span>Code Academy Tech</span>
+            </button>
+            <button
+              onClick={() => setSelectedSpecialty('general')}
+              className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                selectedSpecialty === 'general'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-purple-600" />
+              <span>Language & Islamic Schools</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Specialty Preview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {selectedSpecialty === 'quran' && (
+            <>
+              <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">114 Surah Uthmani Reader</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Real-time Uthmani script calligraphy and English translations dynamically streamed from AlQuran Cloud API.
+                </p>
+              </Card>
+              <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <Mic className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">Reciter Audio Looper</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Multi-reciter streaming player (Alafasy, Husary, Minshawi, Abdul Basit) with verse repetition and auto-progression.
+                </p>
+              </Card>
+              <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <Award className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">Sanad Ijazah Verification</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Systematic revision halaqah tracking, Juz completion milestones, and verified Sanad chain certificates.
+                </p>
+              </Card>
+            </>
+          )}
+
+          {selectedSpecialty === 'coding' && (
+            <>
+              <Card className="space-y-3 border-blue-200 bg-blue-50/20">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                  <Code2 className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">In-Browser Code Sandbox</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Integrated code editor supporting instant JavaScript, Python, and HTML/CSS runtime execution without setups.
+                </p>
+              </Card>
+              <Card className="space-y-3 border-blue-200 bg-blue-50/20">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                  <Laptop className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">Automated Test Grading</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Instant feedback on coding homework assignments with automated assert test evaluation.
+                </p>
+              </Card>
+              <Card className="space-y-3 border-blue-200 bg-blue-50/20">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                  <Video className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">Live Pair-Programming</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Collaborative code editing alongside live WebRTC video calling and screen sharing for mentors.
+                </p>
+              </Card>
+            </>
+          )}
+
+          {selectedSpecialty === 'general' && (
+            <>
+              <Card className="space-y-3 border-purple-200 bg-purple-50/20">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                  <Globe className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">Multilingual Arabic & English</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Classical grammar curriculum with dynamic RTL and LTR layout toggles for Arabic language students.
+                </p>
+              </Card>
+              <Card className="space-y-3 border-purple-200 bg-purple-50/20">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                  <Palette className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">GrapesJS Landing Builder</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Visual drag-and-drop page builder with pre-built admissions templates for prospective student enrollment.
+                </p>
+              </Card>
+              <Card className="space-y-3 border-purple-200 bg-purple-50/20">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900">Independent Merchant Setup</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Direct connection to Flutterwave, Paystack, Stripe, and Moyasar to collect tuition in any local currency.
+                </p>
+              </Card>
+            </>
+          )}
         </div>
       </section>
 
-      {/* 5. 4-Tier SaaS Pricing Grid */}
+      {/* 5. White-Label Architecture Section */}
+      <section id="architecture" className="py-20 px-4 sm:px-8 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <Badge variant="default" className="bg-slate-800 text-emerald-400 border-slate-700">
+              White-Label Engine
+            </Badge>
+            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+              TechMadrasah White-Label Multi-Tenant Architecture
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              TechMadrasah sits behind the scenes as your cloud engine, while your students and teachers see only your academy brand.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <MultiTenantNetworkIllustration className="w-full h-auto" />
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Pricing Grid */}
       <section id="pricing" className="py-20 px-4 sm:px-8 bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <Badge variant="success">Transparent SaaS Pricing</Badge>
+            <Badge variant="success">Platform Subscription Plans</Badge>
             <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Simple, Predictable Plans for Every Academy
+              Predictable SaaS Pricing for Your Academy
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
               Zero commission on your student tuition. Billed securely via Stripe.
@@ -469,8 +558,8 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             {/* Free */}
             <Card className="flex flex-col justify-between border-slate-200 hover:border-slate-300 transition-all">
               <div className="space-y-4">
-                <Badge variant="default">Free Tier</Badge>
-                <h3 className="font-bold text-base text-slate-900">Free Starter</h3>
+                <Badge variant="default">Free Starter</Badge>
+                <h3 className="font-bold text-base text-slate-900">Community Free</h3>
                 <p className="text-xs text-slate-500">Perfect for initial trials and getting started.</p>
                 <div className="pb-3 border-b border-slate-100">
                   <span className="text-3xl font-bold font-mono text-slate-900">$0</span>
@@ -487,11 +576,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Subdomain (*.hifz.app)</span>
+                    <span>Subdomain (*.techmadrasah.app)</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Basic Overview Numbers</span>
+                    <span>Basic Overview Statistics</span>
                   </li>
                 </ul>
               </div>
@@ -510,9 +599,9 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             {/* Qari */}
             <Card className="flex flex-col justify-between border-slate-200 hover:border-slate-300 transition-all">
               <div className="space-y-4">
-                <Badge variant="default">Qari Solo</Badge>
-                <h3 className="font-bold text-base text-slate-900">Independent Qari</h3>
-                <p className="text-xs text-slate-500">For private tutors and solo Quran instructors.</p>
+                <Badge variant="default">Solo Tutor</Badge>
+                <h3 className="font-bold text-base text-slate-900">Independent Qari / Tutor</h3>
+                <p className="text-xs text-slate-500">For private instructors and solo mentors.</p>
                 <div className="pb-3 border-b border-slate-100">
                   <span className="text-3xl font-bold font-mono text-slate-900">$29</span>
                   <span className="text-xs text-slate-500 ml-1">/ month</span>
@@ -528,7 +617,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Audio Looper & Homework</span>
+                    <span>Audio Looper & Coding Sandbox</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -543,7 +632,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   className="w-full"
                   onClick={() => onNavigateToAuth('create-academy')}
                 >
-                  Get Qari Tier
+                  Get Solo Plan
                 </Button>
               </div>
             </Card>
@@ -569,7 +658,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span className="font-semibold text-slate-900">Custom Domain (*.academy.com)</span>
+                    <span className="font-semibold text-slate-900">Custom Domain (*.youracademy.com)</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -616,7 +705,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Sanad Certificate Builder</span>
+                    <span>Full White-Label Removal</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -639,7 +728,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 6. FAQ Section */}
+      {/* 7. FAQ Section */}
       <section id="faq" className="py-20 px-4 sm:px-8 max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <Badge variant="default">Frequently Asked Questions</Badge>
@@ -671,26 +760,26 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 7. Footer */}
+      {/* 8. Footer */}
       <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 py-12 px-4 sm:px-8 font-sans text-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              <BookOpen className="w-3.5 h-3.5" />
+              <Terminal className="w-3.5 h-3.5" />
             </div>
-            <span className="font-extrabold text-white text-sm">Hifz OS</span>
+            <span className="font-extrabold text-white text-sm">TechMadrasah</span>
             <span className="text-slate-600">|</span>
-            <span>Educational Multitenancy Infrastructure</span>
+            <span>White-Label Educational SaaS Infrastructure</span>
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#demos" className="hover:text-white transition-colors">Live Academies</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             <button onClick={() => onNavigateToAuth('login')} className="hover:text-white transition-colors cursor-pointer">Sign In</button>
             <button onClick={() => onNavigateToAuth('create-academy')} className="text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer">Launch Academy</button>
           </div>
 
-          <p className="text-[11px] text-slate-500">© 2026 Hifz LMS Inc. All rights reserved.</p>
+          <p className="text-[11px] text-slate-500">© 2026 TechMadrasah Inc. All rights reserved.</p>
         </div>
       </footer>
     </div>

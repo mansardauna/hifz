@@ -32,7 +32,10 @@ export async function GET(request: NextRequest) {
   }
 
   // Graceful fallback to mock data
-  const fallback = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
+  let resolvedKey = subdomain;
+  if (resolvedKey === 'hifz') resolvedKey = 'hifz-academy';
+  if (resolvedKey === 'code') resolvedKey = 'code-academy';
+  const fallback = MOCK_TENANTS[resolvedKey] || MOCK_TENANTS['hifz-academy'] || MOCK_TENANTS['al-furqan'];
   return NextResponse.json(fallback);
 }
 

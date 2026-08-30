@@ -40,7 +40,10 @@ class HifzApiClient {
       }
     }
 
-    const tenant = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
+    let resolvedKey = subdomain;
+    if (resolvedKey === 'hifz') resolvedKey = 'hifz-academy';
+    if (resolvedKey === 'code') resolvedKey = 'code-academy';
+    const tenant = MOCK_TENANTS[resolvedKey] || MOCK_TENANTS['hifz-academy'] || MOCK_TENANTS['al-furqan'];
     return Promise.resolve({ ...tenant });
   }
 

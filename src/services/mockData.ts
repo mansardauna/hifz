@@ -1,6 +1,121 @@
 import { TenantConfig, Course, Lead, Surah, RecitationSubmission } from '../types';
 
 export const MOCK_TENANTS: Record<string, TenantConfig> = {
+  'hifz-academy': {
+    id: 'tenant-hifz',
+    name: 'Hifz Quran Academy',
+    nameAr: 'أكاديمية حفظ للقرآن الكريم والقراءات',
+    tagline: 'Systematic Quran Memorization, Sanad Verification & Daily Oral Recitation',
+    taglineAr: 'حفظ كتاب الله بالسند المتصل وتعلّم أحكام التجويد الميسرة',
+    subdomain: 'hifz-academy',
+    logoUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=150&q=80',
+    faviconUrl: '📖',
+    theme: {
+      primaryColor: '#059669',
+      primaryHover: '#047857',
+      secondaryColor: '#d97706',
+      accentColor: '#0284c7',
+      backgroundColor: '#f8fafc',
+      surfaceColor: '#ffffff',
+      textColor: '#0f172a',
+      borderRadius: '0.5rem',
+      fontFamily: 'Poppins',
+    },
+    defaultDirection: 'rtl',
+    heroBadgeText: 'Certified Sanad Reciters • 114 Surahs Audio Reader Active',
+    heroBadgeTextAr: 'نخبة من المجازين بالسند المتصل • قارئ السور التفاعلي نشط',
+    aboutText: 'Hifz Quran Academy provides global students with rigorous 1-on-1 recitation correction, continuous audio looping, and verified Sanad chains.',
+    aboutTextAr: 'تهدف أكاديمية حفظ إلى تقديم تعليم قرآني متميز وتخريج حفظة متقنين لكتاب الله تعالى.',
+    contactEmail: 'admissions@hifz-academy.com',
+    contactPhone: '+966 50 888 1234',
+    admissionsOpen: true,
+    pageBlocks: [],
+    customFormFields: [
+      { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Tariq Mansoor', width: 'half', order: 1 },
+      { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 }
+    ],
+    pricingPlans: [
+      {
+        id: 'plan-hifz-core',
+        name: 'Hifz & Tajweed Mastery',
+        nameAr: 'مسار الحفظ والتجويد المتقن',
+        description: '3 sessions per week with certified Sanad Qari and audio looper homework',
+        descriptionAr: 'ثلاث حصص أسبوعياً للحفظ المنهجي والمراجعة',
+        priceMonthly: 89,
+        priceYearly: 890,
+        currency: 'USD',
+        features: ['3 Live 1-on-1 Sessions Weekly', 'Audio Homework Submissions', '114 Surah Uthmani Reader', 'Sanad Khatmah Certification']
+      }
+    ],
+    paymentGateways: [
+      {
+        provider: 'stripe',
+        enabled: true,
+        publishableKey: 'pk_live_hifz_stripe',
+        liveMode: true
+      },
+      {
+        provider: 'moyasar',
+        enabled: true,
+        publishableKey: 'pk_live_hifz_moyasar',
+        liveMode: true
+      }
+    ]
+  },
+  'code-academy': {
+    id: 'tenant-code',
+    name: 'Code Academy Bootcamp',
+    nameAr: 'أكاديمية البرمجة والتقنية',
+    tagline: 'Modern Web Engineering, Interactive Browser Sandboxes & Mentorship',
+    taglineAr: 'تعلّم هندسة البرمجيات وبيئات التطوير السحابية مع نخبة المهندسين',
+    subdomain: 'code-academy',
+    logoUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=150&q=80',
+    faviconUrl: '💻',
+    theme: {
+      primaryColor: '#2563eb',
+      primaryHover: '#1d4ed8',
+      secondaryColor: '#0ea5e9',
+      accentColor: '#8b5cf6',
+      backgroundColor: '#0f172a',
+      surfaceColor: '#1e293b',
+      textColor: '#f8fafc',
+      borderRadius: '0.5rem',
+      fontFamily: 'Inter',
+    },
+    defaultDirection: 'ltr',
+    heroBadgeText: 'Interactive Browser Coding Sandboxes • Live JS & Python Execution',
+    heroBadgeTextAr: 'محرر برمجي سحابي تفاعلي • تشغيل فوري للغات البرمجة',
+    aboutText: 'Code Academy delivers cohort-based web development and software engineering bootcamps with real-time browser compilers and mentor pair-programming.',
+    aboutTextAr: 'أكاديمية متخصصة في تدريب وتأهيل المطورين على أحدث تقنيات الويب والذكاء الاصطناعي.',
+    contactEmail: 'admissions@codeacademy.dev',
+    contactPhone: '+1 (415) 800-4499',
+    admissionsOpen: true,
+    pageBlocks: [],
+    customFormFields: [
+      { id: 'experienceLevel', label: 'Prior Coding Experience', labelAr: 'الخبرة البرمجية السابقة', type: 'select', required: true, options: ['Beginner (Zero experience)', 'Intermediate (Knows JS/Python basics)', 'Advanced'] }
+    ],
+    pricingPlans: [
+      {
+        id: 'plan-code-pro',
+        name: 'Full-Stack Web Immersion',
+        nameAr: 'مسار تطوير الويب الشامل',
+        description: 'Comprehensive curriculum covering React, Next.js, Node.js, and Cloud Deployment',
+        descriptionAr: 'برنامج مكثف يشمل رياكت ونكست جي إس والبرمجة الخلفية',
+        priceMonthly: 129,
+        priceYearly: 1290,
+        currency: 'USD',
+        features: ['Live Code Sandbox Exercises', 'Automated Test Runner Grading', 'Weekly 1-on-1 Mentor Code Review', 'Portfolio Capstone Projects']
+      }
+    ],
+    paymentGateways: [
+      {
+        provider: 'stripe',
+        enabled: true,
+        publishableKey: 'pk_live_code_stripe',
+        liveMode: true
+      }
+    ]
+  },
   'al-furqan': {
     id: 'tenant-1',
     name: 'Al-Furqan Quran Academy',
@@ -29,109 +144,11 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     contactEmail: 'admissions@alfurqan-academy.com',
     contactPhone: '+966 50 123 4567',
     admissionsOpen: true,
-    pageBlocks: [
-      {
-        id: 'blk-1',
-        type: 'hero',
-        title: 'Preserving Sacred Quranic Knowledge',
-        titleAr: 'حفظ كتاب الله بالسند المتصل وتعلّم أحكام التجويد',
-        content: 'Join certified Qaris for individual oral recitation, Tajweed correction, and complete Quran memorization.',
-        contentAr: 'انضم إلى نخبة المعلمين المجازين في جلسات فردية لتصحيح التلاوة وتطبيق أحكام التجويد وحفظ القرآن الكريم.',
-        style: { backgroundColor: '#ffffff', textColor: '#0f172a', paddingY: 'py-16' }
-      },
-      {
-        id: 'blk-2',
-        type: 'calligraphy',
-        title: 'Verily, We Have Sent Down The Quran & We Will Guard It',
-        titleAr: 'إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ',
-        content: 'Surah Al-Hijr [15:9]',
-        contentAr: 'سورة الحجر - آية ٩',
-        style: { backgroundColor: '#f8fafc', textColor: '#0f172a', paddingY: 'py-12' }
-      },
-      {
-        id: 'blk-3',
-        type: 'courses',
-        title: 'Featured Quranic Curriculums',
-        titleAr: 'المناهج والدورات القرآنية المتاحة',
-        content: 'Select from beginner foundational tracks to 10 Qira\'at specialization.',
-        contentAr: 'اختر المنهج المناسب لمستواك من التأسيس وحتى الاتقان.',
-        style: { backgroundColor: '#ffffff', textColor: '#0f172a', paddingY: 'py-16' }
-      },
-      {
-        id: 'blk-4',
-        type: 'pricing',
-        title: 'Tuition & Subscription Plans',
-        titleAr: 'الخطط الدراسية ورسوم الاشتراك',
-        content: 'Flexible monthly or annual plans with certified 1-on-1 tutoring.',
-        contentAr: 'خطط اشتراك مرنة وميسرة تشمل حصص التسميع والمتابعة الفردية.',
-        style: { backgroundColor: '#f8fafc', textColor: '#0f172a', paddingY: 'py-16' }
-      },
-      {
-        id: 'blk-5',
-        type: 'form',
-        title: 'Direct Admissions Application',
-        titleAr: 'نموذج الالتحاق المباشر',
-        content: 'Fill out your student details below for immediate review by our admissions committee.',
-        contentAr: 'قم بتعبئة البيانات أدناه وسيتواصل معك فريق القبول لترتيب اختبار التحديد.',
-        style: { backgroundColor: '#ffffff', textColor: '#0f172a', paddingY: 'py-16' }
-      }
-    ],
+    pageBlocks: [],
     customFormFields: [
       { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
-      { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 },
-      { id: 'preferredTime', label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 3 }
+      { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 }
     ],
-    formTitle: 'Direct Admissions & Evaluation Inquiry',
-    formDescription: 'Fill out your prospective student details below for immediate review by our admissions committee.',
-    forms: [
-      {
-        id: 'form-admissions',
-        title: 'Direct Admissions & Evaluation Inquiry',
-        titleAr: 'نموذج القبول وتقييم المستوى',
-        description: 'Fill out your prospective student details below for immediate review by our admissions committee.',
-        isDefault: true,
-        status: 'active',
-        submissionsCount: 48,
-        createdAt: '2026-08-01',
-        fields: [
-          { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
-          { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 },
-          { id: 'preferredTime', label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 3 }
-        ]
-      },
-      {
-        id: 'form-ijazah',
-        title: 'Sanad Ijazah & Khatmah Application',
-        titleAr: 'طلب الالتحاق بمسار الإسناد والإجازة',
-        description: 'Application for students seeking unbroken Sanad chains and complete oral recitation verification.',
-        isDefault: false,
-        status: 'active',
-        submissionsCount: 14,
-        createdAt: '2026-08-10',
-        fields: [
-          { id: 'priorCertification', label: 'Prior Tajweed Certifications (e.g. Tuhfat al-Atfal, Jazariyyah)', labelAr: 'المتون المحفوظة (تحفة الأطفال، الجزرية)', type: 'text', required: true, placeholder: 'List certified texts...', width: 'full', order: 1 },
-          { id: 'qiraahPreference', label: 'Target Qira\'ah Track', labelAr: 'الرواية المطلوبة', type: 'select', required: true, options: ['Hafs \'an \'Asim (حفص عن عاصم)', 'Warsh \'an Nafi\' (ورش عن نافع)', 'Qalun \'an Nafi\' (قالون عن نافع)', 'Shu\'bah \'an \'Asim (شعبة عن عاصم)'], width: 'half', order: 2 },
-          { id: 'weeklyAvailability', label: 'Hours Dedicated Weekly for Muraja\'ah', labelAr: 'ساعات المراجعة الأسبوعية', type: 'select', required: true, options: ['5 - 10 hours', '10 - 20 hours', '20+ hours (Intensive)'], width: 'half', order: 3 }
-        ]
-      },
-      {
-        id: 'form-summer-camp',
-        title: 'Summer Intensive Hifz Camp Registration',
-        titleAr: 'التسجيل في المخيم الصيفي المكثف',
-        description: '6-week accelerated Quran memorization and Arabic immersion camp for youth and children.',
-        isDefault: false,
-        status: 'active',
-        submissionsCount: 32,
-        createdAt: '2026-08-15',
-        fields: [
-          { id: 'childAge', label: 'Student Age (6 - 17 years)', labelAr: 'عمر الطالب', type: 'select', required: true, options: ['6 - 9 Years', '10 - 13 Years', '14 - 17 Years'], width: 'half', order: 1 },
-          { id: 'targetJuzCount', label: 'Summer Memorization Goal', labelAr: 'الهدف الصيفي', type: 'select', required: true, options: ['1 New Juz + Revision', '2 New Juz', '3 New Juz (Accelerated Track)'], width: 'half', order: 2 },
-          { id: 'emergencyContact', label: 'Emergency Phone Number', labelAr: 'رقم هاتف الطوارئ', type: 'phone', required: true, placeholder: '+966 55 000 0000', width: 'full', order: 3 }
-        ]
-      }
-    ],
-    subscriptionPlan: 'growth',
-    studentCapacity: 350,
     pricingPlans: [
       {
         id: 'plan-tajweed',
@@ -148,40 +165,6 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
           'Tuhfat al-Atfal Certificate',
           'Student Quran Viewer Access'
         ]
-      },
-      {
-        id: 'plan-hifz',
-        name: 'Intensive Hifz Program',
-        nameAr: 'برنامج الحفظ المكثف',
-        description: '4 sessions per week with dedicated Sanad Qari for systematic memorization',
-        descriptionAr: 'أربع حصص أسبوعياً للحفظ المنهجي والمراجعة وضبط المتشابهات',
-        priceMonthly: 140,
-        priceYearly: 1400,
-        currency: 'USD',
-        popular: true,
-        features: [
-          '4 Live 1-on-1 Sessions Weekly',
-          'Personalized Muraja\'ah Checklist',
-          'Unlimited Audio Homework Feedback',
-          'Official Academy Ijazah Preparation',
-          'Parent Progress Dashboard'
-        ]
-      },
-      {
-        id: 'plan-ijazah',
-        name: 'Qira\'at & Ijazah Specialization',
-        nameAr: 'دبلوم الإجازة والقراءات العشر',
-        description: 'Daily recitation directly connected to chain of transmission (Sanad)',
-        descriptionAr: 'ختمة كاملة غيباً بالإسناد المتصل إلى رسول الله صلى الله عليه وسلم',
-        priceMonthly: 240,
-        priceYearly: 2400,
-        currency: 'USD',
-        features: [
-          'Daily 1-on-1 Sanad Sessions',
-          'Complete Quran Khatmah Review',
-          'Written & Oral Ijazah Verification',
-          'Priority 24/7 Teacher Support'
-        ]
       }
     ],
     paymentGateways: [
@@ -195,17 +178,6 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
         provider: 'moyasar',
         enabled: true,
         publishableKey: 'pk_live_moyasar_alfurqan',
-        liveMode: true
-      },
-      {
-        provider: 'bank_transfer',
-        enabled: true,
-        bankDetails: {
-          bankName: 'Al Rajhi Bank (مصرف الراجحي)',
-          accountName: 'Al-Furqan Quran Academy LLC',
-          iban: 'SA4480000123456789012345',
-          swiftCode: 'RJHISARI'
-        },
         liveMode: true
       }
     ]

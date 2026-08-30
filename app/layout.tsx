@@ -34,14 +34,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Hifz - Sanad-Verified Quran & Arabic Academy Platform',
+  title: 'TechMadrasah - White-Label Multi-Tenant Academy Platform',
   description:
-    'The premier SaaS LMS and visual website builder engineered for Quran institutes, Madrasahs, and Arabic tutors. Custom subdomains, real GrapesJS canvas, Uthmani Tajweed reader, audio homework grading, and direct tuition payments.',
-  keywords: ['Hifz', 'Quran LMS', 'Madrasah SaaS', 'GrapesJS Builder', 'Tajweed LMS', 'Islamic Institute Software', 'PWA'],
+    'The premier white-label educational SaaS LMS and visual page builder powering Quran institutes, coding bootcamps, and language academies. Custom domains, WebRTC video classrooms, code sandboxes, and autonomous tuition processing.',
+  keywords: ['TechMadrasah', 'White-Label LMS', 'Quran LMS', 'Coding Bootcamp SaaS', 'Multi-Tenant Academy', 'GrapesJS Builder', 'LiveKit WebRTC'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: 'Hifz',
+    title: 'TechMadrasah',
     statusBarStyle: 'black-translucent',
   },
   icons: {
@@ -50,9 +50,9 @@ export const metadata: Metadata = {
     apple: '/icons/icon.svg',
   },
   openGraph: {
-    title: 'Hifz - Sanad-Verified Quran & Arabic Academy Platform',
-    description: 'Launch your branded online Quran academy with custom subdomains, GrapesJS visual builder, and automated tuition billing.',
-    siteName: 'Hifz',
+    title: 'TechMadrasah - White-Label Multi-Tenant Academy Platform',
+    description: 'Launch your branded online academy with custom domains, real WebRTC classrooms, code sandboxes, and automated tuition billing.',
+    siteName: 'TechMadrasah',
     type: 'website',
   },
 };

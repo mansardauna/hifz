@@ -14,7 +14,8 @@ import {
   GraduationCap,
   Sparkles,
   BookOpen,
-  ArrowLeft
+  ArrowLeft,
+  Terminal
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AuthHeroIllustration } from '../illustrations/Illustrations2D';
@@ -30,31 +31,34 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
   const { login } = useAuth();
 
   const [activeRole, setActiveRole] = useState<'student' | 'admin'>('student');
-  const [email, setEmail] = useState<string>('student@al-furqan.com');
+  const [email, setEmail] = useState<string>('student@hifz-academy.com');
   const [password, setPassword] = useState<string>('password123');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const detectedTenant = useMemo(() => {
     const lowerEmail = email.toLowerCase().trim();
+    if (lowerEmail.includes('code')) {
+      return MOCK_TENANTS['code-academy'] || tenant;
+    }
     if (lowerEmail.includes('bayyinah')) {
       return MOCK_TENANTS['bayyinah-arabic'] || tenant;
-    }
-    if (lowerEmail.includes('dar-alquran') || lowerEmail.includes('dar')) {
-      return MOCK_TENANTS['dar-alquran'] || tenant;
     }
     if (lowerEmail.includes('al-furqan') || lowerEmail.includes('furqan')) {
       return MOCK_TENANTS['al-furqan'] || tenant;
     }
-    return tenant || MOCK_TENANTS['al-furqan'];
+    if (lowerEmail.includes('hifz')) {
+      return MOCK_TENANTS['hifz-academy'] || tenant;
+    }
+    return tenant || MOCK_TENANTS['hifz-academy'] || MOCK_TENANTS['al-furqan'];
   }, [email, tenant]);
 
   const handleRoleChange = (role: 'student' | 'admin') => {
     setActiveRole(role);
     if (role === 'admin') {
-      setEmail('admin@al-furqan.com');
+      setEmail('admin@hifz-academy.com');
     } else {
-      setEmail('student@al-furqan.com');
+      setEmail('student@hifz-academy.com');
     }
   };
 
@@ -103,16 +107,16 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold">
-            <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <span className="font-extrabold text-slate-900 text-sm">Hifz OS</span>
+          <span className="font-extrabold text-slate-900 text-sm">TechMadrasah</span>
         </div>
 
         <button
           onClick={() => router.push('/register')}
           className="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
         >
-          Create Academy &rarr;
+          Register Student &rarr;
         </button>
       </header>
 
@@ -121,21 +125,20 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 rounded-2xl bg-white border border-slate-200/80 shadow-xl shadow-slate-200/50 overflow-hidden">
           {/* Left Hero Visual Card */}
           <div className="hidden lg:flex flex-col justify-between p-8 bg-slate-900 text-white relative overflow-hidden">
-            {/* Background Radial Glow */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="space-y-4 relative z-10">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-emerald-400 text-[10px] font-bold border border-slate-700">
                 <Sparkles className="w-3 h-3" />
-                <span>Multi-Tenant Auth Portal</span>
+                <span>White-Label Tenant Portal</span>
               </div>
 
               <h2 className="text-2xl font-bold tracking-tight text-white leading-tight">
-                Authentic Learning Infrastructure
+                TechMadrasah Core OS
               </h2>
 
               <p className="text-xs text-slate-400 leading-relaxed">
-                Connect directly to your registered madrasah, review live Tajweed recitation loops, and join scheduled WebRTC live classes.
+                Connect directly to your registered institution, access live 114 Surahs or browser code sandboxes, and enter WebRTC live video classrooms.
               </p>
             </div>
 
@@ -237,7 +240,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
                   <span className="text-[10px] text-slate-400 block uppercase font-bold">Target Academy</span>
                   <span className="font-bold text-slate-900">{detectedTenant.name}</span>
                 </div>
-                <Badge variant="default">{detectedTenant.subdomain}.hifz.app</Badge>
+                <Badge variant="default">{detectedTenant.subdomain}.techmadrasah.app</Badge>
               </div>
 
               <Button
@@ -268,7 +271,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
       {/* Minimal Footer */}
       <footer className="py-4 text-center text-xs text-slate-400">
-        © 2026 Hifz LMS Inc. • Multitenant Educational Platform
+        © 2026 TechMadrasah Inc. • White-Label Educational Platform
       </footer>
     </div>
   );

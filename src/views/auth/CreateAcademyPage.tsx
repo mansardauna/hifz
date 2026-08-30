@@ -14,7 +14,8 @@ import {
   BookOpen,
   Sparkles,
   ShieldCheck,
-  Code2
+  Code2,
+  Terminal
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button, Input, Card, Badge } from '../../components/ui';
@@ -64,7 +65,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
       onAddToast({
         type: 'success',
         title: 'Academy Setup Completed',
-        message: `Welcome to ${academyName}! Your subdomain ${subdomain}.hifz.app is ready.`,
+        message: `Welcome to ${academyName}! Your subdomain ${subdomain}.techmadrasah.app is ready.`,
       });
       setIsSubmitting(false);
       onSuccess();
@@ -85,9 +86,9 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold">
-            <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <span className="font-extrabold text-slate-900 text-sm">Hifz OS</span>
+          <span className="font-extrabold text-slate-900 text-sm">TechMadrasah</span>
         </div>
 
         <button
@@ -228,7 +229,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                       className="w-full px-3 py-2 text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 font-mono"
                     />
                     <span className="px-2.5 py-2 bg-slate-100 border-l border-slate-200 text-slate-500 text-xs font-mono select-none">
-                      .hifz.app
+                      .techmadrasah.app
                     </span>
                   </div>
                 </div>

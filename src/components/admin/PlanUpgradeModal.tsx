@@ -42,7 +42,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
       features: [
         'Up to 15 Active Students',
         '1 Teacher Seat',
-        'Subdomain (*.hifz.app)',
+        'Subdomain (*.techmadrasah.app)',
         'Basic Page & Form Builder',
         'Basic Overview KPI Numbers',
       ],
@@ -58,7 +58,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
       features: [
         'Up to 50 Active Students',
         '1 Teacher Seat',
-        'Subdomain (*.hifz.app)',
+        'Subdomain (*.techmadrasah.app)',
         'Audio Homework Looper & Recorder',
         'Custom Merchant Gateways',
         'Standard Admissions CRM',
