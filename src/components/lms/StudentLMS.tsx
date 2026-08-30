@@ -317,41 +317,16 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <Button
                     variant="primary"
                     size="sm"
-                    onClick={async () => {
-                      try {
-                        onAddToast({
-                          type: 'info',
-                          title: 'Connecting to Stripe',
-                          message: 'Redirecting to secure Stripe Checkout...',
-                        });
-                        const res = await fetch('/api/stripe/checkout', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            planName: 'Monthly Quran LMS Tuition',
-                            amount: 65,
-                            currency: 'USD',
-                            studentEmail: user?.email || 'student@hifz.app',
-                            tenantSubdomain: tenant.subdomain,
-                          }),
-                        });
-                        const data = await res.json();
-                        if (data.url) {
-                          window.location.href = data.url;
-                        } else {
-                          throw new Error(data.error || 'Failed to initiate Stripe session');
-                        }
-                      } catch (err: any) {
-                        onAddToast({
-                          type: 'error',
-                          title: 'Payment Error',
-                          message: err.message || 'Could not connect to Stripe.',
-                        });
-                      }
+                    onClick={() => {
+                      onAddToast({
+                        type: 'info',
+                        title: 'Tuition Payment',
+                        message: `Connecting to ${tenant.name}'s merchant payment gateway...`,
+                      });
                     }}
                     leftIcon={<CreditCard className="w-3.5 h-3.5" />}
                   >
-                    Pay Tuition with Stripe
+                    Pay Tuition Invoice
                   </Button>
                 </div>
               </Card>

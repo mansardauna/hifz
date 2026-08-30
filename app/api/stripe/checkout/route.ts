@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'Stripe secret key not configured in environment variables' },
+        { error: 'Platform Stripe secret key not configured in environment variables' },
         { status: 500 }
       );
     }
@@ -21,36 +21,56 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const {
-      planName = 'Foundational Tajweed Track',
-      amount = 65,
+      tierId,
+      tierName,
+      amount,
       currency = 'usd',
-      studentEmail = 'student@example.com',
-      tenantSubdomain = 'zarah',
+      academySubdomain = 'zarah',
+      adminEmail = 'admin@hifz.app',
       successUrl,
       cancelUrl,
     } = body;
 
     const origin = req.headers.get('origin') || 'http://localhost:3000';
 
+    // Pricing map for SaaS platform tiers
+    const TIER_PRICES: Record<string, { name: string; priceUsd: number }> = {
+      qari: { name: 'Independent Qari Tier Subscription', priceUsd: 29 },
+      growth: { name: 'Madrasah Growth Tier Subscription', priceUsd: 79 },
+      enterprise: { name: 'Global Enterprise Tier Subscription', priceUsd: 199 },
+    };
+
+    const targetTier = tierId && TIER_PRICES[tierId] ? TIER_PRICES[tierId] : null;
+    const finalAmount = targetTier ? targetTier.priceUsd : (amount || 29);
+    const finalName = targetTier ? targetTier.name : (tierName || 'SaaS Platform Tier Subscription');
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment',
-      customer_email: studentEmail,
+      mode: 'subscription',
+      customer_email: adminEmail,
       line_items: [
         {
           price_data: {
             currency: currency.toLowerCase(),
             product_data: {
-              name: planName,
-              description: `Monthly tuition fee for ${tenantSubdomain}.hifz.app`,
+              name: finalName,
+              description: `Hifz LMS Platform Subscription for ${academySubdomain}.hifz.app`,
             },
-            unit_amount: Math.round(amount * 100), // convert to cents
+            unit_amount: Math.round(finalAmount * 100),
+            recurring: {
+              interval: 'month',
+            },
           },
           quantity: 1,
         },
       ],
-      success_url: successUrl || `${origin}/${tenantSubdomain}/lms?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${origin}/${tenantSubdomain}/lms?payment=cancelled`,
+      metadata: {
+        type: 'platform_tier_upgrade',
+        tierId: tierId || 'growth',
+        academySubdomain,
+      },
+      success_url: successUrl || `${origin}/${academySubdomain}/admin?upgrade=success&tier=${tierId || 'growth'}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl || `${origin}/${academySubdomain}/admin?upgrade=cancelled`,
     });
 
     return NextResponse.json({
@@ -58,9 +78,9 @@ export async function POST(req: NextRequest) {
       url: session.url,
     });
   } catch (error: any) {
-    console.error('Stripe checkout error:', error);
+    console.error('Stripe platform checkout error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create checkout session' },
+      { error: error.message || 'Failed to create platform checkout session' },
       { status: 500 }
     );
   }

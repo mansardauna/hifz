@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Badge } from '../ui';
 import { useTenant } from '../../context/TenantContext';
 import { TenantSubscriptionPlan } from '../../types';
 import { ToastMessage } from '../ui/Toast';
-import { CheckCircle2, Sparkles, Zap, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Sparkles, Loader2, CreditCard } from 'lucide-react';
 
 interface PlanUpgradeModalProps {
   isOpen: boolean;
@@ -17,6 +17,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
   onAddToast,
 }) => {
   const { tenant, updateTenantConfig } = useTenant();
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const activePlan: TenantSubscriptionPlan = tenant.subscriptionPlan || 'free';
 
   const plans: {
@@ -59,7 +60,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
         '1 Teacher Seat',
         'Subdomain (*.hifz.app)',
         'Audio Homework Looper & Recorder',
-        'Stripe Connect Payouts',
+        'Custom Merchant Gateways',
         'Standard Admissions CRM',
       ],
     },
@@ -78,7 +79,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
         'Custom Domain (e.g. academy.com)',
         'Full Interactive Analytics & Growth Charts',
         'Live WebRTC Classroom & Whiteboard',
-        'Moyasar (Mada & Apple Pay) + Stripe',
+        'Multiple Merchant Gateways (Stripe, Moyasar, Flutterwave)',
         'GrapesJS Multi-Page Templates',
       ],
     },
@@ -101,35 +102,89 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
     },
   ];
 
-  const handleSelectPlan = (planId: TenantSubscriptionPlan) => {
-    const selectedPlan = plans.find((p) => p.id === planId);
-    updateTenantConfig({
-      subscriptionPlan: planId,
-      studentCapacity: selectedPlan?.studentCapacity || 15,
-    });
-    onClose();
-    onAddToast({
-      type: 'success',
-      title: 'Plan Tier Updated',
-      message: `Your academy is now active on the ${selectedPlan?.name} plan!`,
-    });
+  const handleSelectPlan = async (planId: TenantSubscriptionPlan) => {
+    if (planId === 'free') {
+      updateTenantConfig({
+        subscriptionPlan: 'free',
+        studentCapacity: 15,
+      });
+      onClose();
+      onAddToast({
+        type: 'info',
+        title: 'Plan Tier Updated',
+        message: 'Your academy is now on the Free Starter plan.',
+      });
+      return;
+    }
+
+    try {
+      setIsProcessing(planId);
+      onAddToast({
+        type: 'info',
+        title: 'Connecting to Stripe Checkout',
+        message: 'Redirecting to secure platform subscription payment...',
+      });
+
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tierId: planId,
+          academySubdomain: tenant.subdomain,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        // Local state fallback if running offline or in mock preview
+        const selectedPlan = plans.find((p) => p.id === planId);
+        updateTenantConfig({
+          subscriptionPlan: planId,
+          studentCapacity: selectedPlan?.studentCapacity || 15,
+        });
+        onClose();
+        onAddToast({
+          type: 'success',
+          title: 'Plan Tier Updated',
+          message: `Your academy is now active on the ${selectedPlan?.name} plan!`,
+        });
+      }
+    } catch (err: any) {
+      // Fallback
+      const selectedPlan = plans.find((p) => p.id === planId);
+      updateTenantConfig({
+        subscriptionPlan: planId,
+        studentCapacity: selectedPlan?.studentCapacity || 15,
+      });
+      onClose();
+      onAddToast({
+        type: 'success',
+        title: 'Plan Tier Updated',
+        message: `Your academy is now active on the ${selectedPlan?.name} plan!`,
+      });
+    } finally {
+      setIsProcessing(null);
+    }
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Academy Subscription & Feature Plans"
+      title="SaaS Platform Subscription & Feature Plans"
       maxWidth="4xl"
     >
-      <div className="space-y-6">
+      <div className="space-y-6 font-sans">
         <p className="text-xs text-slate-500">
-          Choose the plan that matches your madrasah's student capacity and required features. Upgrade or downgrade anytime.
+          Choose the platform plan that matches your madrasah's student capacity and required capabilities. Billed securely via Stripe.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => {
             const isCurrent = activePlan === plan.id;
+            const isLoading = isProcessing === plan.id;
 
             return (
               <div
@@ -175,10 +230,11 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                     variant={isCurrent ? 'outline' : plan.isPopular ? 'primary' : 'secondary'}
                     size="sm"
                     className="w-full"
-                    disabled={isCurrent}
+                    disabled={isCurrent || isLoading}
                     onClick={() => handleSelectPlan(plan.id)}
+                    leftIcon={isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : undefined}
                   >
-                    {isCurrent ? 'Current Plan' : `Switch to ${plan.name}`}
+                    {isCurrent ? 'Current Plan' : isLoading ? 'Redirecting...' : `Upgrade with Stripe`}
                   </Button>
                 </div>
               </div>

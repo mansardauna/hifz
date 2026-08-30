@@ -68,7 +68,7 @@ export interface PricingPlan {
 }
 
 export interface PaymentGatewayConfig {
-  provider: 'stripe' | 'moyasar' | 'paypal' | 'bank_transfer';
+  provider: 'stripe' | 'moyasar' | 'flutterwave' | 'paystack' | 'paypal' | 'bank_transfer';
   enabled: boolean;
   publishableKey?: string;
   secretKey?: string;
