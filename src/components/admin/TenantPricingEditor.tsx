@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { PricingPlan } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Plus, Edit3, Trash2, Check, Save, Star } from 'lucide-react';
+import { Button, Input, Card, Badge } from '../ui';
+import { Plus, Edit3, Trash2, Check, Save } from 'lucide-react';
 
 interface TenantPricingEditorProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -16,10 +17,10 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
   const handleAddPlan = () => {
     const newPlan: PricingPlan = {
       id: `plan-${Date.now()}`,
-      name: 'New Tuition Track',
-      nameAr: 'مسار دراسي جديد',
-      description: '2 live sessions weekly with oral correction',
-      descriptionAr: 'حصتان أسبوعياً مع التسميع الفردي',
+      name: 'Standard Track',
+      nameAr: 'المسار الدراسي العام',
+      description: '2 live interactive sessions weekly with tutor feedback',
+      descriptionAr: 'حصتان أسبوعياً مع المتابعة الفردية',
       priceMonthly: 75,
       priceYearly: 750,
       currency: 'USD',
@@ -52,76 +53,81 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
 
   return (
     <div className="space-y-6 font-sans">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Card */}
+      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Student Tuition & Pricing Plans</h2>
-          <p className="text-xs text-slate-500 mt-1">Configure subscription fee tiers offered to students on your public academy landing page.</p>
+          <h2 className="text-base font-bold text-slate-900">Tuition & Pricing Plans</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Configure subscription fee tiers displayed on your public academy landing page.</p>
         </div>
 
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={handleAddPlan}
-          className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-sm shadow-sm flex items-center gap-1.5 cursor-pointer"
+          leftIcon={<Plus className="w-4 h-4" />}
         >
-          <Plus className="w-4 h-4" />
-          <span>Add Tuition Plan</span>
-        </button>
-      </div>
+          Add Tuition Plan
+        </Button>
+      </Card>
 
       {/* Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map((plan) => (
-          <div
+          <Card
             key={plan.id}
-            className={`bg-white p-6 rounded-sm border shadow-sm flex flex-col justify-between relative ${
-              plan.popular ? 'border-teal-600 ring-1 ring-teal-600' : 'border-slate-200'
+            className={`flex flex-col justify-between relative ${
+              plan.popular ? 'border-slate-900 ring-1 ring-slate-900 shadow-md' : ''
             }`}
           >
             {plan.popular && (
-              <span className="absolute -top-2.5 right-4 px-2 py-0.5 bg-teal-600 text-white font-bold text-[10px] uppercase rounded-sm">
-                Featured
-              </span>
+              <div className="absolute -top-2.5 right-4">
+                <Badge variant="success">Featured</Badge>
+              </div>
             )}
 
             <div>
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-base text-slate-900">{plan.name}</h3>
-                <span className="text-xs font-semibold text-slate-400 font-arabic">{plan.nameAr}</span>
+                <h3 className="font-bold text-sm text-slate-900">{plan.name}</h3>
+                <span className="text-xs text-slate-400 font-semibold">{plan.nameAr}</span>
               </div>
 
               <p className="text-xs text-slate-500 mt-1">{plan.description}</p>
 
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-extrabold text-slate-900">${plan.priceMonthly}</span>
+                <span className="text-2xl font-bold font-mono text-slate-900">${plan.priceMonthly}</span>
                 <span className="text-xs text-slate-500">/ month</span>
               </div>
 
               <ul className="mt-5 space-y-2 text-xs text-slate-600">
                 {plan.features.map((f, i) => (
                   <li key={i} className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span>{f}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <button
+            <div className="pt-5 mt-5 border-t border-slate-100 flex items-center justify-between">
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setEditingPlan(plan)}
-                className="px-3 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-sm flex items-center gap-1"
+                leftIcon={<Edit3 className="w-3.5 h-3.5" />}
               >
-                <Edit3 className="w-3.5 h-3.5" /> Edit
-              </button>
+                Edit
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700"
                 onClick={() => handleDeletePlan(plan.id)}
-                className="p-1.5 text-slate-400 hover:text-rose-600 rounded-sm"
               >
-                <Trash2 className="w-4 h-4" />
-              </button>
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 

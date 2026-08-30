@@ -4,21 +4,32 @@ import { api } from '../../services/api';
 import { useTenant } from '../../context/TenantContext';
 import { LeadDetailModal } from './LeadDetailModal';
 import { ToastMessage } from '../ui/Toast';
-import { Search, Filter, CheckCircle, UserCheck, Clock, FileText, ChevronRight, Mail, Phone, CreditCard, ChevronDown } from 'lucide-react';
+import {
+  Button,
+  Input,
+  Select,
+  Card,
+  Badge,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell
+} from '../ui';
+import { Search } from 'lucide-react';
 
 interface LeadsCRMProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
 }
 
 export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
-  const { tenant, language, direction } = useTenant();
+  const { tenant, direction } = useTenant();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-
-  const isAr = language === 'ar';
 
   const fetchLeads = async () => {
     const data = await api.getLeads(tenant.id);
@@ -43,158 +54,147 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
     return matchesSearch && matchesStatus && matchesPayment;
   });
 
-  const getStatusBadge = (status: LeadStatus) => {
+  const renderStatusBadge = (status: LeadStatus) => {
     switch (status) {
       case 'New':
-        return <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200">New</span>;
+        return <Badge variant="info">New</Badge>;
       case 'Under Review':
-        return <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">Under Review</span>;
+        return <Badge variant="warning">Under Review</Badge>;
       case 'Interview':
-        return <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200">Interview</span>;
+        return <Badge variant="info">Interview</Badge>;
       case 'Admitted':
-        return <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Admitted</span>;
+        return <Badge variant="success">Admitted</Badge>;
       case 'Rejected':
-        return <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-800 border border-rose-200">Rejected</span>;
+        return <Badge variant="error">Rejected</Badge>;
     }
   };
 
-  const getPaymentBadge = (status: PaymentStatus) => {
+  const renderPaymentBadge = (status: PaymentStatus) => {
     switch (status) {
       case 'Paid':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">✓ Paid</span>;
+        return <Badge variant="success">Paid</Badge>;
       case 'Pending':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">⏳ Pending</span>;
+        return <Badge variant="warning">Pending</Badge>;
       case 'Past Due':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">⚠ Past Due</span>;
+        return <Badge variant="error">Past Due</Badge>;
       case 'Exempt':
-        return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">Exempt</span>;
+        return <Badge variant="default">Exempt</Badge>;
     }
   };
 
   return (
     <div className="space-y-5 font-sans" dir={direction}>
-      {/* Header */}
-      <div className="bg-white p-5 sm:p-6 rounded-md border border-slate-200 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Card */}
+      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold font-display text-slate-900">Student Admissions & Tuition CRM</h2>
-          <p className="text-xs text-slate-500 mt-1">Review student applications, track tuition payment plans, and manage interview workflows.</p>
+          <h2 className="text-base font-bold text-slate-900">Student Admissions CRM</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Manage applications, review status, and track tuition payments.</p>
         </div>
 
-        <div className="text-xs text-slate-600 font-semibold bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 self-start sm:self-auto">
-          Total Students: <span className="font-bold text-slate-900">{leads.length}</span>
+        <div className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg self-start sm:self-auto">
+          Total Inquiries: <span className="font-bold text-slate-900">{leads.length}</span>
         </div>
-      </div>
+      </Card>
 
-      {/* Filter Toolbar */}
-      <div className="bg-white p-4 rounded-md border border-slate-200 shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-slate-400 absolute top-3 left-3" />
-          <input
-            type="text"
-            placeholder="Search student name, email, or phone..."
+      {/* Filter Toolbar Card */}
+      <Card className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className="flex-1 min-w-[220px]">
+          <Input
+            placeholder="Search by name, email, or phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-md border border-slate-300 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            leftIcon={<Search className="w-4 h-4" />}
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Status Tabs with Horizontal Scroll on Mobile */}
-          <div className="overflow-x-auto max-w-full pb-1 md:pb-0 scrollbar-none">
-            <div className="flex items-center border border-slate-200 rounded-md p-0.5 bg-slate-50 text-xs whitespace-nowrap">
-              {['ALL', 'New', 'Under Review', 'Interview', 'Admitted'].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                    statusFilter === status ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
+          {/* Status Tabs */}
+          <div className="flex items-center border border-slate-200 rounded-lg p-0.5 bg-slate-50 text-xs">
+            {['ALL', 'New', 'Under Review', 'Interview', 'Admitted'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                  statusFilter === status ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {status}
+              </button>
+            ))}
           </div>
 
           {/* Payment Filter */}
-          <select
+          <Select
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-md border border-slate-300 text-xs font-semibold bg-white text-slate-700 focus:outline-none cursor-pointer"
-          >
-            <option value="ALL">All Payment Statuses</option>
-            <option value="Paid">Tuition: Paid</option>
-            <option value="Pending">Tuition: Pending</option>
-            <option value="Past Due">Tuition: Past Due</option>
-          </select>
+            options={[
+              { value: 'ALL', label: 'All Payment Statuses' },
+              { value: 'Paid', label: 'Tuition: Paid' },
+              { value: 'Pending', label: 'Tuition: Pending' },
+              { value: 'Past Due', label: 'Tuition: Past Due' },
+            ]}
+          />
         </div>
-      </div>
+      </Card>
 
-      {/* Data Table */}
-      <div className="bg-white rounded-md border border-slate-200 shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-start text-xs text-slate-700 min-w-[650px]">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px] font-display">
-              <tr>
-                <th className="p-3.5 text-start">Student Profile</th>
-                <th className="p-3.5 text-start">Program Interest</th>
-                <th className="p-3.5 text-start">Tuition Plan & Fee</th>
-                <th className="p-3.5 text-start">Tuition Status</th>
-                <th className="p-3.5 text-start">Workflow Status</th>
-                <th className="p-3.5 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
-              {filteredLeads.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-400">
-                    No student applications match the selected criteria.
-                  </td>
-                </tr>
-              ) : (
-                filteredLeads.map((lead) => (
-                  <tr
-                    key={lead.id}
+      {/* Standardized Data Table */}
+      <Table>
+        <TableHeader>
+          <tr>
+            <TableHead>Student Name</TableHead>
+            <TableHead>Course Track</TableHead>
+            <TableHead>Tuition Plan</TableHead>
+            <TableHead>Payment</TableHead>
+            <TableHead>Workflow</TableHead>
+            <TableHead className="text-center">Action</TableHead>
+          </tr>
+        </TableHeader>
+        <TableBody>
+          {filteredLeads.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="p-8 text-center text-slate-400">
+                No student applications match the selected filter.
+              </TableCell>
+            </TableRow>
+          ) : (
+            filteredLeads.map((lead) => (
+              <TableRow
+                key={lead.id}
+                onClick={() => setSelectedLead(lead)}
+                className="cursor-pointer"
+              >
+                <TableCell>
+                  <p className="font-bold text-slate-900 text-xs">{lead.studentName || lead.name}</p>
+                  <p className="text-slate-400 text-[11px] mt-0.5">{lead.email} • {lead.phone}</p>
+                </TableCell>
+
+                <TableCell className="font-semibold text-slate-800">
+                  {lead.courseInterest}
+                </TableCell>
+
+                <TableCell>
+                  <p className="font-bold text-slate-900 text-xs">{lead.planName || lead.selectedPlanName || 'Foundational'}</p>
+                  <p className="text-[11px] text-slate-500 font-mono">${lead.planPrice || lead.tuitionAmount || 65}/mo</p>
+                </TableCell>
+
+                <TableCell>{renderPaymentBadge(lead.paymentStatus)}</TableCell>
+
+                <TableCell>{renderStatusBadge(lead.status)}</TableCell>
+
+                <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setSelectedLead(lead)}
-                    className="hover:bg-slate-50/80 transition-colors cursor-pointer"
                   >
-                    <td className="p-3.5">
-                      <div>
-                        <p className="font-bold text-slate-900 text-xs">{lead.studentName || lead.name}</p>
-                        <div className="flex flex-wrap items-center gap-2 text-slate-400 text-[10px] mt-0.5">
-                          <span>{lead.email}</span>
-                          <span>•</span>
-                          <span>{lead.phone}</span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="p-3.5 font-semibold text-slate-800">{lead.courseInterest}</td>
-
-                    <td className="p-3.5">
-                      <p className="font-bold text-slate-900 text-xs">{lead.planName || lead.selectedPlanName || 'Foundational Track'}</p>
-                      <p className="text-[10px] text-slate-500 font-mono">${lead.planPrice || lead.tuitionAmount || 65} / {lead.billingCycle || 'mo'}</p>
-                    </td>
-
-                    <td className="p-3.5 whitespace-nowrap">{getPaymentBadge(lead.paymentStatus)}</td>
-
-                    <td className="p-3.5 whitespace-nowrap">{getStatusBadge(lead.status)}</td>
-
-                    <td className="p-3.5 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => setSelectedLead(lead)}
-                        className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold font-display rounded-md text-xs transition-colors cursor-pointer"
-                      >
-                        View Dossier
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    View Details
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
 
       {/* Detailed Lead Profile Modal */}
       {selectedLead && (

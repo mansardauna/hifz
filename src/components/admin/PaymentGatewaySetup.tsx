@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { PaymentGatewayConfig } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { CreditCard, ShieldCheck, CheckCircle2, Lock, Building2, Save, ArrowRight } from 'lucide-react';
+import { Button, Input, Card, Badge } from '../ui';
+import { CreditCard, Building2, Save } from 'lucide-react';
 
 interface PaymentGatewaySetupProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -28,8 +29,8 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
     e.preventDefault();
     onAddToast({
       type: 'success',
-      title: 'Payment Gateways Saved',
-      message: 'Tuition payment methods and API credentials updated.',
+      title: 'Payment Settings Saved',
+      message: 'Gateway credentials and merchant configuration updated.',
     });
   };
 
@@ -64,114 +65,102 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
 
   return (
     <form onSubmit={handleSave} className="space-y-6 font-sans">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Card */}
+      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Student Payment Gateway Setup</h2>
-          <p className="text-xs text-slate-500 mt-1">Connect your merchant account to directly collect monthly student tuition, fees, and Ijazah subscriptions.</p>
+          <h2 className="text-base font-bold text-slate-900">Payment Gateways</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Connect merchant accounts to collect tuition fees directly from enrolled students.</p>
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-sm shadow-sm flex items-center gap-2 cursor-pointer"
+          variant="primary"
+          size="sm"
+          leftIcon={<Save className="w-4 h-4" />}
         >
-          <Save className="w-4 h-4" />
-          <span>Save Credentials</span>
-        </button>
-      </div>
+          Save Credentials
+        </Button>
+      </Card>
 
-      {/* Gateway Options Grid */}
+      {/* Gateway Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Stripe */}
-        <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+        <Card className="space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-sm bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                  S
+                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
+                  <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Stripe Connect</h3>
-                  <p className="text-[11px] text-slate-500">Global Credit Cards & Debit</p>
+                  <h3 className="font-bold text-xs text-slate-900">Stripe Connect</h3>
+                  <p className="text-[11px] text-slate-500">Credit / Debit Cards</p>
                 </div>
               </div>
 
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={stripe.enabled}
-                  onChange={() => handleToggle('stripe')}
-                  className="w-4 h-4 text-teal-600 rounded-sm"
-                />
-              </label>
+              <input
+                type="checkbox"
+                checked={stripe.enabled}
+                onChange={() => handleToggle('stripe')}
+                className="w-4 h-4 text-slate-900 rounded cursor-pointer"
+              />
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Publishable Key</label>
-                <input
-                  type="text"
-                  value={stripe.publishableKey || ''}
-                  onChange={(e) => handleUpdate('stripe', { publishableKey: e.target.value })}
-                  placeholder="pk_live_..."
-                  className="w-full p-2.5 border border-slate-300 rounded-sm font-mono text-[11px]"
-                />
-              </div>
+            <div className="space-y-3">
+              <Input
+                label="Publishable Key"
+                type="text"
+                value={stripe.publishableKey || ''}
+                onChange={(e) => handleUpdate('stripe', { publishableKey: e.target.value })}
+                placeholder="pk_live_..."
+              />
 
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Secret Key</label>
-                <input
-                  type="password"
-                  value={stripe.secretKey || ''}
-                  onChange={(e) => handleUpdate('stripe', { secretKey: e.target.value })}
-                  placeholder="sk_live_..."
-                  className="w-full p-2.5 border border-slate-300 rounded-sm font-mono text-[11px]"
-                />
-              </div>
+              <Input
+                label="Secret Key"
+                type="password"
+                value={stripe.secretKey || ''}
+                onChange={(e) => handleUpdate('stripe', { secretKey: e.target.value })}
+                placeholder="sk_live_..."
+              />
             </div>
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
             <span className="text-slate-500">Mode:</span>
-            <span className="font-bold text-emerald-700">Live Production</span>
+            <Badge variant="success">Live Production</Badge>
           </div>
-        </div>
+        </Card>
 
         {/* Moyasar */}
-        <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+        <Card className="space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-sm bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
-                  M
+                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
+                  <Building2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Moyasar (GCC & Mada)</h3>
-                  <p className="text-[11px] text-slate-500">Mada, Apple Pay & STC Pay</p>
+                  <h3 className="font-bold text-xs text-slate-900">Moyasar Gateway</h3>
+                  <p className="text-[11px] text-slate-500">Mada, Apple Pay, STC Pay</p>
                 </div>
               </div>
 
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={moyasar.enabled}
-                  onChange={() => handleToggle('moyasar')}
-                  className="w-4 h-4 text-teal-600 rounded-sm"
-                />
-              </label>
+              <input
+                type="checkbox"
+                checked={moyasar.enabled}
+                onChange={() => handleToggle('moyasar')}
+                className="w-4 h-4 text-slate-900 rounded cursor-pointer"
+              />
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Moyasar API Key</label>
-                <input
-                  type="text"
-                  value={moyasar.publishableKey || ''}
-                  onChange={(e) => handleUpdate('moyasar', { publishableKey: e.target.value })}
-                  placeholder="pk_live_moyasar_..."
-                  className="w-full p-2.5 border border-slate-300 rounded-sm font-mono text-[11px]"
-                />
-              </div>
+            <div className="space-y-3">
+              <Input
+                label="Moyasar API Key"
+                type="text"
+                value={moyasar.publishableKey || ''}
+                onChange={(e) => handleUpdate('moyasar', { publishableKey: e.target.value })}
+                placeholder="pk_live_moyasar_..."
+              />
             </div>
           </div>
 
@@ -179,69 +168,61 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
             <span className="text-slate-500">Supported:</span>
             <span className="font-bold text-slate-800">SAR, AED, KWD, USD</span>
           </div>
-        </div>
+        </Card>
 
-        {/* Bank Wire Transfer */}
-        <div className="bg-white p-6 rounded-sm border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+        {/* Bank Wire */}
+        <Card className="space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
                   <Building2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Manual Bank Wire</h3>
-                  <p className="text-[11px] text-slate-500">Direct IBAN & Wire Receipts</p>
+                  <h3 className="font-bold text-xs text-slate-900">Direct Bank Wire</h3>
+                  <p className="text-[11px] text-slate-500">IBAN & Wire Receipts</p>
                 </div>
               </div>
 
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={bank.enabled}
-                  onChange={() => handleToggle('bank_transfer')}
-                  className="w-4 h-4 text-teal-600 rounded-sm"
-                />
-              </label>
+              <input
+                type="checkbox"
+                checked={bank.enabled}
+                onChange={() => handleToggle('bank_transfer')}
+                className="w-4 h-4 text-slate-900 rounded cursor-pointer"
+              />
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Bank Name</label>
-                <input
-                  type="text"
-                  value={bank.bankDetails?.bankName || ''}
-                  onChange={(e) =>
-                    handleUpdate('bank_transfer', {
-                      bankDetails: { ...bank.bankDetails!, bankName: e.target.value },
-                    })
-                  }
-                  placeholder="e.g. Al Rajhi Bank"
-                  className="w-full p-2.5 border border-slate-300 rounded-sm"
-                />
-              </div>
+            <div className="space-y-3">
+              <Input
+                label="Bank Name"
+                type="text"
+                value={bank.bankDetails?.bankName || ''}
+                onChange={(e) =>
+                  handleUpdate('bank_transfer', {
+                    bankDetails: { ...bank.bankDetails!, bankName: e.target.value },
+                  })
+                }
+                placeholder="e.g. Chase / Al Rajhi"
+              />
 
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">IBAN Number</label>
-                <input
-                  type="text"
-                  value={bank.bankDetails?.iban || ''}
-                  onChange={(e) =>
-                    handleUpdate('bank_transfer', {
-                      bankDetails: { ...bank.bankDetails!, iban: e.target.value },
-                    })
-                  }
-                  placeholder="SA448000..."
-                  className="w-full p-2.5 border border-slate-300 rounded-sm font-mono text-[11px]"
-                />
-              </div>
+              <Input
+                label="IBAN / Account Number"
+                type="text"
+                value={bank.bankDetails?.iban || ''}
+                onChange={(e) =>
+                  handleUpdate('bank_transfer', {
+                    bankDetails: { ...bank.bankDetails!, iban: e.target.value },
+                  })
+                }
+                placeholder="SA448000..."
+              />
             </div>
           </div>
 
           <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-500">
-            Receipts uploaded by students will appear in CRM for manual verification.
+            Payment receipts are submitted directly to the Admissions CRM.
           </div>
-        </div>
+        </Card>
       </div>
     </form>
   );
