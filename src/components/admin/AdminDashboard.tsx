@@ -87,68 +87,54 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       />
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-100">
-        {/* Header */}
-        <header className="bg-white border-b border-slate-200 py-4 px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-xs">
-          <div className="flex items-center gap-3 text-sm">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+        {/* Clean Header */}
+        <header className="bg-white border-b border-slate-200 py-3.5 px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-20">
+          <div className="flex items-center gap-3">
             {/* Mobile Hamburger Trigger */}
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer"
-              aria-label="Open Sidebar Menu"
+              className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer"
+              aria-label="Open Navigation Menu"
             >
               <Menu className="w-5 h-5" />
             </button>
 
-            <span className="text-slate-500 font-semibold hidden sm:inline">{tenant.name}</span>
-            <span className="text-slate-300 hidden sm:inline">/</span>
-            <span className="font-bold text-slate-900 capitalize font-display text-base sm:text-lg">
-              {activeTab.replace('_', ' ')}
-            </span>
-
-            {/* Tenant Subscription Plan Tag */}
-            <button
-              onClick={() => setIsPlanModalOpen(true)}
-              className={`px-3 py-1 rounded-md border text-xs font-bold font-display cursor-pointer hover:opacity-90 transition-opacity ${currentPlan.color}`}
-              title="Click to manage account subscription tier"
-            >
-              {currentPlan.badge}
-            </button>
+            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <span className="font-semibold text-slate-800 hidden sm:inline">{tenant.name}</span>
+              <span className="text-slate-300 hidden sm:inline">/</span>
+              <span className="text-slate-900 font-bold capitalize text-sm">
+                {activeTab.replace('_', ' ')}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden md:inline-block text-xs text-slate-500 font-medium">
-              Capacity: <strong>{currentPlan.quota}</strong>
-            </span>
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsOnboardingWizardOpen(true)}
-              className="px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold font-display rounded-md flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
-              title="Launch Guided Setup Wizard"
+              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
-              <Rocket className="w-4 h-4 text-slate-950" />
-              <span className="hidden sm:inline">Setup Wizard</span>
+              Setup Wizard
             </button>
 
             <button
               onClick={() => setIsProfileModalOpen(true)}
-              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-display rounded-md flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Manage Profile & Settings"
+              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
-              <User className="w-4 h-4 text-emerald-700" />
-              <span className="hidden sm:inline">Profile & Settings</span>
+              Settings
             </button>
 
             <button
               onClick={onViewLiveSite}
-              className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold font-display rounded-md shadow-sm flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <ExternalLink className="w-4 h-4" />
-              <span className="hidden sm:inline">View Live Academy</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Live Site</span>
             </button>
           </div>
         </header>
 
-        {/* Tab Content Container with Generous Spacing */}
+        {/* Tab Content Container */}
         <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
           {isOnboardingWizardOpen ? (
             <OnboardingWizard
@@ -158,97 +144,75 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           ) : (
             <>
               {activeTab === 'overview' && (
-                <div className="space-y-8 max-w-7xl mx-auto">
-                  {/* Setup Wizard Prompt Banner */}
-                  <div className="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white rounded-2xl border border-slate-700 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                    <div className="space-y-1">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-wider font-mono">
-                        <Sparkles className="w-3.5 h-3.5" /> Founder Onboarding
-                      </div>
-                      <h3 className="text-xl font-extrabold text-white font-display">Configure & Launch Your Academy</h3>
-                      <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-                        Complete your brand identity, set your custom theme colors, pick your page template, and configure live video classrooms.
+                <div className="space-y-6 max-w-7xl mx-auto">
+                  {/* Setup Banner */}
+                  <div className="p-6 bg-white rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900">Academy Configuration</h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Configure branding, curriculum tracks, payment providers, and live classroom settings.
                       </p>
                     </div>
 
                     <button
                       onClick={() => setIsOnboardingWizardOpen(true)}
-                      className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer uppercase tracking-wider"
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer whitespace-nowrap"
                     >
-                      <Rocket className="w-4 h-4" />
-                      <span>Start Setup Wizard</span>
+                      Open Setup Wizard
                     </button>
                   </div>
 
-                  {/* Overview Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Inquiries</span>
-                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">128 Leads</p>
-                      <span className="text-[11px] text-emerald-600 font-bold mt-1 block">↑ +14% this week</span>
+                  {/* Clean KPI Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs">
+                      <span className="text-xs font-medium text-slate-500">Inquiries</span>
+                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">128</p>
+                      <span className="text-[11px] text-emerald-600 font-medium mt-1 block">+14% this week</span>
                     </div>
 
-                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Enrolled Students</span>
-                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">42 Active</p>
-                      <span className="text-[11px] text-slate-500 font-medium mt-1 block">Quota: {currentPlan.quota}</span>
+                    <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs">
+                      <span className="text-xs font-medium text-slate-500">Active Students</span>
+                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">42</p>
+                      <span className="text-[11px] text-slate-500 font-medium mt-1 block">Enrolled in courses</span>
                     </div>
 
-                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Live Classrooms</span>
-                      <p className="text-2xl font-bold font-mono text-emerald-700 mt-1">3 Active Now</p>
-                      <span className="text-[11px] text-emerald-600 font-bold mt-1 block">Video & Whiteboard SFU</span>
+                    <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs">
+                      <span className="text-xs font-medium text-slate-500">Live Sessions</span>
+                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">3 Active</p>
+                      <span className="text-[11px] text-emerald-600 font-medium mt-1 block">Real-time classroom</span>
                     </div>
 
-                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Monthly Revenue</span>
+                    <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs">
+                      <span className="text-xs font-medium text-slate-500">Monthly Volume</span>
                       <p className="text-2xl font-bold font-mono text-slate-900 mt-1">$4,850.00</p>
-                      <span className="text-[11px] text-emerald-600 font-bold mt-1 block">100% Payouts Active</span>
+                      <span className="text-[11px] text-emerald-600 font-medium mt-1 block">Active tuition billing</span>
                     </div>
                   </div>
 
-                  {/* Quick Action Navigation */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                  {/* Clean Navigation Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                     <div
                       onClick={() => setActiveTab('classroom')}
-                      className="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer group"
+                      className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all cursor-pointer"
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="p-3 bg-emerald-50 text-emerald-700 rounded-md group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                          <Rocket className="w-6 h-6" />
-                        </span>
-                        <span className="text-xs font-bold text-emerald-700">Enter Classroom →</span>
-                      </div>
-                      <h4 className="font-bold text-base text-slate-900 font-display">Live Video & Whiteboard Room</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">Start live 1-on-1 tutoring or group halaqah with real-time video, laser pointer, and collaborative canvas.</p>
+                      <h4 className="font-bold text-sm text-slate-900">Live Classroom & Whiteboard</h4>
+                      <p className="text-xs text-slate-500 mt-1">Join active sessions, use interactive whiteboard tools, and share screens with students.</p>
                     </div>
 
                     <div
                       onClick={() => setActiveTab('page_builder')}
-                      className="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer group"
+                      className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all cursor-pointer"
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="p-3 bg-emerald-50 text-emerald-700 rounded-md group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                          <Layers className="w-6 h-6" />
-                        </span>
-                        <span className="text-xs font-bold text-emerald-700">Open GrapesJS →</span>
-                      </div>
-                      <h4 className="font-bold text-base text-slate-900 font-display">Visual Page Builder</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">Customize your public landing page with multi-niche templates, Islamic calligraphy, and dynamic forms.</p>
+                      <h4 className="font-bold text-sm text-slate-900">Visual Page Builder</h4>
+                      <p className="text-xs text-slate-500 mt-1">Edit landing page content, choose layout templates, and customize form sections.</p>
                     </div>
 
                     <div
                       onClick={() => setActiveTab('settings')}
-                      className="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer group"
+                      className="p-5 bg-white rounded-xl border border-slate-200 shadow-xs hover:border-slate-300 transition-all cursor-pointer"
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="p-3 bg-amber-50 text-amber-700 rounded-md group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                          <ShieldCheck className="w-6 h-6" />
-                        </span>
-                        <span className="text-xs font-bold text-amber-700">Open Settings →</span>
-                      </div>
-                      <h4 className="font-bold text-base text-slate-900 font-display">Company Info & Brand Color</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">Update academy contact information, brand color palettes, 2FA security, and domain configurations.</p>
+                      <h4 className="font-bold text-sm text-slate-900">Settings & Security</h4>
+                      <p className="text-xs text-slate-500 mt-1">Manage brand colors, company information, custom domain, and two-step verification.</p>
                     </div>
                   </div>
                 </div>

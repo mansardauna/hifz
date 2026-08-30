@@ -58,29 +58,28 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
     <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center p-4 sm:p-6 font-sans">
       <div className="max-w-xl w-full my-8">
         <div className="text-center mb-6">
-          <div className="inline-block px-3 py-1 text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200 rounded-sm mb-2">
-            Custom Academy Institute Setup
+          <div className="inline-block px-3 py-1 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded-md mb-2">
+            Academy Registration
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Launch Your Academy in Minutes</h2>
-          <p className="text-xs text-slate-500 mt-1">14-day free trial • Real GrapesJS visual editor & live classrooms included</p>
+          <h2 className="text-2xl font-bold text-slate-900">Create Your Academy</h2>
+          <p className="text-xs text-slate-500 mt-1">Setup your custom domain, curriculum, and classroom in minutes</p>
         </div>
 
-        <div className="bg-white rounded-sm p-6 sm:p-8 shadow-sm border border-slate-200">
+        <div className="bg-white rounded-xl p-6 sm:p-8 shadow-xs border border-slate-200">
           <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans">
             {/* Niche Selector */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-2">Academy Domain / Specialty</label>
+              <label className="block font-semibold text-slate-700 mb-2">Academy Type</label>
               <div className="grid grid-cols-3 gap-2.5">
                 <button
                   type="button"
                   onClick={() => setNiche('quran')}
-                  className={`p-3 rounded-lg border text-center transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
                     niche === 'quran'
                       ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold ring-1 ring-emerald-600'
                       : 'border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
-                  <div className="text-lg mb-1">🕌</div>
                   <div className="font-semibold text-xs">Quran & Islamic</div>
                   <div className="text-[10px] text-slate-500">Tajweed & Hifz</div>
                 </button>
@@ -88,27 +87,25 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setNiche('coding')}
-                  className={`p-3 rounded-lg border text-center transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
                     niche === 'coding'
                       ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold ring-1 ring-blue-600'
                       : 'border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
-                  <div className="text-lg mb-1">💻</div>
                   <div className="font-semibold text-xs">Coding & Tech</div>
-                  <div className="text-[10px] text-slate-500">Monaco & Sandbox</div>
+                  <div className="text-[10px] text-slate-500">Sandbox & Coding</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setNiche('general')}
-                  className={`p-3 rounded-lg border text-center transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
                     niche === 'general'
                       ? 'border-purple-600 bg-purple-50 text-purple-900 font-bold ring-1 ring-purple-600'
                       : 'border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
-                  <div className="text-lg mb-1">🌍</div>
                   <div className="font-semibold text-xs">Language & General</div>
                   <div className="text-[10px] text-slate-500">Interactive Courses</div>
                 </button>
@@ -116,7 +113,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Academy / Madrasah Name</label>
+              <label className="block font-semibold text-slate-700 mb-1">Academy Name</label>
               <input
                 type="text"
                 value={academyName}

@@ -210,23 +210,22 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
         {/* Step 2: Niche / Track */}
         {currentStep === 2 && (
           <div className="space-y-5 animate-in fade-in duration-200">
-            <h3 className="text-base font-extrabold text-slate-900 font-display">Select Academy Specialty & Track</h3>
-            <p className="text-xs text-slate-500">The platform automatically tailors the LMS reader, homework recorder, and curriculum hierarchy for your domain.</p>
+            <h3 className="text-base font-bold text-slate-900">Select Academy Specialty</h3>
+            <p className="text-xs text-slate-500">Choose the primary track for your curriculum and student workspace.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <button
                 type="button"
                 onClick={() => setSelectedNiche('quran')}
-                className={`p-5 rounded-2xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-5 rounded-xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
                   selectedNiche === 'quran'
-                    ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600 shadow-md'
+                    ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                 }`}
               >
                 <div>
-                  <div className="text-2xl mb-2">🕌</div>
-                  <h4 className="font-extrabold text-sm text-slate-900 font-display">Quran & Islamic Academy</h4>
-                  <p className="text-xs text-slate-600 mt-1">Uthmani Medina Mushaf, Tajweed rules, audio looper & homework voice recorder.</p>
+                  <h4 className="font-bold text-sm text-slate-900">Quran & Islamic Academy</h4>
+                  <p className="text-xs text-slate-600 mt-1">Uthmani Mushaf, Tajweed rules, recitation player, and audio recorder.</p>
                 </div>
                 {selectedNiche === 'quran' && (
                   <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700">
@@ -238,16 +237,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
               <button
                 type="button"
                 onClick={() => setSelectedNiche('coding')}
-                className={`p-5 rounded-2xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-5 rounded-xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
                   selectedNiche === 'coding'
-                    ? 'border-blue-600 bg-blue-50/70 ring-1 ring-blue-600 shadow-md'
+                    ? 'border-blue-600 bg-blue-50/70 ring-1 ring-blue-600 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                 }`}
               >
                 <div>
-                  <div className="text-2xl mb-2">💻</div>
-                  <h4 className="font-extrabold text-sm text-slate-900 font-display">Coding & Tech Bootcamp</h4>
-                  <p className="text-xs text-slate-600 mt-1">Interactive code editor, live HTML/JS sandbox runner & automated code submissions.</p>
+                  <h4 className="font-bold text-sm text-slate-900">Coding & Tech Academy</h4>
+                  <p className="text-xs text-slate-600 mt-1">Code editor, live sandbox execution, and code challenges.</p>
                 </div>
                 {selectedNiche === 'coding' && (
                   <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-blue-700">
@@ -259,16 +257,15 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
               <button
                 type="button"
                 onClick={() => setSelectedNiche('general')}
-                className={`p-5 rounded-2xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-5 rounded-xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
                   selectedNiche === 'general'
-                    ? 'border-purple-600 bg-purple-50/70 ring-1 ring-purple-600 shadow-md'
+                    ? 'border-purple-600 bg-purple-50/70 ring-1 ring-purple-600 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                 }`}
               >
                 <div>
-                  <div className="text-2xl mb-2">🌍</div>
-                  <h4 className="font-extrabold text-sm text-slate-900 font-display">Language & General Academy</h4>
-                  <p className="text-xs text-slate-600 mt-1">Interactive video lessons, PDF materials, quizzes & multi-instructor schedules.</p>
+                  <h4 className="font-bold text-sm text-slate-900">Language & General</h4>
+                  <p className="text-xs text-slate-600 mt-1">Interactive course modules, live video classes, and PDF assignments.</p>
                 </div>
                 {selectedNiche === 'general' && (
                   <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-purple-700">
@@ -283,12 +280,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
         {/* Step 3: Tuition & Payment */}
         {currentStep === 3 && (
           <div className="space-y-5 animate-in fade-in duration-200">
-            <h3 className="text-base font-extrabold text-slate-900 font-display">Tuition Pricing & Payment Collection</h3>
-            <p className="text-xs text-slate-500">Configure how much students are billed and enable automated payment gateways.</p>
+            <h3 className="text-base font-bold text-slate-900">Tuition Pricing & Payment Collection</h3>
+            <p className="text-xs text-slate-500">Configure monthly student tuition rates and select payment providers.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
-              <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200">
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Standard Monthly Tuition</label>
+              <div className="p-5 bg-slate-50 rounded-xl border border-slate-200">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Monthly Tuition Rate</label>
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-bold text-slate-500">$</span>
                   <input
@@ -297,18 +294,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                     onChange={(e) => setPlanPrice(Number(e.target.value))}
                     className="w-32 px-3 py-2 border border-slate-300 rounded-xl text-lg font-bold text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   />
-                  <span className="text-xs text-slate-500 font-medium">/ month per student</span>
+                  <span className="text-xs text-slate-500 font-medium">/ month</span>
                 </div>
-                <p className="text-[11px] text-slate-400 mt-2">Includes live 1-on-1 halaqah sessions, video call room & unlimited reviews.</p>
+                <p className="text-[11px] text-slate-400 mt-2">Standard rate per enrolled student.</p>
               </div>
 
               <div className="space-y-3">
                 <div className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <CreditCard className="w-4 h-4 text-emerald-600" />
+                    <CreditCard className="w-4 h-4 text-slate-700" />
                     <div>
-                      <h5 className="font-bold text-xs text-slate-800">Stripe Connect (Credit / Debit)</h5>
-                      <p className="text-[10px] text-slate-400">Direct global payouts in 135+ currencies</p>
+                      <h5 className="font-bold text-xs text-slate-800">Stripe Connect</h5>
+                      <p className="text-[10px] text-slate-400">Credit / Debit cards</p>
                     </div>
                   </div>
                   <input
@@ -321,10 +318,10 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
                 <div className="p-3.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <Building2 className="w-4 h-4 text-emerald-600" />
+                    <Building2 className="w-4 h-4 text-slate-700" />
                     <div>
-                      <h5 className="font-bold text-xs text-slate-800">Moyasar (Mada, Apple Pay, STC Pay)</h5>
-                      <p className="text-[10px] text-slate-400">Optimized for Saudi Arabia & GCC students</p>
+                      <h5 className="font-bold text-xs text-slate-800">Moyasar Gateway</h5>
+                      <p className="text-[10px] text-slate-400">Mada, Apple Pay, STC Pay</p>
                     </div>
                   </div>
                   <input
@@ -342,28 +339,28 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
         {/* Step 4: GrapesJS Landing Page Template */}
         {currentStep === 4 && (
           <div className="space-y-5 animate-in fade-in duration-200">
-            <h3 className="text-base font-extrabold text-slate-900 font-display">Pick Your Website Landing Page Layout</h3>
-            <p className="text-xs text-slate-500">Select a pre-built visual template. You can customize every section later with GrapesJS.</p>
+            <h3 className="text-base font-bold text-slate-900">Landing Page Layout</h3>
+            <p className="text-xs text-slate-500">Select a base layout. You can customize all sections later in the Page Builder.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               {TEMPLATES.map((tpl) => (
                 <div
                   key={tpl.id}
                   onClick={() => setSelectedTemplate(tpl.id)}
-                  className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     selectedTemplate === tpl.id
-                      ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600 shadow-md'
+                      ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600 shadow-xs'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md text-white" style={{ backgroundColor: tpl.color }}>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: tpl.color }}>
                         {tpl.badge}
                       </span>
                       {selectedTemplate === tpl.id && <Check className="w-4 h-4 text-emerald-600" />}
                     </div>
-                    <h4 className="font-bold text-xs text-slate-900 mt-2 font-display">{tpl.name}</h4>
+                    <h4 className="font-bold text-xs text-slate-900 mt-2">{tpl.name}</h4>
                     <p className="text-[11px] text-slate-500 leading-relaxed">{tpl.desc}</p>
                   </div>
                 </div>
@@ -372,24 +369,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
           </div>
         )}
 
-        {/* Step 5: Launch & Live Domain */}
+        {/* Step 5: Launch */}
         {currentStep === 5 && (
           <div className="text-center py-6 space-y-4 animate-in fade-in duration-200">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-2xl mx-auto shadow-inner border-2 border-emerald-300">
-              <Rocket className="w-8 h-8 text-emerald-600 animate-bounce" />
-            </div>
-
             <div className="max-w-md mx-auto space-y-2">
-              <h3 className="text-xl font-extrabold text-slate-900 font-display">
-                Ready to Launch {academyName}!
+              <h3 className="text-xl font-bold text-slate-900">
+                Ready to Launch {academyName}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Your academy is configured with instant Admissions CRM, live Video & Whiteboard classrooms, and automated tuition billing.
+                Your academy is configured with student admissions, live classrooms, and automated tuition billing.
               </p>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 max-w-sm mx-auto text-xs font-mono font-bold text-emerald-800">
-              🌐 https://{tenant.subdomain}.hifz.app
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 max-w-sm mx-auto text-xs font-mono font-bold text-slate-800">
+              https://{tenant.subdomain}.hifz.app
             </div>
           </div>
         )}

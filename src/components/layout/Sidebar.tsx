@@ -64,17 +64,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems = [
     { id: 'overview' as AdminTab, label: 'Overview', labelAr: 'الرئيسية', icon: LayoutDashboard },
-    { id: 'classroom' as AdminTab, label: 'Live Video & Whiteboard', labelAr: 'الفصل والسبورة المباشرة', icon: Video },
-    { id: 'page_builder' as AdminTab, label: 'GrapesJS Visual Canvas', labelAr: 'محرر الصفحات المرئي', icon: Palette },
-    { id: 'form_builder' as AdminTab, label: 'Admissions Form Builder', labelAr: 'منشئ الاستبيان', icon: FileCheck },
-    { id: 'curriculum' as AdminTab, label: 'Courses & Curriculum', labelAr: 'المناهج والدورات', icon: Layers },
-    { id: 'pricing' as AdminTab, label: 'Tuition & Pricing Plans', labelAr: 'الخطط الدراسية', icon: DollarSign },
+    { id: 'classroom' as AdminTab, label: 'Live Classroom', labelAr: 'الفصل المباشر', icon: Video },
+    { id: 'page_builder' as AdminTab, label: 'Page Builder', labelAr: 'محرر الصفحات', icon: Palette },
+    { id: 'form_builder' as AdminTab, label: 'Form Builder', labelAr: 'منشئ الاستبيان', icon: FileCheck },
+    { id: 'curriculum' as AdminTab, label: 'Curriculum', labelAr: 'المناهج والدورات', icon: Layers },
+    { id: 'pricing' as AdminTab, label: 'Tuition & Pricing', labelAr: 'الخطط الدراسية', icon: DollarSign },
     { id: 'payment_gateways' as AdminTab, label: 'Payment Gateways', labelAr: 'بوابات الدفع', icon: CreditCard },
-    { id: 'crm' as AdminTab, label: 'Students & CRM', labelAr: 'إدارة الطلاب والطلبات', icon: Users },
-    { id: 'analytics' as AdminTab, label: 'Analytics & Growth', labelAr: 'التحليلات', icon: BarChart3 },
-    { id: 'settings' as AdminTab, label: 'Branding & Academy', labelAr: 'بيانات المعهد', icon: Settings },
-    { id: 'profile' as AdminTab, label: 'Administrator Profile', labelAr: 'الملف الشخصي للمشرف', icon: User },
-    { id: 'user_settings' as AdminTab, label: 'Account & Security Settings', labelAr: 'إعدادات الحساب والأمان', icon: Shield },
+    { id: 'crm' as AdminTab, label: 'Admissions CRM', labelAr: 'إدارة الطلاب والطلبات', icon: Users },
+    { id: 'analytics' as AdminTab, label: 'Analytics', labelAr: 'التحليلات', icon: BarChart3 },
+    { id: 'settings' as AdminTab, label: 'Settings', labelAr: 'الإعدادات', icon: Settings },
+    { id: 'profile' as AdminTab, label: 'Admin Profile', labelAr: 'الملف الشخصي', icon: User },
   ];
 
   const handleItemClick = (tabId: AdminTab) => {
@@ -99,27 +98,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`bg-emerald-950 text-emerald-100 border-r border-emerald-900 flex flex-col justify-between transition-all duration-200 z-50 font-sans ${
+        className={`bg-slate-900 text-slate-200 border-r border-slate-800 flex flex-col justify-between transition-all duration-200 z-50 font-sans ${
           /* Desktop sidebar sizing */
-          collapsed ? 'lg:w-20' : 'lg:w-72'
+          collapsed ? 'lg:w-20' : 'lg:w-64'
         } ${
           /* Mobile slide-over drawer */
           isOpenOnMobile
-            ? 'fixed inset-y-0 left-0 w-72 shadow-2xl flex'
+            ? 'fixed inset-y-0 left-0 w-64 shadow-2xl flex'
             : 'hidden lg:flex lg:sticky lg:top-0 lg:h-screen'
         }`}
       >
         {/* Top Branding & Close Button */}
         <div>
-          <div className="p-5 border-b border-emerald-900 flex items-center justify-between">
+          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-10 h-10 rounded-md bg-emerald-900 border border-emerald-700 text-amber-400 flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
-                {tenant.faviconUrl || '📖'}
+              <div className="w-9 h-9 rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+                <BookOpen className="w-4 h-4" />
               </div>
               {(!collapsed || isOpenOnMobile) && (
                 <div className="min-w-0">
-                  <h2 className="font-bold text-sm text-white truncate font-display">{tenant.name}</h2>
-                  <p className="text-[11px] text-emerald-400 font-mono truncate">{tenant.subdomain}.hifz.app</p>
+                  <h2 className="font-bold text-xs text-white truncate font-display">{tenant.name}</h2>
+                  <p className="text-[10px] text-slate-400 font-mono truncate">{tenant.subdomain}.hifz.app</p>
                 </div>
               )}
             </div>
