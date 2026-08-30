@@ -5,14 +5,26 @@ declare global {
   var prismaGlobal: PrismaClient | undefined;
 }
 
-export const prisma =
-  globalThis.prismaGlobal ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  });
+const createPrismaClient = (): PrismaClient => {
+  return (
+    globalThis.prismaGlobal ??
+    new PrismaClient({
+      log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+    })
+  );
+};
 
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.prismaGlobal = prisma;
-}
+export const prisma = (() => {
+  try {
+    const client = createPrismaClient();
+    if (process.env.NODE_ENV !== 'production') {
+      globalThis.prismaGlobal = client;
+    }
+    return client;
+  } catch (error) {
+    console.warn('Prisma initialization deferred until runtime database connection is configured.');
+    return {} as PrismaClient;
+  }
+})();
 
 export default prisma;

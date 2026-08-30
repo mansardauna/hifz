@@ -3,6 +3,7 @@ import { prisma } from '../../../src/lib/prisma';
 import { MOCK_TENANTS } from '../../../src/services/mockData';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
