@@ -13,38 +13,38 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full space-y-1.5 font-sans">
+      <div className="w-full space-y-2 font-sans">
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-semibold text-slate-700">
+          <label htmlFor={inputId} className="block text-xs sm:text-sm font-semibold text-slate-700">
             {label}
           </label>
         )}
-        <div className="relative rounded-lg">
+        <div className="relative rounded-xl">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               {leftIcon}
             </div>
           )}
           <input
             ref={ref}
             id={inputId}
-            className={`w-full px-3.5 py-2 text-xs bg-white text-slate-900 border rounded-lg transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed ${
-              leftIcon ? 'pl-9' : ''
-            } ${rightIcon ? 'pr-9' : ''} ${
-              error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'border-slate-300'
+            className={`w-full px-4 py-2.5 sm:py-3 text-xs sm:text-sm bg-white text-slate-900 border rounded-xl transition-all placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed ${
+              leftIcon ? 'pl-11' : ''
+            } ${rightIcon ? 'pr-11' : ''} ${
+              error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'border-slate-300 hover:border-slate-400'
             } ${className}`}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
               {rightIcon}
             </div>
           )}
         </div>
         {error ? (
-          <p className="text-[11px] text-red-600 font-medium">{error}</p>
+          <p className="text-xs text-red-600 font-medium">{error}</p>
         ) : helperText ? (
-          <p className="text-[11px] text-slate-500">{helperText}</p>
+          <p className="text-xs text-slate-500">{helperText}</p>
         ) : null}
       </div>
     );
@@ -64,17 +64,17 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full space-y-1.5 font-sans">
+      <div className="w-full space-y-2 font-sans">
         {label && (
-          <label htmlFor={selectId} className="block text-xs font-semibold text-slate-700">
+          <label htmlFor={selectId} className="block text-xs sm:text-sm font-semibold text-slate-700">
             {label}
           </label>
         )}
         <select
           ref={ref}
           id={selectId}
-          className={`w-full px-3.5 py-2 text-xs bg-white text-slate-900 border rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer ${
-            error ? 'border-red-500 focus:border-red-500' : 'border-slate-300'
+          className={`w-full px-4 py-2.5 sm:py-3 text-xs sm:text-sm bg-white text-slate-900 border rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer ${
+            error ? 'border-red-500 focus:border-red-500' : 'border-slate-300 hover:border-slate-400'
           } ${className}`}
           {...props}
         >
@@ -87,9 +87,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             : children}
         </select>
         {error ? (
-          <p className="text-[11px] text-red-600 font-medium">{error}</p>
+          <p className="text-xs text-red-600 font-medium">{error}</p>
         ) : helperText ? (
-          <p className="text-[11px] text-slate-500">{helperText}</p>
+          <p className="text-xs text-slate-500">{helperText}</p>
         ) : null}
       </div>
     );

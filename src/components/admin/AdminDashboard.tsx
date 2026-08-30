@@ -16,7 +16,7 @@ import { NotificationCenter } from '../notifications/NotificationCenter';
 import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Button, Badge } from '../ui';
+import { Button } from '../ui';
 import { ExternalLink, Menu, SlidersHorizontal, Globe } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -28,7 +28,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onAddToast,
   onViewLiveSite,
 }) => {
-  const { tenant, updateTenantConfig, direction, language, setLanguage } = useTenant();
+  const { tenant, direction, language, setLanguage } = useTenant();
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
@@ -36,7 +36,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const plan = tenant.subscriptionPlan || 'free';
 
-  // 1. Calculate real dynamic setup wizard completion percentage
+  // Calculate real dynamic setup wizard completion percentage
   const calculateSetupProgress = () => {
     let completed = 0;
     const total = 5;
@@ -57,7 +57,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex font-sans text-slate-900" dir={direction}>
+    <div className="min-h-screen bg-slate-100 flex font-sans text-slate-900 overflow-x-hidden" dir={direction}>
       {/* Sidebar with Direct Tab Switchers */}
       <Sidebar
         activeTab={activeTab}
@@ -77,36 +77,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Main Content Workspace */}
       <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
-        {/* Top Header */}
-        <header className="bg-white border-b border-slate-200 py-3 px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-20 shadow-xs">
-          <div className="flex items-center gap-3">
+        {/* Top Header — Highly Responsive on Mobile */}
+        <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-20 shadow-xs">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer"
+              className="lg:hidden p-2 sm:p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer shrink-0"
               aria-label="Open Navigation Menu"
             >
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span className="font-semibold text-slate-800 hidden sm:inline">{tenant.name}</span>
-              <span className="text-slate-300 hidden sm:inline">/</span>
+            {/* Desktop Breadcrumb (Hidden completely on mobile screens as requested) */}
+            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-500">
+              <span className="font-semibold text-slate-800">{tenant.name}</span>
+              <span className="text-slate-300">/</span>
               <span className="text-slate-900 font-bold capitalize text-sm">
                 {isOnboardingWizardOpen ? 'Setup Wizard' : activeTab === 'overview' ? 'Academy Overview & Analytics' : activeTab.replace('_', ' ')}
               </span>
             </div>
+
+            {/* Mobile Title (Clean, no breadcrumbs) */}
+            <div className="md:hidden flex items-center gap-1.5 min-w-0">
+              <span className="text-xs font-extrabold text-slate-900 truncate">
+                {isOnboardingWizardOpen ? 'Setup' : activeTab === 'overview' ? 'Overview' : activeTab.replace('_', ' ')}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Language Switcher */}
             <button
               type="button"
               onClick={toggleLanguage}
-              className="px-2.5 py-1 text-xs font-bold rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer text-slate-700"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer text-slate-700 select-none min-h-[36px]"
               title="Switch Language"
             >
-              <Globe className="w-3.5 h-3.5 text-slate-500" />
-              <span>{language === 'ar' ? 'English' : 'العربية'}</span>
+              <Globe className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              <span className="hidden sm:inline">{language === 'ar' ? 'English' : 'العربية'}</span>
+              <span className="sm:hidden">{language === 'ar' ? 'EN' : 'عر'}</span>
             </button>
 
             {/* Real-time Notification Center */}
@@ -118,7 +127,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setIsPlanUpgradeModalOpen(true)}
-                className="font-bold"
+                className="font-bold hidden sm:inline-flex"
               >
                 Upgrade
               </Button>
@@ -130,8 +139,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               size="sm"
               onClick={() => setIsOnboardingWizardOpen(!isOnboardingWizardOpen)}
               leftIcon={<SlidersHorizontal className="w-3.5 h-3.5" />}
+              className="px-2.5 sm:px-3.5"
             >
-              {isOnboardingWizardOpen ? 'Exit Wizard' : `Setup (${setupProgress.percentage}%)`}
+              <span className="hidden sm:inline">{isOnboardingWizardOpen ? 'Exit' : `Setup (${setupProgress.percentage}%)`}</span>
+              <span className="sm:hidden">{setupProgress.percentage}%</span>
             </Button>
 
             {/* Live Site CTA */}
@@ -140,14 +151,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               size="sm"
               onClick={onViewLiveSite}
               rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
+              className="px-2.5 sm:px-3.5"
             >
-              Live Site
+              <span className="hidden sm:inline">Live Site</span>
+              <span className="sm:hidden">Live</span>
             </Button>
           </div>
         </header>
 
         {/* Tab Content Body */}
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
           {isOnboardingWizardOpen ? (
             <OnboardingWizard
               onAddToast={onAddToast}
@@ -174,7 +187,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <CourseBuilder onAddToast={onAddToast} />
               )}
               {activeTab === 'classroom' && (
-                <div className="h-[750px] rounded-2xl overflow-hidden border border-slate-200 shadow-lg">
+                <div className="h-[calc(100vh-140px)] min-h-[600px] rounded-2xl overflow-hidden border border-slate-200 shadow-md">
                   <LiveClassroomHub
                     roomTitle={`${tenant.name} Live Session`}
                     courseTitle={tenant.tagline || 'Interactive Curriculum'}
