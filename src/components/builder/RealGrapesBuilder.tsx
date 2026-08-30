@@ -204,6 +204,101 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       `,
     },
     {
+      id: 'modern-codecraft-bootcamp',
+      name: 'Modern CodeCraft Bootcamp',
+      description: 'Engineered for coding academies and software bootcamps. Features terminal hero, live coding sandbox preview, and curriculum tracks.',
+      badge: 'Tech & Coding',
+      previewImg: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
+      html: `
+        <!-- Tech Hero Section -->
+        <section class="py-24 px-8 bg-slate-950 text-white font-sans overflow-hidden">
+          <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950 border border-blue-800 text-blue-400 text-xs font-bold font-mono">
+                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> FULL-STACK TECH BOOTCAMP
+              </div>
+              <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight font-display tracking-tight">
+                Master Modern <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Software Engineering</span>
+              </h1>
+              <p class="text-base text-slate-300 leading-relaxed max-w-xl">
+                Build real-world web apps, master algorithms, and launch your software career with 1-on-1 live mentoring and interactive sandboxes.
+              </p>
+              <div class="flex flex-wrap gap-4 pt-2">
+                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Start Coding Today</a>
+                <a href="#curriculum" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm rounded-xl transition-all">View Curriculum</a>
+              </div>
+            </div>
+
+            <!-- Terminal Mockup -->
+            <div class="lg:col-span-5 bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-2xl font-mono text-xs">
+              <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                <span class="text-slate-500 ml-2 text-[10px]">main.js — Live Sandbox</span>
+              </div>
+              <div class="pt-3 text-emerald-400 space-y-1">
+                <p class="text-slate-400">// Interactive Coding Exercise</p>
+                <p><span class="text-blue-400">const</span> academy = <span class="text-amber-300">&quot;${tenant.name}&quot;</span>;</p>
+                <p><span class="text-blue-400">async function</span> startBootcamp() {</p>
+                <p class="pl-4"><span class="text-purple-400">await</span> learnFullStack();</p>
+                <p class="pl-4"><span class="text-purple-400">return</span> <span class="text-amber-300">&quot;Senior Developer 🚀&quot;</span>;</p>
+                <p>}</p>
+                <p class="text-slate-500 pt-2">&gt; Running tests: 100% Passed</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3-Features Row -->
+        <section class="py-16 px-8 bg-slate-900 text-white font-sans border-t border-slate-800">
+          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+              <div class="text-2xl">💻</div>
+              <h3 class="font-bold text-base text-white">Browser Sandbox</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">No complex setups needed. Run code, execute tests, and build web apps directly in the browser.</p>
+            </div>
+            <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+              <div class="text-2xl">⚡</div>
+              <h3 class="font-bold text-base text-white">Live Whiteboard Mentoring</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Pair-program live with senior engineers using real-time video classrooms and collaborative whiteboards.</p>
+            </div>
+            <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+              <div class="text-2xl">🎓</div>
+              <h3 class="font-bold text-base text-white">Career Certification</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Graduate with a portfolio of full-stack projects, verified certificates, and interview preparation.</p>
+            </div>
+          </div>
+        </section>
+      `,
+    },
+    {
+      id: 'royal-sanad-gold',
+      name: 'Royal Gold Sanad Institute',
+      description: 'Luxury gold & dark emerald aesthetic for prestigious Qira\'at institutes and Ijazah certification programs.',
+      badge: 'Ijazah & Sanad',
+      previewImg: 'https://images.unsplash.com/photo-1584286595398-a59f21d313f5?auto=format&fit=crop&w=600&q=80',
+      html: `
+        <section class="py-28 px-8 bg-gradient-to-b from-slate-950 via-emerald-950 to-slate-950 text-white text-center font-sans">
+          <div class="max-w-4xl mx-auto space-y-6">
+            <div class="w-16 h-16 rounded-full bg-amber-500/20 border-2 border-amber-400 text-amber-300 flex items-center justify-center font-bold text-2xl mx-auto shadow-lg">
+              📜
+            </div>
+            <p class="text-amber-400 text-xs font-bold uppercase tracking-widest font-mono">Continuous Chain of Transmission (Sanad Muttasil)</p>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-white font-display">
+              Sanad-Verified Quranic Ijazah
+            </h1>
+            <p class="text-base text-emerald-200/90 max-w-2xl mx-auto leading-relaxed">
+              Receive one-on-one instruction from scholars connected through an unbroken chain to the Prophet Muhammad ﷺ.
+            </p>
+            <div class="flex justify-center gap-4 pt-4">
+              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg transition-all">Enroll in Ijazah Track</a>
+            </div>
+          </div>
+        </section>
+      `,
+    },
+    {
       id: 'intensive-hifz-institute',
       name: 'Intensive Hifz & Tajweed Institute',
       description: 'Modern Quran institute design emphasizing daily recitation looper, Medina Mushaf reader, and certified Sanad faculty.',
@@ -219,7 +314,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               ${tenant.tagline}
             </p>
             <div class="flex justify-center gap-4 pt-4">
-              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 text-slate-950 font-bold text-sm rounded-md shadow-md">Enroll Student</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm rounded-md shadow-md transition-all">Apply for Admissions</a>
             </div>
           </div>
         </section>

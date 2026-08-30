@@ -9,11 +9,13 @@ import { PaymentGatewaySetup } from './PaymentGatewaySetup';
 import { LeadsCRM } from './LeadsCRM';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { SiteBuilder } from './SiteBuilder';
+import { ModernAcademySettings } from './ModernAcademySettings';
+import { OnboardingWizard } from './OnboardingWizard';
 import { UserProfileModal } from '../profile/UserProfileModal';
 import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { ExternalLink, Sparkles, ShieldCheck, Layers, CheckCircle2, Menu, User, Settings } from 'lucide-react';
+import { ExternalLink, Sparkles, ShieldCheck, Layers, CheckCircle2, Menu, User, Settings, Rocket } from 'lucide-react';
 
 interface AdminDashboardProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -29,6 +31,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
 
   const plan = tenant.subscriptionPlan || 'growth';
 
@@ -117,6 +120,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <span className="hidden md:inline-block text-xs text-slate-500 font-medium">
               Capacity: <strong>{currentPlan.quota}</strong>
             </span>
+            <button
+              onClick={() => setIsOnboardingWizardOpen(true)}
+              className="px-3 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold font-display rounded-md flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+              title="Launch Guided Setup Wizard"
+            >
+              <Rocket className="w-4 h-4 text-slate-950" />
+              <span className="hidden sm:inline">Setup Wizard</span>
+            </button>
 
             <button
               onClick={() => setIsProfileModalOpen(true)}
@@ -138,85 +149,139 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </header>
 
         {/* Tab Content Container with Generous Spacing */}
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto space-y-6">
-          {activeTab === 'overview' && (
-            <div className="space-y-8">
-              {/* Clean Summary KPI Grid */}
-              <AnalyticsDashboard />
+        <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
+          {isOnboardingWizardOpen ? (
+            <OnboardingWizard
+              onAddToast={onAddToast}
+              onComplete={() => setIsOnboardingWizardOpen(false)}
+            />
+          ) : (
+            <>
+              {activeTab === 'overview' && (
+                <div className="space-y-8 max-w-7xl mx-auto">
+                  {/* Setup Wizard Prompt Banner */}
+                  <div className="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white rounded-2xl border border-slate-700 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-extrabold uppercase tracking-wider font-mono">
+                        <Sparkles className="w-3.5 h-3.5" /> Founder Onboarding
+                      </div>
+                      <h3 className="text-xl font-extrabold text-white font-display">Configure & Launch Your Academy</h3>
+                      <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                        Complete your brand identity, set your custom theme colors, pick your page template, and configure live video classrooms.
+                      </p>
+                    </div>
 
-              {/* Quick Actions Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div
-                  onClick={() => setActiveTab('page_builder')}
-                  className="p-6 bg-white rounded-md border border-slate-200 shadow-md hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="p-3 bg-emerald-50 text-emerald-700 rounded-md group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                      <Sparkles className="w-6 h-6" />
-                    </span>
-                    <span className="text-xs font-bold text-emerald-700">Open Builder →</span>
+                    <button
+                      onClick={() => setIsOnboardingWizardOpen(true)}
+                      className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer uppercase tracking-wider"
+                    >
+                      <Rocket className="w-4 h-4" />
+                      <span>Start Setup Wizard</span>
+                    </button>
                   </div>
-                  <h4 className="font-bold text-base text-slate-900 font-display">GrapesJS Landing Page Canvas</h4>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">Customize hero calligraphy, course lists, and pricing blocks visually with live sync.</p>
-                </div>
 
-                <div
-                  onClick={() => setActiveTab('form_builder')}
-                  className="p-6 bg-white rounded-md border border-slate-200 shadow-md hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="p-3 bg-purple-50 text-purple-700 rounded-md group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                      <Layers className="w-6 h-6" />
-                    </span>
-                    <span className="text-xs font-bold text-purple-700">Manage Forms →</span>
+                  {/* Overview Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Inquiries</span>
+                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">128 Leads</p>
+                      <span className="text-[11px] text-emerald-600 font-bold mt-1 block">↑ +14% this week</span>
+                    </div>
+
+                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Enrolled Students</span>
+                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">42 Active</p>
+                      <span className="text-[11px] text-slate-500 font-medium mt-1 block">Quota: {currentPlan.quota}</span>
+                    </div>
+
+                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Live Classrooms</span>
+                      <p className="text-2xl font-bold font-mono text-emerald-700 mt-1">3 Active Now</p>
+                      <span className="text-[11px] text-emerald-600 font-bold mt-1 block">Video & Whiteboard SFU</span>
+                    </div>
+
+                    <div className="p-5 bg-white rounded-md border border-slate-200 shadow-xs">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Monthly Revenue</span>
+                      <p className="text-2xl font-bold font-mono text-slate-900 mt-1">$4,850.00</p>
+                      <span className="text-[11px] text-emerald-600 font-bold mt-1 block">100% Payouts Active</span>
+                    </div>
                   </div>
-                  <h4 className="font-bold text-base text-slate-900 font-display">Admissions & Questionnaires</h4>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">Create multiple intake forms with drag-and-drop flex layouts and question banks.</p>
-                </div>
 
-                <div
-                  onClick={() => setActiveTab('crm')}
-                  className="p-6 bg-white rounded-md border border-slate-200 shadow-md hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="p-3 bg-amber-50 text-amber-700 rounded-md group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                      <ShieldCheck className="w-6 h-6" />
-                    </span>
-                    <span className="text-xs font-bold text-amber-700">Open CRM Pipeline →</span>
+                  {/* Quick Action Navigation */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                    <div
+                      onClick={() => setActiveTab('classroom')}
+                      className="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="p-3 bg-emerald-50 text-emerald-700 rounded-md group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                          <Rocket className="w-6 h-6" />
+                        </span>
+                        <span className="text-xs font-bold text-emerald-700">Enter Classroom →</span>
+                      </div>
+                      <h4 className="font-bold text-base text-slate-900 font-display">Live Video & Whiteboard Room</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">Start live 1-on-1 tutoring or group halaqah with real-time video, laser pointer, and collaborative canvas.</p>
+                    </div>
+
+                    <div
+                      onClick={() => setActiveTab('page_builder')}
+                      className="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="p-3 bg-emerald-50 text-emerald-700 rounded-md group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                          <Layers className="w-6 h-6" />
+                        </span>
+                        <span className="text-xs font-bold text-emerald-700">Open GrapesJS →</span>
+                      </div>
+                      <h4 className="font-bold text-base text-slate-900 font-display">Visual Page Builder</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">Customize your public landing page with multi-niche templates, Islamic calligraphy, and dynamic forms.</p>
+                    </div>
+
+                    <div
+                      onClick={() => setActiveTab('settings')}
+                      className="p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="p-3 bg-amber-50 text-amber-700 rounded-md group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                          <ShieldCheck className="w-6 h-6" />
+                        </span>
+                        <span className="text-xs font-bold text-amber-700">Open Settings →</span>
+                      </div>
+                      <h4 className="font-bold text-base text-slate-900 font-display">Company Info & Brand Color</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">Update academy contact information, brand color palettes, 2FA security, and domain configurations.</p>
+                    </div>
                   </div>
-                  <h4 className="font-bold text-base text-slate-900 font-display">Student Admissions & Inquiries</h4>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">Review incoming student inquiries, schedule evaluations, and manage tuition billing.</p>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {activeTab === 'classroom' && (
-            <div className="max-w-7xl mx-auto">
-              <VideoClassroomRoom
-                roomTitle="Instructor Live Masterclass & Whiteboard Room"
-                courseTitle="Live Teaching & Interactive Review"
-                userRole="teacher"
-                currentUserName="Ustadh Ahmad (Instructor)"
-                niche={tenant.niche || 'quran'}
-                onLeaveRoom={() => setActiveTab('overview')}
-              />
-            </div>
-          )}
+              {activeTab === 'classroom' && (
+                <div className="max-w-7xl mx-auto">
+                  <VideoClassroomRoom
+                    roomTitle="Instructor Live Masterclass & Whiteboard Room"
+                    courseTitle="Live Teaching & Interactive Review"
+                    userRole="teacher"
+                    currentUserName="Ustadh Ahmad (Instructor)"
+                    niche={tenant.niche || 'quran'}
+                    onLeaveRoom={() => setActiveTab('overview')}
+                  />
+                </div>
+              )}
 
-          {activeTab === 'page_builder' && (
-            <div className="bg-white rounded-md border border-slate-200 shadow-md overflow-hidden min-h-[700px]">
-              <RealGrapesBuilder onAddToast={onAddToast} />
-            </div>
-          )}
+              {activeTab === 'page_builder' && (
+                <div className="bg-white rounded-md border border-slate-200 shadow-md overflow-hidden min-h-[700px]">
+                  <RealGrapesBuilder onAddToast={onAddToast} />
+                </div>
+              )}
 
-          {activeTab === 'form_builder' && <VisualFormBuilder onAddToast={onAddToast} />}
-          {activeTab === 'curriculum' && <CourseBuilder onAddToast={onAddToast} />}
-          {activeTab === 'pricing' && <TenantPricingEditor onAddToast={onAddToast} />}
-          {activeTab === 'payment_gateways' && <PaymentGatewaySetup onAddToast={onAddToast} />}
-          {activeTab === 'crm' && <LeadsCRM onAddToast={onAddToast} />}
-          {activeTab === 'analytics' && <AnalyticsDashboard />}
-          {activeTab === 'settings' && <SiteBuilder onAddToast={onAddToast} />}
+              {activeTab === 'form_builder' && <VisualFormBuilder onAddToast={onAddToast} />}
+              {activeTab === 'curriculum' && <CourseBuilder onAddToast={onAddToast} />}
+              {activeTab === 'pricing' && <TenantPricingEditor onAddToast={onAddToast} />}
+              {activeTab === 'payment_gateways' && <PaymentGatewaySetup onAddToast={onAddToast} />}
+              {activeTab === 'crm' && <LeadsCRM onAddToast={onAddToast} />}
+              {activeTab === 'analytics' && <AnalyticsDashboard />}
+              {activeTab === 'settings' && <ModernAcademySettings onAddToast={onAddToast} />}
+            </>
+          )}
         </main>
       </div>
 
