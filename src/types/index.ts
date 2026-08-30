@@ -97,6 +97,17 @@ export interface ClassroomParticipant {
   handRaised?: boolean;
 }
 
+export interface AuthPageCustomization {
+  layout: 'split' | 'card' | 'minimal' | 'banner';
+  welcomeHeading?: string;
+  welcomeSubtitle?: string;
+  backgroundImageUrl?: string;
+  showCalligraphyQuote?: boolean;
+  calligraphyText?: string;
+  calligraphyTranslation?: string;
+  customAuthFields?: FormFieldConfig[];
+}
+
 export interface TenantConfig {
   id: string;
   name: string;
@@ -128,6 +139,7 @@ export interface TenantConfig {
   customCss?: string;
   subscriptionPlan?: TenantSubscriptionPlan;
   studentCapacity?: number;
+  authCustomization?: AuthPageCustomization;
 }
 
 export interface Lesson {

@@ -34,10 +34,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'TechMadrasah - White-Label Multi-Tenant Academy Platform',
+  title: 'TechMadrasah - Custom-Branded Online Academy Infrastructure',
   description:
-    'The premier white-label educational SaaS LMS and visual page builder powering Quran institutes, coding bootcamps, and language academies. Custom domains, WebRTC video classrooms, code sandboxes, and autonomous tuition processing.',
-  keywords: ['TechMadrasah', 'White-Label LMS', 'Quran LMS', 'Coding Bootcamp SaaS', 'Multi-Tenant Academy', 'GrapesJS Builder', 'LiveKit WebRTC'],
+    'The premier educational SaaS LMS and visual page builder powering Quran institutes, coding bootcamps, and language academies. Custom domains, WebRTC video classrooms, code sandboxes, and autonomous tuition processing.',
+  keywords: ['TechMadrasah', 'Academy OS', 'Quran LMS', 'Coding Bootcamp SaaS', 'Multi-Tenant Academy', 'GrapesJS Builder', 'LiveKit WebRTC'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     apple: '/icons/icon.svg',
   },
   openGraph: {
-    title: 'TechMadrasah - White-Label Multi-Tenant Academy Platform',
+    title: 'TechMadrasah - Custom-Branded Online Academy Infrastructure',
     description: 'Launch your branded online academy with custom domains, real WebRTC classrooms, code sandboxes, and automated tuition billing.',
     siteName: 'TechMadrasah',
     type: 'website',

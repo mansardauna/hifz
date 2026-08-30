@@ -3,7 +3,7 @@ import React from 'react';
 /**
  * Modern 2D Vector Illustrations & Visual Assets for TechMadrasah
  * Razor-sharp SVG components with Islamic geometric aesthetic & modern SaaS minimalism
- * Illustrates TechMadrasah as the white-label engine powering Hifz Academy, Code Academy, and other institutions.
+ * Illustrates TechMadrasah powering Hifz Academy, Code Academy, and other institutions.
  */
 
 export const HeroDashboardIllustration: React.FC<{ className?: string }> = ({ className = "w-full h-auto" }) => (
@@ -44,7 +44,7 @@ export const HeroDashboardIllustration: React.FC<{ className?: string }> = ({ cl
     <rect x="28" y="238" width="8" height="8" rx="2" fill="#64748B" />
     <text x="44" y="246" fill="#94A3B8" fontSize="11" fontFamily="sans-serif" fontWeight="500">Tuition & Invoices</text>
 
-    {/* Powered By White Label Footer in Sidebar */}
+    {/* Custom Branded Footer in Sidebar */}
     <rect x="20" y="430" width="140" height="24" rx="4" fill="#1E293B" />
     <text x="32" y="446" fill="#64748B" fontSize="8" fontFamily="sans-serif" fontWeight="700">POWERED BY TECHMADRASAH</text>
 
@@ -124,7 +124,7 @@ export const MultiTenantNetworkIllustration: React.FC<{ className?: string }> = 
     <circle cx="300" cy="180" r="58" fill="#0F172A" />
     <circle cx="300" cy="180" r="46" fill="#1E293B" />
     <text x="248" y="174" fill="#FFFFFF" fontSize="11" fontFamily="sans-serif" fontWeight="800">TECHMADRASAH</text>
-    <text x="252" y="190" fill="#10B981" fontSize="9" fontFamily="sans-serif" fontWeight="700">WHITE-LABEL OS</text>
+    <text x="256" y="190" fill="#10B981" fontSize="9" fontFamily="sans-serif" fontWeight="700">ACADEMY OS</text>
 
     {/* Connecting Curved Lines */}
     <path d="M300 122V60H140" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="4 4" />
@@ -174,12 +174,12 @@ export const AuthHeroIllustration: React.FC<{ className?: string }> = ({ classNa
       <rect x="20" y="20" width="160" height="160" rx="12" fill="#047857" fillOpacity="0.4" stroke="#10B981" strokeWidth="2" transform="rotate(45 100 100)" />
     </g>
 
-    {/* Floating Card: Multi-Tenant White-Label Status */}
+    {/* Floating Card: Multi-Tenant Status */}
     <rect x="70" y="110" width="220" height="90" rx="12" fill="#FFFFFF" fillOpacity="0.95" />
     <circle cx="100" cy="145" r="16" fill="#10B981" />
     <path d="M94 145L98 149L106 141" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <text x="126" y="140" fill="#0F172A" fontSize="11" fontFamily="sans-serif" fontWeight="700">White-Label Isolation</text>
-    <text x="126" y="154" fill="#059669" fontSize="10" fontFamily="sans-serif" fontWeight="600">TechMadrasah Multi-Tenant</text>
+    <text x="126" y="140" fill="#0F172A" fontSize="11" fontFamily="sans-serif" fontWeight="700">Dedicated Isolation</text>
+    <text x="126" y="154" fill="#059669" fontSize="10" fontFamily="sans-serif" fontWeight="600">TechMadrasah Platform</text>
     <rect x="126" y="164" width="144" height="6" rx="3" fill="#E2E8F0" />
     <rect x="126" y="164" width="138" height="6" rx="3" fill="#10B981" />
 

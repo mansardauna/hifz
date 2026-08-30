@@ -82,7 +82,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       name: 'Bayyinah Classical Arabic',
       subdomain: 'arabic.bayyinah.com',
       specialty: 'Arabic Language',
-      desc: 'Custom domain white-label with classical grammar & syntax drills.',
+      desc: 'Custom domain academy portal with classical grammar & syntax drills.',
       icon: <Globe className="w-5 h-5 text-purple-600" />,
       tagColor: 'bg-purple-50 text-purple-700 border-purple-200',
     },
@@ -90,7 +90,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
   const faqs = [
     {
-      q: 'How does TechMadrasah provide white-label branding?',
+      q: 'How does TechMadrasah power custom-branded academies?',
       a: 'TechMadrasah provides complete turn-key infrastructure. Your academy runs under your own custom domain (e.g. learn.youracademy.com) or subdomain (*.techmadrasah.app) with your brand colors, custom logos, isolated student databases, and dedicated merchant gateways.',
     },
     {
@@ -129,7 +129,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   TechMadrasah
                 </span>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase tracking-wider">
-                  White-Label OS
+                  Academy OS
                 </span>
               </div>
               <span className="text-[10px] text-slate-500 font-medium tracking-wide uppercase block">
@@ -142,7 +142,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
           <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1 rounded-full border border-slate-200/60 text-xs font-semibold text-slate-600">
             <a href="#demos" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Live Academies</a>
             <a href="#specialties" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Specialties</a>
-            <a href="#architecture" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">White-Label Engine</a>
+            <a href="#architecture" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Platform Engine</a>
             <a href="#pricing" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Pricing</a>
             <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">FAQ</a>
           </nav>
@@ -195,7 +195,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2.5 rounded-lg bg-slate-50 text-slate-800 hover:bg-slate-100 text-center font-medium"
               >
-                White-Label
+                Architecture
               </a>
               <a
                 href="#pricing"
@@ -227,7 +227,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   onNavigateToAuth('create-academy');
                 }}
               >
-                Launch White-Label Academy
+                Launch Academy
               </Button>
             </div>
           </div>
@@ -243,11 +243,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
             <span className="font-bold text-slate-900">TechMadrasah Engine</span>
             <span className="text-slate-300">•</span>
-            <span>Complete White-Label SaaS for Online Academies</span>
+            <span>Custom-Branded Cloud Infrastructure for Online Academies</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
-            The White-Label Educational Operating System for Modern Academies
+            The Autonomous Educational Operating System for Modern Academies
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -262,7 +262,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all"
             >
-              Launch Your White-Label Academy
+              Launch Your Branded Academy
             </Button>
             <Button
               variant="outline"
@@ -323,12 +323,12 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <section id="demos" className="py-20 px-4 sm:px-8 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <Badge variant="success">White-Label Client Showcase</Badge>
+            <Badge variant="success">Client Showcase</Badge>
             <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">
               Live Academies Powered by TechMadrasah
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Click any live academy below to preview their isolated white-label portal, courses, and interactive tools.
+              Click any live academy below to preview their isolated custom portal, courses, and interactive tools.
             </p>
           </div>
 
@@ -520,18 +520,18 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 5. White-Label Architecture Section */}
+      {/* 5. Academy Architecture Section */}
       <section id="architecture" className="py-20 px-4 sm:px-8 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <Badge variant="default" className="bg-slate-800 text-emerald-400 border-slate-700">
-              White-Label Engine
+              Autonomous Cloud Platform
             </Badge>
             <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
-              TechMadrasah White-Label Multi-Tenant Architecture
+              TechMadrasah Multi-Tenant Academy Architecture
             </h2>
             <p className="text-xs sm:text-sm text-slate-400">
-              TechMadrasah sits behind the scenes as your cloud engine, while your students and teachers see only your academy brand.
+              TechMadrasah operates behind the scenes as your cloud engine, while your students and teachers see only your academy brand.
             </p>
           </div>
 
@@ -705,7 +705,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Full White-Label Removal</span>
+                    <span>Custom Enterprise Branding</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -769,7 +769,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             </div>
             <span className="font-extrabold text-white text-sm">TechMadrasah</span>
             <span className="text-slate-600">|</span>
-            <span>White-Label Educational SaaS Infrastructure</span>
+            <span>Educational SaaS Infrastructure</span>
           </div>
 
           <div className="flex items-center gap-6">
