@@ -1,44 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Ayah } from '../../types';
 import { QuranViewer } from './QuranViewer';
 import { AudioRecitationPlayer } from './AudioRecitationPlayer';
 import { StudentProgress } from './StudentProgress';
-import { UserProfileModal } from '../profile/UserProfileModal';
+import { UserProfilePage } from '../profile/UserProfilePage';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
 import { ToastMessage } from '../ui/Toast';
+import { Button, Card, Badge, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../ui';
 import {
   BookOpen,
   Award,
-  Flame,
-  CheckCircle2,
-  Calendar,
   CreditCard,
-  Sparkles,
-  ArrowRight,
-  TrendingUp,
-  Bookmark,
-  Clock,
-  User,
   Sliders,
-  Play,
-  Pause,
-  UploadCloud,
-  CheckCircle,
   ExternalLink,
-  ChevronRight,
-  Globe,
   LogOut,
   Menu,
   X,
-  Settings,
   Radio,
   Code2,
-  PenTool
+  User,
+  Settings
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-import { IslamicStarPattern, CrescentVector } from '../ui/IslamicArtDecoration';
 import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
 import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
 
@@ -50,15 +34,16 @@ interface StudentLMSProps {
 
 export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const router = useRouter();
-  const { tenant, language, toggleLanguage, direction } = useTenant();
+  const { tenant, direction } = useTenant();
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<StudentTab>('quran');
+
+  const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
+  const isQuranNiche = !tenant.niche || tenant.niche === 'quran' || tenant.subdomain.includes('furqan') || tenant.subdomain.includes('dar');
+
+  const [activeTab, setActiveTab] = useState<StudentTab>(isCodingNiche ? 'coding' : 'quran');
   const [selectedAyah, setSelectedAyah] = useState<Ayah | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
-
-  const isAr = language === 'ar';
 
   const handleSelectAyah = (ayah: Ayah) => {
     setSelectedAyah(ayah);
@@ -68,23 +53,31 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
     setIsPlaying((prev) => !prev);
   };
 
-  const studentNavItems: { id: StudentTab; label: string; labelAr: string; icon: any; isLiveBadge?: boolean }[] = [
-    { id: 'quran', label: 'Quran Reader & Tajweed', labelAr: 'المصحف وأحكام التجويد', icon: BookOpen },
-    { id: 'classroom', label: 'Live Video & Whiteboard', labelAr: 'الفصل التفاعلي المباشر', icon: Radio, isLiveBadge: true },
-    { id: 'coding', label: 'Coding Sandbox Lab', labelAr: 'معمل البرمجة والتقنية', icon: Code2 },
-    { id: 'audio', label: 'Audio Looper & Recorder', labelAr: 'التسجيل الصوتي والتكرار', icon: Sliders },
-    { id: 'progress', label: 'Progress & Reviews', labelAr: 'نسبة الإنجاز والمراجعة', icon: Award },
-    { id: 'tuition', label: 'Tuition & Invoices', labelAr: 'الرسوم الدراسية والفواتير', icon: CreditCard },
-    { id: 'profile', label: 'My Student Profile & Bio', labelAr: 'ملفي الشخصي وسيرتي', icon: User },
-    { id: 'settings', label: 'Account & Security Settings', labelAr: 'إعدادات الحساب والأمان', icon: Settings },
-  ];
+  // Strictly filter navigation items by tenant niche (No coding in Quran academies)
+  const studentNavItems = useMemo(() => {
+    const items: { id: StudentTab; label: string; icon: any }[] = [];
+
+    if (isCodingNiche) {
+      items.push({ id: 'coding', label: 'Coding Sandbox Lab', icon: Code2 });
+      items.push({ id: 'classroom', label: 'Live Video Classroom', icon: Radio });
+    } else if (isQuranNiche) {
+      items.push({ id: 'quran', label: 'Quran Reader & Tajweed', icon: BookOpen });
+      items.push({ id: 'audio', label: 'Audio Looper & Recorder', icon: Sliders });
+      items.push({ id: 'classroom', label: 'Live Virtual Classroom', icon: Radio });
+    } else {
+      items.push({ id: 'classroom', label: 'Live Classroom', icon: Radio });
+    }
+
+    items.push({ id: 'progress', label: 'Curriculum & Progress', icon: Award });
+    items.push({ id: 'tuition', label: 'Tuition & Invoices', icon: CreditCard });
+    items.push({ id: 'profile', label: 'My Student Profile', icon: User });
+    items.push({ id: 'settings', label: 'Account & Security', icon: Settings });
+
+    return items;
+  }, [isCodingNiche, isQuranNiche]);
 
   const handleStudentNavClick = (id: StudentTab) => {
-    if (id === 'profile' || id === 'settings') {
-      setIsProfileModalOpen(true);
-    } else {
-      setActiveTab(id);
-    }
+    setActiveTab(id);
     setIsMobileNavOpen(false);
   };
 
@@ -94,95 +87,56 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
       {isMobileNavOpen && (
         <div
           onClick={() => setIsMobileNavOpen(false)}
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-40 lg:hidden transition-opacity"
         />
       )}
 
-      {/* ------------------------------------------------------------- */}
-      {/* 1. DEDICATED STUDENT LMS LEFT SIDEBAR */}
-      {/* ------------------------------------------------------------- */}
+      {/* 1. Student Left Sidebar */}
       <aside
-        className={`bg-emerald-950 text-white border-r border-emerald-900 flex flex-col justify-between z-50 transition-all duration-200 ${
+        className={`bg-slate-900 text-slate-200 border-r border-slate-800 flex flex-col justify-between z-50 transition-all duration-200 ${
           isMobileNavOpen
-            ? 'fixed inset-y-0 left-0 w-72 shadow-2xl flex'
-            : 'hidden lg:flex lg:w-72 lg:sticky lg:top-0 lg:h-screen'
+            ? 'fixed inset-y-0 left-0 w-64 shadow-2xl flex'
+            : 'hidden lg:flex lg:w-64 lg:sticky lg:top-0 lg:h-screen'
         }`}
       >
-        {/* Top Header Branding */}
         <div>
-          <div className="p-5 border-b border-emerald-900 flex items-center justify-between">
+          {/* Academy Brand Header */}
+          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-md bg-emerald-900 border border-emerald-700 text-amber-300 flex items-center justify-center font-bold text-xl shadow-sm shrink-0">
-                {tenant.faviconUrl || '📖'}
+              <div className="w-8 h-8 rounded-lg bg-white/10 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                <BookOpen className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <h2 className="font-bold text-sm text-white truncate font-display">
-                  {isAr ? tenant.nameAr : tenant.name}
-                </h2>
-                <p className="text-[11px] text-emerald-400 font-mono truncate">
-                  Student Portal LMS
-                </p>
+                <h2 className="font-bold text-xs text-white truncate">{tenant.name}</h2>
+                <p className="text-[10px] text-slate-400 font-mono truncate">{tenant.subdomain}.hifz.app</p>
               </div>
             </div>
 
             {isMobileNavOpen && (
               <button
                 onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-1 rounded-md text-emerald-300 hover:text-white"
+                className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          {/* Student Profile Card in Sidebar */}
-          <div className="p-4 mx-3 my-4 bg-emerald-900/60 rounded-md border border-emerald-800/80 space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-11 h-11 rounded-md bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold font-display text-sm border border-amber-300 shadow-xs shrink-0">
-                  {user?.name?.[0] || 'M'}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-sm text-white truncate font-display">
-                    {user?.name || 'Mariam Mansoor'}
-                  </p>
-                  <span className="inline-block px-2 py-0.5 bg-emerald-800 text-emerald-200 text-[10px] font-bold rounded-md mt-0.5">
-                    Intensive Hifz Track
-                  </span>
-                </div>
+          {/* Student Profile Snapshot in Sidebar */}
+          <div className="p-3 mx-3 my-3 bg-slate-800/60 rounded-xl border border-slate-700/60">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs">
+                {user?.name?.charAt(0).toUpperCase() || 'M'}
               </div>
-
-              <button
-                onClick={() => setIsProfileModalOpen(true)}
-                className="p-1.5 rounded-md text-emerald-300 hover:text-white hover:bg-emerald-800 transition-colors cursor-pointer shrink-0"
-                title="Profile & Settings"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Quick Metrics Inside Sidebar */}
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-800 text-xs">
-              <div className="bg-emerald-950/80 p-2 rounded-md border border-emerald-800 text-center">
-                <div className="flex items-center justify-center gap-1 text-amber-400 font-bold text-xs">
-                  <Flame className="w-3.5 h-3.5 fill-amber-400" />
-                  <span>14 Days</span>
-                </div>
-                <p className="text-[9px] text-emerald-300 uppercase tracking-wider mt-0.5">Streak</p>
-              </div>
-
-              <div className="bg-emerald-950/80 p-2 rounded-md border border-emerald-800 text-center">
-                <div className="flex items-center justify-center gap-1 text-emerald-300 font-bold text-xs">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  <span>Juz 3/30</span>
-                </div>
-                <p className="text-[9px] text-emerald-300 uppercase tracking-wider mt-0.5">10% Done</p>
+              <div className="min-w-0">
+                <p className="font-bold text-xs text-white truncate">{user?.name || 'Mariam Mansoor'}</p>
+                <Badge variant="success">Enrolled Student</Badge>
               </div>
             </div>
           </div>
 
-          {/* Navigation Menu Items with Enhanced Spacing & Larger Typography */}
-          <nav className="px-3 space-y-1.5">
+          {/* Navigation Links */}
+          <nav className="p-3 space-y-1">
             {studentNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -191,14 +145,14 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 <button
                   key={item.id}
                   onClick={() => handleStudentNavClick(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-semibold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-emerald-900 text-white font-bold border-l-4 border-amber-400 shadow-md ring-1 ring-emerald-700/50'
-                      : 'text-emerald-200 hover:text-white hover:bg-emerald-900/60'
+                      ? 'bg-white/10 text-white shadow-2xs font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-amber-400' : 'text-emerald-400'}`} />
-                  <span className="truncate">{isAr ? item.labelAr : item.label}</span>
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <span className="truncate">{item.label}</span>
                 </button>
               );
             })}
@@ -206,93 +160,81 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
         </div>
 
         {/* Bottom Sidebar Action Controls */}
-        <div className="p-4 border-t border-emerald-900 space-y-3">
-          <button
+        <div className="p-3 border-t border-slate-800 space-y-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-slate-300 bg-slate-800/60 border-slate-700 hover:bg-slate-800"
             onClick={() => router.push(`/${tenant.subdomain}`)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-emerald-900 hover:bg-emerald-850 text-amber-300 font-bold text-xs border border-emerald-700 transition-colors shadow-xs cursor-pointer"
+            rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
           >
-            <ExternalLink className="w-4 h-4" />
-            <span>View Academy Website</span>
+            Live Academy Site
+          </Button>
+
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            <span>Sign Out</span>
           </button>
-
-          <div className="flex items-center justify-between pt-1">
-            <div className="text-[11px] text-emerald-300">
-              <span>{isAr ? 'اللغة:' : 'Language:'}</span>
-              <button
-                onClick={toggleLanguage}
-                className="ms-1.5 font-bold text-white hover:underline cursor-pointer"
-              >
-                {isAr ? 'English' : 'العربية'}
-              </button>
-            </div>
-
-            <button
-              onClick={logout}
-              className="p-1.5 rounded-md text-emerald-300 hover:text-rose-400 hover:bg-emerald-900 transition-colors cursor-pointer flex items-center gap-1 text-xs font-semibold"
-              title="Sign Out"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Sign Out</span>
-            </button>
-          </div>
         </div>
       </aside>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 2. MAIN LMS CONTENT AREA WITH GENEROUS SPACING */}
-      {/* ------------------------------------------------------------- */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-100">
-        {/* Top Header Bar for Mobile & Quick Actions */}
-        <header className="bg-white border-b border-slate-200 py-3.5 px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-xs">
+      {/* 2. Main LMS Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+        {/* Top Header Bar */}
+        <header className="bg-white border-b border-slate-200 py-3 px-4 sm:px-8 flex items-center justify-between gap-4 sticky top-0 z-30">
           <div className="flex items-center gap-3">
-            {/* Mobile Hamburger Trigger */}
             <button
               onClick={() => setIsMobileNavOpen(true)}
-              className="lg:hidden p-2 rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none cursor-pointer"
+              className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer"
               aria-label="Open Student Sidebar"
             >
               <Menu className="w-5 h-5" />
             </button>
 
-            <div>
-              <span className="text-[10px] font-bold font-display uppercase tracking-wider text-emerald-700 block">
-                {isAr ? tenant.nameAr : tenant.name}
+            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <span className="font-semibold text-slate-800 hidden sm:inline">{tenant.name}</span>
+              <span className="text-slate-300 hidden sm:inline">/</span>
+              <span className="text-slate-900 font-bold capitalize text-sm">
+                {activeTab === 'quran' && 'Medina Mushaf Reader & Tajweed'}
+                {activeTab === 'classroom' && 'Live Virtual Classroom & Whiteboard'}
+                {activeTab === 'coding' && 'Coding Lab & Interactive Challenges'}
+                {activeTab === 'audio' && 'Recitation Looper & Audio Homework'}
+                {activeTab === 'progress' && 'Milestones & Teacher Feedback'}
+                {activeTab === 'tuition' && 'Student Tuition & Invoices'}
+                {activeTab === 'profile' && 'Student Profile'}
+                {activeTab === 'settings' && 'Account & Security Settings'}
               </span>
-              <h1 className="text-base sm:text-lg font-bold font-display text-slate-900 leading-tight">
-                {activeTab === 'quran' && (isAr ? 'المصحف الشريف وأحكام التجويد' : 'Interactive Medina Mushaf & Tajweed')}
-                {activeTab === 'classroom' && (isAr ? 'الفصل التفاعلي المباشر (فيديو وسبورة بيضاء)' : 'Live Interactive Classroom (Video & Whiteboard)')}
-                {activeTab === 'coding' && (isAr ? 'معمل البرمجة وتحديات الأكواد' : 'Coding Lab & Interactive Challenges')}
-                {activeTab === 'audio' && (isAr ? 'مكرر التلاوة وتسجيل الواجبات' : 'Recitation Looper & Audio Homework')}
-                {activeTab === 'progress' && (isAr ? 'تقارير الحفظ والإنجاز' : 'Curriculum Milestones & Teacher Feedback')}
-                {activeTab === 'tuition' && (isAr ? 'الرسوم الدراسية والفواتير' : 'Student Tuition & Billing Portal')}
-              </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-xs">
-            <button
+          <div className="flex items-center gap-2.5">
+            <Button
+              variant="primary"
+              size="sm"
               onClick={() => setActiveTab('classroom')}
-              className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs rounded-lg shadow-sm flex items-center gap-1.5 cursor-pointer animate-pulse"
+              leftIcon={<Radio className="w-3.5 h-3.5" />}
             >
-              <Radio className="w-3.5 h-3.5 text-amber-300" />
-              <span>Join Live Class</span>
-            </button>
+              Join Live Class
+            </Button>
           </div>
         </header>
 
-        {/* Tab Viewport Content */}
+        {/* Tab Viewport Main Content */}
         <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
           {activeTab === 'classroom' && (
             <div className="max-w-7xl mx-auto">
               <VideoClassroomRoom
-                roomTitle="Live Masterclass Halaqah & Whiteboard"
-                courseTitle="Advanced Sanad Mastery Track"
+                roomTitle="Live Masterclass & Whiteboard"
+                courseTitle="Interactive Learning Session"
                 userRole="student"
                 currentUserName={user?.name || 'Mariam Mansoor'}
-                niche={tenant.niche || 'quran'}
-                onLeaveRoom={() => setActiveTab('quran')}
+                niche={isCodingNiche ? 'coding' : 'quran'}
+                onLeaveRoom={() => setActiveTab(isCodingNiche ? 'coding' : 'quran')}
                 renderWorkspacePlugin={
-                  tenant.niche === 'coding' ? (
+                  isCodingNiche ? (
                     <CodingSandboxWorkspace />
                   ) : (
                     <QuranViewer
@@ -307,15 +249,15 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
             </div>
           )}
 
-          {activeTab === 'coding' && (
+          {activeTab === 'coding' && isCodingNiche && (
             <div className="max-w-6xl mx-auto">
               <CodingSandboxWorkspace />
             </div>
           )}
 
           {activeTab === 'quran' && (
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-              {/* Left / Main Quran Viewer */}
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 max-w-7xl mx-auto">
+              {/* Left Quran Viewer */}
               <div className="xl:col-span-8">
                 <QuranViewer
                   activeAyahNumber={selectedAyah?.number || null}
@@ -325,7 +267,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 />
               </div>
 
-              {/* Right / Audio Reciter & Looper */}
+              {/* Right Audio Reciter & Looper */}
               <div className="xl:col-span-4 space-y-6">
                 <AudioRecitationPlayer
                   currentAyah={selectedAyah}
@@ -338,15 +280,15 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           )}
 
           {activeTab === 'audio' && (
-            <div className="max-w-4xl mx-auto space-y-6">
-              <div className="bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-md">
+            <div className="max-w-4xl mx-auto">
+              <Card>
                 <AudioRecitationPlayer
                   currentAyah={selectedAyah}
                   isPlaying={isPlaying}
                   onTogglePlay={handleTogglePlay}
                   onAddToast={onAddToast}
                 />
-              </div>
+              </Card>
             </div>
           )}
 
@@ -357,85 +299,61 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           )}
 
           {activeTab === 'tuition' && (
-            <div className="max-w-5xl mx-auto bg-white p-6 sm:p-10 rounded-md border border-slate-200 shadow-md space-y-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="max-w-5xl mx-auto space-y-6">
+              <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-900">
-                    Student Tuition & Payment History
+                  <h3 className="text-base font-bold text-slate-900">
+                    Tuition & Subscription Status
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    Direct tuition billing processed securely by {tenant.name}
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Direct billing managed by {tenant.name}
                   </p>
                 </div>
-                <span className="px-3.5 py-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-md self-start sm:self-auto">
-                  Active Subscription • Auto-Renewal
-                </span>
-              </div>
+                <Badge variant="success">Active Subscription • Auto-Renewal</Badge>
+              </Card>
 
-              {/* Active Plan Card */}
-              <div className="p-6 bg-slate-50 rounded-md border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Current Enrolled Plan</span>
-                  <h4 className="text-lg sm:text-xl font-bold font-display text-slate-900 mt-0.5">Intensive Hifz Program</h4>
-                  <p className="text-xs text-slate-600 mt-1">4 live 1-on-1 sessions weekly • Sanad Ijazah Prep • Daily Audio Review</p>
-                </div>
-                <div className="sm:text-right">
-                  <p className="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-700">
-                    $140.00 <span className="text-xs text-slate-500 font-sans font-normal">/ month</span>
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">Next Billing Date: September 15, 2026</p>
-                </div>
-              </div>
+              {/* Invoices Table */}
+              <Table>
+                <TableHeader>
+                  <tr>
+                    <TableHead>Invoice #</TableHead>
+                    <TableHead>Course Track</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Payment Method</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Billing Date</TableHead>
+                  </tr>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-mono font-bold text-slate-900">INV-2026-0819</TableCell>
+                    <TableCell className="font-semibold text-slate-800">Foundational Track</TableCell>
+                    <TableCell className="font-mono font-bold text-slate-900">$140.00 USD</TableCell>
+                    <TableCell>Credit Card (•••• 4242)</TableCell>
+                    <TableCell><Badge variant="success">Paid</Badge></TableCell>
+                    <TableCell className="text-slate-500">Aug 15, 2026</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-mono font-bold text-slate-900">INV-2026-0715</TableCell>
+                    <TableCell className="font-semibold text-slate-800">Foundational Track</TableCell>
+                    <TableCell className="font-mono font-bold text-slate-900">$140.00 USD</TableCell>
+                    <TableCell>Apple Pay</TableCell>
+                    <TableCell><Badge variant="success">Paid</Badge></TableCell>
+                    <TableCell className="text-slate-500">Jul 15, 2026</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
-              {/* Invoice History Table */}
-              <div className="space-y-4">
-                <h4 className="text-xs font-bold font-display uppercase tracking-wider text-slate-700">
-                  Official Invoices & Receipts
-                </h4>
-                <div className="overflow-x-auto rounded-md border border-slate-200">
-                  <table className="w-full text-xs text-left min-w-[600px]">
-                    <thead className="bg-slate-100 text-slate-600 uppercase font-semibold font-display">
-                      <tr>
-                        <th className="p-4">Invoice #</th>
-                        <th className="p-4">Program Track</th>
-                        <th className="p-4">Amount</th>
-                        <th className="p-4">Payment Method</th>
-                        <th className="p-4">Status</th>
-                        <th className="p-4">Billing Date</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 bg-white">
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-4 font-mono font-bold text-slate-900">INV-2026-0819</td>
-                        <td className="p-4 font-semibold text-slate-800">Intensive Hifz Program</td>
-                        <td className="p-4 font-mono font-bold text-emerald-700 text-sm">$140.00 USD</td>
-                        <td className="p-4">Stripe Card (•••• 4242)</td>
-                        <td className="p-4"><span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-md">Paid</span></td>
-                        <td className="p-4 text-slate-500">Aug 15, 2026</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-4 font-mono font-bold text-slate-900">INV-2026-0715</td>
-                        <td className="p-4 font-semibold text-slate-800">Intensive Hifz Program</td>
-                        <td className="p-4 font-mono font-bold text-emerald-700 text-sm">$140.00 USD</td>
-                        <td className="p-4">Moyasar Apple Pay</td>
-                        <td className="p-4"><span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-md">Paid</span></td>
-                        <td className="p-4 text-slate-500">Jul 15, 2026</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+          {/* Full Page View for Student Profile & Account Settings */}
+          {(activeTab === 'profile' || activeTab === 'settings') && (
+            <div className="max-w-4xl mx-auto">
+              <UserProfilePage onAddToast={onAddToast} />
             </div>
           )}
         </main>
       </div>
-
-      {/* Profile & Settings Modal */}
-      <UserProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        onAddToast={onAddToast}
-      />
     </div>
   );
 };

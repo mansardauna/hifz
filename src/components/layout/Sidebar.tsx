@@ -9,8 +9,6 @@ import {
   BarChart3,
   Settings,
   BookOpen,
-  ExternalLink,
-  Globe,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -19,11 +17,8 @@ import {
   DollarSign,
   X,
   User,
-  Shield,
-  Sparkles,
   Video,
 } from 'lucide-react';
-import { IslamicStarPattern, CrescentVector } from '../ui/IslamicArtDecoration';
 
 export type AdminTab =
   | 'overview'
@@ -36,8 +31,7 @@ export type AdminTab =
   | 'crm'
   | 'analytics'
   | 'settings'
-  | 'profile'
-  | 'user_settings';
+  | 'profile';
 
 interface SidebarProps {
   activeTab: AdminTab;
@@ -56,32 +50,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   onOpenProfile,
 }) => {
-  const { tenant, language, toggleLanguage } = useTenant();
+  const { tenant } = useTenant();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
-  const isAr = language === 'ar';
-
   const menuItems = [
-    { id: 'overview' as AdminTab, label: 'Overview', labelAr: 'الرئيسية', icon: LayoutDashboard },
-    { id: 'classroom' as AdminTab, label: 'Live Classroom', labelAr: 'الفصل المباشر', icon: Video },
-    { id: 'page_builder' as AdminTab, label: 'Page Builder', labelAr: 'محرر الصفحات', icon: Palette },
-    { id: 'form_builder' as AdminTab, label: 'Form Builder', labelAr: 'منشئ الاستبيان', icon: FileCheck },
-    { id: 'curriculum' as AdminTab, label: 'Curriculum', labelAr: 'المناهج والدورات', icon: Layers },
-    { id: 'pricing' as AdminTab, label: 'Tuition & Pricing', labelAr: 'الخطط الدراسية', icon: DollarSign },
-    { id: 'payment_gateways' as AdminTab, label: 'Payment Gateways', labelAr: 'بوابات الدفع', icon: CreditCard },
-    { id: 'crm' as AdminTab, label: 'Admissions CRM', labelAr: 'إدارة الطلاب والطلبات', icon: Users },
-    { id: 'analytics' as AdminTab, label: 'Analytics', labelAr: 'التحليلات', icon: BarChart3 },
-    { id: 'settings' as AdminTab, label: 'Settings', labelAr: 'الإعدادات', icon: Settings },
-    { id: 'profile' as AdminTab, label: 'Admin Profile', labelAr: 'الملف الشخصي', icon: User },
+    { id: 'overview' as AdminTab, label: 'Overview & Analytics', icon: LayoutDashboard },
+    { id: 'classroom' as AdminTab, label: 'Live Classroom', icon: Video },
+    { id: 'page_builder' as AdminTab, label: 'Page Builder', icon: Palette },
+    { id: 'form_builder' as AdminTab, label: 'Form Builder', icon: FileCheck },
+    { id: 'curriculum' as AdminTab, label: 'Curriculum & Courses', icon: Layers },
+    { id: 'pricing' as AdminTab, label: 'Tuition & Pricing', icon: DollarSign },
+    { id: 'payment_gateways' as AdminTab, label: 'Payment Gateways', icon: CreditCard },
+    { id: 'crm' as AdminTab, label: 'Admissions CRM', icon: Users },
+    { id: 'settings' as AdminTab, label: 'Academy Settings', icon: Settings },
+    { id: 'profile' as AdminTab, label: 'User Profile & Security', icon: User },
   ];
 
   const handleItemClick = (tabId: AdminTab) => {
-    if ((tabId === 'profile' || tabId === 'user_settings') && onOpenProfile) {
-      onOpenProfile();
-    } else {
-      onTabChange(tabId);
-    }
+    onTabChange(tabId);
     if (onCloseMobile) {
       onCloseMobile();
     }
@@ -93,135 +80,102 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpenOnMobile && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-40 lg:hidden transition-opacity"
         />
       )}
 
       <aside
         className={`bg-slate-900 text-slate-200 border-r border-slate-800 flex flex-col justify-between transition-all duration-200 z-50 font-sans ${
-          /* Desktop sidebar sizing */
           collapsed ? 'lg:w-20' : 'lg:w-64'
         } ${
-          /* Mobile slide-over drawer */
           isOpenOnMobile
             ? 'fixed inset-y-0 left-0 w-64 shadow-2xl flex'
             : 'hidden lg:flex lg:sticky lg:top-0 lg:h-screen'
         }`}
       >
-        {/* Top Branding & Close Button */}
+        {/* Top Branding & Header */}
         <div>
           <div className="p-4 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-white/10 text-white flex items-center justify-center font-bold text-xs shrink-0">
                 <BookOpen className="w-4 h-4" />
               </div>
               {(!collapsed || isOpenOnMobile) && (
                 <div className="min-w-0">
-                  <h2 className="font-bold text-xs text-white truncate font-display">{tenant.name}</h2>
+                  <h2 className="font-bold text-xs text-white truncate">{tenant.name}</h2>
                   <p className="text-[10px] text-slate-400 font-mono truncate">{tenant.subdomain}.hifz.app</p>
                 </div>
               )}
             </div>
 
-            {/* Mobile Close Icon */}
             {isOpenOnMobile ? (
               <button
                 onClick={onCloseMobile}
-                className="lg:hidden p-1.5 rounded-md text-emerald-300 hover:text-white hover:bg-emerald-900 transition-colors"
+                className="lg:hidden p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             ) : (
               <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="hidden lg:block p-1.5 rounded-md border border-emerald-800 hover:bg-emerald-900 text-emerald-300 mx-auto transition-colors cursor-pointer"
+                className="hidden lg:block p-1.5 rounded-lg border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
                 title="Toggle Sidebar"
               >
-                {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+                {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
               </button>
             )}
           </div>
 
-          {/* Menu Items with Larger Font & Generous Spacing */}
-          <nav className="p-3.5 space-y-1.5 overflow-y-auto max-h-[calc(100vh-200px)]">
+          {/* Navigation Links */}
+          <nav className="p-3 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
-
               return (
                 <button
                   key={item.id}
                   onClick={() => handleItemClick(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-semibold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-emerald-900 text-white font-bold border-l-4 border-amber-400 shadow-md ring-1 ring-emerald-700/50'
-                      : 'text-emerald-200 hover:text-white hover:bg-emerald-900/60'
+                      ? 'bg-white/10 text-white shadow-2xs font-bold'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
-                  title={item.label}
+                  title={collapsed ? item.label : undefined}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-amber-400' : 'text-emerald-400'}`} />
-                  {(!collapsed || isOpenOnMobile) && (
-                    <span className="truncate">{isAr ? item.labelAr : item.label}</span>
-                  )}
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  {(!collapsed || isOpenOnMobile) && <span className="truncate">{item.label}</span>}
                 </button>
               );
             })}
           </nav>
         </div>
 
-        {/* Bottom User & Live Site Bar */}
-        <div className="p-4 border-t border-emerald-900 space-y-3">
-          <button
-            onClick={() => {
-              if (onCloseMobile) onCloseMobile();
-              onViewLiveSite();
-            }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-emerald-900 hover:bg-emerald-850 text-amber-300 font-bold text-xs border border-emerald-700 transition-colors shadow-xs cursor-pointer"
-            title="View Live Academy"
-          >
-            <ExternalLink className="w-4 h-4" />
-            {(!collapsed || isOpenOnMobile) && <span>View Live Academy</span>}
-          </button>
-
-          <div className="flex items-center justify-between pt-1">
-            {(!collapsed || isOpenOnMobile) && (
+        {/* Footer User Info */}
+        <div className="p-3 border-t border-slate-800 space-y-2">
+          {(!collapsed || isOpenOnMobile) && (
+            <div
+              onClick={() => handleItemClick('profile')}
+              className="px-3 py-2 bg-slate-800/50 rounded-lg flex items-center justify-between cursor-pointer hover:bg-slate-800 transition-colors"
+            >
               <div className="flex items-center gap-2.5 overflow-hidden">
-                <div className="w-7 h-7 rounded-full bg-emerald-800 border border-emerald-700 flex items-center justify-center text-xs font-bold text-emerald-200">
-                  {user?.name?.[0] || 'A'}
+                <div className="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs">
+                  {user?.name?.charAt(0).toUpperCase() || 'A'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-white truncate">{user?.name || 'Academy Admin'}</p>
-                  <p className="text-[10px] text-emerald-400 truncate">Administrator</p>
+                  <p className="text-xs font-semibold text-white truncate">{user?.name || 'Administrator'}</p>
+                  <p className="text-[10px] text-slate-400 truncate">{user?.role?.toUpperCase() || 'ADMIN'}</p>
                 </div>
               </div>
-            )}
-
-            <div className="flex items-center gap-1 mx-auto">
-              {onOpenProfile && (
-                <button
-                  onClick={onOpenProfile}
-                  className="p-2 rounded-md text-emerald-300 hover:text-white hover:bg-emerald-900 transition-colors cursor-pointer"
-                  title="Profile & Settings"
-                >
-                  <User className="w-4 h-4" />
-                </button>
-              )}
-              <button
-                onClick={toggleLanguage}
-                className="p-2 rounded-md text-emerald-300 hover:text-white hover:bg-emerald-900 transition-colors cursor-pointer"
-                title="Toggle Language"
-              >
-                <Globe className="w-4 h-4" />
-              </button>
-              <button
-                onClick={logout}
-                className="p-2 rounded-md text-emerald-300 hover:text-rose-400 hover:bg-emerald-900 transition-colors cursor-pointer"
-                title="Sign Out"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
             </div>
-          </div>
+          )}
+
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            {(!collapsed || isOpenOnMobile) && <span>Log Out</span>}
+          </button>
         </div>
       </aside>
     </>
