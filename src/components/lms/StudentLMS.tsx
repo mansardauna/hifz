@@ -25,6 +25,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
 import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
+import { NotificationCenter } from '../notifications/NotificationCenter';
 
 export type StudentTab = 'quran' | 'classroom' | 'coding' | 'audio' | 'progress' | 'tuition' | 'profile' | 'settings';
 
@@ -211,6 +212,8 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           </div>
 
           <div className="flex items-center gap-2.5">
+            <NotificationCenter onNavigateTab={(tab) => setActiveTab(tab as StudentTab)} />
+
             <Button
               variant="primary"
               size="sm"

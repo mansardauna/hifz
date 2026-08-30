@@ -8,9 +8,11 @@ import { PaymentGatewaySetup } from './PaymentGatewaySetup';
 import { LeadsCRM } from './LeadsCRM';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { ModernAcademySettings } from './ModernAcademySettings';
+import { IntegrationsManager } from './IntegrationsManager';
 import { OnboardingWizard } from './OnboardingWizard';
 import { UserProfilePage } from '../profile/UserProfilePage';
 import { PlanUpgradeModal } from './PlanUpgradeModal';
+import { NotificationCenter } from '../notifications/NotificationCenter';
 import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
@@ -83,6 +85,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-2.5">
+            {/* Real-time Notification Center */}
+            <NotificationCenter onNavigateTab={(tab) => setActiveTab(tab as AdminTab)} />
+
             {/* Active Plan Pill & Upgrade CTA */}
             <div className="hidden sm:flex items-center gap-2">
               <Badge variant={planLabels[plan].variant}>
@@ -176,6 +181,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <AnalyticsDashboard onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
               )}
               {activeTab === 'settings' && <ModernAcademySettings onAddToast={onAddToast} />}
+              {activeTab === 'integrations' && <IntegrationsManager onAddToast={onAddToast} />}
               {activeTab === 'profile' && <UserProfilePage onAddToast={onAddToast} />}
             </>
           )}

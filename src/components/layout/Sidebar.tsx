@@ -32,6 +32,7 @@ export type AdminTab =
   | 'crm'
   | 'analytics'
   | 'settings'
+  | 'integrations'
   | 'profile';
 
 interface SidebarProps {
@@ -69,6 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'payment_gateways' as AdminTab, label: 'Payment Gateways', icon: CreditCard },
     { id: 'crm' as AdminTab, label: 'Admissions CRM', icon: Users },
     { id: 'settings' as AdminTab, label: 'Academy Settings', icon: Settings },
+    { id: 'integrations' as AdminTab, label: 'API Keys & Services', icon: Sparkles },
     { id: 'profile' as AdminTab, label: 'User Profile & Security', icon: User },
   ];
 
