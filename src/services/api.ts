@@ -15,13 +15,13 @@ import { MOCK_TENANTS, MOCK_COURSES, MOCK_LEADS, MOCK_RECITATIONS } from './mock
  * Maps seamlessly to any PHP / Laravel / Symfony Backend
  * Set process.env.NEXT_PUBLIC_PHP_API_URL (e.g. http://localhost:8000/api or https://api.yourdomain.com)
  */
-const PHP_API_BASE_URL =
-  process.env.NEXT_PUBLIC_PHP_API_URL ||
+const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  '';
+  process.env.NEXT_PUBLIC_PHP_API_URL ||
+  '/api';
 
 class HifzApiClient {
-  private apiBaseUrl: string = PHP_API_BASE_URL;
+  private apiBaseUrl: string = API_BASE_URL;
 
   // Resolve tenant based on hostname or subdomain key
   async getTenantConfig(subdomain: string = 'al-furqan'): Promise<TenantConfig> {

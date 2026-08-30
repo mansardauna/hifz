@@ -1,0 +1,164 @@
+// Prisma Multi-Tenant SaaS Schema for Hifz LMS & Educational Platform
+// Supports PostgreSQL (Supabase, Neon, AWS RDS) and SQLite for zero-config local dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id              String         @id @default(cuid())
+  name            String
+  subdomain       String         @unique
+  customDomain    String?        @unique
+  niche           String         @default("quran_tajweed")
+  logo            String?
+  brandColor      String         @default("#0f766e")
+  tagline         String?
+  description     String?
+  language        String         @default("en")
+  currency        String         @default("USD")
+  
+  // JSON configurations
+  pricingPlans    Json?
+  paymentGateways Json?
+  settings        Json?
+  builderLayout   Json?
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  users           User[]
+  leads           Lead[]
+  courses         Course[]
+  liveSessions    LiveSession[]
+  transactions    PaymentTransaction[]
+
+  @@index([subdomain])
+  @@index([customDomain])
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String    @default("student") // "admin" | "teacher" | "student"
+  phone        String?
+  avatar       String?
+  
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  submissions  RecitationSubmission[]
+
+  @@index([tenantId])
+}
+
+model Lead {
+  id                String    @id @default(cuid())
+  studentName       String
+  email             String
+  phone             String
+  country           String?
+  courseInterest    String?
+  preferredSchedule String?
+  priorHifzLevel    String?
+  status            String    @default("New") // "New" | "Under Review" | "Interview" | "Admitted" | "Rejected"
+  paymentStatus     String    @default("Pending") // "Paid" | "Pending" | "Past Due" | "Exempt"
+  tuitionAmount     Float?
+  planName          String?
+  notes             String?
+  invoices          Json?
+  
+  tenantId          String
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  transactions      PaymentTransaction[]
+
+  @@index([tenantId])
+}
+
+model Course {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  instructor  String?
+  level       String    @default("Beginner")
+  category    String?
+  lessons     Json?
+  
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([tenantId])
+}
+
+model LiveSession {
+  id          String    @id @default(cuid())
+  title       String
+  roomName    String    @unique
+  hostId      String?
+  isLive      Boolean   @default(false)
+  scheduledAt DateTime?
+  
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([tenantId])
+}
+
+model RecitationSubmission {
+  id          String   @id @default(cuid())
+  surahNumber Int
+  startAyah   Int
+  endAyah     Int
+  audioUrl    String
+  status      String   @default("Pending Review") // "Pending Review" | "Mastered" | "Revision Needed"
+  score       Int?
+  feedback    String?
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model PaymentTransaction {
+  id            String   @id @default(cuid())
+  amount        Float
+  currency      String   @default("USD")
+  gateway       String   // "stripe" | "moyasar" | "bank_transfer"
+  status        String   // "succeeded" | "pending" | "failed"
+  transactionId String?
+  
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  leadId        String?
+  lead          Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([leadId])
+}
