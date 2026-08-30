@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
+import { Button, Input, Card, Badge } from '../ui';
+import { LockedFeatureCard } from './LockedFeatureCard';
 import {
   Building2,
   Phone,
@@ -17,11 +19,14 @@ import {
   Eye,
   EyeOff,
   Check,
-  Palette
+  Palette,
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 
 interface ModernAcademySettingsProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
+  onOpenUpgradeModal?: () => void;
 }
 
 const PRESET_BRAND_COLORS = [
@@ -31,12 +36,17 @@ const PRESET_BRAND_COLORS = [
   '#2563eb', // Royal Blue
   '#7c3aed', // Vibrant Purple
   '#0f172a', // Slate Dark
-  '#1C1B73', // Navy Indigo (from reference UI)
+  '#1C1B73', // Navy Indigo
   '#0d9488', // Teal
 ];
 
-export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ onAddToast }) => {
+export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
+  onAddToast,
+  onOpenUpgradeModal,
+}) => {
   const { tenant, updateTenantConfig } = useTenant();
+  const plan = tenant.subscriptionPlan || 'free';
+  const isCustomDomainUnlocked = plan === 'growth' || plan === 'enterprise';
 
   // Company Information State
   const [companyName, setCompanyName] = useState<string>(tenant.name || 'Zarah Academy');
@@ -49,12 +59,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
   const [country, setCountry] = useState<string>('United States of America');
   const [timeZone, setTimeZone] = useState<string>('UTC -5:00 Central');
   const [subdomain, setSubdomain] = useState<string>(tenant.subdomain || 'zarah');
+  const [customDomain, setCustomDomain] = useState<string>(tenant.customDomain || '');
 
   // Brand Color State
-  const [brandColor, setBrandColor] = useState<string>(tenant.theme?.primaryColor || '#1C1B73');
-  const [customHex, setCustomHex] = useState<string>(tenant.theme?.primaryColor || '#1C1B73');
-  const [logoUrl, setLogoUrl] = useState<string>(tenant.logoUrl || '');
-  const [faviconUrl, setFaviconUrl] = useState<string>(tenant.faviconUrl || '');
+  const [brandColor, setBrandColor] = useState<string>(tenant.theme?.primaryColor || '#059669');
+  const [customHex, setCustomHex] = useState<string>(tenant.theme?.primaryColor || '#059669');
 
   // Security / Password State
   const [password, setPassword] = useState<string>('••••••••••••');
@@ -67,7 +76,6 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
   const handleBrandColorChange = (newColor: string) => {
     setBrandColor(newColor);
     setCustomHex(newColor);
-    // Apply immediate CSS variable live preview
     document.documentElement.style.setProperty('--primary-color', newColor);
   };
 
@@ -76,6 +84,8 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
     updateTenantConfig({
       name: companyName,
       contactPhone: phoneNumber,
+      subdomain,
+      customDomain: isCustomDomainUnlocked ? customDomain : undefined,
       theme: {
         ...tenant.theme,
         primaryColor: brandColor,
@@ -100,182 +110,120 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden font-sans">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden font-sans">
       {/* Top Header & Breadcrumb */}
       <div className="px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4 bg-slate-50/50">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-            <span>Home</span>
+            <span>Dashboard</span>
             <span>&rsaquo;</span>
-            <span>Setup</span>
+            <span>Academy Settings</span>
             <span>&rsaquo;</span>
             <span className="text-slate-800 font-semibold capitalize">{settingsSection}</span>
           </div>
-          <h2 className="text-xl font-extrabold text-slate-900 mt-1 font-display">
-            {settingsSection === 'general' ? 'Company Informations & Branding' : 'Two-Step Authentication & Security'}
+          <h2 className="text-xl font-bold text-slate-900 mt-1">
+            {settingsSection === 'general' ? 'Academy Profile, Domain & Branding' : 'Authentication & Account Security'}
           </h2>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="flex bg-slate-200/80 p-1 rounded-xl">
             <button
+              type="button"
               onClick={() => setSettingsSection('general')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                settingsSection === 'general'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                settingsSection === 'general' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Company Info
+              General & Domain
             </button>
             <button
+              type="button"
               onClick={() => setSettingsSection('security')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                settingsSection === 'security'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                settingsSection === 'security' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Security & 2FA
             </button>
           </div>
-
-          {settingsSection === 'general' && (
-            <button
-              onClick={handleSaveCompanyInfo}
-              className="px-5 py-2 rounded-xl text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center gap-2"
-              style={{ backgroundColor: brandColor }}
-            >
-              <Check className="w-4 h-4" />
-              <span>Save Changes</span>
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Main Form Body */}
       {settingsSection === 'general' ? (
         <form onSubmit={handleSaveCompanyInfo} className="p-6 sm:p-8 space-y-6">
-          {/* Row 1: Company Name & Company ID */}
+          {/* Row 1: Academy Name & ID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Company Name</label>
-              <input
-                type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
-                placeholder="Academy Name"
-              />
-            </div>
+            <Input
+              label="Academy Name"
+              type="text"
+              required
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="e.g. Al-Furqan Quran Academy"
+              leftIcon={<Building2 className="w-4 h-4" />}
+            />
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Company ID</label>
-              <input
-                type="text"
-                value={companyId}
-                disabled
-                className="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-500 cursor-not-allowed font-mono"
-              />
-            </div>
+            <Input
+              label="Account ID"
+              type="text"
+              disabled
+              value={companyId}
+              helperText="Managed by platform multi-tenant registry"
+            />
           </div>
 
-          {/* Row 2: Phone Number & Business Address */}
+          {/* Row 2: Phone Number & Address */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Phone Number</label>
-              <input
-                type="text"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
-                placeholder="(480) 555-0103"
-              />
-            </div>
+            <Input
+              label="Contact Phone"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="+1 (555) 000-0000"
+              leftIcon={<Phone className="w-4 h-4" />}
+            />
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Business Address</label>
-              <input
-                type="text"
-                value={businessAddress}
-                onChange={(e) => setBusinessAddress(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
-                placeholder="2464 Royal Ln. Mesa"
-              />
-            </div>
+            <Input
+              label="Campus Address"
+              type="text"
+              value={businessAddress}
+              onChange={(e) => setBusinessAddress(e.target.value)}
+              leftIcon={<MapPin className="w-4 h-4" />}
+            />
           </div>
 
-          {/* Row 3: City & State */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">City</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
-                placeholder="City"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">State</label>
-              <select
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all cursor-pointer"
-              >
-                <option value="Arizona">Arizona</option>
-                <option value="California">California</option>
-                <option value="Texas">Texas</option>
-                <option value="New York">New York</option>
-                <option value="Makkah">Makkah Region</option>
-                <option value="Riyadh">Riyadh Province</option>
-                <option value="Dubai">Dubai</option>
-                <option value="London">London</option>
-              </select>
-            </div>
+          {/* Row 3: City, State, Zip */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <Input label="City" value={city} onChange={(e) => setCity(e.target.value)} />
+            <Input label="State / Province" value={state} onChange={(e) => setState(e.target.value)} />
+            <Input label="Zip Code" value={zip} onChange={(e) => setZip(e.target.value)} />
           </div>
 
-          {/* Row 4: Zip & Country */}
+          {/* Row 4: Subdomain */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Zip</label>
-              <input
-                type="text"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
-                placeholder="45463"
-              />
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Free Platform Subdomain</label>
+              <div className="flex items-center rounded-xl border border-slate-300 overflow-hidden bg-white">
+                <input
+                  type="text"
+                  value={subdomain}
+                  onChange={(e) => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  className="flex-1 px-3 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none"
+                  placeholder="myname"
+                />
+                <span className="px-3 bg-slate-100 text-slate-500 text-xs font-mono border-l border-slate-200 py-2">
+                  .hifz.app
+                </span>
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Country</label>
-              <select
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all cursor-pointer"
-              >
-                <option value="United States of America">United States of America</option>
-                <option value="Saudi Arabia">Saudi Arabia</option>
-                <option value="United Arab Emirates">United Arab Emirates</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Canada">Canada</option>
-                <option value="Egypt">Egypt</option>
-                <option value="Malaysia">Malaysia</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Row 5: Timezone & Subdomain */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Time Zone</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Timezone</label>
               <select
                 value={timeZone}
                 onChange={(e) => setTimeZone(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all cursor-pointer"
+                className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900"
               >
                 <option value="UTC -5:00 Central">UTC -5:00 Central</option>
                 <option value="UTC +3:00 Arabia Standard Time">UTC +3:00 Arabia Standard Time (Makkah)</option>
@@ -283,64 +231,45 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
                 <option value="UTC -8:00 Pacific">UTC -8:00 Pacific</option>
                 <option value="UTC +4:00 Gulf Standard Time">UTC +4:00 Gulf Standard Time (Dubai)</option>
               </select>
-              <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-                <span>ⓘ</span> Timezone is updated automatically to match your computer timezone
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Subdomain</label>
-              <div className="flex items-center rounded-xl border border-slate-300 overflow-hidden bg-white">
-                <input
-                  type="text"
-                  value={subdomain}
-                  onChange={(e) => setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  className="flex-1 px-3 py-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none"
-                  placeholder="myname"
-                />
-                <span className="px-3 bg-slate-100 text-slate-500 text-xs font-mono border-l border-slate-200 py-2.5">
-                  .hifz.app
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-                <span>ⓘ</span> Your subdomain is your account&apos;s unique address (e.g., {subdomain}.hifz.app)
-              </p>
             </div>
           </div>
 
-          {/* Business Logo Upload Zone */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">Business Logo</label>
-            <div className="border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-2xl p-6 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shadow-xs">
-                <Upload className="w-5 h-5" />
+          {/* Custom Domain Section (Gated on Free / Qari Tiers) */}
+          <div className="pt-2">
+            <label className="block text-xs font-bold text-slate-700 mb-2">Custom Domain Mapping (SSL)</label>
+            {isCustomDomainUnlocked ? (
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <Input
+                    label="Primary Domain"
+                    placeholder="e.g. quranacademy.com"
+                    value={customDomain}
+                    onChange={(e) => setCustomDomain(e.target.value)}
+                    className="flex-1"
+                    leftIcon={<Globe className="w-4 h-4" />}
+                  />
+                  <div className="sm:pt-5">
+                    <Badge variant="success">SSL Active & Secured</Badge>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Point your DNS CNAME record to <code className="font-mono text-slate-800 bg-slate-200/80 px-1 py-0.5 rounded">cname.vercel-dns.com</code>. SSL certificates are provisioned automatically.
+                </p>
               </div>
-              <p className="text-xs text-slate-600 font-medium">
-                <span className="font-bold text-indigo-600 hover:underline">Click to upload</span> or drag and drop
-              </p>
-              <p className="text-[10px] text-slate-400">SVG, PNG, JPG or GIF (max. 800x400px)</p>
-            </div>
+            ) : (
+              <LockedFeatureCard
+                title="Custom Domain & Wildcard SSL Mapping"
+                description="Connect your own custom domain (e.g. academy.com) with automated Cloudflare SSL certificates. Requires Growth or Enterprise plan."
+                requiredPlan="growth"
+                onUpgrade={() => onOpenUpgradeModal?.()}
+              />
+            )}
           </div>
 
-          {/* Fav Icon Upload Zone */}
+          {/* Brand Colour Box */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">Fav Icon</label>
-            <div className="border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-2xl p-6 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shadow-xs">
-                <Upload className="w-5 h-5" />
-              </div>
-              <p className="text-xs text-slate-600 font-medium">
-                <span className="font-bold text-indigo-600 hover:underline">Click to upload</span> or drag and drop
-              </p>
-              <p className="text-[10px] text-slate-400">Square 32x32px or 64x64px ICO/PNG</p>
-            </div>
-          </div>
-
-          {/* Brand Colour Box (Replicated exactly from reference design) */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-2">Brand Colour</label>
+            <label className="block text-xs font-bold text-slate-700 mb-2">Theme Brand Colour</label>
             <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-wrap items-center justify-between gap-4">
-              {/* Preset Swatches */}
               <div className="flex flex-col items-center gap-2">
                 <div className="grid grid-cols-4 gap-2.5">
                   {PRESET_BRAND_COLORS.slice(0, 4).map((c) => (
@@ -349,7 +278,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
                       type="button"
                       onClick={() => handleBrandColorChange(c)}
                       className={`w-6 h-6 rounded-full transition-all cursor-pointer ${
-                        brandColor === c ? 'scale-125 ring-2 ring-indigo-500 ring-offset-2' : 'hover:scale-110 opacity-90'
+                        brandColor === c ? 'scale-125 ring-2 ring-slate-900 ring-offset-2' : 'hover:scale-110 opacity-90'
                       }`}
                       style={{ backgroundColor: c }}
                     />
@@ -360,22 +289,16 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
                       type="button"
                       onClick={() => handleBrandColorChange(c)}
                       className={`w-6 h-6 rounded-full transition-all cursor-pointer ${
-                        brandColor === c ? 'scale-125 ring-2 ring-indigo-500 ring-offset-2' : 'hover:scale-110 opacity-90'
+                        brandColor === c ? 'scale-125 ring-2 ring-slate-900 ring-offset-2' : 'hover:scale-110 opacity-90'
                       }`}
                       style={{ backgroundColor: c }}
                     />
                   ))}
                 </div>
-
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 mt-1">
-                  <span>More Colours</span>
-                  <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-pink-500 via-amber-400 to-blue-500 cursor-pointer" />
-                </div>
               </div>
 
-              {/* Custom Colour Hex Input */}
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-600">Custom Colour:</span>
+                <span className="text-xs font-semibold text-slate-600">Hex Code:</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -386,123 +309,74 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({ on
                         handleBrandColorChange(e.target.value);
                       }
                     }}
-                    className="w-28 px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-800 text-center uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-24 px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-800 text-center uppercase focus:outline-none focus:ring-1 focus:ring-slate-900"
                   />
                   <div
-                    className="w-8 h-8 rounded-full border-2 border-white shadow-md ring-1 ring-slate-300 transition-transform"
+                    className="w-7 h-7 rounded-full border-2 border-white shadow-sm ring-1 ring-slate-300"
                     style={{ backgroundColor: brandColor }}
                   />
                 </div>
               </div>
             </div>
           </div>
+
+          <div className="pt-4 flex justify-end">
+            <Button type="submit" variant="primary">
+              Save Academy Changes
+            </Button>
+          </div>
         </form>
       ) : (
-        /* Security & 2-Step Authentication View (Replicated from reference design 1) */
-        <div className="p-6 sm:p-8 space-y-8">
+        /* Security & 2FA View */
+        <div className="p-6 sm:p-8 space-y-6">
           <div>
-            <h3 className="text-base font-extrabold text-slate-900 font-display">
-              Protect Your Account by Enabling Two-Step Authentication
+            <h3 className="text-sm font-bold text-slate-900">
+              Two-Step Authentication Security
             </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              Choose how you want to receive your authentication codes
+            <p className="text-xs text-slate-500 mt-0.5">
+              Secure administrative access with multi-factor authentication methods.
             </p>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 space-y-3">
               {/* Option 1: Authenticator App */}
-              <div className="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-4 shadow-xs">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-                    <Shield className="w-5 h-5" />
+              <div className="p-4 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-4 shadow-2xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                    <Shield className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-slate-800">Set up using Authenticator App</h4>
-                    <p className="text-[11px] text-slate-400">Use an authenticator app (Google Authenticator or Authy) to get authentication code</p>
+                    <h4 className="font-bold text-xs text-slate-800">Authenticator App</h4>
+                    <p className="text-[11px] text-slate-400">Use Google Authenticator or Authy for 6-digit TOTP codes</p>
                   </div>
                 </div>
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => handle2faSetup('authenticator')}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
                 >
                   Set Up
-                </button>
+                </Button>
               </div>
 
               {/* Option 2: Email */}
-              <div className="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-4 shadow-xs">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-                    <Mail className="w-5 h-5" />
+              <div className="p-4 bg-white border border-slate-200 rounded-xl flex items-center justify-between gap-4 shadow-2xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                    <Mail className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-slate-800">Set up using Email</h4>
-                    <p className="text-[11px] text-slate-400">An Email text containing the code will be sent to admin@academy.com</p>
+                    <h4 className="font-bold text-xs text-slate-800">Email Verification</h4>
+                    <p className="text-[11px] text-slate-400">Verification OTP codes sent to administrator email</p>
                   </div>
                 </div>
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => handle2faSetup('email')}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
                 >
                   Set Up
-                </button>
+                </Button>
               </div>
-
-              {/* Option 3: SMS */}
-              <div className="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-4 shadow-xs">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-xs text-slate-800">Set up using SMS</h4>
-                    <p className="text-[11px] text-slate-400">An SMS text containing the code will be sent to (480) 555-0103</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handle2faSetup('sms')}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
-                >
-                  Set Up
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Password Reset Section */}
-          <div className="pt-6 border-t border-slate-200">
-            <h3 className="text-base font-extrabold text-slate-900 font-display">Password</h3>
-            <div className="mt-4 p-5 bg-slate-50/70 border border-slate-200 rounded-2xl flex flex-wrap items-center justify-between gap-4">
-              <div className="flex-1 max-w-sm">
-                <label className="block text-xs font-bold text-slate-700 mb-1">Current Password</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 pr-10 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                onClick={() =>
-                  onAddToast({
-                    type: 'success',
-                    title: 'Password Updated',
-                    message: 'Your account password was securely updated.',
-                  })
-                }
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
-              >
-                Change Password
-              </button>
             </div>
           </div>
         </div>

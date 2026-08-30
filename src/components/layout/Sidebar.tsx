@@ -6,7 +6,6 @@ import {
   Palette,
   Layers,
   Users,
-  BarChart3,
   Settings,
   BookOpen,
   LogOut,
@@ -18,7 +17,9 @@ import {
   X,
   User,
   Video,
+  Sparkles,
 } from 'lucide-react';
+import { Badge } from '../ui';
 
 export type AdminTab =
   | 'overview'
@@ -40,6 +41,7 @@ interface SidebarProps {
   isOpenOnMobile?: boolean;
   onCloseMobile?: () => void;
   onOpenProfile?: () => void;
+  onOpenUpgrade?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -49,10 +51,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenOnMobile = false,
   onCloseMobile,
   onOpenProfile,
+  onOpenUpgrade,
 }) => {
   const { tenant } = useTenant();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState<boolean>(false);
+
+  const plan = tenant.subscriptionPlan || 'free';
 
   const menuItems = [
     { id: 'overview' as AdminTab, label: 'Overview & Analytics', icon: LayoutDashboard },
@@ -150,8 +155,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </nav>
         </div>
 
-        {/* Footer User Info */}
+        {/* Footer Tier Indicator & User Info */}
         <div className="p-3 border-t border-slate-800 space-y-2">
+          {(!collapsed || isOpenOnMobile) && (
+            <div className="p-2.5 bg-slate-800/70 rounded-lg border border-slate-700/60 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold text-slate-400">Plan Tier</span>
+                <span className="text-[10px] font-bold text-amber-300 capitalize">{plan}</span>
+              </div>
+              <p className="text-[10px] text-slate-400">
+                {plan === 'free' ? '15 Students max' : plan === 'qari' ? '50 Students max' : plan === 'growth' ? '350 Students max' : 'Unlimited Students'}
+              </p>
+              {plan !== 'enterprise' && onOpenUpgrade && (
+                <button
+                  onClick={onOpenUpgrade}
+                  className="w-full mt-1 py-1 px-2 bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-300" />
+                  <span>Upgrade Plan</span>
+                </button>
+              )}
+            </div>
+          )}
+
           {(!collapsed || isOpenOnMobile) && (
             <div
               onClick={() => handleItemClick('profile')}

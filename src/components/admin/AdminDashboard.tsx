@@ -10,11 +10,12 @@ import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { ModernAcademySettings } from './ModernAcademySettings';
 import { OnboardingWizard } from './OnboardingWizard';
 import { UserProfilePage } from '../profile/UserProfilePage';
+import { PlanUpgradeModal } from './PlanUpgradeModal';
 import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Button } from '../ui';
-import { ExternalLink, Menu, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { Button, Badge } from '../ui';
+import { ExternalLink, Menu, Sparkles, SlidersHorizontal, Shield } from 'lucide-react';
 
 interface AdminDashboardProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -29,6 +30,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
+  const [isPlanUpgradeModalOpen, setIsPlanUpgradeModalOpen] = useState(false);
+
+  const plan = tenant.subscriptionPlan || 'free';
+
+  const planLabels = {
+    free: { label: 'Free Tier', variant: 'warning' as const },
+    qari: { label: 'Qari Solo', variant: 'default' as const },
+    growth: { label: 'Growth Plan', variant: 'success' as const },
+    enterprise: { label: 'Enterprise VIP', variant: 'success' as const },
+  };
 
   return (
     <div className="min-h-screen bg-slate-100 flex font-sans text-slate-900" dir={direction}>
@@ -46,6 +57,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           setIsOnboardingWizardOpen(false);
           setActiveTab('profile');
         }}
+        onOpenUpgrade={() => setIsPlanUpgradeModalOpen(true)}
       />
 
       {/* Main Content Workspace */}
@@ -71,6 +83,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-2.5">
+            {/* Active Plan Pill & Upgrade CTA */}
+            <div className="hidden sm:flex items-center gap-2">
+              <Badge variant={planLabels[plan].variant}>
+                {planLabels[plan].label}
+              </Badge>
+              {plan !== 'enterprise' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsPlanUpgradeModalOpen(true)}
+                  leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-500" />}
+                >
+                  Upgrade
+                </Button>
+              )}
+            </div>
+
             <Button
               variant="secondary"
               size="sm"
@@ -115,7 +144,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           ) : (
             <>
               {/* Analytics IS the Primary Academy Overview */}
-              {activeTab === 'overview' && <AnalyticsDashboard />}
+              {activeTab === 'overview' && (
+                <AnalyticsDashboard onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+              )}
 
               {activeTab === 'classroom' && (
                 <div className="max-w-7xl mx-auto">
@@ -141,13 +172,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {activeTab === 'pricing' && <TenantPricingEditor onAddToast={onAddToast} />}
               {activeTab === 'payment_gateways' && <PaymentGatewaySetup onAddToast={onAddToast} />}
               {activeTab === 'crm' && <LeadsCRM onAddToast={onAddToast} />}
-              {activeTab === 'analytics' && <AnalyticsDashboard />}
+              {activeTab === 'analytics' && (
+                <AnalyticsDashboard onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+              )}
               {activeTab === 'settings' && <ModernAcademySettings onAddToast={onAddToast} />}
               {activeTab === 'profile' && <UserProfilePage onAddToast={onAddToast} />}
             </>
           )}
         </main>
       </div>
+
+      {/* Plan Upgrade & Tier Switcher Modal */}
+      <PlanUpgradeModal
+        isOpen={isPlanUpgradeModalOpen}
+        onClose={() => setIsPlanUpgradeModalOpen(false)}
+        onAddToast={onAddToast}
+      />
     </div>
   );
 };

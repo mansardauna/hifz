@@ -83,7 +83,7 @@ export interface PaymentGatewayConfig {
   liveMode: boolean;
 }
 
-export type TenantSubscriptionPlan = 'qari' | 'growth' | 'enterprise';
+export type TenantSubscriptionPlan = 'free' | 'qari' | 'growth' | 'enterprise';
 export type TenantNiche = 'quran' | 'coding' | 'general' | 'language';
 
 export interface ClassroomParticipant {
