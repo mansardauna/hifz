@@ -15,9 +15,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = process.env.LIVEKIT_API_KEY || 'devkey';
-    const apiSecret = process.env.LIVEKIT_API_SECRET || 'secret';
-    const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://live.hifz.app';
+    const apiKey = process.env.LIVEKIT_API_KEY;
+    const apiSecret = process.env.LIVEKIT_API_SECRET;
+    const livekitUrl = process.env.LIVEKIT_URL || process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://hifz-hyyxyaf8.livekit.cloud';
+
+    if (!apiKey || !apiSecret) {
+      return NextResponse.json(
+        { error: 'LiveKit API key or Secret not configured in environment variables' },
+        { status: 500 }
+      );
+    }
 
     // Generate JWT access token for LiveKit Cloud SFU
     const token = new AccessToken(apiKey, apiSecret, {

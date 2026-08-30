@@ -92,6 +92,33 @@ export const VideoClassroomRoom: React.FC<VideoClassroomRoomProps> = ({
   const [inputChat, setInputChat] = useState<string>('');
   const [isRecording, setIsRecording] = useState<boolean>(true);
   const [sessionSeconds, setSessionSeconds] = useState<number>(1420); // 23 mins elapsed
+  const [livekitConnected, setLivekitConnected] = useState<boolean>(false);
+  const [livekitToken, setLivekitToken] = useState<string | null>(null);
+
+  // Initialize LiveKit Cloud Session
+  useEffect(() => {
+    const initLiveKit = async () => {
+      try {
+        const res = await fetch('/api/livekit/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            roomName: (courseTitle || 'live-class').toLowerCase().replace(/\s+/g, '-'),
+            participantName: currentUserName || 'Student',
+            isHost: userRole === 'teacher',
+          }),
+        });
+        const data = await res.json();
+        if (data.token) {
+          setLivekitToken(data.token);
+          setLivekitConnected(true);
+        }
+      } catch (err) {
+        console.warn('LiveKit cloud fallback mode active:', err);
+      }
+    };
+    initLiveKit();
+  }, [courseTitle, currentUserName, userRole]);
 
   // Format Elapsed Time
   useEffect(() => {
@@ -159,6 +186,14 @@ export const VideoClassroomRoom: React.FC<VideoClassroomRoomProps> = ({
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> REC
                 </span>
               )}
+              <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                livekitConnected
+                  ? 'bg-emerald-950/80 text-emerald-400 border-emerald-800/60'
+                  : 'bg-slate-800 text-slate-400 border-slate-700'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${livekitConnected ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                {livekitConnected ? 'LiveKit SFU Active' : 'Connecting LiveKit...'}
+              </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">{courseTitle} • Elapsed: {formatTimer(sessionSeconds)}</p>
           </div>
