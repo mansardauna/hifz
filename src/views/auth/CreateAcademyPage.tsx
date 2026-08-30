@@ -21,6 +21,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
   const [adminName, setAdminName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [niche, setNiche] = useState<'quran' | 'coding' | 'general'>('quran');
   const [selectedPlan, setSelectedPlan] = useState<string>('Madrasah Growth ($149/mo)');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -61,11 +62,59 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
             Custom Academy Institute Setup
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Launch Your Academy in Minutes</h2>
-          <p className="text-xs text-slate-500 mt-1">14-day free trial • Real GrapesJS visual editor included</p>
+          <p className="text-xs text-slate-500 mt-1">14-day free trial • Real GrapesJS visual editor & live classrooms included</p>
         </div>
 
         <div className="bg-white rounded-sm p-6 sm:p-8 shadow-sm border border-slate-200">
           <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans">
+            {/* Niche Selector */}
+            <div>
+              <label className="block font-semibold text-slate-700 mb-2">Academy Domain / Specialty</label>
+              <div className="grid grid-cols-3 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setNiche('quran')}
+                  className={`p-3 rounded-lg border text-center transition-all cursor-pointer ${
+                    niche === 'quran'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold ring-1 ring-emerald-600'
+                      : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="text-lg mb-1">🕌</div>
+                  <div className="font-semibold text-xs">Quran & Islamic</div>
+                  <div className="text-[10px] text-slate-500">Tajweed & Hifz</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setNiche('coding')}
+                  className={`p-3 rounded-lg border text-center transition-all cursor-pointer ${
+                    niche === 'coding'
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold ring-1 ring-blue-600'
+                      : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="text-lg mb-1">💻</div>
+                  <div className="font-semibold text-xs">Coding & Tech</div>
+                  <div className="text-[10px] text-slate-500">Monaco & Sandbox</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setNiche('general')}
+                  className={`p-3 rounded-lg border text-center transition-all cursor-pointer ${
+                    niche === 'general'
+                      ? 'border-purple-600 bg-purple-50 text-purple-900 font-bold ring-1 ring-purple-600'
+                      : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="text-lg mb-1">🌍</div>
+                  <div className="font-semibold text-xs">Language & General</div>
+                  <div className="text-[10px] text-slate-500">Interactive Courses</div>
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Academy / Madrasah Name</label>
               <input
@@ -77,7 +126,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                     setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''));
                   }
                 }}
-                placeholder="e.g. Al-Furqan Quran Academy"
+                placeholder={niche === 'coding' ? 'e.g. CodeCraft Academy' : niche === 'general' ? 'e.g. Horizon Language Institute' : 'e.g. Al-Furqan Quran Academy'}
                 className="w-full p-2.5 border border-slate-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
             </div>
@@ -90,7 +139,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                   type="text"
                   value={subdomain}
                   onChange={handleSubdomainChange}
-                  placeholder="al-furqan"
+                  placeholder={niche === 'coding' ? 'codecraft' : 'al-furqan'}
                   className="flex-1 py-2.5 px-1 font-mono font-bold text-teal-800 focus:outline-none"
                 />
                 <span className="pr-3 text-slate-400 font-mono text-[11px]">.hifz.app</span>

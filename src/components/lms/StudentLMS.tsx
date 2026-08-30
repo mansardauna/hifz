@@ -21,18 +21,28 @@ import {
   Clock,
   User,
   Sliders,
+  Play,
+  Pause,
+  UploadCloud,
+  CheckCircle,
   ExternalLink,
+  ChevronRight,
   Globe,
   LogOut,
   Menu,
   X,
-  Settings
+  Settings,
+  Radio,
+  Code2,
+  PenTool
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { IslamicStarPattern, CrescentVector } from '../ui/IslamicArtDecoration';
+import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
+import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
 
-export type StudentTab = 'quran' | 'audio' | 'progress' | 'tuition' | 'profile' | 'settings';
+export type StudentTab = 'quran' | 'classroom' | 'coding' | 'audio' | 'progress' | 'tuition' | 'profile' | 'settings';
 
 interface StudentLMSProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -58,8 +68,10 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
     setIsPlaying((prev) => !prev);
   };
 
-  const studentNavItems: { id: StudentTab; label: string; labelAr: string; icon: any }[] = [
+  const studentNavItems: { id: StudentTab; label: string; labelAr: string; icon: any; isLiveBadge?: boolean }[] = [
     { id: 'quran', label: 'Quran Reader & Tajweed', labelAr: 'المصحف وأحكام التجويد', icon: BookOpen },
+    { id: 'classroom', label: 'Live Video & Whiteboard', labelAr: 'الفصل التفاعلي المباشر', icon: Radio, isLiveBadge: true },
+    { id: 'coding', label: 'Coding Sandbox Lab', labelAr: 'معمل البرمجة والتقنية', icon: Code2 },
     { id: 'audio', label: 'Audio Looper & Recorder', labelAr: 'التسجيل الصوتي والتكرار', icon: Sliders },
     { id: 'progress', label: 'Progress & Reviews', labelAr: 'نسبة الإنجاز والمراجعة', icon: Award },
     { id: 'tuition', label: 'Tuition & Invoices', labelAr: 'الرسوم الدراسية والفواتير', icon: CreditCard },
@@ -248,6 +260,8 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               </span>
               <h1 className="text-base sm:text-lg font-bold font-display text-slate-900 leading-tight">
                 {activeTab === 'quran' && (isAr ? 'المصحف الشريف وأحكام التجويد' : 'Interactive Medina Mushaf & Tajweed')}
+                {activeTab === 'classroom' && (isAr ? 'الفصل التفاعلي المباشر (فيديو وسبورة بيضاء)' : 'Live Interactive Classroom (Video & Whiteboard)')}
+                {activeTab === 'coding' && (isAr ? 'معمل البرمجة وتحديات الأكواد' : 'Coding Lab & Interactive Challenges')}
                 {activeTab === 'audio' && (isAr ? 'مكرر التلاوة وتسجيل الواجبات' : 'Recitation Looper & Audio Homework')}
                 {activeTab === 'progress' && (isAr ? 'تقارير الحفظ والإنجاز' : 'Curriculum Milestones & Teacher Feedback')}
                 {activeTab === 'tuition' && (isAr ? 'الرسوم الدراسية والفواتير' : 'Student Tuition & Billing Portal')}
@@ -256,17 +270,49 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           </div>
 
           <div className="flex items-center gap-3 text-xs">
-            <span className="hidden sm:inline text-slate-500">
-              Teacher: <strong>Shaykh Ahmad Al-Mansoor</strong>
-            </span>
-            <span className="hidden sm:inline px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-md">
-              Live Session: Today 5:30 PM
-            </span>
+            <button
+              onClick={() => setActiveTab('classroom')}
+              className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs rounded-lg shadow-sm flex items-center gap-1.5 cursor-pointer animate-pulse"
+            >
+              <Radio className="w-3.5 h-3.5 text-amber-300" />
+              <span>Join Live Class</span>
+            </button>
           </div>
         </header>
 
         {/* Tab Viewport Content */}
         <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
+          {activeTab === 'classroom' && (
+            <div className="max-w-7xl mx-auto">
+              <VideoClassroomRoom
+                roomTitle="Live Masterclass Halaqah & Whiteboard"
+                courseTitle="Advanced Sanad Mastery Track"
+                userRole="student"
+                currentUserName={user?.name || 'Mariam Mansoor'}
+                niche={tenant.niche || 'quran'}
+                onLeaveRoom={() => setActiveTab('quran')}
+                renderWorkspacePlugin={
+                  tenant.niche === 'coding' ? (
+                    <CodingSandboxWorkspace />
+                  ) : (
+                    <QuranViewer
+                      activeAyahNumber={selectedAyah?.number || null}
+                      onSelectAyah={handleSelectAyah}
+                      isPlaying={isPlaying}
+                      onTogglePlay={handleTogglePlay}
+                    />
+                  )
+                }
+              />
+            </div>
+          )}
+
+          {activeTab === 'coding' && (
+            <div className="max-w-6xl mx-auto">
+              <CodingSandboxWorkspace />
+            </div>
+          )}
+
           {activeTab === 'quran' && (
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
               {/* Left / Main Quran Viewer */}

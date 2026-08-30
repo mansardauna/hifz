@@ -10,6 +10,7 @@ import { LeadsCRM } from './LeadsCRM';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { SiteBuilder } from './SiteBuilder';
 import { UserProfileModal } from '../profile/UserProfileModal';
+import { VideoClassroomRoom } from '../../collaboration/VideoClassroomRoom';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
 import { ExternalLink, Sparkles, ShieldCheck, Layers, CheckCircle2, Menu, User, Settings } from 'lucide-react';
@@ -187,6 +188,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <p className="text-xs text-slate-500 mt-1 leading-relaxed">Review incoming student inquiries, schedule evaluations, and manage tuition billing.</p>
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'classroom' && (
+            <div className="max-w-7xl mx-auto">
+              <VideoClassroomRoom
+                roomTitle="Instructor Live Masterclass & Whiteboard Room"
+                courseTitle="Live Teaching & Interactive Review"
+                userRole="teacher"
+                currentUserName="Ustadh Ahmad (Instructor)"
+                niche={tenant.niche || 'quran'}
+                onLeaveRoom={() => setActiveTab('overview')}
+              />
             </div>
           )}
 

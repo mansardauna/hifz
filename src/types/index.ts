@@ -84,6 +84,18 @@ export interface PaymentGatewayConfig {
 }
 
 export type TenantSubscriptionPlan = 'qari' | 'growth' | 'enterprise';
+export type TenantNiche = 'quran' | 'coding' | 'general' | 'language';
+
+export interface ClassroomParticipant {
+  id: string;
+  name: string;
+  role: 'teacher' | 'student';
+  avatar?: string;
+  audioEnabled: boolean;
+  videoEnabled: boolean;
+  screenSharing: boolean;
+  handRaised?: boolean;
+}
 
 export interface TenantConfig {
   id: string;
@@ -93,6 +105,7 @@ export interface TenantConfig {
   taglineAr: string;
   subdomain: string;
   customDomain?: string;
+  niche?: TenantNiche;
   logoUrl: string;
   faviconUrl: string;
   theme: TenantTheme;

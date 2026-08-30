@@ -21,11 +21,13 @@ import {
   User,
   Shield,
   Sparkles,
+  Video,
 } from 'lucide-react';
 import { IslamicStarPattern, CrescentVector } from '../ui/IslamicArtDecoration';
 
 export type AdminTab =
   | 'overview'
+  | 'classroom'
   | 'page_builder'
   | 'form_builder'
   | 'curriculum'
@@ -62,6 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems = [
     { id: 'overview' as AdminTab, label: 'Overview', labelAr: 'الرئيسية', icon: LayoutDashboard },
+    { id: 'classroom' as AdminTab, label: 'Live Video & Whiteboard', labelAr: 'الفصل والسبورة المباشرة', icon: Video },
     { id: 'page_builder' as AdminTab, label: 'GrapesJS Visual Canvas', labelAr: 'محرر الصفحات المرئي', icon: Palette },
     { id: 'form_builder' as AdminTab, label: 'Admissions Form Builder', labelAr: 'منشئ الاستبيان', icon: FileCheck },
     { id: 'curriculum' as AdminTab, label: 'Courses & Curriculum', labelAr: 'المناهج والدورات', icon: Layers },
