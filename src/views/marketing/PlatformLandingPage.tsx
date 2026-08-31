@@ -239,13 +239,6 @@ export const PlatformLandingPage: React.FC<PlatformLandingPageProps> = ({
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-gradient-to-b from-emerald-100/40 via-sky-100/20 to-transparent blur-3xl pointer-events-none -z-10" />
 
         <div className="text-center max-w-4xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/80 text-slate-700 text-xs font-semibold shadow-xs">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-            <span className="font-bold text-slate-900">TechMadrasah Engine</span>
-            <span className="text-slate-300">•</span>
-            <span>Custom-Branded Cloud Infrastructure for Online Academies</span>
-          </div>
-
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
             The Autonomous Educational Operating System for Modern Academies
           </h1>
@@ -273,21 +266,6 @@ export const PlatformLandingPage: React.FC<PlatformLandingPageProps> = ({
             >
               Explore Hifz Quran Academy Demo
             </Button>
-          </div>
-
-          <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-semibold text-slate-500">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Full Multi-Tenant Isolation</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>LiveKit Cloud SFU Active</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>0% Platform Commission on Tuition</span>
-            </div>
           </div>
         </div>
 
@@ -554,7 +532,7 @@ export const PlatformLandingPage: React.FC<PlatformLandingPageProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {/* Free */}
             <Card className="flex flex-col justify-between border-slate-200 hover:border-slate-300 transition-all">
               <div className="space-y-4">
@@ -678,49 +656,6 @@ export const PlatformLandingPage: React.FC<PlatformLandingPageProps> = ({
                   onClick={() => onNavigateToAuth('create-academy')}
                 >
                   Launch Growth Plan
-                </Button>
-              </div>
-            </Card>
-
-            {/* Enterprise */}
-            <Card className="flex flex-col justify-between border-slate-900 bg-slate-900 text-white shadow-xl">
-              <div className="space-y-4">
-                <Badge variant="default" className="bg-slate-800 text-emerald-400 border-slate-700">
-                  Enterprise VIP
-                </Badge>
-                <h3 className="font-bold text-base text-white">Global Enterprise</h3>
-                <p className="text-xs text-slate-400">For multi-branch networks & institutions.</p>
-                <div className="pb-3 border-b border-slate-800">
-                  <span className="text-3xl font-bold font-mono text-white">$199</span>
-                  <span className="text-xs text-slate-400 ml-1">/ month</span>
-                </div>
-                <ul className="space-y-2 text-xs text-slate-300">
-                  <li className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span className="font-bold text-white">Unlimited Students & Teachers</span>
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Multi-Branch Campuses</span>
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Custom Enterprise Branding</span>
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Dedicated SFU Bandwidth</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="pt-6">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold"
-                  onClick={() => onNavigateToAuth('create-academy')}
-                >
-                  Get Enterprise Plan
                 </Button>
               </div>
             </Card>
