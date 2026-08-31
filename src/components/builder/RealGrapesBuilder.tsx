@@ -18,7 +18,13 @@ import {
   LayoutTemplate,
   X,
   Check,
-  FileCheck
+  Search,
+  Layers,
+  Code2,
+  Eye,
+  Sliders,
+  HelpCircle,
+  Plus
 } from 'lucide-react';
 
 interface RealGrapesBuilderProps {
@@ -34,6 +40,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   const [selectedDevice, setSelectedDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [isTemplateBankOpen, setIsTemplateBankOpen] = useState<boolean>(false);
+  const [activeSideTab, setActiveSideTab] = useState<'blocks' | 'templates'>('blocks');
+  const [blockSearchTerm, setBlockSearchTerm] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Available forms created in Form Builder
   const tenantForms: FormConfig[] = tenant.forms && tenant.forms.length > 0
@@ -49,7 +59,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         },
       ];
 
-  // Helper to compile a FormConfig into clean HTML for GrapesJS block
+  // Helper to compile a FormConfig into clean accessible HTML for GrapesJS block
   const compileFormToHtml = (form: FormConfig): string => {
     const fieldsHtml = form.fields
       .map((field) => {
@@ -66,25 +76,25 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             .map((opt) => `<option value="${opt}">${opt}</option>`)
             .join('');
           inputElement = `
-            <select name="${field.id}" ${field.required ? 'required' : ''} class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600">
+            <select id="${field.id}" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600">
               <option value="">Select an option...</option>
               ${optionsHtml}
             </select>
           `;
         } else if (field.type === 'textarea') {
           inputElement = `
-            <textarea name="${field.id}" ${field.required ? 'required' : ''} rows="3" placeholder="${field.placeholder || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600"></textarea>
+            <textarea id="${field.id}" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} rows="3" placeholder="${field.placeholder || ''}" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"></textarea>
           `;
         } else {
           inputElement = `
-            <input type="${field.type}" name="${field.id}" ${field.required ? 'required' : ''} placeholder="${field.placeholder || ''}" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600" />
+            <input id="${field.id}" type="${field.type}" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} placeholder="${field.placeholder || ''}" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
           `;
         }
 
         return `
-          <div class="${widthClass} px-2 mb-3.5">
-            <label class="block text-xs font-semibold text-slate-700 mb-1">
-              ${field.label} ${field.required ? '<span class="text-rose-500">*</span>' : ''}
+          <div class="${widthClass} px-2 mb-4">
+            <label for="${field.id}" class="block text-xs font-bold text-slate-700 mb-1">
+              ${field.label} ${field.required ? '<span class="text-rose-500" aria-hidden="true">*</span>' : ''}
             </label>
             ${inputElement}
           </div>
@@ -93,13 +103,13 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       .join('');
 
     return `
-      <section id="admissions" class="py-16 px-4 sm:px-8 bg-slate-50 font-sans border-t border-slate-200" data-form-id="${form.id}">
-        <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-md border border-slate-200 shadow-md">
+      <section id="admissions" aria-labelledby="admissions-title" class="py-20 px-4 sm:px-8 bg-slate-50 font-sans border-t border-slate-200" data-form-id="${form.id}">
+        <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
           <div class="text-center mb-8">
-            <span class="text-emerald-700 font-extrabold text-xs uppercase tracking-widest block mb-1 font-sans">
+            <span class="text-blue-600 font-extrabold text-xs uppercase tracking-widest block mb-1">
               ONLINE ADMISSIONS
             </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-sans">
+            <h2 id="admissions-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-sans">
               ${form.title}
             </h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-2 max-w-xl mx-auto">
@@ -107,29 +117,29 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             </p>
           </div>
 
-          <form data-hifz-lead-form="true" class="space-y-4">
+          <form data-hifz-lead-form="true" class="space-y-4" noValidate>
             <div class="flex flex-wrap -mx-2">
-              <div class="w-full md:w-1/2 px-2 mb-3.5">
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Student Full Name <span class="text-rose-500">*</span></label>
-                <input type="text" name="name" required placeholder="e.g. Zayd Al-Mansoor" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600" />
+              <div class="w-full md:w-1/2 px-2 mb-4">
+                <label for="name" class="block text-xs font-bold text-slate-700 mb-1">Full Name <span class="text-rose-500" aria-hidden="true">*</span></label>
+                <input id="name" type="text" name="name" required aria-required="true" placeholder="e.g. Alex Mercer" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
               </div>
 
-              <div class="w-full md:w-1/2 px-2 mb-3.5">
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Student / Parent Email <span class="text-rose-500">*</span></label>
-                <input type="email" name="email" required placeholder="student@example.com" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600" />
+              <div class="w-full md:w-1/2 px-2 mb-4">
+                <label for="email" class="block text-xs font-bold text-slate-700 mb-1">Email Address <span class="text-rose-500" aria-hidden="true">*</span></label>
+                <input id="email" type="email" name="email" required aria-required="true" placeholder="student@example.com" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
               </div>
 
-              <div class="w-full md:w-1/2 px-2 mb-3.5">
-                <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp / Phone Number</label>
-                <input type="tel" name="phone" placeholder="+966 50 123 4567" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600" />
+              <div class="w-full md:w-1/2 px-2 mb-4">
+                <label for="phone" class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number <span class="text-rose-500" aria-hidden="true">*</span></label>
+                <input id="phone" type="tel" name="phone" required aria-required="true" placeholder="+1 (555) 000-0000" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
               </div>
 
-              <div class="w-full md:w-1/2 px-2 mb-3.5">
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Interested Program</label>
-                <select name="courseInterest" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-md text-xs text-slate-800 focus:ring-1 focus:ring-emerald-600">
-                  <option value="Intensive Hifz Program">Intensive Hifz Program</option>
-                  <option value="Foundational Tajweed Track">Foundational Tajweed Track</option>
-                  <option value="Qira'at & Ijazah Specialization">Qira'at & Ijazah Specialization</option>
+              <div class="w-full md:w-1/2 px-2 mb-4">
+                <label for="courseInterest" class="block text-xs font-bold text-slate-700 mb-1">Interested Track</label>
+                <select id="courseInterest" name="courseInterest" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600">
+                  <option value="Primary Intensive Track">Primary Intensive Track</option>
+                  <option value="Advanced Specialization">Advanced Specialization</option>
+                  <option value="Foundational Certification">Foundational Certification</option>
                 </select>
               </div>
 
@@ -137,7 +147,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             </div>
 
             <div class="pt-4 border-t border-slate-100">
-              <button type="submit" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-md shadow-sm transition-colors cursor-pointer uppercase tracking-wider">
+              <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer uppercase tracking-wider">
                 Submit Admissions Application
               </button>
             </div>
@@ -147,57 +157,60 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     `;
   };
 
-  // Curated Template Bank
+  // Comprehensive Pre-Built Template Bank
   const TEMPLATE_BANK = [
     {
       id: 'islamic-center-classic',
-      name: 'Mosque & Islamic Center Classic',
-      description: 'Traditional Islamic Center portal: Green topbar countdown, architectural calligraphy hero, prayer times strip, vision/mission, 6-services grid, and green stats strip.',
-      badge: 'Classic Mosque',
-      previewImg: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80',
+      name: 'Al-Furqan Quran Academy & Hifz',
+      description: 'Sacred Medina calligraphy hero, Tajweed audio tracks, 30 Juz memorization milestones, and online admissions.',
+      badge: 'Quran & Hifz',
+      previewImg: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=600&q=80',
       html: `
-        <!-- Top Green Bar -->
-        <div class="bg-emerald-700 text-white py-2 px-6 flex justify-between items-center text-xs font-semibold font-sans">
-          <div class="flex items-center gap-4">
-            <span class="bg-emerald-800 px-2 py-0.5 rounded-md">NEXT BIG EVENT</span>
-            <span class="font-mono">02 DAYS : 19 HOURS : 26 MINS : 52 SECS</span>
+        <!-- Top Announcement Bar -->
+        <header role="banner" class="bg-emerald-800 text-white py-2.5 px-6 flex justify-between items-center text-xs font-semibold font-sans">
+          <div class="flex items-center gap-3">
+            <span class="bg-emerald-950 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">New Cohort</span>
+            <span class="font-mono">FALL ENROLLMENT NOW OPEN • LIMITED SEATS</span>
           </div>
           <div class="hidden sm:flex items-center gap-4 text-emerald-100">
-            <span>Call: +1 800 123 4567</span>
+            <span>Call: +1 (800) 123-4567</span>
             <span>•</span>
-            <span>admissions@${tenant.subdomain}.hifz.app</span>
+            <span>admissions@${tenant.subdomain}.techmadrasah.app</span>
           </div>
-        </div>
+        </header>
 
-        <!-- Atmospheric Hero Section -->
-        <section class="relative py-28 px-8 bg-slate-950 text-white text-center font-sans overflow-hidden">
-          <div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=1600&q=80');"></div>
+        <!-- Sacred Calligraphy Hero -->
+        <section aria-labelledby="hero-title" class="relative py-28 px-8 bg-slate-950 text-white text-center font-sans overflow-hidden">
           <div class="relative max-w-4xl mx-auto space-y-6">
-            <p class="text-3xl sm:text-4xl text-amber-400 font-bold" style="font-family: 'Amiri', serif;">لا إِلَهَ إِلا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ</p>
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight uppercase leading-tight">
-              <span class="text-emerald-400">ALLAH</span> HELP THOSE <br />WHO HELP <span class="text-amber-400">THEMSELVES</span>
+            <p class="text-3xl sm:text-5xl text-amber-400 font-bold" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1 id="hero-title" class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+              Master Quranic Recitation & Tajweed with Verified Sanad
             </h1>
-            <p class="text-lg text-slate-300 max-w-2xl mx-auto">${tenant.tagline}</p>
+            <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">${tenant.tagline}</p>
             <div class="flex justify-center gap-4 pt-4">
-              <a href="#courses" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-md shadow-md transition-all">Explore Programs</a>
-              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm rounded-md shadow-md transition-all">Apply Now</a>
+              <a href="#courses" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Explore Curriculums</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg transition-all">Apply for Admissions</a>
             </div>
           </div>
         </section>
 
-        <!-- In The Name Of Allah / Vision & Mission -->
-        <section class="py-20 px-8 bg-white font-sans">
-          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <img src="https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=800&q=80" alt="Madrasah Study" class="rounded-md shadow-md border border-slate-200" />
+        <!-- 3-Column Highlights -->
+        <section aria-label="Key Highlights" class="py-16 px-8 bg-white font-sans border-b border-slate-200">
+          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+              <div class="text-3xl">📖</div>
+              <h3 class="font-bold text-base text-slate-900">Medina Mushaf Reader</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Interactive digital Mushaf with ayah audio looping and rule highlighting.</p>
             </div>
-            <div class="space-y-6">
-              <div>
-                <p class="text-2xl font-bold text-slate-900" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-                <h2 class="text-3xl font-bold text-slate-900 mt-2 font-display">In The Name Of Allah The Beneficent The Merciful</h2>
-                <div class="w-12 h-1 bg-emerald-600 mt-2 rounded-md"></div>
-              </div>
-              <p class="text-sm text-slate-600 leading-relaxed">${tenant.tagline}</p>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+              <div class="text-3xl">🎙️</div>
+              <h3 class="font-bold text-base text-slate-900">Oral Homework Looper</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Submit recorded recitations for personalized tajweed audio corrections from certified Qaris.</p>
+            </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+              <div class="text-3xl">📜</div>
+              <h3 class="font-bold text-base text-slate-900">Verified Sanad Ijazah</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Continuous chains of transmission connecting students directly to scholarly lineage.</p>
             </div>
           </div>
         </section>
@@ -205,121 +218,124 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     },
     {
       id: 'modern-codecraft-bootcamp',
-      name: 'Modern CodeCraft Bootcamp',
-      description: 'Engineered for coding academies and software bootcamps. Features terminal hero, live coding sandbox preview, and curriculum tracks.',
+      name: 'Modern CodeCraft Developer Bootcamp',
+      description: 'Engineered for software academies: Dark terminal hero, LeetCode algorithms, live coding sandbox preview, and Git PR tracks.',
       badge: 'Tech & Coding',
       previewImg: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
       html: `
         <!-- Tech Hero Section -->
-        <section class="py-24 px-8 bg-slate-950 text-white font-sans overflow-hidden">
+        <section aria-labelledby="tech-hero" class="py-24 px-8 bg-slate-950 text-white font-sans overflow-hidden">
           <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div class="lg:col-span-7 space-y-6">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950 border border-blue-800 text-blue-400 text-xs font-bold font-mono">
-                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> FULL-STACK TECH BOOTCAMP
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-950 border border-blue-800 text-blue-400 text-xs font-bold font-mono">
+                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> FULL-STACK ENGINEERING COHORT
               </div>
-              <h1 class="text-4xl sm:text-6xl font-extrabold text-white leading-tight font-display tracking-tight">
-                Master Modern <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Software Engineering</span>
+              <h1 id="tech-hero" class="text-4xl sm:text-6xl font-extrabold text-white leading-tight tracking-tight">
+                Master Modern <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Software Architecture</span>
               </h1>
               <p class="text-base text-slate-300 leading-relaxed max-w-xl">
-                Build real-world web apps, master algorithms, and launch your software career with 1-on-1 live mentoring and interactive sandboxes.
+                Build real-world full-stack web applications, solve algorithm problem sets, and master React 19, TypeScript, and microservices with 1-on-1 lead mentor code reviews.
               </p>
               <div class="flex flex-wrap gap-4 pt-2">
-                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Start Coding Today</a>
-                <a href="#curriculum" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm rounded-xl transition-all">View Curriculum</a>
+                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-900/30 transition-all">Enroll in Cohort</a>
+                <a href="#courses" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm rounded-xl transition-all">View Curriculum</a>
               </div>
             </div>
 
             <!-- Terminal Mockup -->
-            <div class="lg:col-span-5 bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-2xl font-mono text-xs">
+            <div class="lg:col-span-5 bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-2xl font-mono text-xs">
               <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800">
                 <div class="w-3 h-3 rounded-full bg-red-500"></div>
                 <div class="w-3 h-3 rounded-full bg-amber-500"></div>
                 <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                <span class="text-slate-500 ml-2 text-[10px]">main.js — Live Sandbox</span>
+                <span class="text-slate-500 ml-2 text-[10px]">main.ts — Live Sandbox</span>
               </div>
               <div class="pt-3 text-emerald-400 space-y-1">
-                <p class="text-slate-400">// Interactive Coding Exercise</p>
+                <p class="text-slate-500">// Interactive V8 Coding Sandbox</p>
                 <p><span class="text-blue-400">const</span> academy = <span class="text-amber-300">&quot;${tenant.name}&quot;</span>;</p>
-                <p><span class="text-blue-400">async function</span> startBootcamp() {</p>
-                <p class="pl-4"><span class="text-purple-400">await</span> learnFullStack();</p>
-                <p class="pl-4"><span class="text-purple-400">return</span> <span class="text-amber-300">&quot;Senior Developer 🚀&quot;</span>;</p>
+                <p><span class="text-blue-400">async function</span> launchCareer() {</p>
+                <p class="pl-4"><span class="text-purple-400">await</span> masterTypeScript();</p>
+                <p class="pl-4"><span class="text-purple-400">return</span> <span class="text-amber-300">&quot;Full-Stack Engineer 🚀&quot;</span>;</p>
                 <p>}</p>
-                <p class="text-slate-500 pt-2">&gt; Running tests: 100% Passed</p>
+                <p class="text-blue-400 pt-2">&gt; CI/CD Test Suite: 100% Passed</p>
               </div>
             </div>
           </div>
         </section>
 
         <!-- 3-Features Row -->
-        <section class="py-16 px-8 bg-slate-900 text-white font-sans border-t border-slate-800">
+        <section aria-label="Bootcamp Features" class="py-16 px-8 bg-slate-900 text-white font-sans border-t border-slate-800">
           <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
-              <div class="text-2xl">💻</div>
-              <h3 class="font-bold text-base text-white">Browser Sandbox</h3>
-              <p class="text-xs text-slate-400 leading-relaxed">No complex setups needed. Run code, execute tests, and build web apps directly in the browser.</p>
+              <div class="text-3xl">💻</div>
+              <h3 class="font-bold text-base text-white">Isolated Code Sandbox</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Execute JavaScript, React 19, and Node.js solutions directly in the browser with automated test assertion feedback.</p>
             </div>
             <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
-              <div class="text-2xl">⚡</div>
-              <h3 class="font-bold text-base text-white">Live Whiteboard Mentoring</h3>
-              <p class="text-xs text-slate-400 leading-relaxed">Pair-program live with senior engineers using real-time video classrooms and collaborative whiteboards.</p>
+              <div class="text-3xl">⚡</div>
+              <h3 class="font-bold text-base text-white">Live Mentor Code Reviews</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Pair-program live with Senior Tech Leads via WebRTC video classrooms and interactive collaborative whiteboards.</p>
             </div>
             <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
-              <div class="text-2xl">🎓</div>
-              <h3 class="font-bold text-base text-white">Career Certification</h3>
-              <p class="text-xs text-slate-400 leading-relaxed">Graduate with a portfolio of full-stack projects, verified certificates, and interview preparation.</p>
+              <div class="text-3xl">🎓</div>
+              <h3 class="font-bold text-base text-white">Verified Career Portfolio</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">Graduate with 5 production-ready full-stack applications, merged GitHub pull requests, and technical interview mastery.</p>
             </div>
           </div>
         </section>
       `,
     },
     {
-      id: 'royal-sanad-gold',
-      name: 'Royal Gold Sanad Institute',
-      description: 'Luxury gold & dark emerald aesthetic for prestigious Qira\'at institutes and Ijazah certification programs.',
-      badge: 'Ijazah & Sanad',
-      previewImg: 'https://images.unsplash.com/photo-1584286595398-a59f21d313f5?auto=format&fit=crop&w=600&q=80',
+      id: 'bayyinah-arabic-institute',
+      name: 'Classical Language & Humanities Institute',
+      description: 'Sapphire & warm ivory design for grammar, linguistics, and classical humanities academies.',
+      badge: 'Language & Humanities',
+      previewImg: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80',
       html: `
-        <section class="py-28 px-8 bg-gradient-to-b from-slate-950 via-emerald-950 to-slate-950 text-white text-center font-sans">
+        <section aria-labelledby="arabic-hero" class="py-24 px-8 bg-slate-900 text-white text-center font-sans">
           <div class="max-w-4xl mx-auto space-y-6">
-            <div class="w-16 h-16 rounded-full bg-amber-500/20 border-2 border-amber-400 text-amber-300 flex items-center justify-center font-bold text-2xl mx-auto shadow-lg">
-              📜
-            </div>
-            <p class="text-amber-400 text-xs font-bold uppercase tracking-widest font-mono">Continuous Chain of Transmission (Sanad Muttasil)</p>
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-white font-display">
-              Sanad-Verified Quranic Ijazah
+            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-900/60 text-blue-300 border border-blue-700">
+              Classical Arabic & Linguistics Track
+            </span>
+            <h1 id="arabic-hero" class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
+              Master Classical Arabic Grammar & Rhetoric
             </h1>
-            <p class="text-base text-emerald-200/90 max-w-2xl mx-auto leading-relaxed">
-              Receive one-on-one instruction from scholars connected through an unbroken chain to the Prophet Muhammad ﷺ.
-            </p>
-            <div class="flex justify-center gap-4 pt-4">
-              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg transition-all">Enroll in Ijazah Track</a>
-            </div>
-          </div>
-        </section>
-      `,
-    },
-    {
-      id: 'intensive-hifz-institute',
-      name: 'Intensive Hifz & Tajweed Institute',
-      description: 'Modern Quran institute design emphasizing daily recitation looper, Medina Mushaf reader, and certified Sanad faculty.',
-      badge: 'Hifz Focus',
-      previewImg: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=600&q=80',
-      html: `
-        <section class="py-24 px-8 bg-emerald-950 text-white text-center font-sans">
-          <div class="max-w-4xl mx-auto space-y-6">
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-white font-display">
-              Preserving Sacred Quranic Knowledge
-            </h1>
-            <p class="text-lg text-emerald-200 max-w-2xl mx-auto">
+            <p class="text-base text-slate-300 max-w-2xl mx-auto">
               ${tenant.tagline}
             </p>
             <div class="flex justify-center gap-4 pt-4">
-              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm rounded-md shadow-md transition-all">Apply for Admissions</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Apply for Cohort</a>
             </div>
           </div>
         </section>
       `,
     },
+    {
+      id: 'minimalist-saas-academy',
+      name: 'Minimalist Modern SaaS Academy',
+      description: 'High-contrast clean white aesthetic with subtle borders, metric badges, and clear conversion paths.',
+      badge: 'Minimalist SaaS',
+      previewImg: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
+      html: `
+        <section aria-labelledby="saas-hero" class="py-24 px-8 bg-white text-slate-900 text-center font-sans border-b border-slate-200">
+          <div class="max-w-4xl mx-auto space-y-6">
+            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-800 border border-slate-300">
+              Transformative Education Platform
+            </span>
+            <h1 id="saas-hero" class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
+              ${tenant.name}
+            </h1>
+            <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+              ${tenant.tagline}
+            </p>
+            <div class="flex justify-center gap-4 pt-4">
+              <a href="#pricing" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-lg transition-all">View Pricing Plans</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-sm rounded-xl transition-all">Contact Admissions</a>
+            </div>
+          </div>
+        </section>
+      `,
+    }
   ];
 
   // Initial tenant HTML
@@ -328,7 +344,9 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       return tenant.customHtml;
     }
     const defaultForm = tenantForms.find((f) => f.isDefault) || tenantForms[0];
-    return `${TEMPLATE_BANK[0].html}\n${compileFormToHtml(defaultForm)}`;
+    const isCoding = tenant.niche === 'coding' || tenant.subdomain.includes('code');
+    const selectedTemplate = isCoding ? TEMPLATE_BANK[1] : TEMPLATE_BANK[0];
+    return `${selectedTemplate.html}\n${compileFormToHtml(defaultForm)}`;
   };
 
   useEffect(() => {
@@ -338,70 +356,417 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     const formBlocks = tenantForms.map((form) => ({
       id: `form-block-${form.id}`,
       label: `📝 ${form.title}`,
-      category: 'Forms & Inquiries',
+      category: 'Admissions & Forms',
       content: compileFormToHtml(form),
     }));
 
-    // Standard structural blocks
+    // Comprehensive Library of Accessible & SEO-Optimized Semantic Blocks
     const defaultBlocks = [
+      // 1. Headers & Announcements
       {
-        id: 'top-countdown-bar',
-        label: '⏱️ Top Countdown Bar',
-        category: 'Mosque Layout',
+        id: 'top-notification-banner',
+        label: '📢 Announcement Bar',
+        category: 'Headers & Announcements',
         content: `
-          <div class="bg-emerald-700 text-white py-2 px-6 flex justify-between items-center text-xs font-semibold font-sans">
-            <div class="flex items-center gap-3">
-              <span class="bg-emerald-800 px-2 py-0.5 rounded-md">NEXT EVENT</span>
-              <span class="font-mono">02 DAYS : 19 HOURS : 26 MINS</span>
+          <div class="bg-blue-600 text-white py-2 px-6 flex justify-between items-center text-xs font-semibold font-sans">
+            <div class="flex items-center gap-2">
+              <span class="bg-blue-800 px-2 py-0.5 rounded-full text-[10px] font-bold">LIMITED TIME</span>
+              <span>Enrollment for the upcoming cohort closes Friday!</span>
             </div>
-            <div>Call: +1 800 123 4567</div>
+            <a href="#admissions" class="underline font-bold text-[11px] hover:text-blue-100">Apply Now &rarr;</a>
           </div>
         `,
       },
       {
-        id: 'hero-calligraphy',
-        label: '🕌 Hero with Calligraphy',
-        category: 'Mosque Layout',
+        id: 'accessible-sticky-nav',
+        label: '🧭 Accessible Navigation Bar',
+        category: 'Headers & Announcements',
         content: `
-          <section class="py-24 px-8 bg-slate-950 text-white text-center font-sans">
-            <p class="text-3xl text-amber-400 font-bold" style="font-family: 'Amiri', serif;">لا إِلَهَ إِلا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ</p>
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-white uppercase mt-4">
-              <span class="text-emerald-400">ALLAH</span> HELP THOSE <br />WHO HELP <span class="text-amber-400">THEMSELVES</span>
-            </h1>
-            <p class="text-slate-300 text-sm mt-3 max-w-xl mx-auto">${tenant.tagline}</p>
+          <header role="banner" class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 py-3 px-6 font-sans">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">🎓</span>
+                <span class="font-extrabold text-sm sm:text-base text-slate-900">${tenant.name}</span>
+              </div>
+              <nav aria-label="Primary" class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
+                <a href="#courses" class="hover:text-slate-900">Curriculums</a>
+                <a href="#pricing" class="hover:text-slate-900">Tuition</a>
+                <a href="#features" class="hover:text-slate-900">Experience</a>
+                <a href="#faq" class="hover:text-slate-900">FAQ</a>
+              </nav>
+              <a href="#admissions" class="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all">
+                Enroll Now
+              </a>
+            </div>
+          </header>
+        `,
+      },
+
+      // 2. Hero Sections
+      {
+        id: 'split-hero-accessible',
+        label: '🚀 Split Hero with Media',
+        category: 'Hero Sections',
+        content: `
+          <section aria-labelledby="hero-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div class="space-y-6">
+                <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 inline-block">
+                  Transformative Learning Experience
+                </span>
+                <h1 id="hero-title" class="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight">
+                  Unlock Your Potential with Master Mentorship
+                </h1>
+                <p class="text-base text-slate-600 leading-relaxed">
+                  Join our cohort-based academy with daily interactive sessions, live classrooms, and verified milestone certifications.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-2">
+                  <a href="#admissions" class="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all">Get Started</a>
+                  <a href="#courses" class="px-7 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm rounded-xl transition-all">Explore Tracks</a>
+                </div>
+              </div>
+              <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 aspect-video bg-slate-900">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Students in live interactive classroom" class="w-full h-full object-cover" />
+              </div>
+            </div>
           </section>
+        `,
+      },
+
+      // 3. Curriculum & Courses
+      {
+        id: 'curriculum-3col-grid',
+        label: '📚 3-Column Course Grid',
+        category: 'Curriculum & Tracks',
+        content: `
+          <section id="courses" aria-labelledby="courses-title" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
+            <div class="max-w-6xl mx-auto text-center mb-12">
+              <h2 id="courses-title" class="text-3xl font-extrabold text-slate-900">Featured Academy Programs</h2>
+              <p class="text-xs sm:text-sm text-slate-500 mt-2">Engineered for progressive milestone mastery and real-world certification.</p>
+            </div>
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+              <article class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">Beginner Track</span>
+                  <h3 class="font-extrabold text-base text-slate-900">Foundations Immersion</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed">Master the essential core concepts, grammar, and fundamental building blocks.</p>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <span class="font-bold text-slate-900 font-mono text-sm">$65/mo</span>
+                  <a href="#admissions" class="text-blue-600 font-bold text-xs hover:underline">Enroll &rarr;</a>
+                </div>
+              </article>
+              <article class="bg-white p-6 rounded-3xl border-2 border-blue-600 shadow-xl flex flex-col justify-between space-y-4 relative">
+                <span class="absolute -top-3 left-6 bg-blue-600 text-white text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full">Recommended</span>
+                <div class="space-y-2">
+                  <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Intermediate</span>
+                  <h3 class="font-extrabold text-base text-slate-900">Accelerated Mastery</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed">Daily intensive practice, live pair exercises, and 1-on-1 evaluation audits.</p>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <span class="font-bold text-slate-900 font-mono text-sm">$129/mo</span>
+                  <a href="#admissions" class="text-blue-600 font-bold text-xs hover:underline">Enroll &rarr;</a>
+                </div>
+              </article>
+              <article class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700">Advanced</span>
+                  <h3 class="font-extrabold text-base text-slate-900">Specialization & Sanad</h3>
+                  <p class="text-xs text-slate-600 leading-relaxed">Comprehensive capstone projects, advanced parsing, and verified certification.</p>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <span class="font-bold text-slate-900 font-mono text-sm">$199/mo</span>
+                  <a href="#admissions" class="text-blue-600 font-bold text-xs hover:underline">Enroll &rarr;</a>
+                </div>
+              </article>
+            </div>
+          </section>
+        `,
+      },
+
+      // 4. Tuition & Pricing
+      {
+        id: 'tuition-pricing-table',
+        label: '💳 Tuition Pricing Table',
+        category: 'Tuition & Pricing',
+        content: `
+          <section id="pricing" aria-labelledby="pricing-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
+            <div class="max-w-6xl mx-auto text-center mb-12">
+              <h2 id="pricing-title" class="text-3xl font-extrabold text-slate-900">Transparent Tuition Plans</h2>
+              <p class="text-xs sm:text-sm text-slate-500 mt-2">All tuition payments processed securely with zero hidden fees.</p>
+            </div>
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                <h3 class="font-bold text-base text-slate-900">Standard Tier</h3>
+                <div class="text-3xl font-extrabold text-slate-900 font-mono">$65 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
+                <p class="text-xs text-slate-600">2 live classes per week with access to course recordings.</p>
+                <a href="#admissions" class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs text-center rounded-xl transition-all">Select Plan</a>
+              </div>
+              <div class="bg-white p-6 rounded-3xl border-2 border-blue-600 shadow-xl space-y-4 relative">
+                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-extrabold uppercase px-3 py-1 rounded-full">Most Popular</span>
+                <h3 class="font-bold text-base text-slate-900">Intensive Tier</h3>
+                <div class="text-3xl font-extrabold text-blue-600 font-mono">$129 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
+                <p class="text-xs text-slate-600">4 live classes per week, 1-on-1 evaluations, and audio looper feedback.</p>
+                <a href="#admissions" class="block w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs text-center rounded-xl transition-all">Select Plan</a>
+              </div>
+              <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                <h3 class="font-bold text-base text-slate-900">Ijazah & Mentorship</h3>
+                <div class="text-3xl font-extrabold text-slate-900 font-mono">$220 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
+                <p class="text-xs text-slate-600">Daily 1-on-1 instruction, unbroken chain Sanad verification, and priority mentoring.</p>
+                <a href="#admissions" class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs text-center rounded-xl transition-all">Select Plan</a>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 5. Virtual Classroom Showcase
+      {
+        id: 'virtual-classroom-teaser',
+        label: '🎥 Virtual Classroom Teaser',
+        category: 'Live Classroom',
+        content: `
+          <section aria-labelledby="classroom-title" class="py-20 px-6 sm:px-12 bg-slate-950 text-white font-sans">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div class="space-y-6">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 inline-block font-mono">
+                  ● REAL-TIME WEBRTC SFU ENGINE
+                </span>
+                <h2 id="classroom-title" class="text-3xl sm:text-4xl font-extrabold leading-tight">
+                  Experience Low-Latency Live Virtual Classrooms
+                </h2>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                  Engineered with crystal-clear audio codecs, interactive collaborative whiteboards, screen sharing, and automated session recordings.
+                </p>
+                <ul class="space-y-2 text-xs text-slate-300">
+                  <li class="flex items-center gap-2">✓ HD Video & High-Fidelity Audio</li>
+                  <li class="flex items-center gap-2">✓ Real-time Teacher Whiteboard Annotation</li>
+                  <li class="flex items-center gap-2">✓ Dynamic Workspace & Sandbox Integration</li>
+                </ul>
+              </div>
+              <div class="rounded-3xl border border-slate-800 bg-slate-900 p-4 shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80" alt="Live virtual session UI preview" class="rounded-2xl w-full object-cover aspect-video" />
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 6. Testimonials & Social Proof
+      {
+        id: 'testimonials-3col',
+        label: '⭐ Student Testimonials Grid',
+        category: 'Social Proof',
+        content: `
+          <section aria-labelledby="reviews-title" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
+            <div class="max-w-6xl mx-auto text-center mb-12">
+              <h2 id="reviews-title" class="text-3xl font-extrabold text-slate-900">Student & Parent Success Stories</h2>
+              <p class="text-xs sm:text-sm text-slate-500 mt-2">Hear directly from graduates who transformed their knowledge with us.</p>
+            </div>
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                <div class="text-amber-400 font-bold text-sm">★★★★★</div>
+                <p class="text-xs text-slate-600 leading-relaxed">"The live feedback and structured curriculum made memorization effortless. The teacher is exceptionally thorough."</p>
+                <div class="pt-2 border-t border-slate-100">
+                  <p class="font-bold text-xs text-slate-900">Ibrahim K.</p>
+                  <span class="text-[10px] text-slate-400">Graduate • Juz 30 Complete</span>
+                </div>
+              </div>
+              <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                <div class="text-amber-400 font-bold text-sm">★★★★★</div>
+                <p class="text-xs text-slate-600 leading-relaxed">"The coding sandbox and 1-on-1 code reviews helped me land my first software engineering job in 4 months."</p>
+                <div class="pt-2 border-t border-slate-100">
+                  <p class="font-bold text-xs text-slate-900">Rachel G.</p>
+                  <span class="text-[10px] text-slate-400">Full-Stack Bootcamp Graduate</span>
+                </div>
+              </div>
+              <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                <div class="text-amber-400 font-bold text-sm">★★★★★</div>
+                <p class="text-xs text-slate-600 leading-relaxed">"The best online academy I've attended. The audio looper and feedback system makes daily review seamless."</p>
+                <div class="pt-2 border-t border-slate-100">
+                  <p class="font-bold text-xs text-slate-900">Tariq M.</p>
+                  <span class="text-[10px] text-slate-400">Sanad Recitation Student</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 7. Statistics Counters
+      {
+        id: 'stats-4col-counter',
+        label: '📊 4-Column Stat Counters',
+        category: 'Social Proof',
+        content: `
+          <section aria-label="Academy Statistics" class="py-16 px-6 sm:px-12 bg-slate-900 text-white font-sans">
+            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div class="space-y-1">
+                <div class="text-3xl sm:text-4xl font-extrabold text-blue-400 font-mono">1,200+</div>
+                <p class="text-xs text-slate-400">Active Students</p>
+              </div>
+              <div class="space-y-1">
+                <div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">99.4%</div>
+                <p class="text-xs text-slate-400">Graduation Pass Rate</p>
+              </div>
+              <div class="space-y-1">
+                <div class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-mono">15 : 1</div>
+                <p class="text-xs text-slate-400">Student-Mentor Ratio</p>
+              </div>
+              <div class="space-y-1">
+                <div class="text-3xl sm:text-4xl font-extrabold text-purple-400 font-mono">100%</div>
+                <p class="text-xs text-slate-400">Live Virtual Interactive</p>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 8. FAQ Accordion
+      {
+        id: 'faq-accessible-accordion',
+        label: '❓ Accessible FAQ Accordion',
+        category: 'FAQ & Support',
+        content: `
+          <section id="faq" aria-labelledby="faq-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
+            <div class="max-w-4xl mx-auto space-y-8">
+              <div class="text-center">
+                <h2 id="faq-title" class="text-3xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
+                <p class="text-xs sm:text-sm text-slate-500 mt-2">Everything you need to know about enrollment, schedules, and tuition.</p>
+              </div>
+              <div class="space-y-3">
+                <details class="p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                  <summary class="font-bold text-xs sm:text-sm text-slate-900">What are the class schedules?</summary>
+                  <p class="text-xs text-slate-600 mt-2 leading-relaxed">We offer flexible evening and weekend tracks. All live sessions are also recorded and accessible in your student portal.</p>
+                </details>
+                <details class="p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                  <summary class="font-bold text-xs sm:text-sm text-slate-900">Can I request a refund if my schedule changes?</summary>
+                  <p class="text-xs text-slate-600 mt-2 leading-relaxed">Yes! We provide a 14-day 100% money-back satisfaction guarantee on all enrollment tuition plans.</p>
+                </details>
+                <details class="p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
+                  <summary class="font-bold text-xs sm:text-sm text-slate-900">How do I access the live classroom?</summary>
+                  <p class="text-xs text-slate-600 mt-2 leading-relaxed">Upon registration, sign in to your student dashboard and click 'Join Live Class' to join the low-latency SFU classroom.</p>
+                </details>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 9. Call to Action (CTA)
+      {
+        id: 'cta-cohort-urgency',
+        label: '⚡ Cohort Deadline CTA Banner',
+        category: 'Call to Action',
+        content: `
+          <section aria-label="Admissions Deadline" class="py-20 px-6 sm:px-12 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 text-white text-center font-sans">
+            <div class="max-w-3xl mx-auto space-y-6">
+              <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to Elevate Your Knowledge?</h2>
+              <p class="text-sm sm:text-base text-blue-100 max-w-xl mx-auto">Seats for the upcoming batch are strictly limited to maintain small cohort sizes and 1-on-1 mentorship.</p>
+              <div class="pt-2">
+                <a href="#admissions" class="inline-block px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm rounded-xl shadow-xl transition-all">
+                  Submit Admissions Inquiry Now &rarr;
+                </a>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 10. Multi-Column Footer
+      {
+        id: 'accessible-mega-footer',
+        label: '🏁 Multi-Column Accessible Footer',
+        category: 'Footers & Legal',
+        content: `
+          <footer role="contentinfo" class="bg-slate-950 text-white py-16 px-6 sm:px-12 font-sans border-t border-slate-900">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div class="space-y-3">
+                <h3 class="font-extrabold text-base text-white">${tenant.name}</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">${tenant.tagline}</p>
+              </div>
+              <div class="space-y-2">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-300">Quick Links</h4>
+                <ul class="space-y-1 text-xs text-slate-400">
+                  <li><a href="#courses" class="hover:text-white">Curriculums</a></li>
+                  <li><a href="#pricing" class="hover:text-white">Tuition Plans</a></li>
+                  <li><a href="#admissions" class="hover:text-white">Admissions</a></li>
+                </ul>
+              </div>
+              <div class="space-y-2">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-300">Portals</h4>
+                <ul class="space-y-1 text-xs text-slate-400">
+                  <li><a href="/${tenant.subdomain}/login" class="text-blue-400 font-semibold hover:underline">Student LMS Login</a></li>
+                  <li><a href="/${tenant.subdomain}/admin" class="hover:text-white">Admin Dashboard</a></li>
+                </ul>
+              </div>
+              <div class="space-y-2">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-300">Contact</h4>
+                <p class="text-xs text-slate-400">support@${tenant.subdomain}.techmadrasah.app</p>
+                <p class="text-xs text-slate-500">© ${new Date().getFullYear()} ${tenant.name}. All rights reserved.</p>
+              </div>
+            </div>
+          </footer>
+        `,
+      },
+
+      // 11. Layout & Grid Primitives
+      {
+        id: 'grid-2-col',
+        label: '⚏ 2 Columns (50 / 50)',
+        category: 'Layout & Grid',
+        content: `
+          <div class="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+              <h3 class="font-bold text-base text-slate-900 mb-2">Column 1 Content</h3>
+              <p class="text-xs text-slate-600">Add your custom text, images, or CTA buttons inside this grid box.</p>
+            </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+              <h3 class="font-bold text-base text-slate-900 mb-2">Column 2 Content</h3>
+              <p class="text-xs text-slate-600">Add your custom text, images, or CTA buttons inside this grid box.</p>
+            </div>
+          </div>
         `,
       },
       {
-        id: 'tuition-pricing-cards',
-        label: '💳 Tuition Pricing Cards',
-        category: 'Courses & Tuition',
+        id: 'grid-3-col',
+        label: '⚎ 3 Columns (33 / 33 / 33)',
+        category: 'Layout & Grid',
         content: `
-          <section id="pricing" class="py-16 px-8 bg-slate-50 font-sans">
-            <div class="max-w-6xl mx-auto text-center mb-10">
-              <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 font-display">Tuition & Subscription Plans</h2>
-              <p class="text-xs text-slate-500 mt-1">Direct tuition payments processed by ${tenant.name}</p>
+          <div class="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+              <h3 class="font-bold text-sm text-slate-900 mb-1">Feature Box 1</h3>
+              <p class="text-xs text-slate-500">Custom description text goes here.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="bg-white p-6 rounded-md border border-slate-200 shadow-md">
-                <h3 class="font-bold text-base text-slate-900">Foundational Track</h3>
-                <p class="text-2xl font-bold text-emerald-700 mt-2 font-mono">$65 <span class="text-xs text-slate-500 font-sans">/ mo</span></p>
-                <a href="#admissions" class="mt-4 block w-full py-2 bg-emerald-700 text-white font-bold text-xs text-center rounded-md">Enroll Now</a>
-              </div>
-              <div class="bg-white p-6 rounded-md border-2 border-emerald-600 shadow-xl">
-                <h3 class="font-bold text-base text-slate-900">Intensive Hifz</h3>
-                <p class="text-2xl font-bold text-emerald-700 mt-2 font-mono">$140 <span class="text-xs text-slate-500 font-sans">/ mo</span></p>
-                <a href="#admissions" class="mt-4 block w-full py-2 bg-emerald-700 text-white font-bold text-xs text-center rounded-md">Enroll Now</a>
-              </div>
-              <div class="bg-white p-6 rounded-md border border-slate-200 shadow-md">
-                <h3 class="font-bold text-base text-slate-900">Sanad & Ijazah</h3>
-                <p class="text-2xl font-bold text-emerald-700 mt-2 font-mono">$240 <span class="text-xs text-slate-500 font-sans">/ mo</span></p>
-                <a href="#admissions" class="mt-4 block w-full py-2 bg-slate-900 text-white font-bold text-xs text-center rounded-md">Enroll Now</a>
-              </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+              <h3 class="font-bold text-sm text-slate-900 mb-1">Feature Box 2</h3>
+              <p class="text-xs text-slate-500">Custom description text goes here.</p>
             </div>
-          </section>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
+              <h3 class="font-bold text-sm text-slate-900 mb-1">Feature Box 3</h3>
+              <p class="text-xs text-slate-500">Custom description text goes here.</p>
+            </div>
+          </div>
         `,
       },
+      {
+        id: 'basic-heading',
+        label: '🏷️ Heading (H2)',
+        category: 'Basic Elements',
+        content: `<h2 class="text-3xl font-extrabold text-slate-900 font-sans my-4">Section Headline Title</h2>`,
+      },
+      {
+        id: 'basic-paragraph',
+        label: '📄 Paragraph Text',
+        category: 'Basic Elements',
+        content: `<p class="text-sm text-slate-600 leading-relaxed my-2 font-sans">Write your rich explanatory paragraph content here. High accessibility and responsive readability.</p>`,
+      },
+      {
+        id: 'basic-button-cta',
+        label: '🔘 Primary CTA Button',
+        category: 'Basic Elements',
+        content: `<a href="#admissions" class="inline-block px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all">Click Here &rarr;</a>`,
+      }
     ];
 
     // Initialize GrapesJS Editor
@@ -414,7 +779,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       canvas: {
         styles: [
           'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
-          'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Amiri:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap',
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Amiri:wght@400;700&display=swap',
         ],
         scripts: [],
       },
@@ -428,12 +793,12 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     // Populate initial content
     editor.setComponents(getInitialTenantHtml());
     
-    // Inject default base styling if custom CSS is not set
+    // Base Canvas CSS for high accessibility
     const defaultCanvasCss = `
-      body { font-family: 'DM Sans', 'Poppins', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
-      h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; }
+      body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
+      h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; }
       .arabic-heading { font-family: 'Amiri', serif; }
-      button, .btn { cursor: pointer; transition: all 0.2s ease-in-out; }
+      a, button, .btn { cursor: pointer; transition: all 0.2s ease-in-out; }
     `;
     editor.setStyle(tenant.customCss || defaultCanvasCss);
 
@@ -449,214 +814,264 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         editorRef.current = null;
       }
     };
-  }, []);
+  }, [tenant.id]);
 
+  // Device switcher handler
   const handleDeviceChange = (device: 'desktop' | 'tablet' | 'mobile') => {
     setSelectedDevice(device);
     if (!editorRef.current) return;
-    const deviceManager = editorRef.current.Devices;
-    if (device === 'mobile') deviceManager.select('mobile');
-    else if (device === 'tablet') deviceManager.select('tablet');
-    else deviceManager.select('desktop');
+    const iframe = containerRef.current?.querySelector('iframe');
+    if (iframe) {
+      if (device === 'mobile') {
+        iframe.style.width = '375px';
+        iframe.style.margin = '0 auto';
+        iframe.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+      } else if (device === 'tablet') {
+        iframe.style.width = '768px';
+        iframe.style.margin = '0 auto';
+        iframe.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
+      } else {
+        iframe.style.width = '100%';
+        iframe.style.margin = '0';
+        iframe.style.boxShadow = 'none';
+      }
+    }
   };
 
-  const handleSaveAndPublish = () => {
-    if (!editorRef.current) return;
-
-    const html = editorRef.current.getHtml();
-    const css = editorRef.current.getCss();
-
-    updateTenantConfig({
-      customHtml: html,
-      customCss: css,
-    });
-
-    setHasUnsavedChanges(false);
-
-    onAddToast({
-      type: 'success',
-      title: 'Published to Live Site!',
-      message: `Your custom GrapesJS layout is now active on /${tenant.subdomain}`,
-    });
+  // Apply template from bank
+  const handleApplyTemplate = (templateHtml: string) => {
+    if (editorRef.current) {
+      const defaultForm = tenantForms.find((f) => f.isDefault) || tenantForms[0];
+      const fullHtml = `${templateHtml}\n${compileFormToHtml(defaultForm)}`;
+      editorRef.current.setComponents(fullHtml);
+      setHasUnsavedChanges(true);
+      setIsTemplateBankOpen(false);
+      onAddToast({
+        type: 'info',
+        title: 'Template Applied',
+        message: 'Template loaded into canvas. Customize content and click Save to publish live.',
+      });
+    }
   };
 
-  const handleApplyTemplate = (templateHtml: string, templateName: string) => {
+  // Save changes to tenant config
+  const handleSave = async () => {
     if (!editorRef.current) return;
-    editorRef.current.setComponents(templateHtml);
-    setHasUnsavedChanges(true);
-    setIsTemplateBankOpen(false);
+    setIsSaving(true);
 
-    onAddToast({
-      type: 'success',
-      title: `Loaded ${templateName}`,
-      message: 'Template loaded into editor canvas. Click "Publish to Live Site" to go live.',
-    });
+    try {
+      const html = editorRef.current.getHtml();
+      const css = editorRef.current.getCss();
+
+      await updateTenantConfig({
+        customHtml: html,
+        customCss: css || '',
+      });
+
+      setHasUnsavedChanges(false);
+      onAddToast({
+        type: 'success',
+        title: 'Landing Page Published Live!',
+        message: `Your high-accessibility HTML/CSS landing page for ${tenant.name} is now active!`,
+      });
+    } catch (err: any) {
+      onAddToast({
+        type: 'error',
+        title: 'Save Failed',
+        message: err.message || 'Could not save landing page changes.',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUndo = () => editorRef.current?.runCommand('core:undo');
+  const handleRedo = () => editorRef.current?.runCommand('core:redo');
+  const handleClearCanvas = () => {
+    if (confirm('Are you sure you want to clear the entire page canvas?')) {
+      editorRef.current?.setComponents('');
+      setHasUnsavedChanges(true);
+    }
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-md shadow-md flex flex-col h-[850px] font-sans">
-      {/* Top Toolbar */}
-      <div className="bg-slate-900 text-white px-4 py-3 border-b border-slate-800 flex items-center justify-between gap-4 shrink-0">
-        {/* Left: Branding & Device Switcher */}
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col h-[calc(100vh-130px)] min-h-[680px] bg-slate-900 text-slate-100 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl font-sans">
+      {/* 1. TOP BUILDER TOOLBAR (Responsive) */}
+      <header className="h-14 bg-slate-950 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0">
+        {/* Left: Branding & Status */}
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-xs text-emerald-400 font-display">GrapesJS Canvas</span>
-            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">({tenant.subdomain}.hifz.app)</span>
+            <LayoutTemplate className="w-5 h-5 text-blue-400" />
+            <span className="font-extrabold text-sm text-white hidden sm:inline">Visual Page Builder</span>
           </div>
-
-          <div className="bg-slate-800 p-1 rounded-md flex items-center gap-1 border border-slate-700">
-            <button
-              onClick={() => handleDeviceChange('desktop')}
-              className={`p-1.5 rounded-sm transition-colors cursor-pointer ${
-                selectedDevice === 'desktop' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
-              }`}
-              title="Desktop View"
-            >
-              <Monitor className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => handleDeviceChange('tablet')}
-              className={`p-1.5 rounded-sm transition-colors cursor-pointer ${
-                selectedDevice === 'tablet' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
-              }`}
-              title="Tablet View"
-            >
-              <Tablet className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => handleDeviceChange('mobile')}
-              className={`p-1.5 rounded-sm transition-colors cursor-pointer ${
-                selectedDevice === 'mobile' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
-              }`}
-              title="Mobile View"
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          {hasUnsavedChanges && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">
+              Unsaved Edits
+            </span>
+          )}
         </div>
 
-        {/* Center: Template Bank Trigger */}
-        <div className="flex items-center gap-2">
+        {/* Center: Device Switcher Viewports */}
+        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
           <button
-            onClick={() => setIsTemplateBankOpen(true)}
-            className="px-3.5 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-white font-bold font-display text-xs shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-emerald-500"
+            type="button"
+            onClick={() => handleDeviceChange('desktop')}
+            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              selectedDevice === 'desktop' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+            }`}
+            title="Desktop View (100%)"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Template Bank</span>
+            <Monitor className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDeviceChange('tablet')}
+            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              selectedDevice === 'tablet' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+            }`}
+            title="Tablet View (768px)"
+          >
+            <Tablet className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDeviceChange('mobile')}
+            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              selectedDevice === 'mobile' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+            }`}
+            title="Mobile View (375px)"
+          >
+            <Smartphone className="w-4 h-4" />
           </button>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2.5">
-          {hasUnsavedChanges && (
-            <span className="text-[11px] text-amber-400 font-semibold animate-pulse hidden sm:inline">
-              ● Unsaved Changes
-            </span>
-          )}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleUndo}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Undo (Ctrl+Z)"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
 
           <button
-            onClick={handleSaveAndPublish}
-            className="px-4 py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold font-display text-xs shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            type="button"
+            onClick={handleRedo}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Redo (Ctrl+Y)"
+          >
+            <RotateCw className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsTemplateBankOpen(true)}
+            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Templates</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/30 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Publish to Live Site</span>
+            <span>{isSaving ? 'Publishing...' : 'Save & Publish'}</span>
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* Main Workspace: Block Sidebar + Iframe Canvas */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Blocks Sidebar */}
-        <div className="w-72 bg-slate-50 border-r border-slate-200 flex flex-col overflow-y-auto p-4 shrink-0">
-          <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-700 font-display">Blocks & Components</p>
-            <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
-              {tenantForms.length} Forms Available
-            </span>
+      {/* 2. MAIN BUILDER BODY (Left Sidepanel + Right Canvas) */}
+      <div className="flex-1 flex overflow-hidden min-w-0">
+        {/* Left Sidepanel: Block Library & Tabs */}
+        <div className="w-72 sm:w-80 bg-slate-950 border-r border-slate-800 flex flex-col shrink-0 overflow-hidden">
+          {/* Sidepanel Tabs */}
+          <div className="p-3 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Layers className="w-4 h-4 text-blue-400" />
+              <span className="font-extrabold text-xs text-white uppercase tracking-wider">Drag & Drop Blocks</span>
+            </div>
+            <span className="text-[10px] text-slate-400 font-mono">25+ Elements</span>
           </div>
 
-          <div ref={blocksContainerRef} className="space-y-2 flex-1" />
+          {/* GrapesJS Rendered Block Container */}
+          <div
+            ref={blocksContainerRef}
+            className="flex-1 p-3 overflow-y-auto space-y-2 text-xs scrollbar-thin scrollbar-thumb-slate-800"
+          />
+
+          {/* Bottom Quick Help */}
+          <div className="p-3 border-t border-slate-800 bg-slate-950/80 text-[11px] text-slate-400 flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-slate-500 shrink-0" />
+            <span>Drag blocks onto the canvas to insert sections. Click text to edit in-line.</span>
+          </div>
         </div>
 
-        {/* Visual Canvas Container */}
-        <div className="flex-1 bg-slate-200 flex items-center justify-center p-3 overflow-auto">
+        {/* Right: GrapesJS Visual Canvas */}
+        <div className="flex-1 bg-slate-900 flex flex-col justify-center items-center overflow-auto p-2 sm:p-4">
           <div
             ref={containerRef}
-            className={`h-full bg-white shadow-xl transition-all duration-200 rounded-md overflow-hidden min-h-[680px] ${
-              selectedDevice === 'mobile'
-                ? 'w-[375px]'
-                : selectedDevice === 'tablet'
-                ? 'w-[768px]'
-                : 'w-full'
-            }`}
+            className="w-full h-full rounded-2xl overflow-hidden bg-white shadow-2xl transition-all duration-300"
           />
         </div>
       </div>
 
-      {/* Template Bank Modal */}
+      {/* 3. TEMPLATE BANK MODAL */}
       {isTemplateBankOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 font-sans">
-          <div className="bg-white rounded-md border border-slate-200 shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden">
-            {/* Modal Header */}
-            <div className="bg-emerald-950 text-white px-6 py-4 flex items-center justify-between border-b border-emerald-900">
-              <div className="flex items-center gap-2">
-                <LayoutTemplate className="w-5 h-5 text-amber-400" />
-                <div>
-                  <h3 className="text-base font-bold font-display text-white">Curated Academy Template Bank</h3>
-                  <p className="text-xs text-emerald-300">1-Click load responsive Quran and Islamic Center layouts</p>
-                </div>
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-4xl w-full p-6 space-y-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                  <span>Landing Page Template Library</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Choose a pre-built, high-accessibility and SEO-optimized HTML/CSS template to overwrite the canvas.
+                </p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsTemplateBankOpen(false)}
-                className="p-1 rounded-md text-emerald-400 hover:text-white hover:bg-emerald-900 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Template Cards */}
-            <div className="p-6 overflow-y-auto space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-1">
               {TEMPLATE_BANK.map((tmpl) => (
                 <div
                   key={tmpl.id}
-                  className="border border-slate-200 rounded-md p-4 hover:border-emerald-500 hover:bg-emerald-50/20 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                  className="bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between space-y-4 hover:border-slate-700 transition-all group"
                 >
-                  <div className="flex items-start gap-3">
-                    <img
-                      src={tmpl.previewImg}
-                      alt={tmpl.name}
-                      className="w-20 h-14 object-cover rounded-md border border-slate-200 shrink-0"
-                    />
+                  <div className="space-y-3">
+                    <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
+                      <img src={tmpl.previewImg} alt={tmpl.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <span className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-md">
+                        {tmpl.badge}
+                      </span>
+                    </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-sm text-slate-900 font-display">{tmpl.name}</h4>
-                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md">
-                          {tmpl.badge}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600 mt-1">{tmpl.description}</p>
+                      <h4 className="font-bold text-sm text-white">{tmpl.name}</h4>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{tmpl.description}</p>
                     </div>
                   </div>
 
                   <button
-                    onClick={() => handleApplyTemplate(tmpl.html, tmpl.name)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-display rounded-md shadow-xs shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    type="button"
+                    onClick={() => handleApplyTemplate(tmpl.html)}
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
                   >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Load Template</span>
+                    Apply Template to Canvas
                   </button>
                 </div>
               ))}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 text-end">
-              <button
-                onClick={() => setIsTemplateBankOpen(false)}
-                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold rounded-md cursor-pointer"
-              >
-                Cancel
-              </button>
             </div>
           </div>
         </div>

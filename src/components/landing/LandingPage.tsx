@@ -18,7 +18,13 @@ import {
   Phone,
   BookOpen,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  Code2,
+  Terminal,
+  Award,
+  Radio,
+  Star,
+  Globe
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -34,6 +40,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
   const [selectedPlanForEnroll, setSelectedPlanForEnroll] = useState<PricingPlan | null>(null);
 
   const isAr = language === 'ar';
+  const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
 
   // Attach global DOM listeners for custom GrapesJS HTML forms and enrollment triggers
   useEffect(() => {
@@ -53,13 +60,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       if (form.getAttribute('data-hifz-lead-form') === 'true') {
         e.preventDefault();
         const data = new FormData(form);
-        const name = (data.get('name') as string) || '';
+        const name = (data.get('name') as string) || (data.get('studentName') as string) || '';
         const email = (data.get('email') as string) || '';
         const phone = (data.get('phone') as string) || '';
-        const courseInterest = (data.get('courseInterest') as string) || 'Quran Memorization (Hifz)';
+        const courseInterest = (data.get('courseInterest') as string) || (isCodingNiche ? 'Full-Stack Software Engineering' : 'Quran Memorization & Tajweed');
 
         if (!name || !email) {
-          onAddToast({ type: 'error', title: 'Missing Info', message: 'Name and email are required.' });
+          onAddToast({ type: 'error', title: 'Missing Info', message: 'Full name and email address are required.' });
           return;
         }
 
@@ -71,16 +78,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
             country: 'Global Inquiry',
             courseInterest,
             preferredSchedule: 'Flexible',
-            priorHifzLevel: '1 - 5 Juz',
+            priorHifzLevel: isCodingNiche ? 'Beginner' : '1 - 5 Juz',
             status: 'New',
             paymentStatus: 'Pending',
-            notes: 'Submitted via GrapesJS Landing Page Lead Form',
+            notes: 'Submitted via Landing Page Lead Inquiry Form',
           });
 
           onAddToast({
             type: 'success',
-            title: 'Admissions Inquiry Submitted!',
-            message: `Jazakallahu Khairan, ${name}. Our admissions committee will reach out shortly.`,
+            title: isAr ? 'تم إرسال طلب القبول بنجاح!' : 'Admissions Inquiry Submitted!',
+            message: isAr
+              ? `شكراً لك، ${name}. ستتواصل معك لجنة القبول والتسجيل في أقرب وقت.`
+              : `Thank you, ${name}. Our admissions committee will reach out shortly.`,
           });
           form.reset();
         } catch (err) {
@@ -96,7 +105,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       document.removeEventListener('click', handleGlobalClick);
       document.removeEventListener('submit', handleFormSubmit);
     };
-  }, [tenant.pricingPlans, onAddToast]);
+  }, [tenant.pricingPlans, onAddToast, isCodingNiche, isAr]);
 
   const handleInputChange = (fieldId: string, value: any) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
@@ -120,17 +129,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       newErrors.phone = isAr ? 'الرجاء إدخال رقم الهاتف' : 'Phone number is required';
     }
 
-    (tenant.customFormFields || []).forEach((field) => {
-      if (field.required && !formData[field.id]) {
-        newErrors[field.id] = isAr ? `حقل ${field.labelAr} مطلوب` : `${field.label} is required`;
-      }
-    });
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmitLead = async (e: React.FormEvent) => {
+  const handleSubmitAdmissions = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -140,389 +143,463 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
         name: formData.studentName,
         email: formData.email,
         phone: formData.phone,
-        country: formData.country || 'Global',
-        courseInterest: formData.courseInterest || 'Quran Memorization (Hifz)',
+        country: formData.country || 'Global Inquiry',
+        courseInterest: formData.courseInterest || (isCodingNiche ? 'Full-Stack Software Engineering' : 'Quran Memorization Track'),
         preferredSchedule: formData.preferredSchedule || 'Evening',
-        priorHifzLevel: formData.priorHifzLevel || '1 - 5 Juz',
+        priorHifzLevel: isCodingNiche ? 'Beginner' : (formData.priorHifzLevel || '1 - 5 Juz'),
         status: 'New',
         paymentStatus: 'Pending',
-        notes: `Custom Inquiries: ${JSON.stringify(formData)}`,
+        notes: formData.notes || `Admissions inquiry submitted from main landing page.`,
       });
 
       onAddToast({
         type: 'success',
-        title: isAr ? 'تم تقديم الطلب بنجاح!' : 'Inquiry Submitted!',
+        title: isAr ? 'تم استلام طلب القبول بنجاح!' : 'Application Submitted Successfully!',
         message: isAr
-          ? 'شكراً لتواصلك، سيتواصل معك فريق القبول قريباً.'
-          : 'Thank you. Our admissions coordinator will contact you shortly.',
+          ? 'شكراً لك، تم تسجيل طلبك وسيتواصل معك فريق التسجيل لجدولة موعد المقابلة.'
+          : 'Thank you! Your inquiry has been routed to admissions. We will contact you soon.',
       });
+
       setFormData({});
-    } catch (err) {
+    } catch (err: any) {
       onAddToast({
         type: 'error',
-        title: isAr ? 'خطأ في التقديم' : 'Submission Error',
-        message: 'Failed to connect to server.',
+        title: isAr ? 'حدث خطأ أثناء الإرسال' : 'Submission Failed',
+        message: isAr ? 'يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة.' : 'Please try again or contact support.',
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const openEnrollModalWithPlan = (plan: PricingPlan) => {
-    setSelectedPlanForEnroll(plan);
-    setIsEnrollModalOpen(true);
+  // Schema.org Structured Data for SEO Rich Snippets
+  const schemaOrgJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: tenant.name,
+    description: tenant.tagline || tenant.aboutText,
+    url: `https://${tenant.subdomain}.techmadrasah.app`,
+    logo: tenant.logoUrl,
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'Global',
+    },
+    offers: tenant.pricingPlans.map((plan) => ({
+      '@type': 'Offer',
+      name: plan.name,
+      price: plan.priceMonthly || (plan as any).price || 65,
+      priceCurrency: plan.currency || 'USD',
+      availability: 'https://schema.org/InStock',
+    })),
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans" dir={direction}>
-      {/* Header */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900" dir={direction}>
+      {/* Schema.org Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgJsonLd) }}
+      />
+
+      {/* Semantic Accessible Header */}
       <Header />
 
-      {/* If Tenant has customized and published via GrapesJS, render the live GrapesJS HTML */}
-      {tenant.customHtml ? (
-        <div>
-          {tenant.customCss && <style>{tenant.customCss}</style>}
-          <div dangerouslySetInnerHTML={{ __html: tenant.customHtml }} />
-        </div>
-      ) : (
-        <>
-          {/* Default Dynamic Live Sections */}
-          <section className="bg-white py-20 lg:py-28 border-b border-slate-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center max-w-4xl mx-auto space-y-6">
-                <span className="inline-block px-3.5 py-1 text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-md">
-                  {isAr ? tenant.heroBadgeTextAr : tenant.heroBadgeText}
-                </span>
+      {/* Main Landmark */}
+      <main id="main-content" role="main">
+        {/* If Tenant has customized and published via GrapesJS, render the live GrapesJS HTML */}
+        {tenant.customHtml ? (
+          <div>
+            {tenant.customCss && <style>{tenant.customCss}</style>}
+            <div dangerouslySetInnerHTML={{ __html: tenant.customHtml }} />
+          </div>
+        ) : (
+          <>
+            {/* 1. Accessible Hero Section */}
+            <section aria-labelledby="hero-heading" className="bg-white py-20 lg:py-28 border-b border-slate-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center max-w-4xl mx-auto space-y-6">
+                  <span className={`inline-block px-3.5 py-1 text-xs font-bold rounded-full ${
+                    isCodingNiche
+                      ? 'text-blue-700 bg-blue-50 border border-blue-200'
+                      : 'text-emerald-800 bg-emerald-50 border border-emerald-200'
+                  }`}>
+                    {isAr ? tenant.heroBadgeTextAr : tenant.heroBadgeText}
+                  </span>
 
-                <h1 className={`text-4xl sm:text-6xl font-bold font-display text-slate-900 leading-tight ${isAr ? 'font-arabic text-5xl sm:text-7xl' : ''}`}>
-                  {isAr ? tenant.taglineAr : tenant.tagline}
-                </h1>
-
-                <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
-                  {isAr ? tenant.aboutTextAr : tenant.aboutText}
-                </p>
-
-                <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-                  <button
-                    onClick={() => {
-                      setSelectedPlanForEnroll(tenant.pricingPlans[0]);
-                      setIsEnrollModalOpen(true);
-                    }}
-                    className="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold font-display text-sm rounded-md shadow-md transition-all cursor-pointer flex items-center gap-2"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    <span>{isAr ? 'تقديم طلب الالتحاق' : 'Enroll & Pay Tuition'}</span>
-                  </button>
-
-                  <a
-                    href="#admissions"
-                    className="px-8 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold font-display text-sm rounded-md shadow-sm transition-all"
-                  >
-                    {isAr ? 'استفسار القبول' : 'Admissions Inquiry'}
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Quran Calligraphy Ayah Banner */}
-          <section className="py-14 bg-slate-900 text-white text-center border-b border-slate-800">
-            <div className="max-w-4xl mx-auto px-4">
-              <p className="font-arabic text-4xl font-bold leading-relaxed mb-2">
-                إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ
-              </p>
-              <p className="text-sm text-slate-400 font-sans tracking-wide">
-                "Indeed, it is We who sent down the Quran and indeed, We will be its guardian." — Surah Al-Hijr [15:9]
-              </p>
-            </div>
-          </section>
-
-          {/* Featured Courses Grid */}
-          <section id="courses" className="py-20 bg-white border-b border-slate-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center max-w-2xl mx-auto mb-12">
-                <h2 className={`text-3xl sm:text-4xl font-bold font-display text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
-                  {isAr ? 'المناهج والدورات القرآنية المتاحة' : 'Featured Quranic Curriculums'}
-                </h2>
-                <p className="text-slate-500 text-sm mt-1">
-                  Structured tracks engineered for progressive mastery, memorization, and Tajweed
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {courses.map((course) => (
-                  <div
-                    key={course.id}
-                    className="bg-white rounded-md border border-slate-200 shadow-md overflow-hidden flex flex-col justify-between"
-                  >
-                    <div className="relative h-48 bg-slate-900">
-                      <img src={course.imageUrl || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&q=80&w=800'} alt={course.title} className="w-full h-full object-cover opacity-80" />
-                      <span className="absolute top-3 right-3 bg-white text-slate-900 font-bold text-xs px-3 py-1 rounded-md shadow-sm">
-                        {course.level}
-                      </span>
-                    </div>
-
-                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                      <div>
-                        <div className="flex items-center gap-4 text-xs text-slate-500 mb-2">
-                          <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {course.durationWeeks} Weeks</span>
-                          <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {course.enrolledStudentsCount} Students</span>
-                        </div>
-
-                        <h3 className={`text-xl font-bold font-display text-slate-900 mb-2 ${isAr ? 'font-arabic text-2xl' : ''}`}>
-                          {isAr ? course.titleAr : course.title}
-                        </h3>
-
-                        <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed">
-                          {isAr ? course.descriptionAr : course.description}
-                        </p>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <div>
-                          <span className="text-xs text-slate-400 block">{isAr ? 'الرسوم الشهرية' : 'Monthly Tuition'}</span>
-                          <span className="text-2xl font-extrabold font-display text-emerald-700">${course.price}</span>
-                        </div>
-
-                        <button
-                          onClick={() => {
-                            const matchedPlan = tenant.pricingPlans.find((p) => p.priceMonthly === course.price) || tenant.pricingPlans[0];
-                            openEnrollModalWithPlan(matchedPlan);
-                          }}
-                          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold font-display text-xs rounded-md shadow-md transition-colors flex items-center gap-1.5 cursor-pointer"
-                        >
-                          <span>{isAr ? 'التسجيل والدفع' : 'Enroll Now'}</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Pricing & Tuition Plans */}
-          <section id="pricing" className="py-20 bg-slate-50 border-b border-slate-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center max-w-2xl mx-auto mb-16">
-                <span className="text-xs font-bold font-display text-emerald-700 uppercase tracking-widest block">
-                  {isAr ? 'الرسوم الدراسية' : 'TUITION PLANS'}
-                </span>
-                <h2 className={`text-3xl sm:text-4xl font-bold font-display text-slate-900 mt-1 ${isAr ? 'font-arabic text-4xl' : ''}`}>
-                  {isAr ? 'خطط الاشتراك والرسوم الشهرية' : 'Tuition & Subscription Plans'}
-                </h2>
-                <p className="text-slate-500 text-sm mt-2">
-                  Transparent tuition billing directly processed by {tenant.name}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                {tenant.pricingPlans.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className={`bg-white rounded-md border p-8 flex flex-col justify-between shadow-md transition-all ${
-                      plan.popular ? 'border-amber-400 ring-2 ring-amber-400/20' : 'border-slate-200'
+                  <h1
+                    id="hero-heading"
+                    className={`text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight ${
+                      isAr ? 'font-arabic text-5xl sm:text-7xl' : ''
                     }`}
                   >
-                    <div>
-                      {plan.popular && (
-                        <span className="px-3 py-1 bg-amber-100 text-amber-900 text-[10px] font-extrabold uppercase tracking-wider rounded-md mb-4 inline-block">
-                          {isAr ? 'الأكثر طلباً' : 'Most Popular'}
-                        </span>
-                      )}
+                    {isAr ? tenant.taglineAr : tenant.tagline}
+                  </h1>
 
-                      <h3 className={`text-xl font-bold font-display text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
-                        {isAr ? plan.nameAr : plan.name}
-                      </h3>
+                  <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
+                    {isAr ? tenant.aboutTextAr : tenant.aboutText}
+                  </p>
 
-                      <p className="text-xs text-slate-500 mt-2 min-h-[36px]">
-                        {isAr ? plan.descriptionAr : plan.description}
-                      </p>
-
-                      <div className="my-6 flex items-baseline gap-1">
-                        <span className="text-4xl font-extrabold font-display text-slate-900 font-mono">
-                          ${plan.priceMonthly}
-                        </span>
-                        <span className="text-xs text-slate-400">/month</span>
-                      </div>
-
-                      <div className="w-full h-px bg-slate-100 mb-6" />
-
-                      <ul className="space-y-3 text-xs text-slate-600">
-                        {plan.features.map((feat, i) => (
-                          <li key={i} className="flex items-center gap-2.5">
-                            <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
+                  <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
                     <button
-                      onClick={() => openEnrollModalWithPlan(plan)}
-                      className={`mt-8 w-full py-3.5 font-bold font-display text-xs rounded-md shadow-md transition-all uppercase tracking-wider cursor-pointer ${
-                        plan.popular
-                          ? 'bg-amber-500 hover:bg-amber-600 text-slate-950'
-                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlanForEnroll(tenant.pricingPlans[0]);
+                        setIsEnrollModalOpen(true);
+                      }}
+                      className={`px-8 py-3.5 text-white font-bold text-sm rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95 ${
+                        isCodingNiche
+                          ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/20'
+                          : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-900/20'
                       }`}
                     >
-                      {isAr ? 'التسجيل في هذه الخطة' : 'Enroll & Pay Tuition'}
+                      <Sparkles className="w-4 h-4" />
+                      <span>{isAr ? 'تقديم طلب الالتحاق' : 'Enroll in Academy'}</span>
                     </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
 
-          {/* Direct Admissions Inquiry Lead Form (Configured by Form Builder) */}
-          <section id="admissions" className="py-20 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="bg-slate-50 p-8 sm:p-12 rounded-md border border-slate-200 shadow-md">
-                <div className="text-center mb-10">
-                  <span className="text-xs font-bold font-display text-emerald-700 uppercase tracking-widest block">
-                    {isAr ? 'طلب استفسار' : 'ADMISSIONS INQUIRY'}
-                  </span>
-                  <h2 className={`text-2xl sm:text-3xl font-extrabold font-display text-slate-900 mt-1 ${isAr ? 'font-arabic text-3xl' : ''}`}>
-                    {tenant.formTitle || (isAr ? 'نموذج طلب الالتحاق والاستفسار' : 'Direct Admissions & Evaluation Inquiry')}
+                    <a
+                      href="#admissions"
+                      className="px-8 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-sm rounded-xl shadow-xs transition-all"
+                    >
+                      {isAr ? 'استفسار القبول' : 'Admissions Inquiry'}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* 2. Distinctive Niche Banner */}
+            {!isCodingNiche ? (
+              <section aria-label="Sacred Quranic Quote" className="py-14 bg-slate-950 text-white text-center border-b border-slate-800">
+                <div className="max-w-4xl mx-auto px-4">
+                  <p className="font-arabic text-4xl font-bold leading-relaxed mb-2 text-amber-400">
+                    إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ
+                  </p>
+                  <p className="text-xs sm:text-sm text-slate-400 font-sans tracking-wide">
+                    "Indeed, it is We who sent down the Quran and indeed, We will be its guardian." — Surah Al-Hijr [15:9]
+                  </p>
+                </div>
+              </section>
+            ) : (
+              <section aria-label="Software Engineering Highlight" className="py-12 bg-slate-950 text-white border-b border-slate-800">
+                <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-3">
+                    <Terminal className="w-8 h-8 text-blue-400 shrink-0" />
+                    <div>
+                      <h2 className="text-base font-extrabold text-white">Full-Stack Cloud & Software Apprenticeship</h2>
+                      <p className="text-xs text-slate-400">Pair programming, daily coding sandboxes, algorithmic audits & CI/CD deployment.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 font-mono text-xs text-emerald-400 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800 shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Live SFU Terminal Cluster: 100% Online</span>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* 3. Featured Courses Grid */}
+            <section id="courses" aria-labelledby="courses-heading" className="py-20 bg-white border-b border-slate-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                  <h2
+                    id="courses-heading"
+                    className={`text-3xl sm:text-4xl font-extrabold text-slate-900 ${
+                      isAr ? 'font-arabic text-4xl' : ''
+                    }`}
+                  >
+                    {isCodingNiche
+                      ? (isAr ? 'المسارات البرمجية المتاحة' : 'Featured Software Curriculums')
+                      : (isAr ? 'المناهج والدورات القرآنية المتاحة' : 'Featured Quranic Curriculums')}
                   </h2>
-                  <p className="text-xs text-slate-500 mt-2 max-w-lg mx-auto">
-                    {tenant.formDescription || (isAr ? 'قم بتعبئة بياناتك وسيتواصل معك فريق القبول لتحديد موعد اختبار المستوى.' : 'Submit your contact information for an immediate evaluation by our admissions team.')}
+                  <p className="text-slate-500 text-sm mt-1">
+                    {isCodingNiche
+                      ? 'Structured tracks engineered for full-stack engineering, algorithms, and microservices.'
+                      : 'Structured tracks engineered for progressive mastery, memorization, and Tajweed.'}
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmitLead} className="space-y-4 text-xs">
-                  {/* Standard Inquiry Fields */}
-                  <div className="flex flex-wrap -mx-2">
-                    <div className="w-full sm:w-1/2 px-2 mb-4">
-                      <label className="block font-bold text-slate-700 mb-1">
-                        {isAr ? 'اسم الطالب الكامل *' : 'Student Full Name *'}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {courses.map((course) => (
+                    <article
+                      key={course.id}
+                      className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden flex flex-col justify-between"
+                    >
+                      <div className="relative h-48 bg-slate-900">
+                        <img
+                          src={course.imageUrl || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800'}
+                          alt={course.title}
+                          className="w-full h-full object-cover opacity-80"
+                        />
+                        <span className="absolute top-3 right-3 bg-white text-slate-900 font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                          {course.level}
+                        </span>
+                      </div>
+
+                      <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                          <h3 className={`text-xl font-bold text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
+                            {isAr ? course.titleAr || course.title : course.title}
+                          </h3>
+                          <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                            {isAr ? course.descriptionAr || course.description : course.description}
+                          </p>
+                        </div>
+
+                        <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                          <span className="font-extrabold text-lg text-slate-900 font-mono">
+                            ${course.price} <span className="text-xs font-normal text-slate-500">/ track</span>
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedPlanForEnroll(tenant.pricingPlans[0]);
+                              setIsEnrollModalOpen(true);
+                            }}
+                            className={`px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors cursor-pointer ${
+                              isCodingNiche ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'
+                            }`}
+                          >
+                            Enroll in Track &rarr;
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* 4. Tuition & Pricing Packages */}
+            <section id="pricing" aria-labelledby="pricing-heading" className="py-20 bg-slate-50 border-b border-slate-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                  <h2
+                    id="pricing-heading"
+                    className={`text-3xl sm:text-4xl font-extrabold text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}
+                  >
+                    {isAr ? 'باقات الاشتراك والرسوم الدراسية' : 'Tuition & Subscription Plans'}
+                  </h2>
+                  <p className="text-slate-500 text-sm mt-1">
+                    {isAr ? 'خطط مرنة تناسب جميع الطلاب والمستويات' : 'Transparent pricing with dedicated mentor support and live classes.'}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {tenant.pricingPlans.map((plan) => {
+                    const isPopular = plan.popular || (plan as any).isPopular;
+                    const price = plan.priceMonthly || (plan as any).price || 65;
+
+                    return (
+                      <div
+                        key={plan.id}
+                        className={`bg-white rounded-3xl p-6 sm:p-8 border shadow-sm flex flex-col justify-between transition-all ${
+                          isPopular ? 'border-2 border-blue-600 shadow-xl relative' : 'border-slate-200'
+                        }`}
+                      >
+                        {isPopular && (
+                          <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-extrabold uppercase px-3 py-1 rounded-full shadow-md tracking-wider">
+                            Most Popular
+                          </span>
+                        )}
+
+                        <div className="space-y-4">
+                          <h3 className="font-extrabold text-lg text-slate-900">{isAr ? plan.nameAr || plan.name : plan.name}</h3>
+                          <p className="text-xs text-slate-500 leading-relaxed">{isAr ? plan.descriptionAr || plan.description : plan.description}</p>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-extrabold text-slate-900 font-mono">${price}</span>
+                            <span className="text-xs text-slate-500 font-bold">/mo</span>
+                          </div>
+
+                          <ul className="space-y-2.5 pt-4 border-t border-slate-100 text-xs text-slate-700">
+                            {plan.features.map((feat, idx) => (
+                              <li key={idx} className="flex items-center gap-2">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <span>{feat}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="pt-6 mt-6 border-t border-slate-100">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedPlanForEnroll(plan);
+                              setIsEnrollModalOpen(true);
+                            }}
+                            className={`w-full py-3 rounded-xl font-bold text-xs transition-all cursor-pointer select-none active:scale-95 ${
+                              isPopular
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                                : 'bg-slate-900 hover:bg-slate-800 text-white'
+                            }`}
+                          >
+                            Select {isAr ? plan.nameAr || plan.name : plan.name}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
+            {/* 5. Accessible Admissions & Inquiry Form */}
+            <section id="admissions" aria-labelledby="admissions-heading" className="py-20 bg-white">
+              <div className="max-w-3xl mx-auto px-4 sm:px-6">
+                <div className="bg-slate-50 rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-md">
+                  <div className="text-center mb-8">
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-600 block mb-1">
+                      {isAr ? 'بوابة التسجيل والقبول' : 'Direct Admissions Portal'}
+                    </span>
+                    <h2
+                      id="admissions-heading"
+                      className={`text-2xl sm:text-3xl font-extrabold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}
+                    >
+                      {tenant.formTitle}
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-2">
+                      {tenant.formDescription}
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSubmitAdmissions} className="space-y-4" noValidate>
+                    <div>
+                      <label htmlFor="studentName" className="block text-xs font-bold text-slate-700 mb-1">
+                        {isAr ? 'اسم الطالب الكامل' : 'Student Full Name'} <span className="text-red-500" aria-hidden="true">*</span>
                       </label>
                       <input
+                        id="studentName"
                         type="text"
+                        required
+                        aria-required="true"
+                        aria-invalid={!!errors.studentName}
                         value={formData.studentName || ''}
                         onChange={(e) => handleInputChange('studentName', e.target.value)}
-                        placeholder="e.g. Mariam Mansoor"
-                        className="w-full p-2.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-emerald-500 bg-white"
+                        placeholder={isAr ? 'مثال: محمد عبد الله' : 'e.g. Alex Mercer'}
+                        className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                       />
-                      {errors.studentName && <p className="text-rose-600 text-[11px] mt-1">{errors.studentName}</p>}
+                      {errors.studentName && (
+                        <p className="text-xs text-red-600 mt-1 font-semibold" role="alert">{errors.studentName}</p>
+                      )}
                     </div>
 
-                    <div className="w-full sm:w-1/2 px-2 mb-4">
-                      <label className="block font-bold text-slate-700 mb-1">
-                        {isAr ? 'البريد الإلكتروني *' : 'Email Address *'}
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.email || ''}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                        placeholder="student@example.com"
-                        className="w-full p-2.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-emerald-500 bg-white"
-                      />
-                      {errors.email && <p className="text-rose-600 text-[11px] mt-1">{errors.email}</p>}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="email" className="block text-xs font-bold text-slate-700 mb-1">
+                          {isAr ? 'البريد الإلكتروني' : 'Email Address'} <span className="text-red-500" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                          id="email"
+                          type="email"
+                          required
+                          aria-required="true"
+                          aria-invalid={!!errors.email}
+                          value={formData.email || ''}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          placeholder="student@example.com"
+                          className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                        />
+                        {errors.email && (
+                          <p className="text-xs text-red-600 mt-1 font-semibold" role="alert">{errors.email}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label htmlFor="phone" className="block text-xs font-bold text-slate-700 mb-1">
+                          {isAr ? 'رقم الهاتف / واتساب' : 'WhatsApp / Phone'} <span className="text-red-500" aria-hidden="true">*</span>
+                        </label>
+                        <input
+                          id="phone"
+                          type="tel"
+                          required
+                          aria-required="true"
+                          aria-invalid={!!errors.phone}
+                          value={formData.phone || ''}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          placeholder="+1 (555) 000-0000"
+                          className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+                        />
+                        {errors.phone && (
+                          <p className="text-xs text-red-600 mt-1 font-semibold" role="alert">{errors.phone}</p>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="w-full sm:w-1/2 px-2 mb-4">
-                      <label className="block font-bold text-slate-700 mb-1">
-                        {isAr ? 'رقم الهاتف / الواتساب *' : 'WhatsApp / Phone *'}
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone || ''}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        placeholder="+966 50 123 4567"
-                        className="w-full p-2.5 border border-slate-300 rounded-md focus:ring-1 focus:ring-emerald-500 bg-white"
-                      />
-                      {errors.phone && <p className="text-rose-600 text-[11px] mt-1">{errors.phone}</p>}
-                    </div>
-
-                    <div className="w-full sm:w-1/2 px-2 mb-4">
-                      <label className="block font-bold text-slate-700 mb-1">
-                        {isAr ? 'المسار الدراسي المطلوب' : 'Course Interest'}
+                    <div>
+                      <label htmlFor="courseInterest" className="block text-xs font-bold text-slate-700 mb-1">
+                        {isAr ? 'المسار الدراسي المطلوب' : 'Program of Interest'}
                       </label>
                       <select
+                        id="courseInterest"
                         value={formData.courseInterest || ''}
                         onChange={(e) => handleInputChange('courseInterest', e.target.value)}
-                        className="w-full p-2.5 border border-slate-300 rounded-md bg-white focus:ring-1 focus:ring-emerald-500"
+                        className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                       >
-                        <option>Quran Memorization (Hifz)</option>
-                        <option>Tajweed & Makharij Rules</option>
-                        <option>Classical Arabic Grammar</option>
-                        <option>Sanad Ijazah Certification</option>
+                        {isCodingNiche ? (
+                          <>
+                            <option value="Full-Stack TypeScript & React 19 Mastery">Full-Stack TypeScript & React 19 Mastery</option>
+                            <option value="Python Algorithms & System Design">Python Algorithms & System Design</option>
+                            <option value="Cloud Architecture & Docker Containers">Cloud Architecture & Docker Containers</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="Foundations of Tajweed & Recitation">Foundations of Tajweed & Recitation</option>
+                            <option value="Intensive Hifz Memorization Track">Intensive Hifz Memorization Track</option>
+                            <option value="Qira'at & Ijazah Sanad Certification">Qira'at & Ijazah Sanad Certification</option>
+                          </>
+                        )}
                       </select>
                     </div>
 
-                    {/* Custom Fields Configured in Form Builder with Flex Layout */}
-                    {(tenant.customFormFields || []).map((field) => {
-                      const widthClass =
-                        field.width === 'third'
-                          ? 'w-full sm:w-1/3 px-2 mb-4'
-                          : field.width === 'half'
-                          ? 'w-full sm:w-1/2 px-2 mb-4'
-                          : 'w-full px-2 mb-4';
-
-                      return (
-                        <div key={field.id} className={widthClass}>
-                          <label className="block font-bold text-slate-700 mb-1">
-                            {isAr ? field.labelAr : field.label} {field.required && <span className="text-rose-500">*</span>}
-                          </label>
-
-                          {field.type === 'select' ? (
-                            <select
-                              value={formData[field.id] || ''}
-                              onChange={(e) => handleInputChange(field.id, e.target.value)}
-                              className="w-full p-2.5 border border-slate-300 rounded-md bg-white focus:ring-1 focus:ring-emerald-500"
-                            >
-                              <option value="">{isAr ? 'اختر الإجابة...' : 'Select option...'}</option>
-                              {(field.options || []).map((opt, i) => (
-                                <option key={i} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          ) : field.type === 'textarea' ? (
-                            <textarea
-                              rows={3}
-                              value={formData[field.id] || ''}
-                              onChange={(e) => handleInputChange(field.id, e.target.value)}
-                              placeholder={field.placeholder}
-                              className="w-full p-2.5 border border-slate-300 rounded-md bg-white focus:ring-1 focus:ring-emerald-500"
-                            />
-                          ) : (
-                            <input
-                              type={field.type}
-                              value={formData[field.id] || ''}
-                              onChange={(e) => handleInputChange(field.id, e.target.value)}
-                              placeholder={field.placeholder}
-                              className="w-full p-2.5 border border-slate-300 rounded-md bg-white focus:ring-1 focus:ring-emerald-500"
-                            />
-                          )}
-                          {errors[field.id] && <p className="text-rose-600 text-[11px] mt-1">{errors[field.id]}</p>}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold font-display text-xs uppercase tracking-wider rounded-md shadow-md transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>{isSubmitting ? 'Submitting...' : isAr ? 'إرسال طلب الاستفسار' : 'Submit Admissions Inquiry'}</span>
-                  </button>
-                </form>
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>{isSubmitting ? (isAr ? 'جاري الإرسال...' : 'Submitting Application...') : (isAr ? 'إرسال طلب الالتحاق' : 'Submit Admissions Application')}</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </div>
-          </section>
-        </>
-      )}
+            </section>
+          </>
+        )}
+      </main>
 
-      {/* Dedicated Student Enrollment & Tuition Payment Modal */}
-      <StudentEnrollmentModal
-        isOpen={isEnrollModalOpen}
-        onClose={() => setIsEnrollModalOpen(false)}
-        selectedPlan={selectedPlanForEnroll}
-        onAddToast={onAddToast}
-      />
+      {/* Semantic Accessible Footer */}
+      <footer role="contentinfo" className="bg-slate-950 text-white py-12 border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="space-y-1 text-center sm:text-left">
+            <p className="font-extrabold text-sm text-white">{tenant.name}</p>
+            <p className="text-xs text-slate-400">{tenant.tagline}</p>
+          </div>
+
+          <div className="flex items-center gap-6 text-xs text-slate-400">
+            <a href="#courses" className="hover:text-white transition-colors">Courses</a>
+            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <a href="#admissions" className="hover:text-white transition-colors">Admissions</a>
+            <a href={`/${tenant.subdomain}/login`} className="text-blue-400 font-bold hover:underline">Student Portal</a>
+          </div>
+
+          <p className="text-[11px] text-slate-500">
+            &copy; {new Date().getFullYear()} {tenant.name}. All rights reserved.
+          </p>
+        </div>
+      </footer>
+
+      {/* Student Enrollment Modal */}
+      {selectedPlanForEnroll && (
+        <StudentEnrollmentModal
+          isOpen={isEnrollModalOpen}
+          onClose={() => setIsEnrollModalOpen(false)}
+          selectedPlan={selectedPlanForEnroll}
+          onAddToast={onAddToast}
+        />
+      )}
     </div>
   );
 };
