@@ -188,8 +188,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
           </Card>
         ) : (
           <LockedFeatureCard
-            title="Student Milestone & Juz Distribution"
-            description="Visual breakdown of students across 30 Juz memorization levels and learning stages requires a Growth subscription."
+            title="Student Cohort Milestone Distribution"
+            description="Visual breakdown of students across learning stages, sandbox progression, and curriculum milestones requires a Growth subscription."
             requiredPlan="growth"
             onUpgrade={() => onOpenUpgradeModal?.()}
           >

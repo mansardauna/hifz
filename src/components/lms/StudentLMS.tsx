@@ -208,10 +208,10 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               <span className="text-slate-300">/</span>
               <span className="text-slate-900 font-bold capitalize text-sm">
                 {activeTab === 'quran' && 'Medina Mushaf Reader & Tajweed'}
-                {activeTab === 'classroom' && 'Live Classroom Hub'}
-                {activeTab === 'coding' && 'Coding Lab & Interactive Challenges'}
+                {activeTab === 'classroom' && 'Live Virtual Classroom'}
+                {activeTab === 'coding' && 'Coding Sandbox Lab & Challenges'}
                 {activeTab === 'audio' && 'Recitation Looper & Audio Homework'}
-                {activeTab === 'progress' && 'Milestones & Teacher Feedback'}
+                {activeTab === 'progress' && (isCodingNiche ? 'Curriculum & Sandbox Progress' : 'Milestones & Teacher Feedback')}
                 {activeTab === 'tuition' && 'Student Tuition & Invoices'}
                 {activeTab === 'profile' && 'Student Profile'}
                 {activeTab === 'settings' && 'Account & Security Settings'}

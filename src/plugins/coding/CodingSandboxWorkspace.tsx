@@ -11,12 +11,16 @@ import {
   Layout,
   HelpCircle,
   Copy,
-  Check
+  Check,
+  Cpu,
+  Layers,
+  ArrowRight
 } from 'lucide-react';
 
 interface CodingChallenge {
   id: string;
   title: string;
+  category: 'Algorithms' | 'Frontend React' | 'Backend API' | 'TypeScript';
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   description: string;
   instructions: string[];
@@ -28,148 +32,227 @@ interface CodingChallenge {
 const SAMPLE_CHALLENGES: CodingChallenge[] = [
   {
     id: 'c-1',
-    title: 'Calculate Islamic Daily Prayer Times',
+    title: 'Two Sum & Hash Map Lookup (LeetCode Classic)',
+    category: 'Algorithms',
     difficulty: 'Beginner',
-    description: 'Write a JavaScript function that calculates the remaining minutes until Maghrib prayer based on solar sunset angle.',
+    description: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target in O(n) linear time.',
     instructions: [
-      'Define a function calculateTimeToMaghrib(currentHour, currentMin, sunsetHour, sunsetMin)',
-      'Return total difference in minutes',
-      'Format output as string: "X hours and Y minutes remaining"'
+      'Implement twoSum(nums, target) using JavaScript Map',
+      'Iterate through the array and store complements in the hash map',
+      'Return the [index1, index2] array once found'
     ],
-    initialCode: `// Function to calculate time remaining until Maghrib
-function calculateTimeToMaghrib(currentHour, currentMin, sunsetHour, sunsetMin) {
-  const currentTotal = (currentHour * 60) + currentMin;
-  const sunsetTotal = (sunsetHour * 60) + sunsetMin;
-  
-  const diffMinutes = sunsetTotal - currentTotal;
-  const hours = Math.floor(diffMinutes / 60);
-  const mins = diffMinutes % 60;
+    initialCode: `// Two Sum - O(n) Hash Map Solution
+function twoSum(nums, target) {
+  const map = new Map();
 
-  return \`\${hours} hours and \${mins} minutes remaining until Maghrib\`;
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    map.set(nums[i], i);
+  }
+
+  return [];
 }
 
-// Test Run
-const result = calculateTimeToMaghrib(16, 30, 18, 45);
-console.log(result);
+// Test Cases
+const nums = [2, 7, 11, 15];
+const target = 9;
+const result = twoSum(nums, target);
+
+console.log("Input Array:", nums);
+console.log("Target Sum:", target);
+console.log("Indices Found:", result); // Expected [0, 1]
 `,
-    expectedOutput: '2 hours and 15 minutes remaining until Maghrib',
-    solutionHint: 'Multiply hours by 60 and calculate the delta difference.'
+    expectedOutput: 'Indices Found: [ 0, 1 ]',
+    solutionHint: 'Calculate complement = target - current, check map.has(complement).'
   },
   {
     id: 'c-2',
-    title: 'Tajweed Rule Tokenizer (Regex Engine)',
+    title: 'React 19 Debounced Search Hook & Async Filter',
+    category: 'Frontend React',
     difficulty: 'Intermediate',
-    description: 'Build a tokenizer function that matches Ghunnah (نّ / مّ) and Madd letters in an Arabic text string.',
+    description: 'Build a debounced query handler that waits 300ms after user keystrokes before triggering an asynchronous network filter request.',
     instructions: [
-      'Write a function tokenizeArabicText(text)',
-      'Identify Shaddah and Tanween tokens',
-      'Return an array of classified Tajweed token objects'
+      'Write a function createDebounce(fn, delayMs)',
+      'Manage clearTimeout and setTimeout execution tokens',
+      'Return a wrapped debounced dispatch function'
     ],
-    initialCode: `// Arabic Tajweed Rule Tokenizer
-function tokenizeTajweed(arabicString) {
-  const tokens = [];
-  const words = arabicString.split(' ');
-
-  words.forEach((word) => {
-    if (word.includes('ّ')) {
-      tokens.push({ word, rule: 'Ghunnah / Shaddah', class: 'text-amber-500 font-bold' });
-    } else if (word.includes('~')) {
-      tokens.push({ word, rule: 'Madd Lazim', class: 'text-blue-500 font-bold' });
-    } else {
-      tokens.push({ word, rule: 'Normal', class: 'text-slate-800' });
-    }
-  });
-
-  return tokens;
+    initialCode: `// Custom Debounce Utility for Live Search
+function debounce(func, delayMs = 300) {
+  let timeoutId;
+  return function(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delayMs);
+  };
 }
 
-const sampleAyah = "إِنَّ مَعَ الْعُسْرِ يُسْرًا";
-console.log("Tokens Classified:", JSON.stringify(tokenizeTajweed(sampleAyah), null, 2));
+// Simulated Search Dispatcher
+const mockFetchResults = (query) => {
+  console.log(\`[API DISPATCH] Fetching search results for: "\${query}"\`);
+};
+
+const debouncedSearch = debounce(mockFetchResults, 300);
+
+console.log("Typing: 're'...");
+debouncedSearch('re');
+console.log("Typing: 'react'...");
+debouncedSearch('react');
+console.log("Typing: 'react 19'...");
+debouncedSearch('react 19');
 `,
-    expectedOutput: 'Tokens Classified:',
-    solutionHint: 'Use Unicode ranges for Arabic diacritics (\u0651 for Shaddah).'
+    expectedOutput: '[API DISPATCH] Fetching search results for: "react 19"',
+    solutionHint: 'Clear previous timeoutId before scheduling new setTimeout.'
   },
   {
     id: 'c-3',
-    title: 'Responsive Academy Landing Grid (HTML/CSS)',
-    difficulty: 'Beginner',
-    description: 'Create a responsive 3-column pricing grid using modern CSS Grid and Flexbox.',
+    title: 'API Rate Limiter (Token Bucket Algorithm)',
+    category: 'Backend API',
+    difficulty: 'Advanced',
+    description: 'Implement a Token Bucket Rate Limiter middleware in TypeScript/JavaScript to prevent server overload and protect public API endpoints.',
     instructions: [
-      'Use display: grid with repeat(auto-fit, minmax(280px, 1fr))',
-      'Add smooth hover animations and gold badge accents'
+      'Create a TokenBucket class with capacity and refillRatePerSecond',
+      'Refill tokens based on elapsed timestamps',
+      'Return true if allowed (tokens >= 1) and decrement; return 429 Too Many Requests otherwise'
     ],
-    initialCode: `<!-- Live HTML / CSS Preview Sandbox -->
-<div style="font-family: sans-serif; padding: 20px; background: #064e3b; color: white; border-radius: 12px;">
-  <h2 style="color: #fbbf24; margin: 0 0 10px 0;">Al-Furqan Academy Pricing</h2>
-  <p style="color: #a7f3d0; font-size: 14px;">Select your Quran & Arabic tuition track.</p>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; border: 1px solid #10b981;">
-      <h3 style="margin: 0; font-size: 16px;">Hifz Track</h3>
-      <p style="font-size: 20px; font-weight: bold; color: #fbbf24; margin: 5px 0;">$65/mo</p>
+    initialCode: `// Token Bucket Rate Limiter Class
+class TokenBucket {
+  constructor(capacity, refillRatePerSec) {
+    this.capacity = capacity;
+    this.tokens = capacity;
+    this.refillRate = refillRatePerSec;
+    this.lastRefill = Date.now();
+  }
+
+  refill() {
+    const now = Date.now();
+    const elapsedSeconds = (now - this.lastRefill) / 1000;
+    this.tokens = Math.min(this.capacity, this.tokens + (elapsedSeconds * this.refillRate));
+    this.lastRefill = now;
+  }
+
+  consume(tokens = 1) {
+    this.refill();
+    if (this.tokens >= tokens) {
+      this.tokens -= tokens;
+      return { allowed: true, remainingTokens: Math.floor(this.tokens) };
+    }
+    return { allowed: false, error: '429 Too Many Requests', retryAfterSec: 1 };
+  }
+}
+
+// Test Run
+const limiter = new TokenBucket(5, 1);
+console.log("Request 1:", limiter.consume(1));
+console.log("Request 2:", limiter.consume(1));
+console.log("Request 3:", limiter.consume(1));
+`,
+    expectedOutput: 'Request 1: { allowed: true',
+    solutionHint: 'Track this.lastRefill timestamp and multiply elapsed seconds by refillRate.'
+  },
+  {
+    id: 'c-4',
+    title: 'Modern SaaS Developer Dashboard (HTML / CSS Grid)',
+    category: 'Frontend React',
+    difficulty: 'Beginner',
+    description: 'Create a responsive 3-column developer metric card component using CSS Grid and modern dark theme palette.',
+    instructions: [
+      'Use display: grid with repeat(auto-fit, minmax(220px, 1fr))',
+      'Add clean border outlines, neon green status badges, and hover depth'
+    ],
+    initialCode: `<!-- Responsive Tech Dashboard Component -->
+<div style="font-family: ui-sans-serif, system-ui, sans-serif; padding: 24px; background: #0f172a; color: #f8fafc; border-radius: 16px; border: 1px solid #334155;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+      <h2 style="font-size: 18px; font-weight: 800; margin: 0; color: #38bdf8;">Production Microservices Cluster</h2>
+      <p style="font-size: 12px; color: #94a3b8; margin: 4px 0 0 0;">Region: us-east-1 • Node v20.12.0</p>
     </div>
-    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; border: 1px solid #10b981;">
-      <h3 style="margin: 0; font-size: 16px;">Ijazah Sanad</h3>
-      <p style="font-size: 20px; font-weight: bold; color: #fbbf24; margin: 5px 0;">$120/mo</p>
+    <span style="background: #064e3b; color: #34d399; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; border: 1px solid #059669;">● 100% Operational</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+    <div style="background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155;">
+      <span style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">API Latency</span>
+      <p style="font-size: 24px; font-weight: 800; color: #f8fafc; margin: 8px 0 0 0;">24ms <span style="font-size: 12px; color: #34d399;">↓ 12%</span></p>
+    </div>
+    <div style="background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155;">
+      <span style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Test Pass Rate</span>
+      <p style="font-size: 24px; font-weight: 800; color: #38bdf8; margin: 8px 0 0 0;">99.8% <span style="font-size: 12px; color: #94a3b8;">(142 tests)</span></p>
     </div>
   </div>
 </div>
 `,
     expectedOutput: '',
-    solutionHint: 'Wrap inside inline CSS grid containers.'
+    solutionHint: 'Use CSS grid auto-fit layout with slate colors (#0f172a / #1e293b).'
   }
 ];
 
 export const CodingSandboxWorkspace: React.FC = () => {
-  const [selectedChallenge, setSelectedChallenge] = useState<CodingChallenge>(SAMPLE_CHALLENGES[0]);
+  const [activeChallengeIndex, setActiveChallengeIndex] = useState<number>(0);
   const [code, setCode] = useState<string>(SAMPLE_CHALLENGES[0].initialCode);
-  const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([
+    '⚡ Code Sandbox Engine v4.2.0 initialized.',
+    '✓ V8 JavaScript Compiler ready with ES2024 & React 19 support.',
+    'Click "Run Code" or press (Ctrl+Enter) to execute your solution in the isolated worker sandbox.'
+  ]);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [testPassed, setTestPassed] = useState<boolean | null>(null);
+  const [activeView, setActiveView] = useState<'editor' | 'preview'>('editor');
   const [copied, setCopied] = useState<boolean>(false);
 
-  const handleSelectChallenge = (ch: CodingChallenge) => {
-    setSelectedChallenge(ch);
-    setCode(ch.initialCode);
-    setConsoleOutput([]);
-    setIsSubmitted(false);
+  const currentChallenge = SAMPLE_CHALLENGES[activeChallengeIndex];
+
+  const handleSelectChallenge = (index: number) => {
+    setActiveChallengeIndex(index);
+    setCode(SAMPLE_CHALLENGES[index].initialCode);
+    setTestPassed(null);
+    setTerminalLogs([
+      `Switched to: ${SAMPLE_CHALLENGES[index].title}`,
+      `Category: ${SAMPLE_CHALLENGES[index].category} | Difficulty: ${SAMPLE_CHALLENGES[index].difficulty}`,
+      'Ready to execute code.'
+    ]);
   };
 
   const handleRunCode = () => {
     setIsRunning(true);
-    setConsoleOutput([]);
+    setTerminalLogs((prev) => [...prev, `\n> Executing script at ${new Date().toLocaleTimeString()}...`]);
+
+    const logs: string[] = [];
+    const customConsole = {
+      log: (...args: any[]) => {
+        logs.push(args.map((a) => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' '));
+      },
+      warn: (...args: any[]) => {
+        logs.push(`⚠️ WARN: ${args.join(' ')}`);
+      },
+      error: (...args: any[]) => {
+        logs.push(`❌ ERROR: ${args.join(' ')}`);
+      },
+    };
 
     setTimeout(() => {
       try {
-        const logs: string[] = [];
-        // Capture console.log
-        const originalLog = console.log;
-        console.log = (...args) => {
-          logs.push(args.map((a) => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' '));
-        };
+        const runFn = new Function('console', code);
+        runFn(customConsole);
 
-        // If code is HTML
-        if (code.trim().startsWith('<')) {
-          logs.push('HTML/CSS Rendered successfully in live Web Sandbox!');
-        } else {
-          // Execute JS safely
-          const runFn = new Function(code);
-          runFn();
-        }
-
-        console.log = originalLog;
-        setConsoleOutput(logs.length > 0 ? logs : ['Execution finished with 0 errors.']);
+        setTerminalLogs((prev) => [...prev, ...logs, '✓ Process exited with code 0.']);
+        setTestPassed(true);
       } catch (err: any) {
-        setConsoleOutput([`Error: ${err.message}`]);
+        setTerminalLogs((prev) => [...prev, ...logs, `❌ Runtime Exception: ${err.message}`]);
+        setTestPassed(false);
       } finally {
         setIsRunning(false);
       }
-    }, 300);
+    }, 250);
   };
 
   const handleResetCode = () => {
-    setCode(selectedChallenge.initialCode);
-    setConsoleOutput([]);
-    setIsSubmitted(false);
+    setCode(currentChallenge.initialCode);
+    setTestPassed(null);
+    setTerminalLogs(['Code reset to initial state.']);
   };
 
   const handleCopyCode = () => {
@@ -178,155 +261,203 @@ export const CodingSandboxWorkspace: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmitCode = () => {
-    setIsSubmitted(true);
-    setTimeout(() => {
-      alert('Homework Code submitted successfully to your Instructor for review & automated grading!');
-    }, 400);
-  };
+  const isHtml = code.trim().startsWith('<') || code.includes('<!DOCTYPE') || code.includes('<div');
 
   return (
-    <div className="bg-slate-900 rounded-2xl border border-slate-800 text-white overflow-hidden shadow-2xl flex flex-col">
-      {/* Top Header */}
-      <div className="p-4 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold border border-blue-500/30">
-            <Code2 className="w-5 h-5" />
-          </div>
-          <div>
+    <div className="flex flex-col lg:flex-row h-full min-h-[640px] bg-slate-950 text-slate-100 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl font-mono">
+      {/* 1. Left Sidebar: Problem Sets & Instructions */}
+      <div className="w-full lg:w-80 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 font-sans">
+        <div className="p-4 border-b border-slate-800 space-y-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h3 className="font-extrabold text-sm text-white">Coding & Tech LMS Sandbox</h3>
-              <span className="bg-blue-900/60 text-blue-300 border border-blue-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
-                {selectedChallenge.difficulty}
-              </span>
+              <Code2 className="w-5 h-5 text-blue-400" />
+              <h3 className="font-extrabold text-sm text-white">Coding Sandbox Labs</h3>
             </div>
-            <p className="text-xs text-slate-400 font-medium">{selectedChallenge.title}</p>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+              Interactive
+            </span>
+          </div>
+
+          <div className="space-y-1.5">
+            {SAMPLE_CHALLENGES.map((ch, idx) => (
+              <button
+                key={ch.id}
+                onClick={() => handleSelectChallenge(idx)}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer ${
+                  activeChallengeIndex === idx
+                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <div className="min-w-0 pr-2">
+                  <p className="truncate text-xs font-semibold">{ch.title}</p>
+                  <span className="text-[10px] opacity-75">{ch.category}</span>
+                </div>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase shrink-0 ${
+                  ch.difficulty === 'Beginner' ? 'bg-emerald-950 text-emerald-400' :
+                  ch.difficulty === 'Intermediate' ? 'bg-amber-950 text-amber-400' : 'bg-red-950 text-red-400'
+                }`}>
+                  {ch.difficulty}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Challenge Switcher */}
-        <div className="flex items-center gap-2">
-          {SAMPLE_CHALLENGES.map((ch) => (
-            <button
-              key={ch.id}
-              onClick={() => handleSelectChallenge(ch)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                selectedChallenge.id === ch.id
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
-              }`}
-            >
-              {ch.title.split(' ')[0]} {ch.title.split(' ')[1]}
-            </button>
-          ))}
+        {/* Challenge Description & Instructions */}
+        <div className="p-4 overflow-y-auto space-y-4 flex-1 text-xs">
+          <div>
+            <h4 className="font-bold text-sm text-white mb-1">{currentChallenge.title}</h4>
+            <p className="text-slate-400 leading-relaxed">{currentChallenge.description}</p>
+          </div>
+
+          <div className="space-y-2">
+            <span className="font-bold text-slate-300 uppercase text-[10px] tracking-wider">Instructions:</span>
+            <ul className="space-y-1.5 text-slate-300">
+              {currentChallenge.instructions.map((inst, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="w-4 h-4 rounded-full bg-slate-800 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <span>{inst}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 space-y-1">
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[11px]">
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>Solution Hint</span>
+            </div>
+            <p className="text-[11px] text-slate-400">{currentChallenge.solutionHint}</p>
+          </div>
+        </div>
+
+        {/* Bottom Status Card */}
+        <div className="p-4 border-t border-slate-800 bg-slate-900/90">
+          {testPassed === true && (
+            <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 flex items-center gap-2 text-xs font-bold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>All Test Assertions Passed!</span>
+            </div>
+          )}
+          {testPassed === false && (
+            <div className="p-2.5 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300 flex items-center gap-2 text-xs font-bold">
+              <span>Tests Failed. Check terminal stack trace.</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Main Sandbox Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 flex-1 min-h-[480px]">
-        {/* Left Col: Problem Description (4 cols) */}
-        <div className="lg:col-span-4 p-5 bg-slate-950/60 border-r border-slate-800 flex flex-col justify-between space-y-4">
-          <div className="space-y-3">
-            <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-400" /> Challenge Prompt
-            </h4>
-            <p className="text-xs text-slate-300 leading-relaxed">{selectedChallenge.description}</p>
-
-            <div className="pt-2">
-              <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Requirements</h5>
-              <ul className="space-y-1.5 text-xs text-slate-300">
-                {selectedChallenge.instructions.map((ins, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>{ins}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400">
-            <span className="font-bold text-amber-300">💡 Hint:</span> {selectedChallenge.solutionHint}
-          </div>
-        </div>
-
-        {/* Right Col: Interactive Code Editor + Output (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col bg-slate-900">
-          {/* Editor Action Bar */}
-          <div className="px-4 py-2 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-slate-300 font-mono">
-              <FileCode className="w-4 h-4 text-blue-400" />
+      {/* 2. Main Workspace: Code Editor & Terminal */}
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-950">
+        {/* Editor Controls Bar */}
+        <div className="h-12 bg-slate-900/90 border-b border-slate-800 px-4 flex items-center justify-between font-sans">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-950 rounded-lg border border-slate-800 text-xs font-bold text-slate-300">
+              <FileCode className="w-3.5 h-3.5 text-blue-400" />
               <span>solution.js</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCopyCode}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-                title="Copy code"
-              >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={handleResetCode}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
-                title="Reset code"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleRunCode}
-                disabled={isRunning}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>{isRunning ? 'Executing...' : 'Run Code'}</span>
-              </button>
-              <button
-                onClick={handleSubmitCode}
-                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Submit</span>
-              </button>
-            </div>
+            {isHtml && (
+              <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs font-bold">
+                <button
+                  onClick={() => setActiveView('editor')}
+                  className={`px-2.5 py-0.5 rounded transition-all cursor-pointer ${activeView === 'editor' ? 'bg-slate-900 text-white' : 'text-slate-400'}`}
+                >
+                  Code
+                </button>
+                <button
+                  onClick={() => setActiveView('preview')}
+                  className={`px-2.5 py-0.5 rounded transition-all cursor-pointer ${activeView === 'preview' ? 'bg-slate-900 text-white' : 'text-slate-400'}`}
+                >
+                  Live UI Preview
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Code Textarea / Monaco Simulation */}
-          <div className="flex-1 p-3 bg-slate-950 font-mono text-xs">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyCode}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Copy Code"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            </button>
+
+            <button
+              onClick={handleResetCode}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Reset Code"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleRunCode}
+              disabled={isRunning}
+              className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/30 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>{isRunning ? 'Running...' : 'Run Code'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Editor Body */}
+        <div className="flex-1 flex flex-col relative min-h-0">
+          {activeView === 'editor' ? (
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="w-full h-full min-h-[220px] bg-transparent text-emerald-300 focus:outline-none resize-none font-mono leading-relaxed selection:bg-blue-600 selection:text-white"
+              className="flex-1 p-4 bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm leading-relaxed resize-none focus:outline-none focus:ring-0 w-full overflow-auto selection:bg-blue-500/30"
               spellCheck={false}
+              autoCapitalize="none"
+              autoComplete="off"
             />
+          ) : (
+            <div className="flex-1 p-4 bg-slate-900 overflow-auto">
+              <iframe
+                title="Live UI Output Preview"
+                srcDoc={code}
+                className="w-full h-full rounded-xl border border-slate-800 bg-white"
+                sandbox="allow-scripts"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Bottom Interactive Terminal */}
+        <div className="h-44 bg-slate-900 border-t border-slate-800 flex flex-col font-mono text-xs">
+          <div className="px-4 py-2 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-slate-400">
+            <div className="flex items-center gap-2">
+              <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="font-bold text-[11px]">Output Terminal & Test Results</span>
+            </div>
+            <button
+              onClick={() => setTerminalLogs([])}
+              className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              Clear
+            </button>
           </div>
 
-          {/* Terminal Output / HTML Sandbox Preview */}
-          <div className="border-t border-slate-800 bg-slate-950/90 p-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-2">
-              <Terminal className="w-4 h-4 text-emerald-400" />
-              <span>Console Output & Sandbox Result</span>
-            </div>
-
-            {code.trim().startsWith('<') ? (
+          <div className="flex-1 p-3 overflow-y-auto space-y-1 text-slate-300">
+            {terminalLogs.map((log, idx) => (
               <div
-                className="p-3 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden"
-                dangerouslySetInnerHTML={{ __html: code }}
-              />
-            ) : (
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 font-mono text-xs text-slate-200 min-h-[70px] space-y-1">
-                {consoleOutput.length > 0 ? (
-                  consoleOutput.map((out, idx) => (
-                    <div key={idx} className="text-emerald-400">
-                      &gt; {out}
-                    </div>
-                  ))
-                ) : (
-                  <span className="text-slate-500 italic">Click &quot;Run Code&quot; to execute and see console output...</span>
-                )}
+                key={idx}
+                className={`${
+                  log.includes('❌') ? 'text-red-400 font-bold' :
+                  log.includes('✓') ? 'text-emerald-400 font-bold' :
+                  log.includes('⚠️') ? 'text-amber-400' :
+                  log.includes('>') ? 'text-blue-400 font-semibold' : 'text-slate-400'
+                } leading-relaxed whitespace-pre-wrap`}
+              >
+                {log}
               </div>
-            )}
+            ))}
           </div>
         </div>
       </div>

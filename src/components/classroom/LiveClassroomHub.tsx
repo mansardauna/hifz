@@ -41,11 +41,13 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   roomTitle = 'Live Interactive Session',
   courseTitle = 'Advanced Curriculum Track',
   userRole = 'student',
-  currentUserName = 'Zayd Al-Mansoor',
-  niche = 'quran',
+  currentUserName = 'Alex Mercer',
+  niche = 'coding',
   onLeaveRoom,
   renderWorkspacePlugin
 }) => {
+  const isCoding = niche === 'coding';
+
   // Classroom Tabs
   const [activeTab, setActiveTab] = useState<'forum' | 'video' | 'agenda' | 'whiteboard' | 'workspace'>('forum');
 
@@ -67,7 +69,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
 
-  // Messages Stream
+  // Messages Stream (Strictly Decoupled for Coding vs Quran)
   const [forumMessages, setForumMessages] = useState<{
     id: string;
     sender: string;
@@ -79,20 +81,24 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   }[]>([
     {
       id: 'm-1',
-      sender: niche === 'coding' ? 'Sarah Jenkins' : 'Shaykh Dr. Abdul Rahman',
+      sender: isCoding ? 'Sarah Jenkins' : 'Shaykh Dr. Abdul Rahman',
       role: 'teacher',
-      text: niche === 'coding' 
-        ? 'Welcome to the Live Coding Session! Today we cover React 19 Server Actions and async data mutations.' 
+      text: isCoding
+        ? 'Welcome to the Live Coding Session! Today we cover React 19 Server Actions, optimistic mutations, and custom hook architectures.'
         : 'Assalamu Alaikum. Welcome everyone to today\'s live halaqah! We will practice Tajweed rules and oral recitations.',
       time: '10:00 AM',
       pinned: true,
-      attachment: niche === 'coding' ? { name: 'React19_Server_Actions.md', size: '42 KB' } : { name: 'Tajweed_Rules_Guide.pdf', size: '1.2 MB' }
+      attachment: isCoding
+        ? { name: 'React19_Server_Actions.md', size: '42 KB' }
+        : { name: 'Tajweed_Rules_Guide.pdf', size: '1.2 MB' }
     },
     {
       id: 'm-2',
-      sender: 'Fatima Zahra',
+      sender: isCoding ? 'David Miller' : 'Fatima Zahra',
       role: 'student',
-      text: niche === 'coding' ? 'Ready with my local sandbox repository.' : 'Wa Alaikum Assalam Ustadh, completed the recitation homework.',
+      text: isCoding
+        ? 'Ready with my local sandbox repository and unit test suite.'
+        : 'Wa Alaikum Assalam Ustadh, completed the recitation homework.',
       time: '10:02 AM'
     }
   ]);
@@ -263,8 +269,10 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         {/* Title & Status */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shrink-0">
-              {niche === 'coding' ? <Code className="w-4 h-4 sm:w-4.5 sm:h-4.5" /> : <BookOpen className="w-4 h-4 sm:w-4.5 sm:h-4.5" />}
+            <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-white flex items-center justify-center font-bold shrink-0 ${
+              isCoding ? 'bg-blue-600' : 'bg-emerald-600'
+            }`}>
+              {isCoding ? <Code className="w-4 h-4 sm:w-4.5 sm:h-4.5" /> : <BookOpen className="w-4 h-4 sm:w-4.5 sm:h-4.5" />}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
@@ -331,7 +339,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               activeTab === 'video' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
             }`}
           >
-            <VideoIcon className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <VideoIcon className={`w-3.5 h-3.5 shrink-0 ${isCoding ? 'text-blue-600' : 'text-emerald-600'}`} />
             <span>Live Video</span>
           </button>
 
@@ -361,7 +369,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               activeTab === 'workspace' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <Sparkles className={`w-3.5 h-3.5 shrink-0 ${isCoding ? 'text-blue-600' : 'text-emerald-600'}`} />
             <span>Workspace</span>
           </button>
         </div>
@@ -408,13 +416,17 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 flex flex-col justify-between bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden max-w-5xl mx-auto w-full">
             <div className="p-3.5 sm:p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-emerald-600 animate-pulse" />
-                <span className="text-xs sm:text-sm font-bold text-slate-900">Class Thread & Resources</span>
+                <Radio className={`w-4 h-4 animate-pulse ${isCoding ? 'text-blue-600' : 'text-emerald-600'}`} />
+                <span className="text-xs sm:text-sm font-bold text-slate-900">
+                  {isCoding ? 'Cohort Discussion Thread & Repository Files' : 'Class Thread & Resources'}
+                </span>
               </div>
               {!isInCall && (
                 <button
                   onClick={handleStartCall}
-                  className="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1 cursor-pointer"
+                  className={`text-xs font-bold hover:underline flex items-center gap-1 cursor-pointer ${
+                    isCoding ? 'text-blue-700' : 'text-emerald-700'
+                  }`}
                 >
                   <VideoIcon className="w-3.5 h-3.5" /> Start Video &rarr;
                 </button>
@@ -431,8 +443,10 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-bold text-xs text-slate-900">{msg.sender}</span>
                       {msg.role === 'teacher' && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">
-                          Instructor
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                          isCoding ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'
+                        }`}>
+                          {isCoding ? 'Lead Mentor' : 'Instructor'}
                         </span>
                       )}
                       <span className="text-[10px] text-slate-400">{msg.time}</span>
@@ -446,7 +460,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                       {msg.text}
                     </div>
                     {msg.attachment && (
-                      <div className="inline-flex items-center gap-2 p-2 rounded-lg bg-slate-100 text-xs text-emerald-700 border border-slate-200">
+                      <div className="inline-flex items-center gap-2 p-2 rounded-lg bg-slate-100 text-xs text-blue-700 border border-slate-200">
                         <FileText className="w-3.5 h-3.5 shrink-0" />
                         <span className="font-semibold text-slate-800 truncate">{msg.attachment.name}</span>
                         <span className="text-[10px] text-slate-500 shrink-0">({msg.attachment.size})</span>
@@ -492,7 +506,9 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 />
                 {!videoEnabled && (
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shadow-lg">
+                    <div className={`w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-xl shadow-lg ${
+                      isCoding ? 'bg-blue-600' : 'bg-emerald-600'
+                    }`}>
                       {currentUserName.charAt(0)}
                     </div>
                     <span className="text-xs text-slate-400 font-semibold">{currentUserName} (Camera Off)</span>
@@ -530,22 +546,22 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-2.5">
-                    <div className="w-16 h-16 rounded-full bg-slate-800 text-emerald-400 flex items-center justify-center font-bold text-xl ring-2 ring-emerald-500/30">
-                      {niche === 'coding' ? 'SJ' : 'AR'}
+                    <div className="w-16 h-16 rounded-full bg-slate-800 text-blue-400 flex items-center justify-center font-bold text-xl ring-2 ring-blue-500/30">
+                      {isCoding ? 'SJ' : 'AR'}
                     </div>
                     <span className="text-xs font-bold text-white">
-                      {niche === 'coding' ? 'Sarah Jenkins (Lead Mentor)' : 'Shaykh Dr. Abdul Rahman (Lead Qari)'}
+                      {isCoding ? 'Sarah Jenkins (Lead Software Architect)' : 'Shaykh Dr. Abdul Rahman (Lead Qari)'}
                     </span>
-                    <span className="text-[10px] text-emerald-400 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-[10px] text-blue-400 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                       Livekit SFU Stream Active
                     </span>
                   </div>
                 )}
 
                 <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-bold flex items-center gap-2 border border-slate-700/60">
-                  <span>{niche === 'coding' ? 'Sarah Jenkins (Instructor)' : 'Shaykh Abdul Rahman'}</span>
-                  <Volume2 className="w-3 h-3 text-emerald-400" />
+                  <span>{isCoding ? 'Sarah Jenkins (Instructor)' : 'Shaykh Abdul Rahman'}</span>
+                  <Volume2 className="w-3 h-3 text-blue-400" />
                 </div>
               </div>
             </div>
@@ -579,7 +595,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               <button
                 onClick={toggleScreenShare}
                 className={`p-3 sm:p-3.5 rounded-2xl font-bold transition-all cursor-pointer select-none active:scale-95 ${
-                  screenSharing ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                  screenSharing ? 'bg-blue-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                 }`}
                 title="Share Screen"
               >
@@ -613,21 +629,39 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full shadow-xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">Session Learning Agenda & Milestones</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Key topics and oral/coding evaluation milestones for today's cohort.</p>
+                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
+                  {isCoding ? 'Technical Agenda & Sprint Milestones' : 'Session Learning Agenda & Milestones'}
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {isCoding
+                    ? 'Code review specs, live architecture evaluation, and pull request audits.'
+                    : 'Key topics and oral evaluation milestones for today\'s cohort.'}
+                </p>
               </div>
               <Badge variant="success">In Progress</Badge>
             </div>
 
             <div className="space-y-3">
-              {[
-                { title: niche === 'coding' ? 'Deep Dive into React 19 useActionState & form hooks' : 'Surah Al-Mulk: Precision Tajweed Review (Ayahs 1-10)', done: true },
-                { title: niche === 'coding' ? 'Building optimistic UI updates with Server Actions' : 'Makharij Drills: Throat letters (ح، خ، ع، غ)', done: true },
-                { title: niche === 'coding' ? 'Interactive Student Code Submissions Evaluation' : 'Individual 1-on-1 Recitation Audits & Grading', done: false },
-                { title: niche === 'coding' ? 'Q&A, Homework Assignment Briefing & Pull Request reviews' : 'Oral homework assignment and recorded Looper submission', done: false }
-              ].map((item, idx) => (
+              {(isCoding
+                ? [
+                    { title: 'Deep Dive into React 19 useActionState & Server Actions', done: true },
+                    { title: 'Building optimistic UI state transitions with useOptimistic', done: true },
+                    { title: 'Interactive Student Code Sandbox Test Suite Evaluation', done: false },
+                    { title: 'Q&A, Pull Request Code Review & Capstone Briefing', done: false }
+                  ]
+                : [
+                    { title: 'Surah Al-Mulk: Precision Tajweed Review (Ayahs 1-10)', done: true },
+                    { title: 'Makharij Drills: Throat letters (ح، خ، ع، غ)', done: true },
+                    { title: 'Individual 1-on-1 Recitation Audits & Grading', done: false },
+                    { title: 'Oral homework assignment and recorded Looper submission', done: false }
+                  ]
+              ).map((item, idx) => (
                 <div key={idx} className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/80 flex items-start gap-3">
-                  <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${item.done ? 'bg-emerald-600 text-white' : 'border border-slate-300 bg-white'}`}>
+                  <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
+                    item.done
+                      ? isCoding ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
+                      : 'border border-slate-300 bg-white'
+                  }`}>
                     {item.done && <CheckCircle2 className="w-3.5 h-3.5" />}
                   </div>
                   <div>
@@ -656,7 +690,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-3 sm:p-6 overflow-y-auto shadow-xs">
             {renderWorkspacePlugin || (
               <div className="p-8 text-center text-slate-400 space-y-3">
-                <Sparkles className="w-8 h-8 mx-auto text-emerald-500" />
+                <Sparkles className="w-8 h-8 mx-auto text-blue-500" />
                 <p className="text-xs sm:text-sm font-semibold">Interactive Workspace Plugin Enabled for this Session.</p>
               </div>
             )}

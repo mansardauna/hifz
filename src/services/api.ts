@@ -156,7 +156,7 @@ class HifzApiClient {
       }
     }
 
-    return MOCK_LEADS.filter((lead) => lead.tenantId === tenantId || true);
+    return MOCK_LEADS.filter((lead) => lead.tenantId === tenantId);
   }
 
   // Update lead status via PUT to PHP API
@@ -201,7 +201,7 @@ class HifzApiClient {
       }
     }
 
-    return MOCK_COURSES.filter((c) => c.tenantId === tenantId || true);
+    return MOCK_COURSES.filter((c) => c.tenantId === tenantId);
   }
 
   // Update course hierarchy / modules in PHP API
