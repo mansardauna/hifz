@@ -258,27 +258,27 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
     return (
       <div className="space-y-6 font-sans" dir={direction}>
         {/* Header Bar */}
-        <div className="bg-white p-6 rounded-md border border-slate-200 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="p-2 bg-emerald-100 text-emerald-800 rounded-md font-bold text-lg">
-                📋
-              </span>
-              <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900">
-                Admissions & Questionnaire Forms
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100 flex items-center justify-center">
+                <FileCheck className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                Form Builder
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Create and manage multiple intake forms for your academy. All forms are automatically available as draggable blocks in the GrapesJS page builder.
+              Create and manage multiple intake and lead capture forms for your academy. Forms are automatically available as draggable blocks in the Page Builder.
             </p>
           </div>
 
           <button
             onClick={handleCreateNewForm}
-            className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold font-display text-xs rounded-md shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4" />
-            <span>+ Create New Form</span>
+            <span>Create New Form</span>
           </button>
         </div>
 

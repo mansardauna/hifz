@@ -501,7 +501,7 @@ export const PlatformLandingPage: React.FC<PlatformLandingPageProps> = ({
                 <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
                   <Palette className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">GrapesJS Landing Builder</h3>
+                <h3 className="font-bold text-sm text-slate-900">Visual Page Builder</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Visual drag-and-drop page builder with pre-built admissions templates for prospective student enrollment.
                 </p>

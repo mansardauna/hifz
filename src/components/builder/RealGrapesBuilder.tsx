@@ -40,9 +40,6 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   const [selectedDevice, setSelectedDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [isTemplateBankOpen, setIsTemplateBankOpen] = useState<boolean>(false);
-  const [activeSideTab, setActiveSideTab] = useState<'blocks' | 'templates'>('blocks');
-  const [blockSearchTerm, setBlockSearchTerm] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Available forms created in Form Builder
@@ -157,7 +154,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     `;
   };
 
-  // Comprehensive Pre-Built Template Bank
+  // Pre-Built Landing Page Template Bank
   const TEMPLATE_BANK = [
     {
       id: 'islamic-center-classic',
@@ -262,27 +259,6 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             </div>
           </div>
         </section>
-
-        <!-- 3-Features Row -->
-        <section aria-label="Bootcamp Features" class="py-16 px-8 bg-slate-900 text-white font-sans border-t border-slate-800">
-          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
-              <div class="text-3xl">💻</div>
-              <h3 class="font-bold text-base text-white">Isolated Code Sandbox</h3>
-              <p class="text-xs text-slate-400 leading-relaxed">Execute JavaScript, React 19, and Node.js solutions directly in the browser with automated test assertion feedback.</p>
-            </div>
-            <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
-              <div class="text-3xl">⚡</div>
-              <h3 class="font-bold text-base text-white">Live Mentor Code Reviews</h3>
-              <p class="text-xs text-slate-400 leading-relaxed">Pair-program live with Senior Tech Leads via WebRTC video classrooms and interactive collaborative whiteboards.</p>
-            </div>
-            <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
-              <div class="text-3xl">🎓</div>
-              <h3 class="font-bold text-base text-white">Verified Career Portfolio</h3>
-              <p class="text-xs text-slate-400 leading-relaxed">Graduate with 5 production-ready full-stack applications, merged GitHub pull requests, and technical interview mastery.</p>
-            </div>
-          </div>
-        </section>
       `,
     },
     {
@@ -338,6 +314,18 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     }
   ];
 
+  // Helper for generating big, crisp SVG icons for GrapesJS block labels
+  const makeBlockLabel = (title: string, svgPath: string) => {
+    return `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px 4px; text-align: center;">
+        <svg style="width: 26px; height: 26px; stroke: #2563eb; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+          ${svgPath}
+        </svg>
+        <span style="font-size: 11px; font-weight: 700; color: #1e293b; line-height: 1.2;">${title}</span>
+      </div>
+    `;
+  };
+
   // Initial tenant HTML
   const getInitialTenantHtml = (): string => {
     if (tenant.customHtml && tenant.customHtml.trim().length > 50) {
@@ -352,23 +340,29 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   useEffect(() => {
     if (!containerRef.current || !blocksContainerRef.current) return;
 
-    // Dynamically compile block definitions for all forms
+    // Dynamically compile block definitions for all forms with sharp SVG icon
     const formBlocks = tenantForms.map((form) => ({
       id: `form-block-${form.id}`,
-      label: `📝 ${form.title}`,
+      label: makeBlockLabel(
+        form.title,
+        `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>`
+      ),
       category: 'Admissions & Forms',
       content: compileFormToHtml(form),
     }));
 
-    // Comprehensive Library of Accessible & SEO-Optimized Semantic Blocks
+    // Comprehensive Library of Accessible & SEO-Optimized Semantic Blocks with Real SVG Icons (Zero Emojis)
     const defaultBlocks = [
       // 1. Headers & Announcements
       {
         id: 'top-notification-banner',
-        label: '📢 Announcement Bar',
-        category: 'Headers & Announcements',
+        label: makeBlockLabel(
+          'Announcement Bar',
+          `<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>`
+        ),
+        category: 'Headers & Nav',
         content: `
-          <div class="bg-blue-600 text-white py-2 px-6 flex justify-between items-center text-xs font-semibold font-sans">
+          <div class="bg-blue-600 text-white py-2.5 px-6 flex justify-between items-center text-xs font-semibold font-sans">
             <div class="flex items-center gap-2">
               <span class="bg-blue-800 px-2 py-0.5 rounded-full text-[10px] font-bold">LIMITED TIME</span>
               <span>Enrollment for the upcoming cohort closes Friday!</span>
@@ -379,10 +373,13 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       },
       {
         id: 'accessible-sticky-nav',
-        label: '🧭 Accessible Navigation Bar',
-        category: 'Headers & Announcements',
+        label: makeBlockLabel(
+          'Navigation Bar',
+          `<polygon points="3 11 22 2 13 21 11 13 3 11"/>`
+        ),
+        category: 'Headers & Nav',
         content: `
-          <header role="banner" class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 py-3 px-6 font-sans">
+          <header role="banner" class="bg-white border-b border-slate-200 sticky top-0 z-30 py-3 px-6 font-sans">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">🎓</span>
@@ -405,7 +402,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 2. Hero Sections
       {
         id: 'split-hero-accessible',
-        label: '🚀 Split Hero with Media',
+        label: makeBlockLabel(
+          'Split Hero',
+          `<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>`
+        ),
         category: 'Hero Sections',
         content: `
           <section aria-labelledby="hero-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
@@ -436,7 +436,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 3. Curriculum & Courses
       {
         id: 'curriculum-3col-grid',
-        label: '📚 3-Column Course Grid',
+        label: makeBlockLabel(
+          '3-Col Course Grid',
+          `<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>`
+        ),
         category: 'Curriculum & Tracks',
         content: `
           <section id="courses" aria-labelledby="courses-title" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
@@ -487,7 +490,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 4. Tuition & Pricing
       {
         id: 'tuition-pricing-table',
-        label: '💳 Tuition Pricing Table',
+        label: makeBlockLabel(
+          'Pricing Table',
+          `<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>`
+        ),
         category: 'Tuition & Pricing',
         content: `
           <section id="pricing" aria-labelledby="pricing-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
@@ -523,7 +529,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 5. Virtual Classroom Showcase
       {
         id: 'virtual-classroom-teaser',
-        label: '🎥 Virtual Classroom Teaser',
+        label: makeBlockLabel(
+          'Live Classroom',
+          `<path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/>`
+        ),
         category: 'Live Classroom',
         content: `
           <section aria-labelledby="classroom-title" class="py-20 px-6 sm:px-12 bg-slate-950 text-white font-sans">
@@ -555,7 +564,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 6. Testimonials & Social Proof
       {
         id: 'testimonials-3col',
-        label: '⭐ Student Testimonials Grid',
+        label: makeBlockLabel(
+          'Reviews Grid',
+          `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`
+        ),
         category: 'Social Proof',
         content: `
           <section aria-labelledby="reviews-title" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
@@ -596,7 +608,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 7. Statistics Counters
       {
         id: 'stats-4col-counter',
-        label: '📊 4-Column Stat Counters',
+        label: makeBlockLabel(
+          'Stat Counters',
+          `<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>`
+        ),
         category: 'Social Proof',
         content: `
           <section aria-label="Academy Statistics" class="py-16 px-6 sm:px-12 bg-slate-900 text-white font-sans">
@@ -625,7 +640,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 8. FAQ Accordion
       {
         id: 'faq-accessible-accordion',
-        label: '❓ Accessible FAQ Accordion',
+        label: makeBlockLabel(
+          'FAQ Accordion',
+          `<circle cx="12" cy="12" r="10"/><path d="9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/>`
+        ),
         category: 'FAQ & Support',
         content: `
           <section id="faq" aria-labelledby="faq-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
@@ -656,7 +674,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 9. Call to Action (CTA)
       {
         id: 'cta-cohort-urgency',
-        label: '⚡ Cohort Deadline CTA Banner',
+        label: makeBlockLabel(
+          'Deadline Banner',
+          `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>`
+        ),
         category: 'Call to Action',
         content: `
           <section aria-label="Admissions Deadline" class="py-20 px-6 sm:px-12 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 text-white text-center font-sans">
@@ -676,7 +697,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 10. Multi-Column Footer
       {
         id: 'accessible-mega-footer',
-        label: '🏁 Multi-Column Accessible Footer',
+        label: makeBlockLabel(
+          'Mega Footer',
+          `<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>`
+        ),
         category: 'Footers & Legal',
         content: `
           <footer role="contentinfo" class="bg-slate-950 text-white py-16 px-6 sm:px-12 font-sans border-t border-slate-900">
@@ -713,7 +737,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       // 11. Layout & Grid Primitives
       {
         id: 'grid-2-col',
-        label: '⚏ 2 Columns (50 / 50)',
+        label: makeBlockLabel(
+          '2 Columns (50/50)',
+          `<rect width="18" height="18" x="3" y="3" rx="2"/><line x1="12" x2="12" y1="3" y2="21"/>`
+        ),
         category: 'Layout & Grid',
         content: `
           <div class="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
@@ -730,7 +757,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       },
       {
         id: 'grid-3-col',
-        label: '⚎ 3 Columns (33 / 33 / 33)',
+        label: makeBlockLabel(
+          '3 Columns (33/33/33)',
+          `<rect width="18" height="18" x="3" y="3" rx="2"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/>`
+        ),
         category: 'Layout & Grid',
         content: `
           <div class="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
@@ -751,19 +781,28 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       },
       {
         id: 'basic-heading',
-        label: '🏷️ Heading (H2)',
+        label: makeBlockLabel(
+          'Heading (H2)',
+          `<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/>`
+        ),
         category: 'Basic Elements',
         content: `<h2 class="text-3xl font-extrabold text-slate-900 font-sans my-4">Section Headline Title</h2>`,
       },
       {
         id: 'basic-paragraph',
-        label: '📄 Paragraph Text',
+        label: makeBlockLabel(
+          'Paragraph Text',
+          `<line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/>`
+        ),
         category: 'Basic Elements',
         content: `<p class="text-sm text-slate-600 leading-relaxed my-2 font-sans">Write your rich explanatory paragraph content here. High accessibility and responsive readability.</p>`,
       },
       {
         id: 'basic-button-cta',
-        label: '🔘 Primary CTA Button',
+        label: makeBlockLabel(
+          'CTA Button',
+          `<path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>`
+        ),
         category: 'Basic Elements',
         content: `<a href="#admissions" class="inline-block px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all">Click Here &rarr;</a>`,
       }
@@ -795,7 +834,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     
     // Base Canvas CSS for high accessibility
     const defaultCanvasCss = `
-      body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
+      body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background-color: #ffffff; color: #0f172a; margin: 0; padding: 0; }
       h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; }
       .arabic-heading { font-family: 'Amiri', serif; }
       a, button, .btn { cursor: pointer; transition: all 0.2s ease-in-out; }
@@ -825,11 +864,11 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       if (device === 'mobile') {
         iframe.style.width = '375px';
         iframe.style.margin = '0 auto';
-        iframe.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+        iframe.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)';
       } else if (device === 'tablet') {
         iframe.style.width = '768px';
         iframe.style.margin = '0 auto';
-        iframe.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1)';
+        iframe.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)';
       } else {
         iframe.style.width = '100%';
         iframe.style.margin = '0';
@@ -887,37 +926,70 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
   const handleUndo = () => editorRef.current?.runCommand('core:undo');
   const handleRedo = () => editorRef.current?.runCommand('core:redo');
-  const handleClearCanvas = () => {
-    if (confirm('Are you sure you want to clear the entire page canvas?')) {
-      editorRef.current?.setComponents('');
-      setHasUnsavedChanges(true);
-    }
-  };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-130px)] min-h-[680px] bg-slate-900 text-slate-100 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl font-sans">
-      {/* 1. TOP BUILDER TOOLBAR (Responsive) */}
-      <header className="h-14 bg-slate-950 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0">
+    <div className="flex flex-col h-[calc(100vh-130px)] min-h-[680px] bg-white text-slate-900 rounded-3xl overflow-hidden border border-slate-200 shadow-xl font-sans">
+      {/* Block Manager Custom CSS Injection for crisp white cards and big SVG icons */}
+      <style>{`
+        .gjs-block {
+          background: #ffffff !important;
+          color: #0f172a !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 14px !important;
+          padding: 8px 4px !important;
+          margin: 6px 0 !important;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+          transition: all 0.2s ease-in-out !important;
+          cursor: grab !important;
+          width: 100% !important;
+          min-height: 68px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+        .gjs-block:hover {
+          border-color: #2563eb !important;
+          box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.15) !important;
+          transform: translateY(-1px) !important;
+        }
+        .gjs-block-category .gjs-title {
+          background: #f8fafc !important;
+          color: #334155 !important;
+          font-weight: 800 !important;
+          font-size: 11px !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.05em !important;
+          padding: 10px 14px !important;
+          border-top: 1px solid #e2e8f0 !important;
+          border-bottom: 1px solid #e2e8f0 !important;
+        }
+        .gjs-cv-canvas {
+          background-color: #f1f5f9 !important;
+        }
+      `}</style>
+
+      {/* 1. TOP BUILDER TOOLBAR (Light Theme, Crisp & Modern) */}
+      <header className="h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0 shadow-xs">
         {/* Left: Branding & Status */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <LayoutTemplate className="w-5 h-5 text-blue-400" />
-            <span className="font-extrabold text-sm text-white hidden sm:inline">Visual Page Builder</span>
+            <LayoutTemplate className="w-5 h-5 text-blue-600" />
+            <span className="font-extrabold text-sm text-slate-900 hidden sm:inline">Page Builder</span>
           </div>
           {hasUnsavedChanges && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
               Unsaved Edits
             </span>
           )}
         </div>
 
         {/* Center: Device Switcher Viewports */}
-        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             type="button"
             onClick={() => handleDeviceChange('desktop')}
             className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-              selectedDevice === 'desktop' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+              selectedDevice === 'desktop' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Desktop View (100%)"
           >
@@ -927,7 +999,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             type="button"
             onClick={() => handleDeviceChange('tablet')}
             className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-              selectedDevice === 'tablet' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+              selectedDevice === 'tablet' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Tablet View (768px)"
           >
@@ -937,7 +1009,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             type="button"
             onClick={() => handleDeviceChange('mobile')}
             className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-              selectedDevice === 'mobile' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'
+              selectedDevice === 'mobile' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
             title="Mobile View (375px)"
           >
@@ -950,7 +1022,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={handleUndo}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
             title="Undo (Ctrl+Z)"
           >
             <RotateCcw className="w-4 h-4" />
@@ -959,7 +1031,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={handleRedo}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
             title="Redo (Ctrl+Y)"
           >
             <RotateCw className="w-4 h-4" />
@@ -968,9 +1040,9 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setIsTemplateBankOpen(true)}
-            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span className="hidden sm:inline">Templates</span>
           </button>
 
@@ -978,7 +1050,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/30 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
+            className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/10 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{isSaving ? 'Publishing...' : 'Save & Publish'}</span>
@@ -986,59 +1058,59 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         </div>
       </header>
 
-      {/* 2. MAIN BUILDER BODY (Left Sidepanel + Right Canvas) */}
-      <div className="flex-1 flex overflow-hidden min-w-0">
+      {/* 2. MAIN BUILDER BODY (Light Left Sidepanel + Clean Canvas) */}
+      <div className="flex-1 flex overflow-hidden min-w-0 bg-slate-50">
         {/* Left Sidepanel: Block Library & Tabs */}
-        <div className="w-72 sm:w-80 bg-slate-950 border-r border-slate-800 flex flex-col shrink-0 overflow-hidden">
+        <div className="w-72 sm:w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-hidden shadow-xs">
           {/* Sidepanel Tabs */}
-          <div className="p-3 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
             <div className="flex items-center gap-1.5">
-              <Layers className="w-4 h-4 text-blue-400" />
-              <span className="font-extrabold text-xs text-white uppercase tracking-wider">Drag & Drop Blocks</span>
+              <Layers className="w-4 h-4 text-blue-600" />
+              <span className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">Drag & Drop Blocks</span>
             </div>
-            <span className="text-[10px] text-slate-400 font-mono">25+ Elements</span>
+            <span className="text-[10px] text-slate-500 font-bold bg-slate-200/80 px-2 py-0.5 rounded-full">25+ Blocks</span>
           </div>
 
           {/* GrapesJS Rendered Block Container */}
           <div
             ref={blocksContainerRef}
-            className="flex-1 p-3 overflow-y-auto space-y-2 text-xs scrollbar-thin scrollbar-thumb-slate-800"
+            className="flex-1 p-3 overflow-y-auto space-y-2 text-xs scrollbar-thin scrollbar-thumb-slate-300"
           />
 
           {/* Bottom Quick Help */}
-          <div className="p-3 border-t border-slate-800 bg-slate-950/80 text-[11px] text-slate-400 flex items-center gap-2">
-            <HelpCircle className="w-4 h-4 text-slate-500 shrink-0" />
-            <span>Drag blocks onto the canvas to insert sections. Click text to edit in-line.</span>
+          <div className="p-3 border-t border-slate-200 bg-slate-50 text-[11px] text-slate-500 flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-slate-400 shrink-0" />
+            <span>Drag blocks onto the canvas. Click text to edit in-line.</span>
           </div>
         </div>
 
         {/* Right: GrapesJS Visual Canvas */}
-        <div className="flex-1 bg-slate-900 flex flex-col justify-center items-center overflow-auto p-2 sm:p-4">
+        <div className="flex-1 bg-slate-100 flex flex-col justify-center items-center overflow-auto p-2 sm:p-4">
           <div
             ref={containerRef}
-            className="w-full h-full rounded-2xl overflow-hidden bg-white shadow-2xl transition-all duration-300"
+            className="w-full h-full rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md transition-all duration-300 min-h-[640px]"
           />
         </div>
       </div>
 
-      {/* 3. TEMPLATE BANK MODAL */}
+      {/* 3. TEMPLATE BANK MODAL (Light Theme) */}
       {isTemplateBankOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-4xl w-full p-6 space-y-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full p-6 space-y-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
+                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-500" />
                   <span>Landing Page Template Library</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Choose a pre-built, high-accessibility and SEO-optimized HTML/CSS template to overwrite the canvas.
+                <p className="text-xs text-slate-500 mt-1">
+                  Choose a pre-built, high-accessibility and SEO-optimized HTML/CSS template to load into your canvas.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsTemplateBankOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1048,7 +1120,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               {TEMPLATE_BANK.map((tmpl) => (
                 <div
                   key={tmpl.id}
-                  className="bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between space-y-4 hover:border-slate-700 transition-all group"
+                  className="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex flex-col justify-between space-y-4 hover:border-blue-400 hover:shadow-md transition-all group"
                 >
                   <div className="space-y-3">
                     <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
@@ -1058,15 +1130,15 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                       </span>
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-white">{tmpl.name}</h4>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{tmpl.description}</p>
+                      <h4 className="font-bold text-sm text-slate-900">{tmpl.name}</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">{tmpl.description}</p>
                     </div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleApplyTemplate(tmpl.html)}
-                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
                   >
                     Apply Template to Canvas
                   </button>

@@ -80,7 +80,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
         'Full Interactive Analytics & Growth Charts',
         'Live WebRTC Classroom & Whiteboard',
         'Multiple Merchant Gateways (Stripe, Moyasar, Flutterwave)',
-        'GrapesJS Multi-Page Templates',
+        'Visual Page Builder & Templates',
       ],
     },
     {
