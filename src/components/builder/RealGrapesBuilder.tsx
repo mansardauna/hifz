@@ -164,9 +164,9 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       previewImg: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=600&q=80',
       html: `
         <!-- Top Announcement Bar -->
-        <header role="banner" class="bg-emerald-800 text-white py-2.5 px-6 flex justify-between items-center text-xs font-semibold font-sans">
+        <header role="banner" class="bg-emerald-700 text-white py-2.5 px-6 flex justify-between items-center text-xs font-semibold font-sans">
           <div class="flex items-center gap-3">
-            <span class="bg-emerald-950 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">New Cohort</span>
+            <span class="bg-emerald-900 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">New Cohort</span>
             <span class="font-mono">FALL ENROLLMENT NOW OPEN • LIMITED SEATS</span>
           </div>
           <div class="hidden sm:flex items-center gap-4 text-emerald-100">
@@ -176,17 +176,17 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           </div>
         </header>
 
-        <!-- Sacred Calligraphy Hero -->
-        <section aria-labelledby="hero-title" class="relative py-28 px-8 bg-slate-950 text-white text-center font-sans overflow-hidden">
+        <!-- Sacred Calligraphy Hero (Light Theme with Crisp Black Headings) -->
+        <section aria-labelledby="hero-title" class="relative py-20 px-8 bg-slate-50 text-slate-900 text-center font-sans border-b border-slate-200">
           <div class="relative max-w-4xl mx-auto space-y-6">
-            <p class="text-3xl sm:text-5xl text-amber-400 font-bold" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-            <h1 id="hero-title" class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+            <p class="text-3xl sm:text-5xl text-emerald-700 font-bold" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1 id="hero-title" class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
               Master Quranic Recitation & Tajweed with Verified Sanad
             </h1>
-            <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">${tenant.tagline}</p>
+            <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">${tenant.tagline}</p>
             <div class="flex justify-center gap-4 pt-4">
               <a href="#courses" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Explore Curriculums</a>
-              <a href="#admissions" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg transition-all">Apply for Admissions</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Apply for Admissions</a>
             </div>
           </div>
         </section>
@@ -216,36 +216,36 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     {
       id: 'modern-codecraft-bootcamp',
       name: 'Modern CodeCraft Developer Bootcamp',
-      description: 'Engineered for software academies: Dark terminal hero, LeetCode algorithms, live coding sandbox preview, and Git PR tracks.',
+      description: 'Engineered for software academies: Clean high-contrast hero, LeetCode algorithms, live coding sandbox preview, and Git PR tracks.',
       badge: 'Tech & Coding',
       previewImg: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80',
       html: `
-        <!-- Tech Hero Section -->
-        <section aria-labelledby="tech-hero" class="py-24 px-8 bg-slate-950 text-white font-sans overflow-hidden">
+        <!-- Tech Hero Section (Light Theme with Crisp Black Text & Code Sandbox) -->
+        <section aria-labelledby="tech-hero" class="py-20 px-8 bg-white text-slate-900 font-sans border-b border-slate-200">
           <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div class="lg:col-span-7 space-y-6">
-              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-950 border border-blue-800 text-blue-400 text-xs font-bold font-mono">
-                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> FULL-STACK ENGINEERING COHORT
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold font-mono">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> FULL-STACK ENGINEERING COHORT
               </div>
-              <h1 id="tech-hero" class="text-4xl sm:text-6xl font-extrabold text-white leading-tight tracking-tight">
-                Master Modern <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Software Architecture</span>
+              <h1 id="tech-hero" class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight">
+                Master Modern <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Software Architecture</span>
               </h1>
-              <p class="text-base text-slate-300 leading-relaxed max-w-xl">
+              <p class="text-base text-slate-600 leading-relaxed max-w-xl">
                 Build real-world full-stack web applications, solve algorithm problem sets, and master React 19, TypeScript, and microservices with 1-on-1 lead mentor code reviews.
               </p>
               <div class="flex flex-wrap gap-4 pt-2">
-                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-900/30 transition-all">Enroll in Cohort</a>
-                <a href="#courses" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm rounded-xl transition-all">View Curriculum</a>
+                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Enroll in Cohort</a>
+                <a href="#courses" class="px-8 py-3.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold text-sm rounded-xl transition-all">View Curriculum</a>
               </div>
             </div>
 
             <!-- Terminal Mockup -->
-            <div class="lg:col-span-5 bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-2xl font-mono text-xs">
+            <div class="lg:col-span-5 bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-2xl font-mono text-xs text-white">
               <div class="flex items-center gap-1.5 pb-3 border-b border-slate-800">
                 <div class="w-3 h-3 rounded-full bg-red-500"></div>
                 <div class="w-3 h-3 rounded-full bg-amber-500"></div>
                 <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                <span class="text-slate-500 ml-2 text-[10px]">main.ts — Live Sandbox</span>
+                <span class="text-slate-400 ml-2 text-[10px]">main.ts — Live Sandbox</span>
               </div>
               <div class="pt-3 text-emerald-400 space-y-1">
                 <p class="text-slate-500">// Interactive V8 Coding Sandbox</p>
@@ -268,15 +268,15 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       badge: 'Language & Humanities',
       previewImg: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=600&q=80',
       html: `
-        <section aria-labelledby="arabic-hero" class="py-24 px-8 bg-slate-900 text-white text-center font-sans">
+        <section aria-labelledby="arabic-hero" class="py-20 px-8 bg-slate-50 text-slate-900 text-center font-sans border-b border-slate-200">
           <div class="max-w-4xl mx-auto space-y-6">
-            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-900/60 text-blue-300 border border-blue-700">
+            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
               Classical Arabic & Linguistics Track
             </span>
-            <h1 id="arabic-hero" class="text-4xl sm:text-6xl font-extrabold text-white leading-tight">
+            <h1 id="arabic-hero" class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
               Master Classical Arabic Grammar & Rhetoric
             </h1>
-            <p class="text-base text-slate-300 max-w-2xl mx-auto">
+            <p class="text-base text-slate-600 max-w-2xl mx-auto">
               ${tenant.tagline}
             </p>
             <div class="flex justify-center gap-4 pt-4">
@@ -527,6 +527,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       },
 
       // 5. Virtual Classroom Showcase
+      // 5. Virtual Classroom Showcase
       {
         id: 'virtual-classroom-teaser',
         label: makeBlockLabel(
@@ -535,25 +536,25 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         ),
         category: 'Live Classroom',
         content: `
-          <section aria-labelledby="classroom-title" class="py-20 px-6 sm:px-12 bg-slate-950 text-white font-sans">
+          <section aria-labelledby="classroom-title" class="py-20 px-6 sm:px-12 bg-slate-50 text-slate-900 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div class="space-y-6">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 inline-block font-mono">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block font-mono">
                   ● REAL-TIME WEBRTC SFU ENGINE
                 </span>
-                <h2 id="classroom-title" class="text-3xl sm:text-4xl font-extrabold leading-tight">
+                <h2 id="classroom-title" class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
                   Experience Low-Latency Live Virtual Classrooms
                 </h2>
-                <p class="text-sm text-slate-300 leading-relaxed">
+                <p class="text-sm text-slate-600 leading-relaxed">
                   Engineered with crystal-clear audio codecs, interactive collaborative whiteboards, screen sharing, and automated session recordings.
                 </p>
-                <ul class="space-y-2 text-xs text-slate-300">
-                  <li class="flex items-center gap-2">✓ HD Video & High-Fidelity Audio</li>
-                  <li class="flex items-center gap-2">✓ Real-time Teacher Whiteboard Annotation</li>
-                  <li class="flex items-center gap-2">✓ Dynamic Workspace & Sandbox Integration</li>
+                <ul class="space-y-2 text-xs text-slate-700">
+                  <li class="flex items-center gap-2 font-medium">✓ HD Video & High-Fidelity Audio</li>
+                  <li class="flex items-center gap-2 font-medium">✓ Real-time Teacher Whiteboard Annotation</li>
+                  <li class="flex items-center gap-2 font-medium">✓ Dynamic Workspace & Sandbox Integration</li>
                 </ul>
               </div>
-              <div class="rounded-3xl border border-slate-800 bg-slate-900 p-4 shadow-2xl">
+              <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-xl">
                 <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80" alt="Live virtual session UI preview" class="rounded-2xl w-full object-cover aspect-video" />
               </div>
             </div>
@@ -614,23 +615,23 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         ),
         category: 'Social Proof',
         content: `
-          <section aria-label="Academy Statistics" class="py-16 px-6 sm:px-12 bg-slate-900 text-white font-sans">
+          <section aria-label="Academy Statistics" class="py-16 px-6 sm:px-12 bg-slate-50 text-slate-900 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-blue-400 font-mono">1,200+</div>
-                <p class="text-xs text-slate-400">Active Students</p>
+                <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 font-mono">1,200+</div>
+                <p class="text-xs font-bold text-slate-700">Active Students</p>
               </div>
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">99.4%</div>
-                <p class="text-xs text-slate-400">Graduation Pass Rate</p>
+                <div class="text-3xl sm:text-4xl font-extrabold text-emerald-600 font-mono">99.4%</div>
+                <p class="text-xs font-bold text-slate-700">Graduation Pass Rate</p>
               </div>
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-amber-400 font-mono">15 : 1</div>
-                <p class="text-xs text-slate-400">Student-Mentor Ratio</p>
+                <div class="text-3xl sm:text-4xl font-extrabold text-amber-600 font-mono">15 : 1</div>
+                <p class="text-xs font-bold text-slate-700">Student-Mentor Ratio</p>
               </div>
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-purple-400 font-mono">100%</div>
-                <p class="text-xs text-slate-400">Live Virtual Interactive</p>
+                <div class="text-3xl sm:text-4xl font-extrabold text-purple-600 font-mono">100%</div>
+                <p class="text-xs font-bold text-slate-700">Live Virtual Interactive</p>
               </div>
             </div>
           </section>
@@ -703,30 +704,30 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         ),
         category: 'Footers & Legal',
         content: `
-          <footer role="contentinfo" class="bg-slate-950 text-white py-16 px-6 sm:px-12 font-sans border-t border-slate-900">
+          <footer role="contentinfo" class="bg-slate-50 text-slate-900 py-16 px-6 sm:px-12 font-sans border-t border-slate-200">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
               <div class="space-y-3">
-                <h3 class="font-extrabold text-base text-white">${tenant.name}</h3>
-                <p class="text-xs text-slate-400 leading-relaxed">${tenant.tagline}</p>
+                <h3 class="font-extrabold text-base text-slate-900">${tenant.name}</h3>
+                <p class="text-xs text-slate-600 leading-relaxed">${tenant.tagline}</p>
               </div>
               <div class="space-y-2">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-300">Quick Links</h4>
-                <ul class="space-y-1 text-xs text-slate-400">
-                  <li><a href="#courses" class="hover:text-white">Curriculums</a></li>
-                  <li><a href="#pricing" class="hover:text-white">Tuition Plans</a></li>
-                  <li><a href="#admissions" class="hover:text-white">Admissions</a></li>
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800">Quick Links</h4>
+                <ul class="space-y-1 text-xs text-slate-600">
+                  <li><a href="#courses" class="hover:text-slate-900">Curriculums</a></li>
+                  <li><a href="#pricing" class="hover:text-slate-900">Tuition Plans</a></li>
+                  <li><a href="#admissions" class="hover:text-slate-900">Admissions</a></li>
                 </ul>
               </div>
               <div class="space-y-2">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-300">Portals</h4>
-                <ul class="space-y-1 text-xs text-slate-400">
-                  <li><a href="/${tenant.subdomain}/login" class="text-blue-400 font-semibold hover:underline">Student LMS Login</a></li>
-                  <li><a href="/${tenant.subdomain}/admin" class="hover:text-white">Admin Dashboard</a></li>
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800">Portals</h4>
+                <ul class="space-y-1 text-xs text-slate-600">
+                  <li><a href="/${tenant.subdomain}/login" class="text-blue-600 font-semibold hover:underline">Student LMS Login</a></li>
+                  <li><a href="/${tenant.subdomain}/admin" class="hover:text-slate-900">Admin Dashboard</a></li>
                 </ul>
               </div>
               <div class="space-y-2">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-300">Contact</h4>
-                <p class="text-xs text-slate-400">support@${tenant.subdomain}.techmadrasah.app</p>
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800">Contact</h4>
+                <p class="text-xs text-slate-600">support@${tenant.subdomain}.techmadrasah.app</p>
                 <p class="text-xs text-slate-500">© ${new Date().getFullYear()} ${tenant.name}. All rights reserved.</p>
               </div>
             </div>
@@ -795,7 +796,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           `<line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/>`
         ),
         category: 'Basic Elements',
-        content: `<p class="text-sm text-slate-600 leading-relaxed my-2 font-sans">Write your rich explanatory paragraph content here. High accessibility and responsive readability.</p>`,
+        content: `<p class="text-sm text-slate-700 leading-relaxed my-2 font-sans">Write your rich explanatory paragraph content here. High accessibility and responsive readability.</p>`,
       },
       {
         id: 'basic-button-cta',
@@ -832,14 +833,77 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     // Populate initial content
     editor.setComponents(getInitialTenantHtml());
     
-    // Base Canvas CSS for high accessibility
+    // Base Canvas CSS for high accessibility and solid black text on white canvas
     const defaultCanvasCss = `
-      body { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background-color: #ffffff; color: #0f172a; margin: 0; padding: 0; }
-      h1, h2, h3, h4 { font-family: 'DM Sans', sans-serif; }
-      .arabic-heading { font-family: 'Amiri', serif; }
-      a, button, .btn { cursor: pointer; transition: all 0.2s ease-in-out; }
+      * { box-sizing: border-box; }
+      html, body {
+        font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'DM Sans', sans-serif !important;
+        color: #0f172a !important;
+        font-weight: 800 !important;
+      }
+      p, span, li, div, label, input, select, textarea, td, th {
+        color: #1e293b;
+      }
+      .arabic-heading {
+        font-family: 'Amiri', serif !important;
+        color: #047857 !important;
+      }
+      a, button, .btn {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      /* High contrast black text defaults */
+      .text-slate-900, .text-black, .text-gray-900 { color: #0f172a !important; }
+      .text-slate-800, .text-gray-800, .text-slate-700, .text-gray-700 { color: #1e293b !important; }
+      .text-slate-600, .text-gray-600 { color: #475569 !important; }
+      .text-slate-500, .text-gray-500 { color: #64748b !important; }
+      /* Ensure text inside canvas is always dark unless on dark buttons/badges */
+      [data-gjs-type="text"], [data-gjs-type="default"] { color: #0f172a !important; }
+      a.btn, button, .bg-blue-600, .bg-emerald-600, .bg-slate-900, .bg-emerald-700, .bg-blue-700 { color: #ffffff !important; }
     `;
-    editor.setStyle(tenant.customCss || defaultCanvasCss);
+    editor.setStyle(tenant.customCss ? `${defaultCanvasCss}\n${tenant.customCss}` : defaultCanvasCss);
+
+    // Direct injection into Canvas iframe document to ensure immediate dark text rendering
+    editor.on('load', () => {
+      const doc = editor.Canvas.getDocument();
+      if (doc) {
+        const styleEl = doc.createElement('style');
+        styleEl.id = 'tm-canvas-core-contrast';
+        styleEl.innerHTML = `
+          * { box-sizing: border-box; }
+          html, body {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+            margin: 0;
+            padding: 0;
+          }
+          h1, h2, h3, h4, h5, h6 {
+            color: #0f172a !important;
+            font-family: 'DM Sans', sans-serif !important;
+            font-weight: 800 !important;
+          }
+          p, span, div, li, td, th, label, input, select, textarea {
+            color: #1e293b;
+          }
+          .text-slate-900, .text-black, .text-gray-900 { color: #0f172a !important; }
+          .text-slate-800, .text-gray-800, .text-slate-700, .text-gray-700 { color: #1e293b !important; }
+          .text-slate-600, .text-gray-600 { color: #475569 !important; }
+          .text-slate-500, .text-gray-500 { color: #64748b !important; }
+          [data-gjs-type="text"], [data-gjs-type="default"] { color: #0f172a !important; }
+          a.btn, button, .bg-blue-600, .bg-emerald-600, .bg-slate-900, .bg-emerald-700, .bg-blue-700 { color: #ffffff !important; }
+        `;
+        doc.head.appendChild(styleEl);
+      }
+    });
 
     editor.on('update', () => {
       setHasUnsavedChanges(true);
