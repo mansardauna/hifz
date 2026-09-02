@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { InteractiveWhiteboard } from '../../collaboration/InteractiveWhiteboard';
 import { ClassroomParticipant } from '../../types';
-import { Room } from 'livekit-client';
+import { Room, RoomEvent, RemoteTrack, RemoteParticipant, Track } from 'livekit-client';
 import { Button, Card, Badge } from '../ui';
 
 interface LiveClassroomHubProps {
@@ -60,9 +60,16 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const [sessionSeconds, setSessionSeconds] = useState<number>(0);
   const [audioLevel, setAudioLevel] = useState<number>(0);
 
+  // LiveKit WebRTC Peer Connection State
+  const [isConnectedToSFU, setIsConnectedToSFU] = useState<boolean>(false);
+  const [remoteParticipantName, setRemoteParticipantName] = useState<string | null>(null);
+  const [hasRemoteVideo, setHasRemoteVideo] = useState<boolean>(false);
+
   // Video Element Refs
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const screenShareVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
   const livekitRoomRef = useRef<Room | null>(null);
@@ -169,19 +176,75 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
       if (tokenRes.ok) {
         const { token, wsUrl } = await tokenRes.json();
         if (token && wsUrl) {
-          const room = new Room();
+          const room = new Room({
+            adaptiveStream: true,
+            dynacast: true,
+          });
           livekitRoomRef.current = room;
+
+          // Wire remote participant track events
+          room.on(RoomEvent.Connected, () => {
+            setIsConnectedToSFU(true);
+            // Check if participants are already present in room
+            room.remoteParticipants.forEach((participant) => {
+              setRemoteParticipantName(participant.name || participant.identity);
+              participant.trackPublications.forEach((pub) => {
+                if (pub.isSubscribed && pub.track) {
+                  if (pub.track.kind === Track.Kind.Video && remoteVideoRef.current) {
+                    pub.track.attach(remoteVideoRef.current);
+                    setHasRemoteVideo(true);
+                  }
+                  if (pub.track.kind === Track.Kind.Audio && remoteAudioRef.current) {
+                    pub.track.attach(remoteAudioRef.current);
+                  }
+                }
+              });
+            });
+          });
+
+          room.on(RoomEvent.ParticipantConnected, (participant: RemoteParticipant) => {
+            setRemoteParticipantName(participant.name || participant.identity);
+          });
+
+          room.on(RoomEvent.ParticipantDisconnected, () => {
+            if (room.remoteParticipants.size === 0) {
+              setRemoteParticipantName(null);
+              setHasRemoteVideo(false);
+            }
+          });
+
+          room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+            setRemoteParticipantName(participant.name || participant.identity);
+            if (track.kind === Track.Kind.Video && remoteVideoRef.current) {
+              track.attach(remoteVideoRef.current);
+              setHasRemoteVideo(true);
+            } else if (track.kind === Track.Kind.Audio && remoteAudioRef.current) {
+              track.attach(remoteAudioRef.current);
+            }
+          });
+
+          room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
+            track.detach();
+            if (track.kind === Track.Kind.Video) {
+              setHasRemoteVideo(false);
+            }
+          });
+
           await room.connect(wsUrl, token);
           await room.localParticipant.enableCameraAndMicrophone();
         }
       }
     } catch (err) {
-      console.warn('Camera/Audio fallback enabled:', err);
+      console.warn('LiveKit SFU connection error:', err);
     }
   };
 
   const handleLeaveCall = () => {
     setIsInCall(false);
+    setIsConnectedToSFU(false);
+    setRemoteParticipantName(null);
+    setHasRemoteVideo(false);
+
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
@@ -200,27 +263,33 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     }
   };
 
-  const toggleMic = () => {
+  const toggleMic = async () => {
+    const nextState = !micEnabled;
+    setMicEnabled(nextState);
+
     if (localStreamRef.current) {
       const audioTrack = localStreamRef.current.getAudioTracks()[0];
       if (audioTrack) {
-        audioTrack.enabled = !audioTrack.enabled;
-        setMicEnabled(audioTrack.enabled);
+        audioTrack.enabled = nextState;
       }
-    } else {
-      setMicEnabled(!micEnabled);
+    }
+    if (livekitRoomRef.current?.localParticipant) {
+      await livekitRoomRef.current.localParticipant.setMicrophoneEnabled(nextState);
     }
   };
 
-  const toggleVideo = () => {
+  const toggleVideo = async () => {
+    const nextState = !videoEnabled;
+    setVideoEnabled(nextState);
+
     if (localStreamRef.current) {
       const videoTrack = localStreamRef.current.getVideoTracks()[0];
       if (videoTrack) {
-        videoTrack.enabled = !videoTrack.enabled;
-        setVideoEnabled(videoTrack.enabled);
+        videoTrack.enabled = nextState;
       }
-    } else {
-      setVideoEnabled(!videoEnabled);
+    }
+    if (livekitRoomRef.current?.localParticipant) {
+      await livekitRoomRef.current.localParticipant.setCameraEnabled(nextState);
     }
   };
 
@@ -535,8 +604,11 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 )}
               </div>
 
-              {/* Remote Participant / Teacher Stream Card */}
+              {/* Remote Participant / Real WebRTC Stream Card */}
               <div className="relative aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center shadow-lg w-full max-h-[380px] mx-auto">
+                {/* Invisible Audio Element for Remote Sound */}
+                <audio ref={remoteAudioRef} autoPlay />
+
                 {screenSharing ? (
                   <video
                     ref={screenShareVideoRef}
@@ -545,23 +617,51 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                     className="w-full h-full object-contain bg-black"
                   />
                 ) : (
-                  <div className="flex flex-col items-center gap-2.5">
-                    <div className="w-16 h-16 rounded-full bg-slate-800 text-blue-400 flex items-center justify-center font-bold text-xl ring-2 ring-blue-500/30">
-                      {isCoding ? 'SJ' : 'AR'}
-                    </div>
-                    <span className="text-xs font-bold text-white">
-                      {isCoding ? 'Sarah Jenkins (Lead Software Architect)' : 'Shaykh Dr. Abdul Rahman (Lead Qari)'}
-                    </span>
-                    <span className="text-[10px] text-blue-400 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                      Livekit SFU Stream Active
-                    </span>
-                  </div>
+                  <>
+                    {/* Remote Video Stream from LiveKit */}
+                    <video
+                      ref={remoteVideoRef}
+                      autoPlay
+                      playsInline
+                      className={`w-full h-full object-cover ${!hasRemoteVideo ? 'hidden' : ''}`}
+                    />
+
+                    {/* Placeholder when peer has no camera or hasn't joined yet */}
+                    {!hasRemoteVideo && (
+                      <div className="flex flex-col items-center text-center p-4 gap-2.5">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl shadow-lg ${
+                          remoteParticipantName
+                            ? 'bg-blue-600 text-white ring-2 ring-blue-400/40'
+                            : 'bg-slate-800 text-slate-400 ring-2 ring-slate-700/50'
+                        }`}>
+                          {remoteParticipantName ? remoteParticipantName.slice(0, 2).toUpperCase() : <Users className="w-7 h-7 text-slate-400" />}
+                        </div>
+                        
+                        <div className="space-y-1 max-w-xs">
+                          <span className="text-xs font-bold text-white block">
+                            {remoteParticipantName || 'Waiting for 2nd participant...'}
+                          </span>
+                          <span className="text-[11px] text-slate-400 leading-tight block">
+                            {remoteParticipantName
+                              ? 'Connected via LiveKit SFU (Camera muted)'
+                              : 'Open this classroom link on a phone or second device to test 2-way video & audio!'}
+                          </span>
+                        </div>
+
+                        {isConnectedToSFU && (
+                          <span className="text-[10px] text-emerald-400 flex items-center gap-1.5 font-mono bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            LiveKit SFU Active
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
 
                 <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-bold flex items-center gap-2 border border-slate-700/60">
-                  <span>{isCoding ? 'Sarah Jenkins (Instructor)' : 'Shaykh Abdul Rahman'}</span>
-                  <Volume2 className="w-3 h-3 text-blue-400" />
+                  <span>{remoteParticipantName || (isCoding ? 'Instructor: Sarah Jenkins' : 'Instructor: Shaykh Abdul Rahman')}</span>
+                  {remoteParticipantName && <Volume2 className="w-3 h-3 text-emerald-400" />}
                 </div>
               </div>
             </div>
