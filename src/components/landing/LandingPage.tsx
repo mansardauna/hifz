@@ -46,6 +46,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState<boolean>(false);
   const [selectedPlanForEnroll, setSelectedPlanForEnroll] = useState<PricingPlan | null>(null);
 
+  // Live published HTML/CSS state synced with localStorage and tenant config
+  const [liveHtml, setLiveHtml] = useState<string>(tenant.customHtml || '');
+  const [liveCss, setLiveCss] = useState<string>(tenant.customCss || '');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(`tenant_customHtml_${tenant.subdomain}`);
+      const cachedCss = localStorage.getItem(`tenant_customCss_${tenant.subdomain}`);
+      if (cached) {
+        setLiveHtml(cached);
+      } else if (tenant.customHtml) {
+        setLiveHtml(tenant.customHtml);
+      } else {
+        setLiveHtml('');
+      }
+
+      if (cachedCss) {
+        setLiveCss(cachedCss);
+      } else if (tenant.customCss) {
+        setLiveCss(tenant.customCss);
+      }
+    }
+  }, [tenant.customHtml, tenant.customCss, tenant.subdomain]);
+
   const isAr = language === 'ar';
   const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
 
@@ -208,16 +232,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgJsonLd) }}
       />
 
-      {/* Semantic Accessible Header */}
-      <Header />
+      {/* Semantic Accessible Header (Only when not already inside custom HTML) */}
+      {(!liveHtml || !liveHtml.includes('<header')) && <Header />}
 
       {/* Main Landmark */}
       <main id="main-content" role="main">
-        {/* If Tenant has customized and published via GrapesJS, render the live GrapesJS HTML */}
-        {tenant.customHtml ? (
+        {/* If Tenant has customized and published via Page Builder / AI, render the live HTML */}
+        {liveHtml ? (
           <div>
-            {tenant.customCss && <style>{tenant.customCss}</style>}
-            <div dangerouslySetInnerHTML={{ __html: tenant.customHtml }} />
+            {liveCss && <style>{liveCss}</style>}
+            <div dangerouslySetInnerHTML={{ __html: liveHtml }} />
           </div>
         ) : (
           <>

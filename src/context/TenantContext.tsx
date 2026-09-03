@@ -47,16 +47,44 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
-  // Fetch tenant config and inject dynamic CSS variables
+  // Fetch tenant config, merge persistent localStorage overrides, and inject dynamic CSS variables
   useEffect(() => {
     setIsLoading(true);
-    api.getTenantConfig(currentSubdomain).then((config) => {
-      setTenant(config);
-      if (activeRole === 'landing') {
-        setDirection(config.defaultDirection);
-        setLanguage(config.defaultDirection === 'rtl' ? 'ar' : 'en');
+    api.getTenantConfig(currentSubdomain).then((baseConfig) => {
+      let mergedConfig = baseConfig;
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedJson = localStorage.getItem(`tenant_config_${currentSubdomain}`);
+          const cachedHtml = localStorage.getItem(`tenant_customHtml_${currentSubdomain}`);
+          const cachedCss = localStorage.getItem(`tenant_customCss_${currentSubdomain}`);
+          const cachedSchema = localStorage.getItem(`tenant_schema_${currentSubdomain}`);
+
+          if (cachedJson) {
+            const parsed = JSON.parse(cachedJson);
+            mergedConfig = { ...mergedConfig, ...parsed };
+          }
+          if (cachedHtml) {
+            mergedConfig.customHtml = cachedHtml;
+          }
+          if (cachedCss) {
+            mergedConfig.customCss = cachedCss;
+          }
+          if (cachedSchema) {
+            try {
+              mergedConfig.landingPageSchema = JSON.parse(cachedSchema);
+            } catch (e) {}
+          }
+        } catch (e) {
+          console.warn('localStorage tenant load error:', e);
+        }
       }
-      injectCssVariables(config);
+
+      setTenant(mergedConfig);
+      if (activeRole === 'landing') {
+        setDirection(mergedConfig.defaultDirection);
+        setLanguage(mergedConfig.defaultDirection === 'rtl' ? 'ar' : 'en');
+      }
+      injectCssVariables(mergedConfig);
       setIsLoading(false);
     });
   }, [currentSubdomain]);
@@ -76,12 +104,20 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const setTenantBySubdomain = (subdomain: string) => {
-    if (MOCK_TENANTS[subdomain]) {
-      setCurrentSubdomain(subdomain);
-      setTenant(MOCK_TENANTS[subdomain]);
-      injectCssVariables(MOCK_TENANTS[subdomain]);
-      setActiveRole('landing');
+    const base = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
+    let merged = base;
+    if (typeof window !== 'undefined') {
+      try {
+        const cachedJson = localStorage.getItem(`tenant_config_${subdomain}`);
+        const cachedHtml = localStorage.getItem(`tenant_customHtml_${subdomain}`);
+        if (cachedJson) merged = { ...merged, ...JSON.parse(cachedJson) };
+        if (cachedHtml) merged.customHtml = cachedHtml;
+      } catch (e) {}
     }
+    setCurrentSubdomain(subdomain);
+    setTenant(merged);
+    injectCssVariables(merged);
+    setActiveRole('landing');
   };
 
   const toggleLanguage = () => {
@@ -95,6 +131,43 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setTenant((prev) => {
       const updated = { ...prev, ...updates };
       if (updates.theme) injectCssVariables(updated);
+
+      // Persist to localStorage immediately
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(`tenant_config_${updated.subdomain}`, JSON.stringify(updated));
+          if (updates.customHtml) {
+            localStorage.setItem(`tenant_customHtml_${updated.subdomain}`, updates.customHtml);
+          }
+          if (updates.customCss) {
+            localStorage.setItem(`tenant_customCss_${updated.subdomain}`, updates.customCss);
+          }
+          if (updates.landingPageSchema) {
+            localStorage.setItem(`tenant_schema_${updated.subdomain}`, JSON.stringify(updates.landingPageSchema));
+          }
+        } catch (e) {
+          console.warn('localStorage tenant save error:', e);
+        }
+      }
+
+      // Persist to backend API asynchronously
+      fetch('/api/tenant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subdomain: updated.subdomain,
+          name: updated.name,
+          customHtml: updated.customHtml,
+          customCss: updated.customCss,
+          settings: {
+            landingPageSchema: updated.landingPageSchema,
+            forms: updated.forms,
+            customFormFields: updated.customFormFields,
+            pricingPlans: updated.pricingPlans,
+          },
+        }),
+      }).catch((err) => console.warn('Backend tenant sync notice:', err));
+
       return updated;
     });
   };

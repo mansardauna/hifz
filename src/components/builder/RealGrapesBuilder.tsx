@@ -1269,16 +1269,30 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       const html = editorRef.current.getHtml();
       const css = editorRef.current.getCss();
 
+      const schema = {
+        type: 'published_page',
+        version: '2.0',
+        savedAt: new Date().toISOString(),
+        subdomain: tenant.subdomain,
+      };
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`tenant_customHtml_${tenant.subdomain}`, html);
+        localStorage.setItem(`tenant_customCss_${tenant.subdomain}`, css || '');
+        localStorage.setItem(`tenant_schema_${tenant.subdomain}`, JSON.stringify(schema));
+      }
+
       await updateTenantConfig({
         customHtml: html,
         customCss: css || '',
+        landingPageSchema: schema,
       });
 
       setHasUnsavedChanges(false);
       onAddToast({
         type: 'success',
         title: 'Landing Page Published Live!',
-        message: `Your high-accessibility HTML/CSS landing page for ${tenant.name} is now active!`,
+        message: `Your high-accessibility landing page for ${tenant.name} is now saved and live across all visits!`,
       });
     } catch (err: any) {
       onAddToast({
