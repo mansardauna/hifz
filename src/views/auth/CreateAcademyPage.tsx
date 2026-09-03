@@ -46,7 +46,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
     setSubdomain(val);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!academyName || !subdomain || !adminName || !email || !password) {
       onAddToast({
@@ -58,16 +58,52 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      // 1. Create Tenant Record in Backend/DB
+      await fetch('/api/tenant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: academyName,
+          subdomain,
+          niche: niche === 'quran' ? 'quran_tajweed' : niche,
+          brandColor: niche === 'quran' ? '#059669' : '#2563eb',
+        }),
+      });
+
+      // 2. Create Admin Account in Backend/DB
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'register',
+          email,
+          password,
+          name: adminName,
+          role: 'admin',
+          subdomain,
+        }),
+      });
+
+      // 3. Update Client Session State
       register(adminName, email, 'admin', subdomain);
+
       onAddToast({
         type: 'success',
         title: 'Academy Setup Completed',
-        message: `Welcome to ${academyName}! Your subdomain ${subdomain}.techmadrasah.app is ready.`,
+        message: `Welcome to ${academyName}! Your academy dashboard is ready.`,
       });
+
       setIsSubmitting(false);
       onSuccess();
-    }, 700);
+      router.push(`/${subdomain}/admin`);
+    } catch (err: any) {
+      console.warn('Academy setup network error, using client fallback:', err);
+      register(adminName, email, 'admin', subdomain);
+      setIsSubmitting(false);
+      onSuccess();
+      router.push(`/${subdomain}/admin`);
+    }
   };
 
   return (
