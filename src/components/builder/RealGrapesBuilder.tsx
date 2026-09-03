@@ -1112,10 +1112,11 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       storageManager: false,
       canvas: {
         styles: [
-          'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
-          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Amiri:wght@400;700&display=swap',
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Amiri:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap',
         ],
-        scripts: [],
+        scripts: [
+          'https://cdn.tailwindcss.com',
+        ],
       },
       panels: { defaults: [] },
       blockManager: {
@@ -1154,21 +1155,21 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         cursor: pointer;
         transition: all 0.2s ease-in-out;
       }
-      /* High contrast black text defaults */
-      .text-slate-900, .text-black, .text-gray-900 { color: #0f172a !important; }
-      .text-slate-800, .text-gray-800, .text-slate-700, .text-gray-700 { color: #1e293b !important; }
-      .text-slate-600, .text-gray-600 { color: #475569 !important; }
-      .text-slate-500, .text-gray-500 { color: #64748b !important; }
-      /* Ensure text inside canvas is always dark unless on dark buttons/badges */
-      [data-gjs-type="text"], [data-gjs-type="default"] { color: #0f172a !important; }
-      a.btn, button, .bg-blue-600, .bg-emerald-600, .bg-slate-900, .bg-emerald-700, .bg-blue-700 { color: #ffffff !important; }
     `;
     editor.setStyle(tenant.customCss ? `${defaultCanvasCss}\n${tenant.customCss}` : defaultCanvasCss);
 
-    // Direct injection into Canvas iframe document to ensure immediate dark text rendering
+    // Direct injection into Canvas iframe document to ensure immediate Tailwind script and styling
     editor.on('load', () => {
       const doc = editor.Canvas.getDocument();
       if (doc) {
+        // Ensure Tailwind CDN script is loaded
+        if (!doc.getElementById('tailwind-cdn')) {
+          const twScript = doc.createElement('script');
+          twScript.id = 'tailwind-cdn';
+          twScript.src = 'https://cdn.tailwindcss.com';
+          doc.head.appendChild(twScript);
+        }
+
         const styleEl = doc.createElement('style');
         styleEl.id = 'tm-canvas-core-contrast';
         styleEl.innerHTML = `
@@ -1188,12 +1189,6 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           p, span, div, li, td, th, label, input, select, textarea {
             color: #1e293b;
           }
-          .text-slate-900, .text-black, .text-gray-900 { color: #0f172a !important; }
-          .text-slate-800, .text-gray-800, .text-slate-700, .text-gray-700 { color: #1e293b !important; }
-          .text-slate-600, .text-gray-600 { color: #475569 !important; }
-          .text-slate-500, .text-gray-500 { color: #64748b !important; }
-          [data-gjs-type="text"], [data-gjs-type="default"] { color: #0f172a !important; }
-          a.btn, button, .bg-blue-600, .bg-emerald-600, .bg-slate-900, .bg-emerald-700, .bg-blue-700 { color: #ffffff !important; }
         `;
         doc.head.appendChild(styleEl);
       }
