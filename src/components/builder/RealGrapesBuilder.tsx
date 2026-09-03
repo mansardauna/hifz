@@ -24,7 +24,12 @@ import {
   Eye,
   Sliders,
   HelpCircle,
-  Plus
+  Plus,
+  Download,
+  Copy,
+  ExternalLink,
+  BookOpen,
+  Award
 } from 'lucide-react';
 
 interface RealGrapesBuilderProps {
@@ -41,6 +46,9 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [isTemplateBankOpen, setIsTemplateBankOpen] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [exportedHtml, setExportedHtml] = useState<string>('');
+  const [exportedCss, setExportedCss] = useState<string>('');
 
   // Available forms created in Form Builder
   const tenantForms: FormConfig[] = tenant.forms && tenant.forms.length > 0
@@ -806,6 +814,121 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         ),
         category: 'Basic Elements',
         content: `<a href="#admissions" class="inline-block px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all">Click Here &rarr;</a>`,
+      },
+
+      // 12. Course Curriculum Accordion
+      {
+        id: 'curriculum-accordion-block',
+        label: makeBlockLabel(
+          'Curriculum Tracks',
+          `<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/>`
+        ),
+        category: 'Curriculum & Tracks',
+        content: `
+          <section id="curriculum" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
+            <div class="max-w-4xl mx-auto space-y-8">
+              <div class="text-center">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">Course Syllabus</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Comprehensive Learning Curriculum</h2>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Structured step-by-step tracks designed for beginners to advanced graduates.</p>
+              </div>
+              <div class="space-y-3">
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-extrabold text-sm text-slate-900">Module 1: Foundations & Fundamentals</h3>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Weeks 1 - 4</span>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-1.5">Core principles, oral articulation, and initial prerequisite benchmarks.</p>
+                </div>
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-extrabold text-sm text-slate-900">Module 2: Intermediate Mastery & Live Practicum</h3>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Weeks 5 - 10</span>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-1.5">Interactive halaqah sessions, live feedback loops, and individual revision logs.</p>
+                </div>
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-extrabold text-sm text-slate-900">Module 3: Advanced Khatmah & Final Sanad Exam</h3>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Weeks 11 - 16</span>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-1.5">Complete oral recitation examination, Sanad certification, and graduation honors.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 13. Faculty & Teachers Showcase
+      {
+        id: 'faculty-bios-block',
+        label: makeBlockLabel(
+          'Faculty Showcase',
+          `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`
+        ),
+        category: 'Social Proof',
+        content: `
+          <section id="faculty" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
+            <div class="max-w-6xl mx-auto text-center mb-12">
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">Expert Mentors</span>
+              <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Learn Directly from Certified Instructors</h2>
+              <p class="text-xs sm:text-sm text-slate-500 mt-1">Our faculty are certified with verified chains of transmission (Sanad) and industry experience.</p>
+            </div>
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
+                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-emerald-400 font-bold text-2xl flex items-center justify-center ring-4 ring-slate-100">AR</div>
+                <h3 class="font-extrabold text-base text-slate-900">Shaykh Dr. Abdul Rahman</h3>
+                <p class="text-[11px] font-bold text-emerald-700">Senior Sanad Reciter • Al-Azhar Graduate</p>
+                <p class="text-xs text-slate-600 leading-relaxed">Over 18 years teaching the 10 Qira'at with connected oral transmission to Prophet Muhammad (ﷺ).</p>
+              </div>
+              <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
+                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-blue-400 font-bold text-2xl flex items-center justify-center ring-4 ring-slate-100">SJ</div>
+                <h3 class="font-extrabold text-base text-slate-900">Sarah Jenkins</h3>
+                <p class="text-[11px] font-bold text-blue-700">Lead Curriculum Architect • Ex-Google Staff</p>
+                <p class="text-xs text-slate-600 leading-relaxed">Full-stack software architect specializing in distributed systems, modern React, and cloud architectures.</p>
+              </div>
+              <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
+                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-purple-400 font-bold text-2xl flex items-center justify-center ring-4 ring-slate-100">TM</div>
+                <h3 class="font-extrabold text-base text-slate-900">Ustadh Tariq Mansoor</h3>
+                <p class="text-[11px] font-bold text-purple-700">Head of Memorization & Muraja'ah Track</p>
+                <p class="text-xs text-slate-600 leading-relaxed">Trained over 400 complete Quran Huffaz across Europe and North America.</p>
+              </div>
+            </div>
+          </section>
+        `,
+      },
+
+      // 14. Trust Badges & Guarantee
+      {
+        id: 'trust-badges-bar',
+        label: makeBlockLabel(
+          'Trust Badges',
+          `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`
+        ),
+        category: 'Social Proof',
+        content: `
+          <section class="py-10 px-6 sm:px-12 bg-white border-b border-slate-200 font-sans">
+            <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center items-center">
+              <div class="space-y-1">
+                <div class="font-extrabold text-slate-900 text-sm">🔒 100% Secure Checkout</div>
+                <p class="text-[10px] text-slate-500">Stripe & 256-bit SSL Encrypted</p>
+              </div>
+              <div class="space-y-1">
+                <div class="font-extrabold text-slate-900 text-sm">📜 Verified Certifications</div>
+                <p class="text-[10px] text-slate-500">Accredited Sanad Transmissions</p>
+              </div>
+              <div class="space-y-1">
+                <div class="font-extrabold text-slate-900 text-sm">⚡ Low-Latency WebRTC</div>
+                <p class="text-[10px] text-slate-500">Real-Time SFU Video Halaqahs</p>
+              </div>
+              <div class="space-y-1">
+                <div class="font-extrabold text-slate-900 text-sm">✨ 14-Day Guarantee</div>
+                <p class="text-[10px] text-slate-500">100% Tuition Satisfaction</p>
+              </div>
+            </div>
+          </section>
+        `,
       }
     ];
 
@@ -1112,6 +1235,22 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
           <button
             type="button"
+            onClick={() => {
+              if (editorRef.current) {
+                setExportedHtml(editorRef.current.getHtml() || '');
+                setExportedCss(editorRef.current.getCss() || '');
+                setIsExportModalOpen(true);
+              }
+            }}
+            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
+            title="Export Clean HTML/CSS"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-600" />
+            <span className="hidden sm:inline">Export</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleSave}
             disabled={isSaving}
             className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/10 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
@@ -1132,7 +1271,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               <Layers className="w-4 h-4 text-blue-600" />
               <span className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">Drag & Drop Blocks</span>
             </div>
-            <span className="text-[10px] text-slate-500 font-bold bg-slate-200/80 px-2 py-0.5 rounded-full">25+ Blocks</span>
+            <span className="text-[10px] text-slate-500 font-bold bg-slate-200/80 px-2 py-0.5 rounded-full">28+ Blocks</span>
           </div>
 
           {/* GrapesJS Rendered Block Container */}
@@ -1149,38 +1288,33 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         </div>
 
         {/* Right: GrapesJS Visual Canvas */}
-        <div className="flex-1 bg-slate-100 flex flex-col justify-center items-center overflow-auto p-2 sm:p-4">
+        <div className="flex-1 flex flex-col relative bg-slate-100 overflow-hidden">
           <div
             ref={containerRef}
-            className="w-full h-full rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md transition-all duration-300 min-h-[640px]"
+            className="w-full h-full"
           />
         </div>
       </div>
 
       {/* 3. TEMPLATE BANK MODAL (Light Theme) */}
       {isTemplateBankOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full p-6 space-y-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
+            <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-500" />
-                  <span>Landing Page Template Library</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Choose a pre-built, high-accessibility and SEO-optimized HTML/CSS template to load into your canvas.
-                </p>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Pre-Built Designs</span>
+                <h3 className="text-base font-extrabold text-slate-900">Choose Academy Landing Page Template</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsTemplateBankOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                &times;
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-1">
+            <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
               {TEMPLATE_BANK.map((tmpl) => (
                 <div
                   key={tmpl.id}
@@ -1208,6 +1342,121 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   </button>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. EXPORT HTML & CSS MODAL */}
+      {isExportModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150 font-sans">
+            <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Export & Integration</span>
+                <h3 className="text-base font-extrabold text-slate-900">Export Clean HTML & CSS</h3>
+                <p className="text-xs text-slate-500">Standalone, semantic, high-accessibility code ready for hosting or static export.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExportModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+              {/* Shareable Link Banner */}
+              <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <div className="font-bold text-blue-900 text-xs">Direct Shareable Academy URL:</div>
+                  <div className="font-mono text-blue-700 text-[11px]">https://{tenant.subdomain}.techmadrasah.app</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://${tenant.subdomain}.techmadrasah.app`);
+                    onAddToast({ type: 'success', title: 'Link Copied', message: 'Shareable academy URL copied to clipboard!' });
+                  }}
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" /> Copy Public URL
+                </button>
+              </div>
+
+              {/* Code Previews */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-800 uppercase text-[10px]">Compiled HTML ({Math.round(exportedHtml.length / 1024)} KB)</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(exportedHtml);
+                      onAddToast({ type: 'success', title: 'HTML Copied', message: 'Complete page HTML copied to clipboard.' });
+                    }}
+                    className="text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" /> Copy HTML
+                  </button>
+                </div>
+                <textarea
+                  readOnly
+                  value={exportedHtml}
+                  rows={8}
+                  className="w-full p-3 font-mono text-[11px] bg-slate-900 text-slate-100 rounded-xl focus:outline-none scrollbar-thin"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-800 uppercase text-[10px]">Canvas CSS</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(exportedCss);
+                      onAddToast({ type: 'success', title: 'CSS Copied', message: 'CSS stylesheet copied to clipboard.' });
+                    }}
+                    className="text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" /> Copy CSS
+                  </button>
+                </div>
+                <textarea
+                  readOnly
+                  value={exportedCss}
+                  rows={4}
+                  className="w-full p-3 font-mono text-[11px] bg-slate-900 text-slate-100 rounded-xl focus:outline-none scrollbar-thin"
+                />
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => {
+                  const blob = new Blob([exportedHtml], { type: 'text/html' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${tenant.subdomain}_landing_page.html`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                  onAddToast({ type: 'success', title: 'HTML File Downloaded', message: 'Downloaded landing page HTML file.' });
+                }}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" /> Download .html File
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExportModalOpen(false)}
+                className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

@@ -19,6 +19,9 @@ import {
   Video,
   Sparkles,
   SlidersHorizontal,
+  FileText,
+  Zap,
+  MessageSquare,
 } from 'lucide-react';
 import { Badge } from '../ui';
 
@@ -27,6 +30,9 @@ export type AdminTab =
   | 'classroom'
   | 'page_builder'
   | 'form_builder'
+  | 'form_responses'
+  | 'automations'
+  | 'chat_insights'
   | 'curriculum'
   | 'pricing'
   | 'payment_gateways'
@@ -64,9 +70,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const menuItems: { id: AdminTab; label: string; icon: any }[] = [
     { id: 'overview', label: 'Overview & Metrics', icon: LayoutDashboard },
     { id: 'classroom', label: 'Live Virtual Classroom', icon: Video },
-    { id: 'curriculum', label: 'Curriculum & Tracks', icon: BookOpen },
     { id: 'page_builder', label: 'Page Builder', icon: Layers },
     { id: 'form_builder', label: 'Form Builder', icon: FileCheck },
+    { id: 'form_responses', label: 'Form Submissions', icon: FileText },
+    { id: 'automations', label: 'Automations & Workflows', icon: Zap },
+    { id: 'chat_insights', label: 'Chat Insights & AI', icon: MessageSquare },
+    { id: 'curriculum', label: 'Curriculum & Tracks', icon: BookOpen },
     { id: 'crm', label: 'Student Leads CRM', icon: Users },
     { id: 'pricing', label: 'Tuition Plan Packages', icon: DollarSign },
     { id: 'payment_gateways', label: 'Merchant Gateways', icon: CreditCard },

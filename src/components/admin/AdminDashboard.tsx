@@ -14,6 +14,9 @@ import { UserProfilePage } from '../profile/UserProfilePage';
 import { PlanUpgradeModal } from './PlanUpgradeModal';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
+import { FormResponsesTable } from './FormResponsesTable';
+import { AutomationsManager } from './AutomationsManager';
+import { ChatAnalyticsSummary } from './ChatAnalyticsSummary';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
 import { Button } from '../ui';
@@ -182,6 +185,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               )}
               {activeTab === 'form_builder' && (
                 <VisualFormBuilder onAddToast={onAddToast} />
+              )}
+              {activeTab === 'form_responses' && (
+                <FormResponsesTable onAddToast={onAddToast} />
+              )}
+              {activeTab === 'automations' && (
+                <AutomationsManager onAddToast={onAddToast} />
+              )}
+              {activeTab === 'chat_insights' && (
+                <ChatAnalyticsSummary onAddToast={onAddToast} />
               )}
               {activeTab === 'curriculum' && (
                 <CourseBuilder onAddToast={onAddToast} />
