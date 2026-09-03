@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
 
     // Pricing map for SaaS platform tiers
     const TIER_PRICES: Record<string, { name: string; priceUsd: number }> = {
-      qari: { name: 'Independent Qari Tier Subscription', priceUsd: 29 },
+      solo: { name: 'Madrasah Solo Tier Subscription', priceUsd: 29 },
+      qari: { name: 'Madrasah Solo Tier Subscription', priceUsd: 29 },
       growth: { name: 'Madrasah Growth Tier Subscription', priceUsd: 79 },
-      enterprise: { name: 'Global Enterprise Tier Subscription', priceUsd: 199 },
     };
 
     const targetTier = tierId && TIER_PRICES[tierId] ? TIER_PRICES[tierId] : null;
