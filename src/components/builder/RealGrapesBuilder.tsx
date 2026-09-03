@@ -245,8 +245,19 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       ];
 
   // Helper to compile a FormConfig into clean accessible HTML for GrapesJS block
+  // Helper to compile a FormConfig into clean accessible HTML for GrapesJS block
   const compileFormToHtml = (form: FormConfig): string => {
-    const fieldsHtml = form.fields
+    // If form has fields configured, render exactly those fields
+    const fieldsToRender = form.fields && form.fields.length > 0
+      ? form.fields
+      : [
+          { id: 'studentName', label: 'Full Name', type: 'text', required: true, placeholder: 'e.g. Bilal Ibrahim', width: 'half', order: 1 },
+          { id: 'email', label: 'Email Address', type: 'email', required: true, placeholder: 'applicant@example.com', width: 'half', order: 2 },
+          { id: 'phone', label: 'WhatsApp / Phone Number', type: 'phone', required: true, placeholder: '+1 (555) 000-0000', width: 'half', order: 3 },
+          { id: 'notes', label: 'Additional Notes / Questions', type: 'textarea', required: false, placeholder: 'Describe your learning background...', width: 'full', order: 4 },
+        ];
+
+    const fieldsHtml = fieldsToRender
       .map((field) => {
         const widthClass =
           field.width === 'third'
@@ -270,9 +281,13 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           inputElement = `
             <textarea id="${field.id}" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} rows="3" placeholder="${field.placeholder || ''}" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"></textarea>
           `;
+        } else if (field.type === 'file') {
+          inputElement = `
+            <input id="${field.id}" type="file" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-700 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+          `;
         } else {
           inputElement = `
-            <input id="${field.id}" type="${field.type}" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} placeholder="${field.placeholder || ''}" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
+            <input id="${field.id}" type="${field.type === 'phone' ? 'tel' : field.type}" name="${field.id}" ${field.required ? 'required aria-required="true"' : ''} placeholder="${field.placeholder || ''}" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
           `;
         }
 
@@ -288,7 +303,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       .join('');
 
     return `
-      <section id="admissions" aria-labelledby="admissions-title" class="py-20 px-4 sm:px-8 bg-slate-50 font-sans border-t border-slate-200" data-form-id="${form.id}">
+      <section id="admissions" aria-labelledby="admissions-title" class="py-20 px-4 sm:px-8 bg-slate-50 font-sans border-t border-slate-200" data-form-id="${form.id}" data-form-title="${form.title}">
         <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
           <div class="text-center mb-8">
             <span class="text-blue-600 font-extrabold text-xs uppercase tracking-widest block mb-1">
@@ -302,38 +317,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             </p>
           </div>
 
-          <form data-hifz-lead-form="true" class="space-y-4" noValidate>
+          <form data-hifz-lead-form="true" data-form-id="${form.id}" data-form-title="${form.title}" class="space-y-4" noValidate>
             <div class="flex flex-wrap -mx-2">
-              <div class="w-full md:w-1/2 px-2 mb-4">
-                <label for="name" class="block text-xs font-bold text-slate-700 mb-1">Full Name <span class="text-rose-500" aria-hidden="true">*</span></label>
-                <input id="name" type="text" name="name" required aria-required="true" placeholder="e.g. Alex Mercer" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
-              </div>
-
-              <div class="w-full md:w-1/2 px-2 mb-4">
-                <label for="email" class="block text-xs font-bold text-slate-700 mb-1">Email Address <span class="text-rose-500" aria-hidden="true">*</span></label>
-                <input id="email" type="email" name="email" required aria-required="true" placeholder="student@example.com" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
-              </div>
-
-              <div class="w-full md:w-1/2 px-2 mb-4">
-                <label for="phone" class="block text-xs font-bold text-slate-700 mb-1">WhatsApp / Phone Number <span class="text-rose-500" aria-hidden="true">*</span></label>
-                <input id="phone" type="tel" name="phone" required aria-required="true" placeholder="+1 (555) 000-0000" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600" />
-              </div>
-
-              <div class="w-full md:w-1/2 px-2 mb-4">
-                <label for="courseInterest" class="block text-xs font-bold text-slate-700 mb-1">Interested Track</label>
-                <select id="courseInterest" name="courseInterest" class="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600">
-                  <option value="Primary Intensive Track">Primary Intensive Track</option>
-                  <option value="Advanced Specialization">Advanced Specialization</option>
-                  <option value="Foundational Certification">Foundational Certification</option>
-                </select>
-              </div>
-
               ${fieldsHtml}
             </div>
 
             <div class="pt-4 border-t border-slate-100">
               <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer uppercase tracking-wider">
-                Submit Admissions Application
+                Submit Application
               </button>
             </div>
           </form>
@@ -1310,42 +1301,20 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
   return (
     <div className="flex flex-col h-[calc(100vh-130px)] min-h-[680px] bg-white text-slate-900 rounded-3xl overflow-hidden border border-slate-200 shadow-xl font-sans">
-      {/* Block Manager Custom CSS Injection for crisp white cards and big SVG icons */}
+      {/* GrapesJS Clean Default Theme Support */}
       <style>{`
         .gjs-block {
-          background: #ffffff !important;
-          color: #0f172a !important;
-          border: 1px solid #e2e8f0 !important;
-          border-radius: 14px !important;
-          padding: 8px 4px !important;
-          margin: 6px 0 !important;
-          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-          transition: all 0.2s ease-in-out !important;
+          border-radius: 10px !important;
+          transition: all 0.15s ease-in-out !important;
           cursor: grab !important;
-          width: 100% !important;
-          min-height: 68px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
         }
         .gjs-block:hover {
-          border-color: #2563eb !important;
-          box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.15) !important;
           transform: translateY(-1px) !important;
         }
         .gjs-block-category .gjs-title {
-          background: #f8fafc !important;
-          color: #334155 !important;
-          font-weight: 800 !important;
+          font-weight: 700 !important;
           font-size: 11px !important;
-          text-transform: uppercase !important;
           letter-spacing: 0.05em !important;
-          padding: 10px 14px !important;
-          border-top: 1px solid #e2e8f0 !important;
-          border-bottom: 1px solid #e2e8f0 !important;
-        }
-        .gjs-cv-canvas {
-          background-color: #f1f5f9 !important;
         }
       `}</style>
 

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   FileText,
   Search,
@@ -134,10 +134,38 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
     }
   ]);
 
+  // Load persistent submissions from localStorage on mount and when tenant changes
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setResponses((prev) => {
+              const combined = [...parsed];
+              prev.forEach((p) => {
+                if (!combined.some((c) => c.id === p.id)) {
+                  combined.push(p);
+                }
+              });
+              return combined;
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Error loading form responses from storage:', e);
+      }
+    }
+  }, [tenant.subdomain]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFormFilter, setSelectedFormFilter] = useState('all');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
   const [viewingResponse, setViewingResponse] = useState<FormResponse | null>(null);
+
+  // Available forms list from tenant
+  const tenantForms = tenant.forms && tenant.forms.length > 0 ? tenant.forms : [];
 
   // Filtered responses
   const filteredResponses = responses.filter((resp) => {
@@ -154,9 +182,13 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
   });
 
   const handleStatusChange = (id: string, newStatus: FormResponse['status']) => {
-    setResponses((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
-    );
+    setResponses((prev) => {
+      const updated = prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify(updated));
+      }
+      return updated;
+    });
     if (viewingResponse && viewingResponse.id === id) {
       setViewingResponse((prev) => (prev ? { ...prev, status: newStatus } : null));
     }
@@ -168,7 +200,13 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
   };
 
   const handleDelete = (id: string) => {
-    setResponses((prev) => prev.filter((r) => r.id !== id));
+    setResponses((prev) => {
+      const updated = prev.filter((r) => r.id !== id);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify(updated));
+      }
+      return updated;
+    });
     if (viewingResponse?.id === id) setViewingResponse(null);
     onAddToast({
       type: 'info',

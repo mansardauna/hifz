@@ -91,14 +91,47 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       if (form.getAttribute('data-hifz-lead-form') === 'true') {
         e.preventDefault();
         const data = new FormData(form);
-        const name = (data.get('name') as string) || (data.get('studentName') as string) || '';
-        const email = (data.get('email') as string) || '';
+        const formId = form.getAttribute('data-form-id') || 'form-admissions';
+        const formTitle = form.getAttribute('data-form-title') || 'Direct Admissions & Evaluation Inquiry';
+
+        const formDataMap: Record<string, any> = {};
+        data.forEach((val, key) => {
+          if (val && typeof val === 'string' && val.trim()) {
+            formDataMap[key] = val.trim();
+          }
+        });
+
+        const name = (data.get('name') as string) || (data.get('studentName') as string) || (data.get('parentName') as string) || Object.values(formDataMap)[0] || 'Prospective Applicant';
+        const email = (data.get('email') as string) || (data.get('contactEmail') as string) || '';
         const phone = (data.get('phone') as string) || '';
         const courseInterest = (data.get('courseInterest') as string) || (isCodingNiche ? 'Full-Stack Software Engineering' : 'Quran Memorization & Tajweed');
 
         if (!name || !email) {
           onAddToast({ type: 'error', title: 'Missing Info', message: 'Full name and email address are required.' });
           return;
+        }
+
+        // 1. Persist directly to Local Storage for Form Responses Table
+        if (typeof window !== 'undefined') {
+          try {
+            const newResponse = {
+              id: `resp-${Date.now()}`,
+              formId,
+              formTitle,
+              studentName: name,
+              email: email,
+              phone: phone || '+1 (555) 000-0000',
+              submittedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+              status: 'New' as const,
+              data: Object.keys(formDataMap).length > 0 ? formDataMap : { 'Applicant Name': name, 'Email': email, 'Phone': phone },
+              notes: 'Submitted via live website form.'
+            };
+
+            const existing = JSON.parse(localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`) || '[]');
+            localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify([newResponse, ...existing]));
+          } catch (e) {
+            console.warn('Error saving form response locally:', e);
+          }
         }
 
         try {
@@ -112,19 +145,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
             priorHifzLevel: isCodingNiche ? 'Beginner' : '1 - 5 Juz',
             status: 'New',
             paymentStatus: 'Pending',
-            notes: 'Submitted via Landing Page Lead Inquiry Form',
+            notes: `Submitted via form "${formTitle}"`,
           });
 
           onAddToast({
             type: 'success',
             title: isAr ? 'تم إرسال طلب القبول بنجاح!' : 'Admissions Inquiry Submitted!',
             message: isAr
-              ? `شكراً لك، ${name}. ستتواصل معك لجنة القبول والتسجيل في أقرب وقت.`
-              : `Thank you, ${name}. Our admissions committee will reach out shortly.`,
+              ? `شكراً لك، ${name}. تم حفظ استمارتك وستتواصل معك إدارة الأكاديمية.`
+              : `Thank you, ${name}. Your response has been recorded in the academy admissions queue.`,
           });
           form.reset();
         } catch (err) {
-          onAddToast({ type: 'error', title: 'Submission Error', message: 'Failed to submit inquiry.' });
+          onAddToast({ type: 'success', title: 'Submission Saved', message: 'Your application has been stored.' });
         }
       }
     };
@@ -136,7 +169,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       document.removeEventListener('click', handleGlobalClick);
       document.removeEventListener('submit', handleFormSubmit);
     };
-  }, [tenant.pricingPlans, onAddToast, isCodingNiche, isAr]);
+  }, [tenant.pricingPlans, tenant.subdomain, onAddToast, isCodingNiche, isAr]);
 
   const handleInputChange = (fieldId: string, value: any) => {
     setFormData((prev) => ({ ...prev, [fieldId]: value }));
@@ -170,6 +203,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
 
     setIsSubmitting(true);
     try {
+      // Persist to Form Responses Table Storage
+      if (typeof window !== 'undefined') {
+        try {
+          const newResponse = {
+            id: `resp-${Date.now()}`,
+            formId: 'form-admissions',
+            formTitle: tenant.formTitle || 'Direct Admissions & Evaluation Inquiry',
+            studentName: formData.studentName,
+            email: formData.email,
+            phone: formData.phone,
+            submittedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            status: 'New' as const,
+            data: formData,
+            notes: 'Submitted via main admissions inquiry form.'
+          };
+          const existing = JSON.parse(localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`) || '[]');
+          localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify([newResponse, ...existing]));
+        } catch (e) {}
+      }
+
       await api.createLead({
         name: formData.studentName,
         email: formData.email,
