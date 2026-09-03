@@ -27,7 +27,8 @@ import {
   ArrowLeft,
   Layers,
   FileCheck,
-  Check
+  Check,
+  Wand2
 } from 'lucide-react';
 
 interface VisualFormBuilderProps {
@@ -119,6 +120,102 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
       formTitle: defaultForm?.title,
       formDescription: defaultForm?.description,
     });
+  };
+
+  // AI Form Generator State
+  const [isAiFormModalOpen, setIsAiFormModalOpen] = useState<boolean>(false);
+  const [aiFormGoal, setAiFormGoal] = useState<string>('');
+  const [isGeneratingFormWithAi, setIsGeneratingFormWithAi] = useState<boolean>(false);
+
+  const handleGenerateFormWithAi = (presetGoal?: string) => {
+    const goal = presetGoal || aiFormGoal;
+    setIsGeneratingFormWithAi(true);
+
+    setTimeout(() => {
+      const formId = `form-${Date.now()}`;
+      let title = 'AI Generated Admissions Application';
+      let titleAr = 'نموذج القبول الذكي';
+      let description = 'Please complete the questionnaire below for immediate academic evaluation.';
+      let fields: FormFieldConfig[] = [];
+
+      const lowerGoal = (goal || '').toLowerCase();
+
+      if (lowerGoal.includes('placement') || lowerGoal.includes('evaluat') || lowerGoal.includes('tajweed') || lowerGoal.includes('hifz') || lowerGoal.includes('quran')) {
+        title = 'Tajweed & Memorization Placement Evaluation';
+        titleAr = 'تقييم مستوى التجويد والحفظ';
+        description = 'Evaluate recitation proficiency, Makharij clarity, and prior memorized Juz.';
+        fields = [
+          { id: `fld_name_${Date.now()}`, label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text', required: true, placeholder: 'e.g. Bilal Ibrahim', width: 'half', order: 1 },
+          { id: `fld_email_${Date.now()}`, label: 'Guardian / Contact Email', labelAr: 'البريد الإلكتروني لولي الأمر', type: 'email', required: true, placeholder: 'parent@example.com', width: 'half', order: 2 },
+          { id: `fld_phone_${Date.now()}`, label: 'WhatsApp / Phone', labelAr: 'رقم الواتساب', type: 'phone', required: true, placeholder: '+966 50 000 0000', width: 'half', order: 3 },
+          { id: `fld_juz_${Date.now()}`, label: 'Current Juz Memorized', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 4 },
+          { id: `fld_rules_${Date.now()}`, label: 'Familiarity with Tajweed Rules (Noon Sakinah, Madd)', labelAr: 'المعرفة بأحكام التجويد', type: 'select', required: true, options: ['Beginner (No Prior Rules)', 'Intermediate (Know Basic Rules)', 'Advanced (Studied Tuhfah/Jazariyyah)'], width: 'half', order: 5 },
+          { id: `fld_audio_${Date.now()}`, label: 'Audio Recitation Sample (Surah Al-Fatihah or Any Surah)', labelAr: 'تسجيل صوتي للتلاوة (الفاتحة أو أي سورة)', type: 'file', required: false, width: 'half', order: 6 },
+          { id: `fld_schedule_${Date.now()}`, label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 7 },
+          { id: `fld_goals_${Date.now()}`, label: 'Personal Memorization Goal for Next 6 Months', labelAr: 'الهدف القرآني للأشهر الستة القادمة', type: 'textarea', required: false, placeholder: 'Describe your goals...', width: 'full', order: 8 },
+        ];
+      } else if (lowerGoal.includes('code') || lowerGoal.includes('bootcamp') || lowerGoal.includes('software')) {
+        title = 'Full-Stack Developer Bootcamp Application';
+        titleAr = 'طلب الالتحاق بمعسكر البرمجة';
+        description = 'Application for aspiring software engineers and cloud architects.';
+        fields = [
+          { id: `fld_name_${Date.now()}`, label: 'Applicant Name', labelAr: 'اسم المتقدم', type: 'text', required: true, placeholder: 'e.g. Alex Morgan', width: 'half', order: 1 },
+          { id: `fld_email_${Date.now()}`, label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'alex@example.com', width: 'half', order: 2 },
+          { id: `fld_github_${Date.now()}`, label: 'GitHub / Portfolio URL', labelAr: 'رابط ملف جيت هاب', type: 'text', required: false, placeholder: 'https://github.com/username', width: 'half', order: 3 },
+          { id: `fld_exp_${Date.now()}`, label: 'Prior Coding Experience', labelAr: 'الخبرة السابقة في البرمجة', type: 'select', required: true, options: ['Absolute Beginner', 'HTML/CSS/JS Basics', 'Built Simple Web Apps', 'Intermediate Programmer'], width: 'half', order: 4 },
+          { id: `fld_hours_${Date.now()}`, label: 'Weekly Hours Dedicated to Practice', labelAr: 'ساعات التفرغ الأسبوعية', type: 'select', required: true, options: ['10 - 15 Hours (Part-Time)', '20 - 30 Hours', '40+ Hours (Full Immersion)'], width: 'half', order: 5 },
+          { id: `fld_track_${Date.now()}`, label: 'Desired Career Track', labelAr: 'المسار المهني المطلوب', type: 'select', required: true, options: ['Full-Stack React & Next.js', 'AI Systems & Cloud Backend', 'Frontend Architecture'], width: 'half', order: 6 },
+          { id: `fld_motivation_${Date.now()}`, label: 'Why do you want to join this cohort?', labelAr: 'ما هو دافعك للانضمام؟', type: 'textarea', required: true, placeholder: 'Tell us about your career transition goals...', width: 'full', order: 7 },
+        ];
+      } else if (lowerGoal.includes('scholarship') || lowerGoal.includes('aid') || lowerGoal.includes('financial')) {
+        title = 'Tuition Assistance & Scholarship Request';
+        titleAr = 'طلب منحة دراسية ومساعدة مالية';
+        description = 'Application for need-based tuition subsidy and educational sponsorships.';
+        fields = [
+          { id: `fld_name_${Date.now()}`, label: 'Applicant / Guardian Name', labelAr: 'اسم المتقدم أو ولي الأمر', type: 'text', required: true, placeholder: 'Full Name...', width: 'half', order: 1 },
+          { id: `fld_email_${Date.now()}`, label: 'Contact Email', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'contact@example.com', width: 'half', order: 2 },
+          { id: `fld_phone_${Date.now()}`, label: 'Phone Number', labelAr: 'رقم الهاتف', type: 'phone', required: true, placeholder: '+1 (555) 000-0000', width: 'half', order: 3 },
+          { id: `fld_dependents_${Date.now()}`, label: 'Number of Students Enrolling', labelAr: 'عدد الطلاب المسجلين', type: 'select', required: true, options: ['1 Student', '2 Students', '3+ Students (Family Discount)'], width: 'half', order: 4 },
+          { id: `fld_subsidy_${Date.now()}`, label: 'Requested Assistance Level', labelAr: 'نسبة الدعم المطلوبة', type: 'select', required: true, options: ['Partial Scholarship (50% Off)', 'Significant Assistance (75% Off)', 'Full Tuition Sponsorship (100% Need-Based)'], width: 'half', order: 5 },
+          { id: `fld_circumstance_${Date.now()}`, label: 'Statement of Need & Dedication', labelAr: 'شرح الوضع المالي والالتزام', type: 'textarea', required: true, placeholder: 'Please share your family situation and commitment to completing the track...', width: 'full', order: 6 },
+        ];
+      } else {
+        title = goal || 'General Admissions & Course Inquiry';
+        fields = [
+          { id: `fld_name_${Date.now()}`, label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text', required: true, placeholder: 'Enter name...', width: 'half', order: 1 },
+          { id: `fld_email_${Date.now()}`, label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'email@example.com', width: 'half', order: 2 },
+          { id: `fld_phone_${Date.now()}`, label: 'Phone / WhatsApp', labelAr: 'رقم الهاتف', type: 'phone', required: true, placeholder: '+1 000 000 0000', width: 'half', order: 3 },
+          { id: `fld_level_${Date.now()}`, label: 'Current Proficiency Level', labelAr: 'المستوى الحالي', type: 'select', required: true, options: ['Beginner', 'Intermediate', 'Advanced'], width: 'half', order: 4 },
+          { id: `fld_notes_${Date.now()}`, label: 'Questions / Special Requests', labelAr: 'أي أسئلة أو طلبات خاصة', type: 'textarea', required: false, placeholder: 'How can our academy assist you?', width: 'full', order: 5 },
+        ];
+      }
+
+      const newForm: FormConfig = {
+        id: formId,
+        title,
+        titleAr,
+        description,
+        isDefault: false,
+        status: 'active',
+        submissionsCount: 0,
+        createdAt: new Date().toISOString().split('T')[0],
+        fields,
+      };
+
+      const updated = [...formsList, newForm];
+      persistForms(updated);
+      setEditingFormId(formId);
+      setSelectedFieldId(newForm.fields[0].id);
+      setIsGeneratingFormWithAi(false);
+      setIsAiFormModalOpen(false);
+      setAiFormGoal('');
+
+      onAddToast({
+        type: 'success',
+        title: 'AI Form Generated Successfully!',
+        message: `Created "${newForm.title}" with ${newForm.fields.length} customized fields.`,
+      });
+    }, 700);
   };
 
   // Create a new form
@@ -273,13 +370,23 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             </p>
           </div>
 
-          <button
-            onClick={handleCreateNewForm}
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create New Form</span>
-          </button>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              onClick={() => setIsAiFormModalOpen(true)}
+              className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer select-none active:scale-95"
+            >
+              <Wand2 className="w-4 h-4 text-amber-300 animate-pulse" />
+              <span>Build Form with AI</span>
+            </button>
+
+            <button
+              onClick={handleCreateNewForm}
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create New Form</span>
+            </button>
+          </div>
         </div>
 
         {/* Form Cards Grid */}
@@ -718,6 +825,107 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           )}
         </div>
       </div>
+
+      {/* BUILD FORM WITH AI MODAL */}
+      {isAiFormModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150 font-sans">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+                  <Wand2 className="w-4 h-4 text-amber-300" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-slate-900">Build Admissions Form with AI</h3>
+                  <p className="text-[11px] text-slate-500">Pick a preset or tell the AI what information you need to collect.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAiFormModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Presets Grid */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Quick Presets:</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleGenerateFormWithAi('Tajweed & Memorization Placement Test')}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">🎙️ Tajweed Placement Test</div>
+                  <div className="text-[10px] text-slate-500">Juz count, Makharij & Audio clip</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleGenerateFormWithAi('Full-Stack Developer Bootcamp Application')}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">💻 Coding Bootcamp Application</div>
+                  <div className="text-[10px] text-slate-500">GitHub, hours & career goals</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleGenerateFormWithAi('Tuition Assistance & Scholarship Request')}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">🤝 Scholarship Request</div>
+                  <div className="text-[10px] text-slate-500">Financial aid & family situation</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleGenerateFormWithAi('Youth Summer Camp Registration')}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">⛺ Summer Camp Registration</div>
+                  <div className="text-[10px] text-slate-500">Emergency contacts & age group</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Custom Input */}
+            <div className="space-y-1 text-xs">
+              <label className="font-bold text-slate-800">Or Describe Your Custom Form Requirements</label>
+              <input
+                type="text"
+                placeholder="e.g. Teacher Recruitment Form with CV Upload and Qira'at Certification"
+                value={aiFormGoal}
+                onChange={(e) => setAiFormGoal(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              />
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setIsAiFormModalOpen(false)}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleGenerateFormWithAi()}
+                disabled={isGeneratingFormWithAi || !aiFormGoal.trim()}
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 disabled:opacity-50 select-none active:scale-95"
+              >
+                <Wand2 className="w-4 h-4 text-amber-300" />
+                <span>{isGeneratingFormWithAi ? 'Generating Form Fields...' : 'Generate Form with AI'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

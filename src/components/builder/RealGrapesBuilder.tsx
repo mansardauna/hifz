@@ -29,7 +29,8 @@ import {
   Copy,
   ExternalLink,
   BookOpen,
-  Award
+  Award,
+  Wand2
 } from 'lucide-react';
 
 interface RealGrapesBuilderProps {
@@ -49,6 +50,185 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [exportedHtml, setExportedHtml] = useState<string>('');
   const [exportedCss, setExportedCss] = useState<string>('');
+
+  // AI Page Builder State
+  const [isAiPageModalOpen, setIsAiPageModalOpen] = useState<boolean>(false);
+  const [aiFocus, setAiFocus] = useState<string>('');
+  const [aiAudience, setAiAudience] = useState<string>('All Ages & Beginners');
+  const [aiHighlight, setAiHighlight] = useState<string>('1-on-1 Daily Live Recitation & Sanad Certification');
+  const [isGeneratingWithAi, setIsGeneratingWithAi] = useState<boolean>(false);
+
+  const handleGeneratePageWithAi = () => {
+    setIsGeneratingWithAi(true);
+    setTimeout(() => {
+      const isCoding = (aiFocus && (aiFocus.toLowerCase().includes('code') || aiFocus.toLowerCase().includes('software'))) || tenant.niche === 'coding';
+      const academyTitle = tenant.name || (isCoding ? 'Code Academy Global' : 'Al-Furqan Quran Academy');
+      const headline = aiFocus || (isCoding ? 'Master Modern Software Engineering & Cloud Architecture' : 'Master Authentic Quran Memorization & Verified Sanad Recitation');
+      const description = `Join our elite academy designed for ${aiAudience.toLowerCase()}. Featuring ${aiHighlight.toLowerCase()} with live real-time interactive halaqahs.`;
+
+      const generatedHtml = `
+        <header class="bg-white border-b border-slate-200 py-4 px-6 sm:px-12 flex items-center justify-between font-sans">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
+              ${academyTitle.slice(0, 2).toUpperCase()}
+            </div>
+            <span class="font-extrabold text-slate-900 text-base">${academyTitle}</span>
+          </div>
+          <nav class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
+            <a href="#about" class="hover:text-slate-900">About</a>
+            <a href="#curriculum" class="hover:text-slate-900">Curriculum</a>
+            <a href="#faculty" class="hover:text-slate-900">Faculty</a>
+            <a href="#pricing" class="hover:text-slate-900">Tuition</a>
+            <a href="#admissions" class="hover:text-slate-900">Admissions</a>
+          </nav>
+          <a href="#admissions" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all">
+            Apply Now &rarr;
+          </a>
+        </header>
+
+        <section class="py-20 lg:py-28 px-6 sm:px-12 bg-white font-sans text-center border-b border-slate-200">
+          <div class="max-w-4xl mx-auto space-y-6">
+            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">
+              ✨ AI-Generated Architecture
+            </span>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
+              ${headline}
+            </h1>
+            <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              ${description}
+            </p>
+            <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
+              <a href="#admissions" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-md transition-all">
+                Enroll Today
+              </a>
+              <a href="#curriculum" class="px-7 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm rounded-xl border border-slate-200 transition-all">
+                Explore Curriculum
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-12 px-6 sm:px-12 bg-slate-50 border-b border-slate-200 font-sans">
+          <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
+              <div class="text-3xl font-black text-slate-900 font-mono">1,400+</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Graduated Students</div>
+            </div>
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
+              <div class="text-3xl font-black text-slate-900 font-mono">100%</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Live SFU Halaqahs</div>
+            </div>
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
+              <div class="text-3xl font-black text-slate-900 font-mono">1-on-1</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Certified Mentors</div>
+            </div>
+            <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
+              <div class="text-3xl font-black text-slate-900 font-mono">4.9/5</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Parent & Student Rating</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="curriculum" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
+          <div class="max-w-4xl mx-auto space-y-8">
+            <div class="text-center">
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">Course Syllabus</span>
+              <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Structured Learning Roadmap</h2>
+              <p class="text-xs sm:text-sm text-slate-500 mt-1">Built for ${aiAudience.toLowerCase()} with progressive evaluation milestones.</p>
+            </div>
+            <div class="space-y-3">
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-extrabold text-sm text-slate-900">Module 1: Foundations & Diagnostic Assessment</h3>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Weeks 1 - 4</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1.5">Core principles, oral recitation rules, and baseline proficiency benchmarks.</p>
+              </div>
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-extrabold text-sm text-slate-900">Module 2: Intensive Mastery & Practicum</h3>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Weeks 5 - 10</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1.5">Interactive live video halaqahs, daily revision logs, and personalized feedback.</p>
+              </div>
+              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-extrabold text-sm text-slate-900">Module 3: Khatmah Examination & Sanad Ijazah</h3>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Weeks 11 - 16</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1.5">Oral examination, formal certification, and graduation credential verification.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="admissions" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
+          <div class="max-w-2xl mx-auto text-center mb-8">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">Admissions Open</span>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Apply for Immediate Enrollment</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Submit your details below and our admissions team will schedule your evaluation.</p>
+          </div>
+          <div class="max-w-xl mx-auto bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
+            <form data-hifz-lead-form="true" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Student / Applicant Full Name</label>
+                <input type="text" name="name" required placeholder="e.g. Zaid Al-Mansoor" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Email Address</label>
+                <input type="email" name="email" required placeholder="name@example.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Phone / WhatsApp Number</label>
+                <input type="tel" name="phone" required placeholder="+1 (555) 000-0000" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
+              </div>
+              <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer">
+                Submit Admissions Application &rarr;
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <footer class="py-12 px-6 sm:px-12 bg-slate-900 text-white font-sans text-center">
+          <div class="max-w-6xl mx-auto space-y-4">
+            <div class="font-bold text-base text-white">${academyTitle}</div>
+            <p class="text-xs text-slate-400">© 2026 ${academyTitle}. Powered by TechMadrasah OS.</p>
+          </div>
+        </footer>
+      `;
+
+      if (editorRef.current) {
+        editorRef.current.setComponents(generatedHtml);
+      }
+
+      const pageSchemaJson = {
+        type: 'ai_generated_page',
+        version: '2.0',
+        generatedAt: new Date().toISOString(),
+        prompt: aiFocus,
+        audience: aiAudience,
+        highlight: aiHighlight,
+        sections: ['header', 'hero', 'stats', 'curriculum', 'admissions_form', 'footer']
+      };
+
+      updateTenantConfig({
+        customHtml: generatedHtml,
+        landingPageSchema: pageSchemaJson,
+        tagline: headline,
+        aboutText: description,
+      });
+
+      setIsGeneratingWithAi(false);
+      setIsAiPageModalOpen(false);
+      setHasUnsavedChanges(true);
+
+      onAddToast({
+        type: 'success',
+        title: 'AI Landing Page Generated!',
+        message: 'Your custom academy landing page has been compiled as JSON and injected into the canvas.',
+      });
+    }, 800);
+  };
 
   // Available forms created in Form Builder
   const tenantForms: FormConfig[] = tenant.forms && tenant.forms.length > 0
@@ -1226,6 +1406,16 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
           <button
             type="button"
+            onClick={() => setIsAiPageModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer select-none active:scale-95"
+            title="Build Academy Landing Page with AI"
+          >
+            <Wand2 className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+            <span className="hidden sm:inline">Build with AI</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsTemplateBankOpen(true)}
             className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
           >
@@ -1456,6 +1646,148 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. BUILD WITH AI MODAL */}
+      {isAiPageModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150 font-sans">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+                  <Wand2 className="w-4 h-4 text-amber-300" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-sm text-slate-900">Build Academy Landing Page with AI</h3>
+                  <p className="text-[11px] text-slate-500">Describe your academy or choose a preset to auto-generate a high-converting layout.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAiPageModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Presets Grid */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Quick Presets:</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiFocus('Authentic Quran Memorization, Tajweed Rules & Al-Azhar Sanad Khatmah');
+                    setAiAudience('Adults, Youth & Reverts');
+                    setAiHighlight('Daily Live 1-on-1 Recitation with WebRTC Audio Looper');
+                  }}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">🌟 Quran & Sanad Academy</div>
+                  <div className="text-[10px] text-slate-500">Tajweed, Hifz, and verified chain</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiFocus('Full-Stack Cloud Software Engineering & AI Systems');
+                    setAiAudience('Aspiring Developers & Tech Career Changers');
+                    setAiHighlight('Project-Based Live Coding with 1-on-1 Code Reviews');
+                  }}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">💻 Software Bootcamp</div>
+                  <div className="text-[10px] text-slate-500">Next.js, TypeScript & Cloud</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiFocus('Youth Weekend Quran & Islamic Foundations School');
+                    setAiAudience('Children Aged 6-16 Years');
+                    setAiHighlight('Interactive Gamified Halaqahs & Character Building');
+                  }}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">🕌 Weekend Islamic School</div>
+                  <div className="text-[10px] text-slate-500">Youth character & Quran fluency</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiFocus('Intensive Summer Khatmah & Arabic Immersion Camp');
+                    setAiAudience('Youth & University Students');
+                    setAiHighlight('Accelerated 6-Week Memorization with Mentorship');
+                  }}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 text-left transition-all text-xs cursor-pointer"
+                >
+                  <div className="font-bold text-slate-900">📖 Accelerated Camp</div>
+                  <div className="text-[10px] text-slate-500">Summer intensive immersion</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Custom Inputs */}
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-800">Academy Focus & Headline Goal</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Master Authentic Quran Memorization with Verified Sanad"
+                  value={aiFocus}
+                  onChange={(e) => setAiFocus(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-800">Target Students</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Beginners & Advanced Youth"
+                    value={aiAudience}
+                    onChange={(e) => setAiAudience(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-800">Key Feature Highlight</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 1-on-1 Daily Live Recitation"
+                    value={aiHighlight}
+                    onChange={(e) => setAiHighlight(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setIsAiPageModalOpen(false)}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleGeneratePageWithAi}
+                disabled={isGeneratingWithAi}
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 disabled:opacity-50 select-none active:scale-95"
+              >
+                <Wand2 className="w-4 h-4 text-amber-300" />
+                <span>{isGeneratingWithAi ? 'Compiling AI Layout...' : 'Generate Page with AI'}</span>
               </button>
             </div>
           </div>

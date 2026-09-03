@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTenant } from '../../context/TenantContext';
+import { useAuth } from '../../context/AuthContext';
 import { Header } from './Header';
 import { api } from '../../services/api';
 import { ToastMessage } from '../ui/Toast';
@@ -24,7 +25,12 @@ import {
   Award,
   Radio,
   Star,
-  Globe
+  Globe,
+  Layers,
+  Wand2,
+  FileText,
+  Settings,
+  LayoutTemplate
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -33,6 +39,7 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
   const { tenant, courses, language, direction } = useTenant();
+  const { user } = useAuth();
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -599,6 +606,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
           selectedPlan={selectedPlanForEnroll}
           onAddToast={onAddToast}
         />
+      )}
+
+      {/* Floating Academy Owner Quick Action Bar */}
+      {user?.role === 'admin' && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-2xl z-50 flex items-center gap-2.5 sm:gap-3 font-sans text-xs animate-in slide-in-from-bottom duration-200">
+          <div className="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-extrabold text-[11px] text-slate-300 hidden sm:inline">Owner Mode</span>
+          </div>
+
+          <a
+            href={`/${tenant.subdomain}/admin`}
+            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Edit Page</span>
+          </a>
+
+          <a
+            href={`/${tenant.subdomain}/admin`}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl flex items-center gap-1.5 transition-all border border-slate-700"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Edit Forms</span>
+          </a>
+
+          <a
+            href={`/${tenant.subdomain}/admin`}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl flex items-center gap-1.5 transition-all border border-slate-700"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Dashboard</span>
+          </a>
+        </div>
       )}
     </div>
   );

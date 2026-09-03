@@ -137,6 +137,7 @@ export interface TenantConfig {
   paymentGateways: PaymentGatewayConfig[];
   customHtml?: string;
   customCss?: string;
+  landingPageSchema?: any;
   subscriptionPlan?: TenantSubscriptionPlan;
   studentCapacity?: number;
   authCustomization?: AuthPageCustomization;
