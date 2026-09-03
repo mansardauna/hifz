@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../../../src/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'hif
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, role } = await request.json();
+    const { email, password, role, action, name, subdomain } = await request.json();
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -18,25 +19,70 @@ export async function POST(request: NextRequest) {
     let userObj: { id: string; email: string; name: string; role: string; tenantId: string } = {
       id: `user-${Date.now()}`,
       email,
-      name: email.split('@')[0],
+      name: name || email.split('@')[0],
       role: role || 'student',
       tenantId: 'tenant-al-furqan',
     };
 
     if (process.env.DATABASE_URL) {
-      const dbUser = await prisma.user.findUnique({
-        where: { email },
-        include: { tenant: true },
-      });
+      if (action === 'register') {
+        // Register new user
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing) {
+          return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
+        }
 
-      if (dbUser) {
+        let targetTenant = null;
+        if (subdomain) {
+          targetTenant = await prisma.tenant.findUnique({ where: { subdomain } });
+        }
+        if (!targetTenant) {
+          targetTenant = await prisma.tenant.findFirst();
+        }
+
+        const passwordHash = await bcrypt.hash(password || 'Password123!', 10);
+        const newUser = await prisma.user.create({
+          data: {
+            email,
+            name: name || email.split('@')[0],
+            passwordHash,
+            role: role || 'student',
+            tenantId: targetTenant ? targetTenant.id : 'tenant-al-furqan',
+          },
+        });
+
         userObj = {
-          id: dbUser.id,
-          email: dbUser.email,
-          name: dbUser.name,
-          role: dbUser.role,
-          tenantId: dbUser.tenantId,
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          role: newUser.role,
+          tenantId: newUser.tenantId,
         };
+      } else {
+        // Login / authenticate
+        const dbUser = await prisma.user.findUnique({
+          where: { email },
+          include: { tenant: true },
+        });
+
+        if (dbUser) {
+          if (password && dbUser.passwordHash) {
+            const isValid = await bcrypt.compare(password, dbUser.passwordHash);
+            if (!isValid) {
+              return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
+            }
+          }
+
+          userObj = {
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            role: dbUser.role,
+            tenantId: dbUser.tenantId,
+          };
+        } else if (password) {
+          return NextResponse.json({ error: 'Account not found' }, { status: 404 });
+        }
       }
     }
 
@@ -70,6 +116,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: any) {
+    console.error('Authentication error:', error);
     return NextResponse.json({ error: error.message || 'Authentication failed' }, { status: 500 });
   }
 }
