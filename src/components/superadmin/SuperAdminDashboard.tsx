@@ -210,40 +210,40 @@ export const SuperAdminDashboard: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
       {/* Super Admin Top Header */}
-      <header className="bg-slate-950 border-b border-slate-800 px-4 sm:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between shadow-lg">
+      <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-700/20 text-white">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-black tracking-tight text-white">
-                Ankabit LMS <span className="text-emerald-400 font-extrabold text-sm uppercase tracking-widest ml-1">SuperAdmin</span>
+              <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900">
+                Ankabit LMS <span className="text-emerald-700 font-extrabold text-xs uppercase tracking-widest ml-1">SuperAdmin</span>
               </h1>
-              <Badge variant="success" className="bg-emerald-950/80 border-emerald-500/30 text-emerald-400 text-[10px]">
+              <Badge variant="success" className="bg-emerald-50 border-emerald-200 text-emerald-800 text-[10px]">
                 Platform Control
               </Badge>
             </div>
-            <p className="text-xs text-slate-400 hidden sm:block">Global Multi-Tenant LMS & Subscription Infrastructure</p>
+            <p className="text-xs text-slate-500 hidden sm:block">Global Multi-Tenant LMS & Subscription Infrastructure</p>
           </div>
         </div>
 
         {/* Status Indicators & Navigation */}
         <div className="flex items-center gap-3">
-          <div className="hidden md:flex items-center gap-2 bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>PostgreSQL: <strong className="text-emerald-400">Connected</strong></span>
-            <span className="text-slate-600">|</span>
-            <span>LiveKit SFU: <strong className="text-emerald-400">Online</strong></span>
+          <div className="hidden md:flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>PostgreSQL: <strong className="text-emerald-700">Connected</strong></span>
+            <span className="text-slate-300">|</span>
+            <span>LiveKit SFU: <strong className="text-emerald-700">Online</strong></span>
           </div>
 
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg transition-colors border border-slate-700"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg transition-colors border border-slate-200 shadow-xs"
           >
             <span>Public Home</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -252,75 +252,75 @@ export const SuperAdminDashboard: React.FC = () => {
       </header>
 
       {/* Hero Financial & Platform Metrics Bar */}
-      <section className="bg-slate-950/60 border-b border-slate-800/80 px-4 sm:px-8 py-6">
+      <section className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-6">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 max-w-7xl mx-auto">
           {/* MRR */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Monthly MRR</span>
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <div className="p-2 rounded-lg bg-emerald-100 text-emerald-700">
                 <DollarSign className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               ${mrr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold mt-1">
+            <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold mt-1">
               <TrendingUp className="w-3 h-3" />
               <span>+24.5% MoM Growth</span>
             </div>
           </div>
 
           {/* ARR */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Projected ARR</span>
-              <div className="p-2 rounded-lg bg-teal-500/10 text-teal-400">
+              <div className="p-2 rounded-lg bg-teal-100 text-teal-700">
                 <Sparkles className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               ${arr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">Annual Run Rate</div>
+            <div className="text-[11px] text-slate-500 mt-1 font-medium">Annual Run Rate</div>
           </div>
 
           {/* Total Academies */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Total Academies</span>
-              <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400">
+              <div className="p-2 rounded-lg bg-sky-100 text-sky-700">
                 <Building2 className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-white tracking-tight">{totalAcademies}</div>
-            <div className="text-[11px] text-emerald-400 font-medium mt-1">4 Active, 1 Trial</div>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{totalAcademies}</div>
+            <div className="text-[11px] text-emerald-700 font-medium mt-1">4 Active, 1 Trial</div>
           </div>
 
           {/* Paying Subscribers */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Subscribers</span>
-              <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+              <div className="p-2 rounded-lg bg-purple-100 text-purple-700">
                 <CreditCard className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-white tracking-tight">{activeSubsCount}</div>
-            <div className="text-[11px] text-purple-400 font-medium mt-1">80% Paid Conversion</div>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{activeSubsCount}</div>
+            <div className="text-[11px] text-purple-700 font-medium mt-1">80% Paid Conversion</div>
           </div>
 
           {/* Total Students */}
-          <div className="col-span-2 lg:col-span-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+          <div className="col-span-2 lg:col-span-1 bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Total Students</span>
-              <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+              <div className="p-2 rounded-lg bg-amber-100 text-amber-700">
                 <Users className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {totalStudents.toLocaleString()}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">Enrolled Globally</div>
+            <div className="text-[11px] text-slate-500 mt-1 font-medium">Enrolled Globally</div>
           </div>
         </div>
       </section>
@@ -328,13 +328,13 @@ export const SuperAdminDashboard: React.FC = () => {
       {/* Main Workspace Navigation */}
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 flex-1 flex flex-col">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-4 mb-6 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-slate-200 pb-4 mb-6 overflow-x-auto">
           <button
             onClick={() => setActiveTab('plans')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'plans'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
             <CreditCard className="w-4 h-4" />
@@ -346,8 +346,8 @@ export const SuperAdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('academies')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'academies'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -359,8 +359,8 @@ export const SuperAdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('subscribers')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'subscribers'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
             <DollarSign className="w-4 h-4" />
@@ -371,8 +371,8 @@ export const SuperAdminDashboard: React.FC = () => {
             onClick={() => setActiveTab('system')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'system'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
             <Settings className="w-4 h-4" />
@@ -383,15 +383,15 @@ export const SuperAdminDashboard: React.FC = () => {
         {/* TAB 1: SUBSCRIPTION PLANS STUDIO */}
         {activeTab === 'plans' && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
               <div>
-                <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+                <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                   <span>Subscription Plans & Feature Gate Matrix</span>
-                  <Badge variant="success" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px]">
+                  <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
                     Live Broadcast Active
                   </Badge>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Edit pricing, modify limits, toggle feature flags, or add/delete custom plan perks. Changes instantly update all checkout pages.
                 </p>
               </div>
@@ -401,7 +401,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 size="sm"
                 onClick={handleOpenNewPlan}
                 leftIcon={<Plus className="w-4 h-4" />}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs"
               >
                 Create New Plan
               </Button>
@@ -414,20 +414,20 @@ export const SuperAdminDashboard: React.FC = () => {
                   key={plan.id}
                   className={`rounded-2xl border p-6 flex flex-col justify-between transition-all duration-200 ${
                     plan.isPopular
-                      ? 'bg-gradient-to-b from-slate-900 to-slate-950 border-emerald-500/50 shadow-xl shadow-emerald-950/30 ring-1 ring-emerald-500/30'
-                      : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                      ? 'bg-white border-emerald-500 shadow-md ring-1 ring-emerald-500/20'
+                      : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
                   }`}
                 >
                   <div>
                     {/* Header with Badge & Edit */}
                     <div className="flex items-center justify-between mb-3">
-                      <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">
                         {plan.badge || plan.name}
                       </span>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleOpenEditPlan(plan)}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                           title="Edit Plan"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -435,7 +435,7 @@ export const SuperAdminDashboard: React.FC = () => {
                         {plan.id !== 'free' && (
                           <button
                             onClick={() => handleDeletePlan(plan.id)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                             title="Delete Plan"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -444,42 +444,42 @@ export const SuperAdminDashboard: React.FC = () => {
                       </div>
                     </div>
 
-                    <h3 className="text-lg font-black text-white">{plan.name}</h3>
-                    <p className="text-xs text-slate-400 mt-1 min-h-[32px] leading-relaxed">{plan.description}</p>
+                    <h3 className="text-lg font-black text-slate-900">{plan.name}</h3>
+                    <p className="text-xs text-slate-500 mt-1 min-h-[32px] leading-relaxed">{plan.description}</p>
 
                     {/* Price display */}
-                    <div className="my-4 py-3 px-4 bg-slate-950/60 rounded-xl border border-slate-800/80">
+                    <div className="my-4 py-3 px-4 bg-slate-50 rounded-xl border border-slate-200">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-2xl sm:text-3xl font-black text-white">${plan.priceMonthly}</span>
-                        <span className="text-xs text-slate-400 font-semibold">{plan.period}</span>
+                        <span className="text-2xl sm:text-3xl font-black text-slate-900">${plan.priceMonthly}</span>
+                        <span className="text-xs text-slate-500 font-semibold">{plan.period}</span>
                       </div>
-                      <div className="text-[11px] text-emerald-400 font-medium mt-0.5">
+                      <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">
                         ${plan.priceYearly}/yr when billed annually
                       </div>
                     </div>
 
                     {/* Quota Highlights */}
                     <div className="grid grid-cols-2 gap-2 mb-4 text-xs font-semibold">
-                      <div className="p-2 rounded-lg bg-slate-950/40 border border-slate-800/60 text-slate-300">
-                        <span className="block text-[10px] text-slate-500 uppercase">Max Students</span>
-                        <span className="text-white font-bold">
+                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-600">
+                        <span className="block text-[10px] text-slate-400 uppercase">Max Students</span>
+                        <span className="text-slate-900 font-bold">
                           {plan.studentCapacity >= 99999 ? 'Unlimited' : plan.studentCapacity}
                         </span>
                       </div>
-                      <div className="p-2 rounded-lg bg-slate-950/40 border border-slate-800/60 text-slate-300">
-                        <span className="block text-[10px] text-slate-500 uppercase">Teacher Seats</span>
-                        <span className="text-white font-bold">{plan.teacherSeats}</span>
+                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-600">
+                        <span className="block text-[10px] text-slate-400 uppercase">Teacher Seats</span>
+                        <span className="text-slate-900 font-bold">{plan.teacherSeats}</span>
                       </div>
                     </div>
 
                     {/* Feature Bullets List */}
-                    <div className="space-y-2 mt-3 pt-3 border-t border-slate-800">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-1">
+                    <div className="space-y-2 mt-3 pt-3 border-t border-slate-200">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">
                         Included Features ({plan.features.length})
                       </span>
                       {plan.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <div key={idx} className="flex items-start gap-2 text-xs text-slate-700">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                           <span className="leading-snug">{feat}</span>
                         </div>
                       ))}
@@ -487,12 +487,12 @@ export const SuperAdminDashboard: React.FC = () => {
                   </div>
 
                   {/* Edit CTA button */}
-                  <div className="mt-6 pt-4 border-t border-slate-800">
+                  <div className="mt-6 pt-4 border-t border-slate-200">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleOpenEditPlan(plan)}
-                      className="w-full border-slate-700 hover:bg-slate-800 text-slate-200 font-bold"
+                      className="w-full border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
                     >
                       Configure Plan & Features
                     </Button>
@@ -507,15 +507,15 @@ export const SuperAdminDashboard: React.FC = () => {
         {activeTab === 'academies' && (
           <div className="space-y-6">
             {/* Search & Filter Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
               <div className="flex-1 relative">
-                <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search by academy name, subdomain, or director email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
                 />
               </div>
 
@@ -523,7 +523,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 <select
                   value={planFilter}
                   onChange={(e) => setPlanFilter(e.target.value)}
-                  className="px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium focus:outline-none focus:border-emerald-600 cursor-pointer"
                 >
                   <option value="all">All Plan Tiers</option>
                   <option value="free">Free Starter</option>
@@ -540,7 +540,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     setPlanFilter('all');
                   }}
                   leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
                 >
                   Reset
                 </Button>
@@ -548,10 +548,10 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
 
             {/* Academies Table */}
-            <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-lg">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-3.5 px-4">Academy & Subdomain</th>
                       <th className="py-3.5 px-4">Director / Email</th>
@@ -561,18 +561,18 @@ export const SuperAdminDashboard: React.FC = () => {
                       <th className="py-3.5 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800 text-slate-300">
+                  <tbody className="divide-y divide-slate-200 text-slate-700">
                     {filteredTenants.map((tenant) => (
-                      <tr key={tenant.id} className="hover:bg-slate-900/50 transition-colors">
+                      <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
                         {/* Academy Name */}
                         <td className="py-4 px-4">
-                          <div className="font-extrabold text-white text-sm">{tenant.name}</div>
-                          <div className="flex items-center gap-2 mt-0.5 text-slate-400">
-                            <span className="text-emerald-400 font-mono text-[11px]">{tenant.subdomain}.ankabit.app</span>
+                          <div className="font-extrabold text-slate-900 text-sm">{tenant.name}</div>
+                          <div className="flex items-center gap-2 mt-0.5 text-slate-500">
+                            <span className="text-emerald-700 font-mono text-[11px] font-semibold">{tenant.subdomain}.ankabit.app</span>
                             {tenant.customDomain && (
                               <>
                                 <span>•</span>
-                                <span className="text-purple-300 text-[11px]">{tenant.customDomain}</span>
+                                <span className="text-purple-700 text-[11px] font-semibold">{tenant.customDomain}</span>
                               </>
                             )}
                           </div>
@@ -580,14 +580,14 @@ export const SuperAdminDashboard: React.FC = () => {
 
                         {/* Director */}
                         <td className="py-4 px-4">
-                          <div className="font-bold text-slate-200">{tenant.ownerName}</div>
-                          <div className="text-slate-400 text-[11px]">{tenant.ownerEmail}</div>
+                          <div className="font-bold text-slate-900">{tenant.ownerName}</div>
+                          <div className="text-slate-500 text-[11px]">{tenant.ownerEmail}</div>
                         </td>
 
                         {/* Students & Courses */}
                         <td className="py-4 px-4">
-                          <div className="font-extrabold text-white">{tenant.studentsCount} Students</div>
-                          <div className="text-slate-400 text-[11px]">{tenant.coursesCount} Active Courses</div>
+                          <div className="font-extrabold text-slate-900">{tenant.studentsCount} Students</div>
+                          <div className="text-slate-500 text-[11px]">{tenant.coursesCount} Active Courses</div>
                         </td>
 
                         {/* Plan selector */}
@@ -595,7 +595,7 @@ export const SuperAdminDashboard: React.FC = () => {
                           <select
                             value={tenant.planId}
                             onChange={(e) => handleChangeTenantPlan(tenant.id, e.target.value)}
-                            className="px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-bold text-emerald-400 focus:outline-none cursor-pointer"
+                            className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-emerald-800 focus:outline-none focus:border-emerald-600 cursor-pointer"
                           >
                             {plans.map((p) => (
                               <option key={p.id} value={p.id}>
@@ -610,19 +610,19 @@ export const SuperAdminDashboard: React.FC = () => {
                           <span
                             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
                               tenant.status === 'active'
-                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                                 : tenant.status === 'trial'
-                                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                : 'bg-rose-50 text-rose-800 border border-rose-200'
                             }`}
                           >
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
                                 tenant.status === 'active'
-                                  ? 'bg-emerald-400'
+                                  ? 'bg-emerald-500'
                                   : tenant.status === 'trial'
-                                  ? 'bg-amber-400'
-                                  : 'bg-rose-400'
+                                  ? 'bg-amber-500'
+                                  : 'bg-rose-500'
                               }`}
                             />
                             <span className="capitalize">{tenant.status}</span>
@@ -637,7 +637,7 @@ export const SuperAdminDashboard: React.FC = () => {
                               href={`/${tenant.subdomain}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                               title="View Academy Public Landing"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
@@ -648,7 +648,7 @@ export const SuperAdminDashboard: React.FC = () => {
                               href={`/${tenant.subdomain}/admin`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 transition-colors"
+                              className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
                               title="Impersonate & Open Admin Dashboard"
                             >
                               <Eye className="w-3.5 h-3.5" />
@@ -657,10 +657,10 @@ export const SuperAdminDashboard: React.FC = () => {
                             {/* Suspend / Activate Toggle */}
                             <button
                               onClick={() => handleToggleTenantStatus(tenant.id)}
-                              className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
                                 tenant.status === 'active'
-                                  ? 'bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300'
-                                  : 'bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800 text-emerald-300'
+                                  ? 'bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700'
+                                  : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700'
                               }`}
                             >
                               {tenant.status === 'active' ? 'Suspend' : 'Activate'}
@@ -679,10 +679,10 @@ export const SuperAdminDashboard: React.FC = () => {
         {/* TAB 3: SUBSCRIBERS & BILLING LEDGER */}
         {activeTab === 'subscribers' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between bg-slate-950 p-4 rounded-2xl border border-slate-800">
+            <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
               <div>
-                <h2 className="text-base font-extrabold text-white">Platform Billing & Subscriber Ledger</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <h2 className="text-base font-extrabold text-slate-900">Platform Billing & Subscriber Ledger</h2>
+                <p className="text-xs text-slate-500 mt-0.5">
                   Track recurring subscription payments processed via Stripe and Moyasar.
                 </p>
               </div>
@@ -690,16 +690,16 @@ export const SuperAdminDashboard: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => success('Exporting CSV', 'Subscriber transactions CSV generated and downloading.')}
-                className="border-slate-700 text-slate-300"
+                className="border-slate-300 text-slate-700 hover:bg-slate-50 font-bold"
               >
                 Export CSV Report
               </Button>
             </div>
 
-            <div className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-lg">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
+                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-3.5 px-4">Academy / Tenant</th>
                       <th className="py-3.5 px-4">Plan Tier</th>
@@ -709,27 +709,27 @@ export const SuperAdminDashboard: React.FC = () => {
                       <th className="py-3.5 px-4">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800 text-slate-300">
+                  <tbody className="divide-y divide-slate-200 text-slate-700">
                     {subscribers.map((sub) => (
-                      <tr key={sub.id} className="hover:bg-slate-900/50 transition-colors">
+                      <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
                         <td className="py-4 px-4">
-                          <div className="font-extrabold text-white">{sub.academyName}</div>
+                          <div className="font-extrabold text-slate-900">{sub.academyName}</div>
                           <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.ankabit.app</div>
                         </td>
-                        <td className="py-4 px-4 font-bold text-slate-200">{sub.planName}</td>
+                        <td className="py-4 px-4 font-bold text-slate-900">{sub.planName}</td>
                         <td className="py-4 px-4">
-                          <div className="font-black text-emerald-400 text-sm">
-                            ${sub.amount} <span className="text-xs text-slate-400 font-normal">/ {sub.billingCycle}</span>
+                          <div className="font-black text-emerald-700 text-sm">
+                            ${sub.amount} <span className="text-xs text-slate-500 font-normal">/ {sub.billingCycle}</span>
                           </div>
                         </td>
                         <td className="py-4 px-4">
-                          <span className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-700 font-mono text-[11px] uppercase font-bold text-slate-300">
+                          <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] uppercase font-bold text-slate-700">
                             {sub.paymentGateway}
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-slate-300">{sub.currentPeriodEnd}</td>
+                        <td className="py-4 px-4 text-slate-600">{sub.currentPeriodEnd}</td>
                         <td className="py-4 px-4">
-                          <Badge variant="success" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                          <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-bold">
                             {sub.status}
                           </Badge>
                         </td>
@@ -746,23 +746,23 @@ export const SuperAdminDashboard: React.FC = () => {
         {activeTab === 'system' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Global Broadcast Announcement */}
-            <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
-              <div className="flex items-center gap-2 text-emerald-400">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 text-emerald-700">
                 <Zap className="w-5 h-5" />
-                <h3 className="text-base font-extrabold text-white">Global Platform Announcement Banner</h3>
+                <h3 className="text-base font-extrabold text-slate-900">Global Platform Announcement Banner</h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Broadcast an urgent alert, planned maintenance notice, or feature release banner across all tenant admin dashboards.
               </p>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">Announcement Content</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Announcement Content</label>
                 <textarea
                   rows={3}
                   value={globalAnnouncement}
                   onChange={(e) => setGlobalAnnouncement(e.target.value)}
                   placeholder="e.g. Scheduled database maintenance this Sunday at 02:00 AM UTC. Live classes will not be interrupted."
-                  className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
                 />
               </div>
 
@@ -771,7 +771,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setGlobalAnnouncement('')}
-                  className="border-slate-700 text-slate-300"
+                  className="border-slate-300 text-slate-700 hover:bg-slate-50"
                 >
                   Clear
                 </Button>
@@ -786,7 +786,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     }, 500);
                   }}
                   isLoading={isSavingAnnouncement}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
                 >
                   Publish Broadcast
                 </Button>
@@ -794,40 +794,40 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
 
             {/* Platform Health & Maintenance */}
-            <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
-              <div className="flex items-center gap-2 text-sky-400">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 text-sky-700">
                 <Server className="w-5 h-5" />
-                <h3 className="text-base font-extrabold text-white">Infrastructure Status & Maintenance</h3>
+                <h3 className="text-base font-extrabold text-slate-900">Infrastructure Status & Maintenance</h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Live status monitors for the Supabase PostgreSQL connection pooler and LiveKit WebRTC video clusters.
               </p>
 
               <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
-                    <Activity className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                    <Activity className="w-4 h-4 text-emerald-600" />
                     <span>PostgreSQL London Pooler (Port 6543)</span>
                   </div>
-                  <Badge variant="success" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                  <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px]">
                     24ms Latency
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
-                    <Zap className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                    <Zap className="w-4 h-4 text-emerald-600" />
                     <span>LiveKit Global SFU Video Node</span>
                   </div>
-                  <Badge variant="success" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                  <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px]">
                     99.99% Uptime
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
                   <div>
-                    <div className="text-xs font-bold text-slate-200">Maintenance Mode</div>
-                    <div className="text-[11px] text-slate-400">Temporarily pause new academy registrations</div>
+                    <div className="text-xs font-bold text-slate-800">Maintenance Mode</div>
+                    <div className="text-[11px] text-slate-500">Temporarily pause new academy registrations</div>
                   </div>
                   <button
                     onClick={() => {
@@ -838,8 +838,8 @@ export const SuperAdminDashboard: React.FC = () => {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                       maintenanceMode
-                        ? 'bg-amber-500 text-slate-950'
-                        : 'bg-slate-800 text-slate-400 hover:text-white'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
                     {maintenanceMode ? 'Enabled' : 'Disabled'}

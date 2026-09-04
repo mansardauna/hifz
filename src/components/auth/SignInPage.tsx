@@ -69,9 +69,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
   const { tenant, setTenantBySubdomain } = useTenant();
   const { login } = useAuth();
 
-  const [activeLayout, setActiveLayout] = useState<LayoutType>(
-    (tenant?.authCustomization?.layout as LayoutType) || 'split'
-  );
+  const activeLayout: LayoutType =
+    (tenant?.authCustomization?.layout as LayoutType) || 'split';
   const [email, setEmail] = useState<string>('student@hifz-academy.com');
   const [password, setPassword] = useState<string>('password123');
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -105,6 +104,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
     const lowerEmail = email.toLowerCase().trim();
     let detectedRole: UserRole = 'student';
+    let detectedName = 'Zaid Al-Mansoor';
+
     if (
       lowerEmail.startsWith('admin') ||
       lowerEmail.includes('admin') ||
@@ -112,13 +113,15 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
       lowerEmail.includes('principal')
     ) {
       detectedRole = 'admin';
+      detectedName = 'Sheikh Tariq Al-Mansoor';
     } else if (
       lowerEmail.startsWith('teacher') ||
       lowerEmail.includes('instructor') ||
       lowerEmail.includes('shaykh') ||
       lowerEmail.includes('ustadh')
     ) {
-      detectedRole = 'student'; // Teacher operates with instructor tools in LMS
+      detectedRole = 'teacher';
+      detectedName = 'Shaykh Bilal Hashmi';
     }
 
     let targetSubdomain = tenant?.subdomain || 'hifz-academy';
@@ -134,12 +137,18 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
     setTimeout(() => {
       setTenantBySubdomain(targetSubdomain);
-      login(email, detectedRole);
+      login(email, detectedRole, detectedName);
 
       onAddToast({
         type: 'success',
         title: 'Authenticated Successfully',
-        message: `Welcome back to your ${detectedRole === 'admin' ? 'Administration' : 'Learning'} Portal!`,
+        message: `Welcome back to your ${
+          detectedRole === 'admin'
+            ? 'Administration'
+            : detectedRole === 'teacher'
+            ? 'Teacher Studio'
+            : 'Learning'
+        } Portal!`,
       });
       setIsSubmitting(false);
 
@@ -259,41 +268,23 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col justify-between p-3 sm:p-6 selection:bg-emerald-100 selection:text-emerald-900 relative">
-      {/* Top Floating Layout Selector */}
-      <div className="w-full max-w-4xl mx-auto mb-4 flex flex-wrap items-center justify-between gap-2 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs z-30">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
-            <Layout className="w-3.5 h-3.5" />
+      {/* Clean Top Navigation Bar */}
+      <div className="w-full max-w-4xl mx-auto mb-4 flex items-center justify-between px-2">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-black text-sm shadow-sm">
+            {tenant?.name?.charAt(0) || 'A'}
           </div>
-          <span className="font-bold text-slate-800">Login Layout Style:</span>
-        </div>
-
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-          {[
-            { id: 'split', label: 'Split Modern' },
-            { id: 'centered_glass', label: 'Medina Glass' },
-            { id: 'minimal_card', label: 'Minimalist' },
-            { id: 'heritage_frame', label: 'Arabesque Frame' },
-          ].map((l) => (
-            <button
-              key={l.id}
-              onClick={() => setActiveLayout(l.id as LayoutType)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeLayout === l.id
-                  ? 'bg-white text-emerald-800 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              {l.label}
-            </button>
-          ))}
+          <div>
+            <span className="font-extrabold text-slate-800 text-sm block leading-none">{tenant?.name || 'Ankabit LMS'}</span>
+            <span className="text-[10px] text-emerald-700 font-mono">{tenant?.subdomain || 'demo'}.ankabit.app</span>
+          </div>
         </div>
 
         <button
           onClick={() => router.push('/')}
-          className="text-xs font-semibold text-slate-500 hover:text-slate-900 flex items-center gap-1 cursor-pointer"
+          className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs cursor-pointer transition-all hover:border-slate-300"
         >
-          <Globe className="w-3.5 h-3.5" />
+          <Globe className="w-3.5 h-3.5 text-slate-400" />
           <span>Academy Home</span>
         </button>
       </div>

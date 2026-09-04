@@ -190,7 +190,12 @@ console.log("Request 3:", limiter.consume(1));
   }
 ];
 
-export const CodingSandboxWorkspace: React.FC = () => {
+export interface CodingSandboxWorkspaceProps {
+  tenantName?: string;
+  onAddToast?: (toast: any) => void;
+}
+
+export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () => {
   const [activeChallengeIndex, setActiveChallengeIndex] = useState<number>(0);
   const [code, setCode] = useState<string>(SAMPLE_CHALLENGES[0].initialCode);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([

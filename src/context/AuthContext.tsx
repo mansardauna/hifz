@@ -14,7 +14,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, role: UserRole) => void;
+  login: (email: string, role: UserRole, customName?: string) => void;
   logout: () => void;
   register: (name: string, email: string, role: UserRole, tenantId: string) => void;
 }
@@ -24,17 +24,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>({
     id: 'usr-demo',
-    name: 'Abdullah Ahmad',
-    email: 'student@hifz.app',
+    name: 'Zaid Al-Mansoor',
+    email: 'student@hifz-academy.com',
     role: 'student',
     tenantId: 'tenant-1',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
   });
 
-  const login = (email: string, role: UserRole) => {
+  const login = (email: string, role: UserRole, customName?: string) => {
+    let resolvedName = customName;
+    if (!resolvedName) {
+      if (role === 'teacher') resolvedName = 'Shaykh Bilal Hashmi';
+      else if (role === 'admin') resolvedName = 'Sheikh Tariq Al-Mansoor';
+      else resolvedName = email.split('@')[0].replace('.', ' ');
+    }
+
     setUser({
       id: `usr-${Date.now()}`,
-      name: email.split('@')[0].replace('.', ' '),
+      name: resolvedName,
       email,
       role,
       tenantId: 'tenant-1',

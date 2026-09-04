@@ -27,7 +27,10 @@ import {
 import { Button, Card, Badge, Input } from '../components/ui';
 import {
   HeroDashboardIllustration,
-  MultiTenantNetworkIllustration
+  MultiTenantNetworkIllustration,
+  MadrasatArtIllustration,
+  CodeAcademyArtIllustration,
+  SchoolSisArtIllustration,
 } from '../components/illustrations/Illustrations2D';
 
 interface SaasLandingPageProps {
@@ -398,101 +401,164 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
           </div>
         </div>
 
-        {/* Specialty Preview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {/* Specialty Preview Showcase */}
+        <div className="max-w-5xl mx-auto space-y-6">
           {selectedSpecialty === 'madrasat' && (
             <>
-              <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                  <BookOpen className="w-4 h-4" />
+              <div className="rounded-3xl border border-emerald-200/80 bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 p-6 sm:p-8 text-white shadow-xl overflow-hidden relative">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                  <div className="lg:col-span-5 space-y-3">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase tracking-wider border border-emerald-500/30">
+                      Madrasat Quranic Suite
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                      Complete Quranic Memory & Tajweed Operating System
+                    </h3>
+                    <p className="text-xs text-emerald-100/80 leading-relaxed">
+                      Equipped with all 114 Surahs Uthmani calligraphy reader, multi-reciter looping player, teacher audio grading studio, and tamper-proof Sheikh Sanad certificates.
+                    </p>
+                  </div>
+                  <div className="lg:col-span-7 rounded-2xl overflow-hidden shadow-2xl border border-emerald-500/30">
+                    <MadrasatArtIllustration className="w-full h-auto" />
+                  </div>
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">114 Surah Uthmani Reader</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Real-time Uthmani script calligraphy and English translations dynamically streamed from AlQuran Cloud API.
-                </p>
-              </Card>
-              <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                  <Mic className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900">Reciter Audio Looper & Homework</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Multi-reciter streaming player (Alafasy, Husary, Minshawi, Abdul Basit) with verse repetition, oral recorder, and auto-progression.
-                </p>
-              </Card>
-              <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                  <Award className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900">Sanad & Ijazah Studio</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Authentic Islamic Khatam certificates with Sheikh signature seals and public tamper-proof QR code verifier.
-                </p>
-              </Card>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="space-y-3 border-emerald-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">114 Surah Uthmani Reader</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Real-time Uthmani script calligraphy and English translations dynamically streamed from AlQuran Cloud API.
+                  </p>
+                </Card>
+                <Card className="space-y-3 border-emerald-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                    <Mic className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Reciter Audio Looper & Homework</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Multi-reciter streaming player (Alafasy, Husary, Minshawi, Abdul Basit) with verse repetition, oral recorder, and auto-progression.
+                  </p>
+                </Card>
+                <Card className="space-y-3 border-emerald-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                    <Award className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Sanad & Ijazah Studio</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Authentic Islamic Khatam certificates with Sheikh signature seals and public tamper-proof QR code verifier.
+                  </p>
+                </Card>
+              </div>
             </>
           )}
 
           {selectedSpecialty === 'code_academy' && (
             <>
-              <Card className="space-y-3 border-blue-200 bg-blue-50/20">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                  <Code2 className="w-4 h-4" />
+              <div className="rounded-3xl border border-blue-200/80 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 sm:p-8 text-white shadow-xl overflow-hidden relative">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                  <div className="lg:col-span-5 space-y-3">
+                    <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-black uppercase tracking-wider border border-blue-500/30">
+                      Developer Code Academy Suite
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                      Zero-Setup In-Browser Monaco Code Labs & Automated Grading
+                    </h3>
+                    <p className="text-xs text-blue-100/80 leading-relaxed">
+                      Instant JavaScript, TypeScript, and Python runtime execution, automated unit test test suites, and developer community forums.
+                    </p>
+                  </div>
+                  <div className="lg:col-span-7 rounded-2xl overflow-hidden shadow-2xl border border-blue-500/30">
+                    <CodeAcademyArtIllustration className="w-full h-auto" />
+                  </div>
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">In-Browser Code Sandbox Lab</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Integrated Monaco code editor supporting instant JavaScript, Python, and HTML/CSS runtime execution without setup.
-                </p>
-              </Card>
-              <Card className="space-y-3 border-blue-200 bg-blue-50/20">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                  <Laptop className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900">Automated Code Test Grading</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Instant feedback on programming problem sets with automated unit test verification and assertions.
-                </p>
-              </Card>
-              <Card className="space-y-3 border-blue-200 bg-blue-50/20">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
-                  <Video className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900">Live Pair-Programming Huddles</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Collaborative code editing alongside live WebRTC video calling and multi-track screen sharing.
-                </p>
-              </Card>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="space-y-3 border-blue-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                    <Code2 className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">In-Browser Code Sandbox Lab</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Integrated Monaco code editor supporting instant JavaScript, Python, and HTML/CSS runtime execution without setup.
+                  </p>
+                </Card>
+                <Card className="space-y-3 border-blue-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                    <Laptop className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Automated Code Test Grading</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Instant feedback on programming problem sets with automated unit test verification and assertions.
+                  </p>
+                </Card>
+                <Card className="space-y-3 border-blue-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
+                    <Video className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Live Pair-Programming Huddles</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Collaborative code editing alongside live WebRTC video calling and multi-track screen sharing.
+                  </p>
+                </Card>
+              </div>
             </>
           )}
 
           {selectedSpecialty === 'school' && (
             <>
-              <Card className="space-y-3 border-purple-200 bg-purple-50/20">
-                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                  <Award className="w-4 h-4" />
+              <div className="rounded-3xl border border-purple-200/80 bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950 p-6 sm:p-8 text-white shadow-xl overflow-hidden relative">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                  <div className="lg:col-span-5 space-y-3">
+                    <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-black uppercase tracking-wider border border-purple-500/30">
+                      Academic School SIS Suite
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                      Comprehensive School Information & Gradebook System
+                    </h3>
+                    <p className="text-xs text-purple-100/80 leading-relaxed">
+                      Multi-term GPA calculations, period attendance rosters, automated parent WhatsApp alerts, and merchant fee collection.
+                    </p>
+                  </div>
+                  <div className="lg:col-span-7 rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30">
+                    <SchoolSisArtIllustration className="w-full h-auto" />
+                  </div>
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Multi-Subject Gradebook & Reports</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Comprehensive academic GPA calculations, weighted test scoring, term report cards, and progress charts.
-                </p>
-              </Card>
-              <Card className="space-y-3 border-purple-200 bg-purple-50/20">
-                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                  <Users className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900">Attendance Roster & Timetable</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Daily period attendance registers, absence tracking, automated parent SMS/WhatsApp notices, and schedules.
-                </p>
-              </Card>
-              <Card className="space-y-3 border-purple-200 bg-purple-50/20">
-                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900">Tuition & Fee Collection Gateways</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Direct connection to Stripe, Moyasar, and Flutterwave to collect term school fees and issue instant receipts.
-                </p>
-              </Card>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="space-y-3 border-purple-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                    <Award className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Multi-Subject Gradebook & Reports</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Comprehensive academic GPA calculations, weighted test scoring, term report cards, and progress charts.
+                  </p>
+                </Card>
+                <Card className="space-y-3 border-purple-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Attendance Roster & Timetable</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Daily period attendance registers, absence tracking, automated parent SMS/WhatsApp notices, and schedules.
+                  </p>
+                </Card>
+                <Card className="space-y-3 border-purple-200 bg-white shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-900">Tuition & Fee Collection Gateways</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Direct connection to Stripe, Moyasar, and Flutterwave to collect term school fees and issue instant receipts.
+                  </p>
+                </Card>
+              </div>
             </>
           )}
         </div>

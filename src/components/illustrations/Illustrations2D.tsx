@@ -181,3 +181,169 @@ export const AuthHeroIllustration: React.FC<{ className?: string }> = ({ classNa
     <text x="252" y="371" fill="#E2E8F0" fontSize="9" fontFamily="sans-serif" fontWeight="600">100% Client Data Privacy</text>
   </svg>
 );
+
+/**
+ * Madrasat Islamic Art Vector Illustration (Quran Rehal, Audio Looper & Wax Stamp)
+ */
+export const MadrasatArtIllustration: React.FC<{ className?: string }> = ({ className = "w-full h-auto" }) => (
+  <svg viewBox="0 0 540 320" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="540" height="320" rx="16" fill="#064E3B" />
+    {/* Geometric decorative background */}
+    <g opacity="0.12" stroke="#A7F3D0" strokeWidth="1.5">
+      <circle cx="270" cy="160" r="120" />
+      <circle cx="270" cy="160" r="80" />
+      <rect x="210" y="100" width="120" height="120" rx="10" transform="rotate(45 270 160)" />
+      <rect x="210" y="100" width="120" height="120" rx="10" />
+    </g>
+
+    {/* Center Rehal Stand & Open Mushaf */}
+    <rect x="120" y="50" width="300" height="170" rx="12" fill="#FFFFFF" stroke="#D1FAE5" strokeWidth="2" />
+    {/* Mushaf Header */}
+    <path d="M120 62C120 55.3726 125.373 50 132 50H408C414.627 50 420 55.3726 420 62V82H120V62Z" fill="#047857" />
+    <text x="270" y="72" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontFamily="serif" fontWeight="bold">سُورَةُ المُلْكِ • تَبَارَكَ ٱلَّذِي بِيَدِهِ ٱلْمُلْكُ</text>
+
+    {/* Ayah Lines */}
+    <line x1="140" y1="105" x2="400" y2="105" stroke="#E2E8F0" strokeWidth="2" strokeDasharray="6 6" />
+    <text x="270" y="125" textAnchor="middle" fill="#065F46" fontSize="15" fontFamily="serif" fontWeight="bold">ٱلَّذِي خَلَقَ ٱلْمَوْتَ وَٱلْحَيَوٰةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًا</text>
+    <line x1="140" y1="145" x2="400" y2="145" stroke="#E2E8F0" strokeWidth="2" strokeDasharray="6 6" />
+
+    {/* Audio Waveform Bar */}
+    <rect x="140" y="165" width="260" height="38" rx="8" fill="#F0FDF4" stroke="#86EFAC" />
+    <circle cx="160" cy="184" r="10" fill="#059669" />
+    <path d="M158 179L164 184L158 189V179Z" fill="#FFFFFF" />
+    {/* Sound waves */}
+    <rect x="182" y="176" width="3" height="16" rx="1.5" fill="#059669" />
+    <rect x="190" y="172" width="3" height="24" rx="1.5" fill="#059669" />
+    <rect x="198" y="178" width="3" height="12" rx="1.5" fill="#059669" />
+    <rect x="206" y="170" width="3" height="28" rx="1.5" fill="#059669" />
+    <rect x="214" y="175" width="3" height="18" rx="1.5" fill="#059669" />
+    <rect x="222" y="173" width="3" height="22" rx="1.5" fill="#059669" />
+    <rect x="230" y="180" width="3" height="8" rx="1.5" fill="#059669" />
+    <text x="310" y="188" fill="#047857" fontSize="10" fontFamily="monospace" fontWeight="bold">02:14 / 04:30 • Looper 3x</text>
+
+    {/* Left Floating Badge: Sheikh Sanad Stamp */}
+    <rect x="40" y="180" width="130" height="90" rx="10" fill="#FFFFFF" stroke="#FDE68A" strokeWidth="2" />
+    <circle cx="65" cy="210" r="14" fill="#D97706" />
+    <path d="M60 210L64 214L71 206" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+    <text x="86" y="206" fill="#92400E" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Sanad Verified</text>
+    <text x="86" y="220" fill="#B45309" fontSize="8" fontFamily="sans-serif">Hafs &apos;an &apos;Asim</text>
+    <rect x="52" y="238" width="106" height="18" rx="4" fill="#FEF3C7" />
+    <text x="105" y="250" textAnchor="middle" fill="#92400E" fontSize="8" fontFamily="sans-serif" fontWeight="bold">AUTHENTIC IJAZAH</text>
+
+    {/* Right Floating Badge: Student Recitation Evaluation */}
+    <rect x="370" y="180" width="130" height="90" rx="10" fill="#FFFFFF" stroke="#A7F3D0" strokeWidth="2" />
+    <circle cx="395" cy="210" r="14" fill="#059669" />
+    <text x="395" y="214" textAnchor="middle" fill="#FFFFFF" fontSize="10" fontWeight="bold">98</text>
+    <text x="416" y="206" fill="#065F46" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Oral Score</text>
+    <text x="416" y="220" fill="#047857" fontSize="8" fontFamily="sans-serif">Mumtaz (Excellent)</text>
+    <rect x="382" y="238" width="106" height="18" rx="4" fill="#ECFDF5" />
+    <text x="435" y="250" textAnchor="middle" fill="#065F46" fontSize="8" fontFamily="sans-serif" fontWeight="bold">Makharij 5/5 ★</text>
+  </svg>
+);
+
+/**
+ * Code Academy Art Vector Illustration (Monaco Editor, Live Terminal & Compiler)
+ */
+export const CodeAcademyArtIllustration: React.FC<{ className?: string }> = ({ className = "w-full h-auto" }) => (
+  <svg viewBox="0 0 540 320" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="540" height="320" rx="16" fill="#0F172A" />
+    
+    {/* Editor Window */}
+    <rect x="30" y="25" width="480" height="270" rx="12" fill="#1E293B" stroke="#334155" />
+    {/* Window Titlebar */}
+    <path d="M30 37C30 30.3726 35.3726 25 42 25H498C504.627 25 510 30.3726 510 37V55H30V37Z" fill="#0F172A" />
+    <circle cx="50" cy="40" r="4" fill="#EF4444" />
+    <circle cx="62" cy="40" r="4" fill="#F59E0B" />
+    <circle cx="74" cy="40" r="4" fill="#10B981" />
+    <rect x="180" y="32" width="180" height="16" rx="4" fill="#1E293B" />
+    <text x="270" y="44" textAnchor="middle" fill="#94A3B8" fontSize="9" fontFamily="monospace">algorithm.ts — Monaco Sandbox</text>
+
+    {/* Code Area */}
+    <text x="50" y="80" fill="#64748B" fontSize="10" fontFamily="monospace">01</text>
+    <text x="75" y="80" fill="#F43F5E" fontSize="10" fontFamily="monospace">import</text>
+    <text x="120" y="80" fill="#38BDF8" fontSize="10" fontFamily="monospace">&#123; createOptimistic &#125;</text>
+    <text x="270" y="80" fill="#F43F5E" fontSize="10" fontFamily="monospace">from</text>
+    <text x="305" y="80" fill="#34D399" fontSize="10" fontFamily="monospace">&apos;react&apos;</text>
+
+    <text x="50" y="100" fill="#64748B" fontSize="10" fontFamily="monospace">02</text>
+    <text x="75" y="100" fill="#818CF8" fontSize="10" fontFamily="monospace">export function</text>
+    <text x="180" y="100" fill="#FBBF24" fontSize="10" fontFamily="monospace">evaluateStudentSubmission</text>
+    <text x="350" y="100" fill="#94A3B8" fontSize="10" fontFamily="monospace">(code: string) &#123;</text>
+
+    <text x="50" y="120" fill="#64748B" fontSize="10" fontFamily="monospace">03</text>
+    <text x="95" y="120" fill="#818CF8" fontSize="10" fontFamily="monospace">const</text>
+    <text x="135" y="120" fill="#38BDF8" fontSize="10" fontFamily="monospace">testResults</text>
+    <text x="215" y="120" fill="#F43F5E" fontSize="10" fontFamily="monospace">=</text>
+    <text x="230" y="120" fill="#FBBF24" fontSize="10" fontFamily="monospace">runAutomatedAssertions</text>
+    <text x="390" y="120" fill="#94A3B8" fontSize="10" fontFamily="monospace">(code);</text>
+
+    <text x="50" y="140" fill="#64748B" fontSize="10" fontFamily="monospace">04</text>
+    <text x="95" y="140" fill="#F43F5E" fontSize="10" fontFamily="monospace">return</text>
+    <text x="145" y="140" fill="#34D399" fontSize="10" fontFamily="monospace">&#123; passed: true, score: 100 &#125;;</text>
+
+    <text x="50" y="160" fill="#64748B" fontSize="10" fontFamily="monospace">05</text>
+    <text x="75" y="160" fill="#94A3B8" fontSize="10" fontFamily="monospace">&#125;</text>
+
+    {/* Integrated Terminal Panel */}
+    <rect x="45" y="180" width="450" height="95" rx="8" fill="#020617" stroke="#1E293B" />
+    <text x="60" y="200" fill="#10B981" fontSize="9" fontFamily="monospace">✓ Test Suite Passed: 14/14 unit test assertions</text>
+    <text x="60" y="218" fill="#38BDF8" fontSize="9" fontFamily="monospace">→ Runtime: 24ms • Memory Allocation: 12.4 MB</text>
+    <text x="60" y="236" fill="#FBBF24" fontSize="9" fontFamily="monospace">★ Instructor Evaluation: Clean Modular Architecture (Score: 100/100)</text>
+    <text x="60" y="254" fill="#94A3B8" fontSize="9" fontFamily="monospace">sandbox@ankabit-compiler:~$ _</text>
+  </svg>
+);
+
+/**
+ * School SIS Art Vector Illustration (Gradebook, Attendance & GPA Matrix)
+ */
+export const SchoolSisArtIllustration: React.FC<{ className?: string }> = ({ className = "w-full h-auto" }) => (
+  <svg viewBox="0 0 540 320" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="540" height="320" rx="16" fill="#4C1D95" />
+    
+    {/* Decorative Soft Backdrop */}
+    <g opacity="0.15" stroke="#C4B5FD" strokeWidth="1.5">
+      <circle cx="270" cy="160" r="140" />
+      <rect x="190" y="80" width="160" height="160" rx="20" />
+    </g>
+
+    {/* Main SIS Card */}
+    <rect x="40" y="30" width="460" height="260" rx="14" fill="#FFFFFF" stroke="#DDD6FE" strokeWidth="2" />
+    
+    {/* Card Header */}
+    <rect x="40" y="30" width="460" height="46" rx="14" fill="#6D28D9" />
+    <text x="65" y="58" fill="#FFFFFF" fontSize="12" fontFamily="sans-serif" fontWeight="bold">School Academic SIS • Term 1 Performance Roster</text>
+    <rect x="410" y="42" width="75" height="22" rx="6" fill="#8B5CF6" />
+    <text x="447" y="56" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontFamily="sans-serif" fontWeight="bold">GPA 3.96 / 4.0</text>
+
+    {/* Roster Table */}
+    {/* Row 1 */}
+    <rect x="60" y="90" width="420" height="36" rx="6" fill="#F5F3FF" />
+    <text x="75" y="112" fill="#5B21B6" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Zayd Al-Mansoor</text>
+    <text x="210" y="112" fill="#6D28D9" fontSize="10" fontFamily="sans-serif">Mathematics: A+ (98%)</text>
+    <text x="340" y="112" fill="#047857" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Attendance: 99%</text>
+    <rect x="440" y="98" width="30" height="18" rx="4" fill="#EDE9FE" />
+    <text x="455" y="111" textAnchor="middle" fill="#6D28D9" fontSize="9" fontWeight="bold">Rank 1</text>
+
+    {/* Row 2 */}
+    <rect x="60" y="134" width="420" height="36" rx="6" fill="#FFFFFF" stroke="#EDE9FE" />
+    <text x="75" y="156" fill="#1E293B" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Fatima Al-Zahra</text>
+    <text x="210" y="156" fill="#6D28D9" fontSize="10" fontFamily="sans-serif">Arabic Grammar: A (95%)</text>
+    <text x="340" y="156" fill="#047857" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Attendance: 97%</text>
+    <rect x="440" y="142" width="30" height="18" rx="4" fill="#EDE9FE" />
+    <text x="455" y="155" textAnchor="middle" fill="#6D28D9" fontSize="9" fontWeight="bold">Rank 2</text>
+
+    {/* Row 3 */}
+    <rect x="60" y="178" width="420" height="36" rx="6" fill="#F5F3FF" />
+    <text x="75" y="200" fill="#5B21B6" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Tariq Ibn Ziyad</text>
+    <text x="210" y="200" fill="#6D28D9" fontSize="10" fontFamily="sans-serif">Computer Science: A+ (100%)</text>
+    <text x="340" y="200" fill="#047857" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Attendance: 100%</text>
+    <rect x="440" y="186" width="30" height="18" rx="4" fill="#EDE9FE" />
+    <text x="455" y="199" textAnchor="middle" fill="#6D28D9" fontSize="9" fontWeight="bold">Rank 1</text>
+
+    {/* Bottom Summary Bar */}
+    <rect x="60" y="226" width="420" height="46" rx="8" fill="#EDE9FE" />
+    <text x="80" y="252" fill="#5B21B6" fontSize="10" fontFamily="sans-serif" fontWeight="bold">Automated Report Cards Ready</text>
+    <text x="320" y="252" fill="#6D28D9" fontSize="10" fontFamily="sans-serif">PDF Download & WhatsApp Sent ✓</text>
+  </svg>
+);
+

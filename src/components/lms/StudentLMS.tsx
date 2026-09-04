@@ -29,6 +29,7 @@ import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
+import { TeacherDashboard } from '../teacher/TeacherDashboard';
 
 export type StudentTab = 'quran' | 'classroom' | 'coding' | 'audio' | 'forum' | 'progress' | 'tuition' | 'profile' | 'settings';
 
@@ -40,6 +41,11 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const router = useRouter();
   const { tenant, direction, language, setLanguage } = useTenant();
   const { user, logout } = useAuth();
+
+  // If authenticated user is a Teacher, render dedicated Instructor Dashboard & Grading Studio
+  if (user?.role === 'teacher') {
+    return <TeacherDashboard onAddToast={onAddToast} />;
+  }
 
   const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
   const isQuranNiche = !tenant.niche || tenant.niche === 'quran' || tenant.subdomain.includes('furqan') || tenant.subdomain.includes('dar') || tenant.subdomain.includes('hifz');
@@ -92,7 +98,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex font-sans text-slate-900 overflow-x-hidden" dir={direction}>
+    <div className="h-screen w-screen overflow-hidden flex bg-slate-100 font-sans text-slate-900" dir={direction}>
       {/* Mobile Drawer Backdrop */}
       {isMobileNavOpen && (
         <div
@@ -101,17 +107,17 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
         />
       )}
 
-      {/* 1. Student Left Sidebar */}
+      {/* 1. Student Left Sidebar (Fixed & Non-Scrolling) */}
       <aside
-        className={`bg-slate-900 text-slate-200 border-r border-slate-800 flex flex-col justify-between z-50 transition-all duration-300 ${
+        className={`w-64 xl:w-72 h-full flex flex-col justify-between bg-slate-900 text-slate-200 border-r border-slate-800 shrink-0 select-none z-30 transition-transform duration-300 ${
           isMobileNavOpen
-            ? 'fixed inset-y-0 left-0 w-72 sm:w-80 shadow-2xl flex'
-            : 'hidden lg:flex lg:w-64 xl:w-72 lg:sticky lg:top-0 lg:h-screen'
+            ? 'fixed inset-y-0 left-0 shadow-2xl translate-x-0'
+            : 'hidden lg:flex'
         }`}
       >
-        <div>
+        <div className="flex flex-col h-full min-h-0">
           {/* Academy Brand Header */}
-          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/40">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold text-xs shrink-0">
                 {isCodingNiche ? <Code2 className="w-4.5 h-4.5 text-blue-400" /> : <BookOpen className="w-4.5 h-4.5 text-emerald-400" />}
@@ -147,7 +153,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           </div>
 
           {/* Navigation Links with Generous Touch Targets */}
-          <nav className="p-3 sm:p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-270px)]">
+          <nav className="flex-1 overflow-y-auto px-3.5 space-y-1.5 min-h-0 py-1">
             {studentNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -171,11 +177,11 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
         </div>
 
         {/* Bottom Sidebar Action Controls */}
-        <div className="p-4 border-t border-slate-800 space-y-2.5 shrink-0">
+        <div className="p-3.5 border-t border-slate-800 space-y-2 shrink-0 bg-slate-950/40">
           <Button
             variant="outline"
             size="sm"
-            className="w-full text-slate-300 bg-slate-800/60 border-slate-700 hover:bg-slate-800 py-2.5"
+            className="w-full text-slate-300 bg-slate-800/60 border-slate-700 hover:bg-slate-800 py-2.5 text-xs"
             onClick={() => router.push(`/${tenant.subdomain}`)}
             rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
           >
@@ -184,7 +190,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
 
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-red-400 hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             <span>Sign Out</span>
@@ -192,8 +198,8 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
         </div>
       </aside>
 
-      {/* 2. Main LMS Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+      {/* 2. Main LMS Content Area (Scrolls Independently) */}
+      <div className="flex-1 h-full overflow-y-auto flex flex-col min-w-0 bg-slate-50">
         {/* Top Header Bar — Highly Responsive on Mobile */}
         <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-30 shadow-xs">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
