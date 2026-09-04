@@ -5,6 +5,7 @@ export interface TenantTheme {
   primaryHover: string;
   secondaryColor: string;
   accentColor: string;
+  sidebarBgColor?: string;
   backgroundColor: string;
   surfaceColor: string;
   textColor: string;

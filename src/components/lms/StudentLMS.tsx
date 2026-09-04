@@ -109,7 +109,8 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
 
       {/* 1. Student Left Sidebar (Fixed & Non-Scrolling) */}
       <aside
-        className={`w-64 xl:w-72 h-full flex flex-col justify-between bg-slate-900 text-slate-200 border-r border-slate-800 shrink-0 select-none z-30 transition-transform duration-300 ${
+        style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
+        className={`w-64 xl:w-72 h-full flex flex-col justify-between text-slate-200 border-r border-slate-800 shrink-0 select-none z-30 transition-transform duration-300 ${
           isMobileNavOpen
             ? 'fixed inset-y-0 left-0 shadow-2xl translate-x-0'
             : 'hidden lg:flex'
@@ -117,7 +118,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
       >
         <div className="flex flex-col h-full min-h-0">
           {/* Academy Brand Header */}
-          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/40">
+          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-black/20">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold text-xs shrink-0">
                 {isCodingNiche ? <Code2 className="w-4.5 h-4.5 text-blue-400" /> : <BookOpen className="w-4.5 h-4.5 text-emerald-400" />}

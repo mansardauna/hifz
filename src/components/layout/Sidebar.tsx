@@ -149,7 +149,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed lg:static top-0 left-0 bottom-0 z-50 flex flex-col bg-slate-900 border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 ${
+        style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
+        className={`fixed lg:static top-0 left-0 bottom-0 z-50 flex flex-col border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 ${
           collapsed && !isOpenOnMobile ? 'w-20' : 'w-72'
         } ${
           isOpenOnMobile
@@ -158,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Top Header Logo */}
-        <div className="h-16 px-4 sm:px-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/50">
+        <div className="h-16 px-4 sm:px-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-black/20">
           {(!collapsed || isOpenOnMobile) && (
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-8 h-8 rounded-xl bg-[var(--color-primary,#047857)] flex items-center justify-center font-bold text-white shadow-md shrink-0">

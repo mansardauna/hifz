@@ -55,6 +55,15 @@ const PRESET_BRAND_COLORS = [
   '#0d9488', // Teal
 ];
 
+const PRESET_SIDEBAR_COLORS = [
+  { label: 'Dark Slate (Standard)', value: '#0f172a' },
+  { label: 'Deep Midnight', value: '#020617' },
+  { label: 'Deep Forest', value: '#064e3b' },
+  { label: 'Deep Indigo', value: '#1e1b4b' },
+  { label: 'Royal Plum', value: '#2e1065' },
+  { label: 'Charcoal Minimal', value: '#18181b' },
+];
+
 interface StaffMember {
   id: string;
   name: string;
@@ -91,6 +100,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
   const [faviconUrl, setFaviconUrl] = useState<string>(tenant.faviconUrl || '/icons/icon.svg');
   const [primaryColor, setPrimaryColor] = useState<string>(tenant.theme?.primaryColor || '#059669');
   const [secondaryColor, setSecondaryColor] = useState<string>(tenant.theme?.secondaryColor || '#d97706');
+  const [sidebarBgColor, setSidebarBgColor] = useState<string>(tenant.theme?.sidebarBgColor || '#0f172a');
   const [fontFamily, setFontFamily] = useState<string>(tenant.theme?.fontFamily || 'Poppins');
   const [borderRadius, setBorderRadius] = useState<string>(tenant.theme?.borderRadius || '0.5rem');
   const [customCss, setCustomCss] = useState<string>(tenant.customCss || '');
@@ -213,12 +223,13 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         primaryColor,
         primaryHover: primaryColor,
         secondaryColor,
+        sidebarBgColor,
         fontFamily,
         borderRadius,
       },
       customCss,
     });
-    success('Theme & Branding Applied', 'Colors, logo, unique favicon, and font styles updated across all views.');
+    success('Theme & Branding Applied', 'Colors, sidebar background, logo, unique favicon, and font styles updated across all views.');
   };
 
   const handleSaveAuthLayout = () => {
@@ -588,8 +599,9 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             </div>
 
             <div className="space-y-4">
+              {/* Primary Color Section */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Preset Brand Palette</label>
+                <label className="block text-xs font-bold text-slate-700 mb-2">Preset Brand Primary Palette</label>
                 <div className="flex flex-wrap items-center gap-3">
                   {PRESET_BRAND_COLORS.map((c) => (
                     <button
@@ -609,9 +621,75 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+              {/* Sidebar Background Color Section */}
+              <div className="pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-700">
+                    Dashboard Sidebar Background Color
+                  </label>
+                  <button
+                    onClick={() => {
+                      setSidebarBgColor(primaryColor);
+                      info('Sidebar Matched', 'Sidebar background matched to brand primary color.');
+                    }}
+                    className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 cursor-pointer"
+                  >
+                    Match Brand Primary Color
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-3">
+                  {PRESET_SIDEBAR_COLORS.map((preset) => (
+                    <button
+                      key={preset.value}
+                      onClick={() => {
+                        setSidebarBgColor(preset.value);
+                        info('Sidebar Color', `Sidebar background set to ${preset.label}.`);
+                      }}
+                      className={`p-2.5 rounded-xl border text-left flex flex-col justify-between h-18 transition-all cursor-pointer ${
+                        sidebarBgColor === preset.value
+                          ? 'border-emerald-500 ring-2 ring-emerald-400/30 shadow-sm'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div
+                          className="w-5 h-5 rounded-md shadow-xs border border-white/20"
+                          style={{ backgroundColor: preset.value }}
+                        />
+                        {sidebarBgColor === preset.value && (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        )}
+                      </div>
+                      <span className="text-[11px] font-bold text-slate-700 truncate">{preset.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={sidebarBgColor}
+                      onChange={(e) => setSidebarBgColor(e.target.value)}
+                      className="w-10 h-10 rounded-lg cursor-pointer border border-slate-200"
+                    />
+                    <input
+                      type="text"
+                      value={sidebarBgColor}
+                      onChange={(e) => setSidebarBgColor(e.target.value)}
+                      placeholder="#0f172a"
+                      className="w-32 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-bold"
+                    />
+                  </div>
+                  <span className="text-xs text-slate-500">Custom Hex Code for Sidebar background</span>
+                </div>
+              </div>
+
+              {/* Font Family & Sizing */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Primary Color Hex</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Primary Brand Hex</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -640,6 +718,105 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     <option value="Amiri">Amiri (Traditional Quranic Naskh)</option>
                     <option value="Cairo">Cairo (Contemporary Arabic)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Real-time Interactive Live Mockup Preview */}
+              <div className="pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-700">
+                    Live Component & Sidebar Preview
+                  </label>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Instant Live Render
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-slate-300 overflow-hidden shadow-inner bg-slate-100 flex flex-col md:flex-row min-h-[220px]">
+                  {/* Mock Sidebar */}
+                  <div
+                    style={{ backgroundColor: sidebarBgColor }}
+                    className="w-full md:w-56 p-4 text-white flex flex-col justify-between shrink-0 transition-colors duration-200"
+                  >
+                    <div className="space-y-4">
+                      {/* Brand Header */}
+                      <div className="flex items-center gap-2.5 pb-3 border-b border-white/10">
+                        <div
+                          style={{ backgroundColor: primaryColor }}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs text-white shadow-xs shrink-0"
+                        >
+                          {companyName.charAt(0) || 'A'}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-bold text-xs text-white truncate">{companyName}</div>
+                          <div className="text-[9px] text-white/50 truncate font-mono">{subdomain}.ankabit.app</div>
+                        </div>
+                      </div>
+
+                      {/* Mock Navigation Menu */}
+                      <div className="space-y-1 text-xs">
+                        <div
+                          style={{ backgroundColor: primaryColor }}
+                          className="px-3 py-1.5 rounded-lg text-white font-bold flex items-center justify-between shadow-xs"
+                        >
+                          <span>Dashboard</span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                        </div>
+                        <div className="px-3 py-1.5 rounded-lg text-white/60 hover:text-white flex items-center justify-between">
+                          <span>Classrooms</span>
+                        </div>
+                        <div className="px-3 py-1.5 rounded-lg text-white/60 hover:text-white flex items-center justify-between">
+                          <span>Students</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-white/10 text-[10px] text-white/40 font-mono">
+                      Sidebar: {sidebarBgColor}
+                    </div>
+                  </div>
+
+                  {/* Mock Dashboard Body */}
+                  <div className="flex-1 p-5 bg-slate-50 space-y-4 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">Welcome Back, Administrator</div>
+                          <div className="text-[11px] text-slate-500">Live Academy KPI Summary</div>
+                        </div>
+                        <button
+                          style={{ backgroundColor: primaryColor }}
+                          className="px-3 py-1.5 rounded-lg text-white text-xs font-bold shadow-xs hover:opacity-95 transition-opacity"
+                        >
+                          + New Student
+                        </button>
+                      </div>
+
+                      {/* Mock Metrics Row */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs">
+                          <div className="text-[10px] font-bold text-slate-500 uppercase">Active Students</div>
+                          <div className="text-base font-extrabold text-slate-900 mt-0.5">148</div>
+                          <div
+                            style={{ color: primaryColor }}
+                            className="text-[10px] font-bold mt-1"
+                          >
+                            ↑ 12% this month
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs">
+                          <div className="text-[10px] font-bold text-slate-500 uppercase">Classrooms</div>
+                          <div className="text-base font-extrabold text-slate-900 mt-0.5">6 Active</div>
+                          <div className="text-[10px] text-emerald-600 font-bold mt-1">WebRTC Online</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-[10px] text-slate-400 text-right">
+                      Primary Brand Color: <span className="font-mono font-bold text-slate-600">{primaryColor}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 

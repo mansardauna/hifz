@@ -22,9 +22,16 @@ import {
   Laptop,
   CheckCircle2,
   Terminal,
-  Building
+  Building,
+  Mail,
+  Phone,
+  MessageSquare,
+  Send,
+  Clock,
+  MapPin,
 } from 'lucide-react';
 import { Button, Card, Badge, Input } from '../components/ui';
+import { AnkabitLogo, AnkabitSpiderIcon } from '../components/brand/AnkabitLogo';
 import {
   HeroDashboardIllustration,
   MultiTenantNetworkIllustration,
@@ -49,6 +56,8 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
   const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
+    institution: '',
+    specialty: 'madrasat',
     message: '',
   });
 
@@ -122,23 +131,8 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-slate-200/80 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
           {/* Logo Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs ring-1 ring-slate-800">
-              <Terminal className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold text-slate-900 tracking-tight leading-none">
-                  Ankabit LMS
-                </span>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase tracking-wider">
-                  Learning OS
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500 font-medium tracking-wide uppercase block">
-                Multi-Tenant Academy Infrastructure
-              </span>
-            </div>
+          <div className="cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <AnkabitLogo size="md" />
           </div>
 
           {/* Desktop Nav Links */}
@@ -147,6 +141,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <a href="#specialties" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Specialties</a>
             <a href="#architecture" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Platform Engine</a>
             <a href="#pricing" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Pricing</a>
+            <a href="#contact" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Contact</a>
             <a href="#faq" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">FAQ</a>
           </nav>
 
@@ -733,7 +728,195 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 7. FAQ Section */}
+      {/* 7. Contact Section */}
+      <section id="contact" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="text-center space-y-3 mb-12 max-w-2xl mx-auto">
+          <Badge variant="default">Get in Touch</Badge>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Connect with the Ankabit LMS Team
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600">
+            Have questions about white-label provisioning, custom domains, or enterprise SLAs? Reach out to our solution architects.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Contact Information & Channels */}
+          <div className="lg:col-span-5 space-y-5">
+            <Card className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-none shadow-xl">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <AnkabitSpiderIcon size={22} color="#34d399" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-white">Ankabit Headquarters</h3>
+                    <p className="text-xs text-slate-400">Global SaaS & Education Infrastructure</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-2 text-xs">
+                  <a
+                    href="mailto:support@ankabit.app"
+                    className="flex items-start gap-3.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                  >
+                    <Mail className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-white">Direct Support Email</div>
+                      <div className="text-slate-400">support@ankabit.app</div>
+                      <div className="text-[10px] text-emerald-400 mt-0.5 font-medium">Avg response time: &lt; 2 hours</div>
+                    </div>
+                  </a>
+
+                  <a
+                    href="https://wa.me/447000000000?text=Hello%20Ankabit%20Team%2C%20I%20would%20like%20to%20inquire%20about%20the%20LMS%20platform."
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-start gap-3.5 p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors border border-emerald-500/30"
+                  >
+                    <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                        WhatsApp Instant Advisory
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-400/20 text-emerald-300 font-mono">Live</span>
+                      </div>
+                      <div className="text-slate-400">Chat with a solutions engineer on WhatsApp</div>
+                    </div>
+                  </a>
+
+                  <div className="flex items-start gap-3.5 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <Clock className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-white">Consultation Hours</div>
+                      <div className="text-slate-400">Monday - Saturday (24/6 SLA Coverage)</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Guaranteed 99.98% Uptime SLA</span>
+                  <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Systems Operational
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Interactive Contact Form */}
+          <div className="lg:col-span-7">
+            <Card className="p-6 sm:p-8 bg-white border border-slate-200 shadow-sm">
+              {contactSubmitted ? (
+                <div className="py-12 text-center space-y-4">
+                  <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto ring-8 ring-emerald-50/50">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">Inquiry Received Successfully!</h3>
+                  <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                    Thank you for reaching out to Ankabit LMS. Our onboarding team has received your message and will email you with your institution demo access within 2 hours.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setContactSubmitted(false);
+                      setContactForm({ name: '', email: '', institution: '', specialty: 'madrasat', message: '' });
+                    }}
+                  >
+                    Send Another Inquiry
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleContactSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Your Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <Input
+                        placeholder="e.g. Dr. Tariq Mansoor"
+                        value={contactForm.name}
+                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Work / Academy Email <span className="text-red-500">*</span>
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="tariq@youracademy.com"
+                        value={contactForm.email}
+                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Academy / Institution Name
+                      </label>
+                      <Input
+                        placeholder="e.g. Al-Bayan Quran Academy"
+                        value={contactForm.institution}
+                        onChange={(e) => setContactForm({ ...contactForm, institution: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Primary Specialty
+                      </label>
+                      <select
+                        className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-slate-400 transition-colors"
+                        value={contactForm.specialty}
+                        onChange={(e) => setContactForm({ ...contactForm, specialty: e.target.value })}
+                      >
+                        <option value="madrasat">Madrasat (Quran & Islamic Studies)</option>
+                        <option value="code_academy">Code Academy (Software Engineering)</option>
+                        <option value="school">School / Academic SIS</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      How can we help your institution? <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      className="w-full p-3 text-xs bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-slate-400 transition-colors resize-none"
+                      placeholder="Tell us about your student volume, custom domain requirements, payment gateway needs, or migration plans..."
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between gap-4">
+                    <p className="text-[11px] text-slate-500">
+                      🔒 No spam. We reply directly via email or WhatsApp within hours.
+                    </p>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="md"
+                      rightIcon={<Send className="w-3.5 h-3.5" />}
+                    >
+                      Send Inquiry
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. FAQ Section */}
       <section id="faq" className="py-20 px-4 sm:px-8 max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <Badge variant="default">Frequently Asked Questions</Badge>
@@ -765,21 +948,19 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 8. Footer */}
+      {/* 9. Footer */}
       <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 py-12 px-4 sm:px-8 font-sans text-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              <Terminal className="w-3.5 h-3.5" />
-            </div>
-            <span className="font-extrabold text-white text-sm">Ankabit LMS</span>
+          <div className="flex items-center gap-3">
+            <AnkabitLogo size="sm" textColor="text-white" />
             <span className="text-slate-600">|</span>
-            <span>Educational SaaS Infrastructure</span>
+            <span className="text-slate-400">Autonomous Education OS</span>
           </div>
 
           <div className="flex items-center gap-6">
             <a href="#demos" className="hover:text-white transition-colors">Live Academies</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
             <button onClick={() => onNavigateToAuth('login')} className="hover:text-white transition-colors cursor-pointer">Sign In</button>
             <button onClick={() => onNavigateToAuth('create-academy')} className="text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer">Launch Academy</button>
           </div>

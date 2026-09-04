@@ -121,6 +121,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     root.style.setProperty('--color-secondary', config.theme?.secondaryColor || '#d97706');
     root.style.setProperty('--color-accent', config.theme?.accentColor || '#0284c7');
+    root.style.setProperty('--sidebar-bg', config.theme?.sidebarBgColor || (config as any).sidebarBgColor || '#0f172a');
     root.style.setProperty('--color-bg', config.theme?.backgroundColor || '#f8fafc');
     root.style.setProperty('--color-surface', config.theme?.surfaceColor || '#ffffff');
     root.style.setProperty('--color-text', config.theme?.textColor || '#0f172a');
