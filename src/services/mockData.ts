@@ -232,6 +232,62 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
         liveMode: true
       }
     ]
+  },
+  'horizon-school': {
+    id: 'tenant-school',
+    name: 'Horizon International School & Academy',
+    nameAr: 'أكاديمية هورايزون الدولية',
+    tagline: 'Empowering Academic Excellence, STEM Leadership, and Rigorous College Prep',
+    taglineAr: 'الريادة الأكاديمية والتميز في العلوم وبرامج التحضير الجامعي المتقدم',
+    subdomain: 'horizon-school',
+    logoUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=150&q=80',
+    faviconUrl: '🎓',
+    niche: 'school',
+    theme: {
+      primaryColor: '#7e22ce',
+      primaryHover: '#6b21a8',
+      secondaryColor: '#f59e0b',
+      accentColor: '#3b82f6',
+      backgroundColor: '#f8fafc',
+      surfaceColor: '#ffffff',
+      textColor: '#0f172a',
+      borderRadius: '0.75rem',
+      fontFamily: 'Inter',
+    },
+    defaultDirection: 'ltr',
+    heroBadgeText: 'Fall 2026 Admissions Open • AP Honors & Dual Enrollment Program',
+    heroBadgeTextAr: 'فتح باب التسجيل للعام الدراسي ٢٠٢٦ • برامج التميز الأكاديمي',
+    aboutText: 'Horizon International Academy provides world-class K-12 education, AP Capstone diplomas, comprehensive gradebook tracking, and university guidance.',
+    aboutTextAr: 'أكاديمية تعليمية رائدة تقدم برامج دولية متكاملة لجميع المراحل الدراسية.',
+    contactEmail: 'admissions@horizonschool.edu',
+    contactPhone: '+1 (617) 555-0142',
+    admissionsOpen: true,
+    pageBlocks: [],
+    customFormFields: [
+      { id: 'gradeLevel', label: 'Applying Grade Level', labelAr: 'الصف الدراسي', type: 'select', required: true, options: ['9th Grade (Freshman)', '10th Grade (Sophomore)', '11th Grade (Junior)', '12th Grade (Senior)'] },
+      { id: 'priorGpa', label: 'Current GPA / Academic Standing', labelAr: 'المعدل التراكمي السابق', type: 'text', required: false, placeholder: 'e.g. 3.85 / 4.0' }
+    ],
+    pricingPlans: [
+      {
+        id: 'plan-school-term',
+        name: 'Comprehensive Academic Term Tuition',
+        nameAr: 'الرسوم الأكاديمية الفصلية',
+        description: 'Full enrollment covering 5 core AP courses, science labs, and academic advising',
+        descriptionAr: 'رسوم الفصل الدراسي الشاملة للمساقات الأكاديمية والمختبرات',
+        priceMonthly: 450,
+        priceYearly: 4500,
+        currency: 'USD',
+        features: ['5 Enrolled AP & Honors Courses', 'Official GPA & Term Report Cards', 'Parent & Guardian Portal Access', 'Weekly Live Virtual Classrooms & Office Hours']
+      }
+    ],
+    paymentGateways: [
+      {
+        provider: 'stripe',
+        enabled: true,
+        publishableKey: 'pk_live_school_stripe',
+        liveMode: true
+      }
+    ]
   }
 };
 

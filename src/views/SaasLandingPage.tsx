@@ -84,7 +84,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       iconColor: 'bg-blue-100 text-blue-700',
     },
     {
-      id: 'al-furqan',
+      id: 'horizon-school',
       title: 'School SIS LMS',
       subtitle: 'Horizon International School',
       desc: 'Multi-subject gradebook, attendance roster, term GPA reports & parent portal.',
@@ -115,7 +115,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       tagColor: 'bg-blue-50 text-blue-700 border-blue-200',
     },
     {
-      id: 'al-furqan',
+      id: 'horizon-school',
       name: 'Horizon International School',
       subdomain: 'horizon-school.ankabit.app',
       specialty: 'School',

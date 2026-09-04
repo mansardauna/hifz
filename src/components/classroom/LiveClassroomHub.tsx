@@ -47,6 +47,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   renderWorkspacePlugin
 }) => {
   const isCoding = niche === 'coding' || niche === 'code_academy';
+  const isSchool = niche === 'school';
 
   // Classroom Tabs
   const [activeTab, setActiveTab] = useState<'forum' | 'video' | 'agenda' | 'whiteboard' | 'workspace'>('forum');
@@ -76,7 +77,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
 
-  // Messages Stream (Strictly Decoupled for Coding vs Quran)
+  // Messages Stream (Strictly Decoupled for School vs Coding vs Quran)
   const [forumMessages, setForumMessages] = useState<{
     id: string;
     sender: string;
@@ -88,22 +89,28 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   }[]>([
     {
       id: 'm-1',
-      sender: isCoding ? 'Sarah Jenkins' : 'Shaykh Dr. Abdul Rahman',
+      sender: isSchool ? 'Dr. Eleanor Vance' : isCoding ? 'Sarah Jenkins' : 'Shaykh Dr. Abdul Rahman',
       role: 'teacher',
-      text: isCoding
+      text: isSchool
+        ? 'Welcome to the live academic lecture! Today we cover Unit 5 Taylor series derivations, radius of convergence, and problem set 5.'
+        : isCoding
         ? 'Welcome to the Live Coding Session! Today we cover React 19 Server Actions, optimistic mutations, and custom hook architectures.'
         : 'Assalamu Alaikum. Welcome everyone to today\'s live halaqah! We will practice Tajweed rules and oral recitations.',
       time: '10:00 AM',
       pinned: true,
-      attachment: isCoding
+      attachment: isSchool
+        ? { name: 'Unit5_Taylor_Series_Slides.pdf', size: '3.4 MB' }
+        : isCoding
         ? { name: 'React19_Server_Actions.md', size: '42 KB' }
         : { name: 'Tajweed_Rules_Guide.pdf', size: '1.2 MB' }
     },
     {
       id: 'm-2',
-      sender: isCoding ? 'David Miller' : 'Fatima Zahra',
+      sender: isSchool ? 'Alex Mercer' : isCoding ? 'David Miller' : 'Fatima Zahra',
       role: 'student',
-      text: isCoding
+      text: isSchool
+        ? 'Good morning Professor, ready with the textbook proofs and derivation notes.'
+        : isCoding
         ? 'Ready with my local sandbox repository and unit test suite.'
         : 'Wa Alaikum Assalam Ustadh, completed the recitation homework.',
       time: '10:02 AM'
@@ -660,7 +667,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 )}
 
                 <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-bold flex items-center gap-2 border border-slate-700/60">
-                  <span>{remoteParticipantName || (isCoding ? 'Instructor: Sarah Jenkins' : 'Instructor: Shaykh Abdul Rahman')}</span>
+                  <span>{remoteParticipantName || (isSchool ? 'Instructor: Dr. Eleanor Vance' : isCoding ? 'Instructor: Sarah Jenkins' : 'Instructor: Shaykh Abdul Rahman')}</span>
                   {remoteParticipantName && <Volume2 className="w-3 h-3 text-emerald-400" />}
                 </div>
               </div>
@@ -742,7 +749,14 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
             </div>
 
             <div className="space-y-3">
-              {(isCoding
+              {(isSchool
+                ? [
+                    { title: 'Unit 5: Taylor & Maclaurin Polynomial Derivations (Theorem 9.1)', done: true },
+                    { title: 'Interactive Whiteboard Problem Solving & Student Proofs', done: true },
+                    { title: 'Live Q&A, Exam Review & Radius of Convergence Drills', done: false },
+                    { title: 'Homework Problem Set 5 Submission & Office Hours Guidance', done: false }
+                  ]
+                : isCoding
                 ? [
                     { title: 'Deep Dive into React 19 useActionState & Server Actions', done: true },
                     { title: 'Building optimistic UI state transitions with useOptimistic', done: true },
@@ -759,7 +773,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 <div key={idx} className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/80 flex items-start gap-3">
                   <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
                     item.done
-                      ? isCoding ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
+                      ? isSchool ? 'bg-purple-600 text-white' : isCoding ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
                       : 'border border-slate-300 bg-white'
                   }`}>
                     {item.done && <CheckCircle2 className="w-3.5 h-3.5" />}
