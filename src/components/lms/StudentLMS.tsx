@@ -21,14 +21,16 @@ import {
   Code2,
   User,
   Settings,
-  Globe
+  Globe,
+  MessageSquare
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
 import { NotificationCenter } from '../notifications/NotificationCenter';
+import { LMSCommunityForum } from '../forum/LMSCommunityForum';
 
-export type StudentTab = 'quran' | 'classroom' | 'coding' | 'audio' | 'progress' | 'tuition' | 'profile' | 'settings';
+export type StudentTab = 'quran' | 'classroom' | 'coding' | 'audio' | 'forum' | 'progress' | 'tuition' | 'profile' | 'settings';
 
 interface StudentLMSProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -75,6 +77,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
       items.push({ id: 'classroom', label: 'Live Virtual Classroom', icon: Radio });
     }
 
+    items.push({ id: 'forum', label: isCodingNiche ? 'Developer Community' : 'Halaqah Community Forum', icon: MessageSquare });
     items.push({ id: 'progress', label: 'Curriculum & Progress', icon: Award });
     items.push({ id: 'tuition', label: 'Tuition & Invoices', icon: CreditCard });
     items.push({ id: 'profile', label: 'My Student Profile', icon: User });
@@ -304,6 +307,12 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 currentAyah={selectedAyah}
                 onAddToast={onAddToast}
               />
+            </div>
+          )}
+
+          {activeTab === 'forum' && (
+            <div className="space-y-6 max-w-6xl mx-auto">
+              <LMSCommunityForum onAddToast={onAddToast} />
             </div>
           )}
 

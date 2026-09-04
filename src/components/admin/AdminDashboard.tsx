@@ -17,6 +17,7 @@ import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { FormResponsesTable } from './FormResponsesTable';
 import { AutomationsManager } from './AutomationsManager';
 import { ChatAnalyticsSummary } from './ChatAnalyticsSummary';
+import { LMSCommunityForum } from '../forum/LMSCommunityForum';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
 import { Button } from '../ui';
@@ -208,6 +209,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     niche={tenant.niche || 'quran'}
                   />
                 </div>
+              )}
+              {activeTab === 'forum' && (
+                <LMSCommunityForum onAddToast={onAddToast} />
               )}
               {activeTab === 'pricing' && (
                 <TenantPricingEditor onAddToast={onAddToast} />

@@ -33,6 +33,7 @@ export type AdminTab =
   | 'form_responses'
   | 'automations'
   | 'chat_insights'
+  | 'forum'
   | 'curriculum'
   | 'pricing'
   | 'payment_gateways'
@@ -75,6 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'form_responses', label: 'Form Submissions', icon: FileText },
     { id: 'automations', label: 'Automations & Workflows', icon: Zap },
     { id: 'chat_insights', label: 'Chat Insights & AI', icon: MessageSquare },
+    { id: 'forum', label: 'Community & Forum', icon: MessageSquare },
     { id: 'curriculum', label: 'Curriculum & Tracks', icon: BookOpen },
     { id: 'crm', label: 'Student Leads CRM', icon: Users },
     { id: 'pricing', label: 'Tuition Plan Packages', icon: DollarSign },
