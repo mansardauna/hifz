@@ -90,6 +90,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [currentSubdomain]);
 
   const injectCssVariables = (config: TenantConfig) => {
+    if (typeof document === 'undefined') return;
+
     const root = document.documentElement;
     root.style.setProperty('--color-primary', config.theme.primaryColor);
     root.style.setProperty('--color-primary-hover', config.theme.primaryHover);
@@ -100,7 +102,17 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     root.style.setProperty('--color-text', config.theme.textColor);
     root.style.setProperty('--tenant-radius', config.theme.borderRadius);
 
-    document.title = `${config.name} | Hifz Quranic LMS`;
+    document.title = `${config.name} • Ankabit LMS`;
+
+    // Dynamically inject tenant unique favicon in browser tab
+    const faviconUrl = config.faviconUrl || config.logoUrl || '/icons/icon.svg';
+    let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    link.href = faviconUrl;
   };
 
   const setTenantBySubdomain = (subdomain: string) => {

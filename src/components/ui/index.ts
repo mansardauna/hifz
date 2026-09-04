@@ -6,4 +6,5 @@ export * from './Table';
 export * from './Badge';
 export * from './Toast';
 export * from './LoadingSpinner';
+export * from './DataTablePagination';
 export * from './PWAInstallToast';

@@ -87,6 +87,8 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
   const [isVerifyingDomain, setIsVerifyingDomain] = useState(false);
 
   // Theme & Branding
+  const [logoUrl, setLogoUrl] = useState<string>(tenant.logoUrl || '');
+  const [faviconUrl, setFaviconUrl] = useState<string>(tenant.faviconUrl || '/icons/icon.svg');
   const [primaryColor, setPrimaryColor] = useState<string>(tenant.theme?.primaryColor || '#059669');
   const [secondaryColor, setSecondaryColor] = useState<string>(tenant.theme?.secondaryColor || '#d97706');
   const [fontFamily, setFontFamily] = useState<string>(tenant.theme?.fontFamily || 'Poppins');
@@ -204,6 +206,8 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
   const handleSaveBranding = () => {
     updateTenantConfig({
+      logoUrl: logoUrl || undefined,
+      faviconUrl: faviconUrl || undefined,
       theme: {
         ...tenant.theme,
         primaryColor,
@@ -214,7 +218,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       },
       customCss,
     });
-    success('Theme & Branding Applied', 'Colors, fonts, and custom CSS styles updated across all views.');
+    success('Theme & Branding Applied', 'Colors, logo, unique favicon, and font styles updated across all views.');
   };
 
   const handleSaveAuthLayout = () => {
@@ -489,89 +493,175 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
       {/* TAB 2: BRANDING & THEME TOKENS */}
       {activeTab === 'branding' && (
-        <Card className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <Palette className="w-5 h-5 text-emerald-600" />
-              <span>Theme Tokens & Brand Colors</span>
-            </h3>
-            <span className="text-xs text-slate-500">Applies across all student & landing pages</span>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">Preset Brand Palette</label>
-              <div className="flex flex-wrap items-center gap-3">
-                {PRESET_BRAND_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => {
-                      setPrimaryColor(c);
-                      info('Color Selected', `Primary brand color set to ${c}.`);
-                    }}
-                    style={{ backgroundColor: c }}
-                    className={`w-9 h-9 rounded-xl transition-transform cursor-pointer flex items-center justify-center shadow-xs ${
-                      primaryColor === c ? 'ring-3 ring-emerald-400 scale-110 shadow-md' : 'hover:scale-105'
-                    }`}
-                  >
-                    {primaryColor === c && <Check className="w-4 h-4 text-white drop-shadow-sm" />}
-                  </button>
-                ))}
+        <div className="space-y-6">
+          {/* Brand Identity & Favicon Card */}
+          <Card className="p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-emerald-600" />
+                  <span>Logos & Subdomain Favicon</span>
+                </h3>
+                <span className="text-xs text-slate-500">Customize the browser tab icon and academy logo across student dashboards</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Primary Color Hex</label>
-                <div className="flex items-center gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Academy Logo Image URL
+                  </label>
                   <input
-                    type="color"
-                    value={primaryColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
-                    className="w-10 h-10 rounded-lg cursor-pointer border border-slate-200"
+                    type="url"
+                    value={logoUrl}
+                    onChange={(e) => setLogoUrl(e.target.value)}
+                    placeholder="https://your-domain.com/logo.png"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
                   />
+                  <p className="text-[11px] text-slate-400 mt-1">Recommended: Transparent PNG or SVG (256x256px or wider)</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Subdomain Favicon URL (Browser Tab Icon)
+                  </label>
                   <input
-                    type="text"
-                    value={primaryColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-bold"
+                    type="url"
+                    value={faviconUrl}
+                    onChange={(e) => setFaviconUrl(e.target.value)}
+                    placeholder="https://your-domain.com/favicon.ico"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
                   />
+                  <p className="text-[11px] text-slate-400 mt-1">Direct link to your .ico, .png, or .svg icon</p>
                 </div>
               </div>
 
+              {/* Live Browser Tab Preview */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Font Family</label>
-                <select
-                  value={fontFamily}
-                  onChange={(e) => setFontFamily(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:outline-none focus:border-emerald-600"
-                >
-                  <option value="Poppins">Poppins (Modern Clean)</option>
-                  <option value="Inter">Inter (SaaS Standard)</option>
-                  <option value="Amiri">Amiri (Traditional Quranic Naskh)</option>
-                  <option value="Cairo">Cairo (Contemporary Arabic)</option>
-                </select>
+                <label className="block text-xs font-bold text-slate-700 mb-2">Live Browser Tab Preview</label>
+                <div className="bg-slate-900 rounded-xl p-3 shadow-inner border border-slate-800">
+                  {/* Fake browser top bar */}
+                  <div className="flex items-center gap-2 pb-2.5 border-b border-slate-800">
+                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+                    <div className="ml-2 text-[10px] text-slate-500 font-mono flex-1 truncate">
+                      https://{subdomain || 'your-academy'}.ankabit.app
+                    </div>
+                  </div>
+
+                  {/* Browser Tab */}
+                  <div className="mt-2.5 max-w-[280px] bg-slate-800 rounded-t-lg px-3 py-1.5 flex items-center gap-2 border border-slate-700 border-b-0 shadow-sm">
+                    {faviconUrl ? (
+                      <img
+                        src={faviconUrl}
+                        alt="Favicon"
+                        className="w-4 h-4 rounded-xs object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/icons/icon.svg';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[9px] font-bold">
+                        {companyName.charAt(0) || 'A'}
+                      </div>
+                    )}
+                    <span className="text-xs text-slate-200 font-medium truncate">
+                      {companyName} • Ankabit
+                    </span>
+                    <span className="ml-auto text-[10px] text-slate-500">×</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Theme Tokens Card */}
+          <Card className="p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Palette className="w-5 h-5 text-emerald-600" />
+                <span>Theme Tokens & Brand Colors</span>
+              </h3>
+              <span className="text-xs text-slate-500">Applies across all student & landing pages</span>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-2">Preset Brand Palette</label>
+                <div className="flex flex-wrap items-center gap-3">
+                  {PRESET_BRAND_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setPrimaryColor(c);
+                        info('Color Selected', `Primary brand color set to ${c}.`);
+                      }}
+                      style={{ backgroundColor: c }}
+                      className={`w-9 h-9 rounded-xl transition-transform cursor-pointer flex items-center justify-center shadow-xs ${
+                        primaryColor === c ? 'ring-3 ring-emerald-400 scale-110 shadow-md' : 'hover:scale-105'
+                      }`}
+                    >
+                      {primaryColor === c && <Check className="w-4 h-4 text-white drop-shadow-sm" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Primary Color Hex</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={primaryColor}
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      className="w-10 h-10 rounded-lg cursor-pointer border border-slate-200"
+                    />
+                    <input
+                      type="text"
+                      value={primaryColor}
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Font Family</label>
+                  <select
+                    value={fontFamily}
+                    onChange={(e) => setFontFamily(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:outline-none focus:border-emerald-600"
+                  >
+                    <option value="Poppins">Poppins (Modern Clean)</option>
+                    <option value="Inter">Inter (SaaS Standard)</option>
+                    <option value="Amiri">Amiri (Traditional Quranic Naskh)</option>
+                    <option value="Cairo">Cairo (Contemporary Arabic)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3">
+                <label className="block text-xs font-bold text-slate-700 mb-1">Custom CSS Overrides</label>
+                <textarea
+                  rows={3}
+                  value={customCss}
+                  onChange={(e) => setCustomCss(e.target.value)}
+                  placeholder="/* Custom CSS overrides for your academy pages */"
+                  className="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600"
+                />
               </div>
             </div>
 
-            <div className="pt-3">
-              <label className="block text-xs font-bold text-slate-700 mb-1">Custom CSS Overrides</label>
-              <textarea
-                rows={3}
-                value={customCss}
-                onChange={(e) => setCustomCss(e.target.value)}
-                placeholder="/* Custom CSS overrides for your academy pages */"
-                className="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600"
-              />
+            <div className="flex justify-end pt-4 border-t border-slate-100">
+              <Button variant="primary" size="sm" onClick={handleSaveBranding} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+                Save & Apply Brand Theme
+              </Button>
             </div>
-          </div>
-
-          <div className="flex justify-end pt-4 border-t border-slate-100">
-            <Button variant="primary" size="sm" onClick={handleSaveBranding} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
-              Save & Apply Brand Theme
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        </div>
       )}
 
       {/* TAB 3: STAFF ROLES & RBAC */}

@@ -28,11 +28,17 @@ import {
   ChevronRight,
   User,
   Sliders,
-  TrendingUp
+  TrendingUp,
+  Copy,
+  LayoutGrid,
+  List,
+  Code2,
+  Printer,
+  Table as TableIcon
 } from 'lucide-react';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Badge } from '../ui';
+import { Badge, DataTablePagination } from '../ui';
 import { FormConfig } from '../../types';
 
 export interface FormResponse {
@@ -211,9 +217,24 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
   const [showAnalyticsCharts, setShowAnalyticsCharts] = useState<boolean>(true);
   const [viewingResponse, setViewingResponse] = useState<FormResponse | null>(null);
 
+  // High-Capacity 400+ Fields Inspector Drawer State
+  const [fieldSearchQuery, setFieldSearchQuery] = useState<string>('');
+  const [modalLayoutMode, setModalLayoutMode] = useState<'cards' | 'grid' | 'table' | 'json'>('cards');
+  const [activeCategoryTab, setActiveCategoryTab] = useState<string>('all');
+  const [copiedFieldKey, setCopiedFieldKey] = useState<string | null>(null);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
   // Sorting State
   const [sortField, setSortField] = useState<SortField>('submittedAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedStatusFilter, selectedFormId, pageSize]);
 
   // Filter responses by selected form
   const responsesForSelectedForm = useMemo(() => {
@@ -280,6 +301,27 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
 
     return result;
   }, [responsesForSelectedForm, searchQuery, selectedStatusFilter, sortField, sortDirection]);
+
+  // Paginated Sliced Responses
+  const paginatedResponses = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredAndSortedResponses.slice(start, start + pageSize);
+  }, [filteredAndSortedResponses, currentPage, pageSize]);
+
+  // Helper to categorize fields for 400+ fields UX
+  const categorizeField = (fieldKey: string): string => {
+    const lower = fieldKey.toLowerCase();
+    if (lower.includes('parent') || lower.includes('guardian') || lower.includes('dob') || lower.includes('birth') || lower.includes('age') || lower.includes('gender') || lower.includes('address') || lower.includes('city') || lower.includes('country') || lower.includes('emergency')) {
+      return 'personal';
+    }
+    if (lower.includes('juz') || lower.includes('tajweed') || lower.includes('quran') || lower.includes('hifz') || lower.includes('surah') || lower.includes('memoriz') || lower.includes('level') || lower.includes('grade') || lower.includes('academic') || lower.includes('school') || lower.includes('experience')) {
+      return 'academic';
+    }
+    if (lower.includes('time') || lower.includes('timing') || lower.includes('schedule') || lower.includes('slot') || lower.includes('day') || lower.includes('plan') || lower.includes('fee') || lower.includes('tuition') || lower.includes('payment') || lower.includes('track')) {
+      return 'scheduling';
+    }
+    return 'custom';
+  };
 
   // Toggle sort direction or set sort field
   const handleSort = (field: SortField) => {
@@ -716,7 +758,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   </td>
                 </tr>
               ) : (
-                filteredAndSortedResponses.map((r) => (
+                paginatedResponses.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
                     {/* Student Column */}
                     <td className="py-3.5 px-4">
@@ -773,7 +815,11 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          onClick={() => setViewingResponse(r)}
+                          onClick={() => {
+                            setViewingResponse(r);
+                            setFieldSearchQuery('');
+                            setActiveCategoryTab('all');
+                          }}
                           className="p-1.5 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-lg transition-colors cursor-pointer"
                           title="View Full Submission"
                         >
@@ -794,105 +840,376 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <DataTablePagination
+          currentPage={currentPage}
+          pageSize={pageSize}
+          totalItems={filteredAndSortedResponses.length}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1);
+          }}
+          pageSizeOptions={[10, 25, 50, 100]}
+        />
       </div>
 
-      {/* 6. Response Inspection Drawer / Modal */}
-      {viewingResponse && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-              <div>
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest block">
-                  {viewingResponse.formTitle}
-                </span>
-                <h3 className="font-extrabold text-base text-slate-900">
-                  {viewingResponse.studentName}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setViewingResponse(null)}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
-              >
-                &times;
-              </button>
-            </div>
+      {/* 6. Ultra-Scalable Response Inspection Drawer / Modal (Built for 400+ Fields) */}
+      {viewingResponse && (() => {
+        // Collect all data entries
+        const allEntries = viewingResponse.data ? Object.entries(viewingResponse.data) : [];
+        
+        // Filter by field search query and category
+        const filteredEntries = allEntries.filter(([k, v]) => {
+          const matchSearch =
+            k.toLowerCase().includes(fieldSearchQuery.toLowerCase()) ||
+            String(v).toLowerCase().includes(fieldSearchQuery.toLowerCase());
+          
+          if (!matchSearch) return false;
+          if (activeCategoryTab === 'all') return true;
+          return categorizeField(k) === activeCategoryTab;
+        });
 
-            {/* Quick Contact Box */}
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-2 text-xs">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                  <Mail className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{viewingResponse.email}</span>
+        // Category counts
+        const catCounts = {
+          all: allEntries.length,
+          personal: allEntries.filter(([k]) => categorizeField(k) === 'personal').length,
+          academic: allEntries.filter(([k]) => categorizeField(k) === 'academic').length,
+          scheduling: allEntries.filter(([k]) => categorizeField(k) === 'scheduling').length,
+          custom: allEntries.filter(([k]) => categorizeField(k) === 'custom').length,
+        };
+
+        const copyToClipboard = (text: string, key?: string) => {
+          navigator.clipboard.writeText(text);
+          if (key) {
+            setCopiedFieldKey(key);
+            setTimeout(() => setCopiedFieldKey(null), 2000);
+          }
+          onAddToast({
+            type: 'info',
+            title: 'Copied to Clipboard',
+            message: key ? `Field "${key}" copied.` : 'Submission data copied.'
+          });
+        };
+
+        return (
+          <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200">
+              
+              {/* Modal Header */}
+              <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
+                      {viewingResponse.formTitle}
+                    </span>
+                    <span className="text-slate-400 font-mono text-[11px]">{viewingResponse.id}</span>
+                  </div>
+                  <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
+                    <span>{viewingResponse.studentName}</span>
+                    <Badge variant={viewingResponse.status === 'Admitted' ? 'success' : viewingResponse.status === 'Rejected' ? 'error' : 'warning'}>
+                      {viewingResponse.status}
+                    </Badge>
+                  </h3>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                  <Phone className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{viewingResponse.phone}</span>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => copyToClipboard(JSON.stringify(viewingResponse, null, 2))}
+                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-700"
+                    title="Copy full record JSON"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">JSON</span>
+                  </button>
+                  <button
+                    onClick={() => window.print()}
+                    className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl transition-colors cursor-pointer border border-slate-700"
+                    title="Print Submission"
+                  >
+                    <Printer className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewingResponse(null)}
+                    className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-sm ml-2 transition-colors cursor-pointer"
+                  >
+                    &times;
+                  </button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <a
-                  href={`mailto:${viewingResponse.email}`}
-                  className="px-3 py-1.5 bg-blue-600 text-white font-bold text-xs rounded-xl shadow-xs hover:bg-blue-700 transition-colors"
-                >
-                  Send Email
-                </a>
+              {/* Quick Contact & Summary Bar */}
+              <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
+                <div className="flex flex-wrap items-center gap-4 text-slate-700">
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    <a href={`mailto:${viewingResponse.email}`} className="font-medium hover:text-emerald-700 underline">
+                      {viewingResponse.email}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-slate-400" />
+                    <a href={`tel:${viewingResponse.phone}`} className="font-medium hover:text-emerald-700">
+                      {viewingResponse.phone}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-slate-500">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{viewingResponse.submittedAt}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-slate-500">
+                    {allEntries.length} Total Fields Recorded
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* Full Form Field Answers List */}
-            <div className="space-y-2 text-xs">
-              <h4 className="font-extrabold text-slate-800 uppercase tracking-wider text-[10px]">
-                Applicant Responses & Questionnaire:
-              </h4>
+              {/* 400+ Fields Search & View Controls Bar */}
+              <div className="px-6 py-3 bg-white border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
+                {/* Search Bar for fast field filtering */}
+                <div className="relative flex-1 max-w-md">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search across questionnaire fields & answers..."
+                    value={fieldSearchQuery}
+                    onChange={(e) => setFieldSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-8 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-600 focus:bg-white"
+                  />
+                  {fieldSearchQuery && (
+                    <button
+                      onClick={() => setFieldSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
 
-              <div className="space-y-2">
-                {viewingResponse.data && Object.keys(viewingResponse.data).length > 0 ? (
-                  Object.entries(viewingResponse.data).map(([field, val]) => (
-                    <div key={field} className="p-3 bg-slate-50/70 rounded-xl border border-slate-100">
-                      <span className="text-slate-500 font-medium block text-[10px] mb-0.5">{field}</span>
-                      <span className="font-bold text-slate-900 block">{String(val)}</span>
-                    </div>
-                  ))
+                {/* Layout Switcher */}
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0 self-end sm:self-auto">
+                  <button
+                    onClick={() => setModalLayoutMode('cards')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                      modalLayoutMode === 'cards' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    title="Card Grid View"
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    <span>Cards</span>
+                  </button>
+                  <button
+                    onClick={() => setModalLayoutMode('table')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                      modalLayoutMode === 'table' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    title="Key-Value Table"
+                  >
+                    <TableIcon className="w-3.5 h-3.5" />
+                    <span>Table</span>
+                  </button>
+                  <button
+                    onClick={() => setModalLayoutMode('json')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                      modalLayoutMode === 'json' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                    title="Raw JSON View"
+                  >
+                    <Code2 className="w-3.5 h-3.5" />
+                    <span>JSON</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Category Tabs */}
+              {modalLayoutMode !== 'json' && (
+                <div className="px-6 py-2 bg-slate-50/50 border-b border-slate-100 flex items-center gap-1.5 overflow-x-auto text-xs shrink-0">
+                  <button
+                    onClick={() => setActiveCategoryTab('all')}
+                    className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                      activeCategoryTab === 'all'
+                        ? 'bg-emerald-700 text-white shadow-xs'
+                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    All ({catCounts.all})
+                  </button>
+                  {catCounts.personal > 0 && (
+                    <button
+                      onClick={() => setActiveCategoryTab('personal')}
+                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                        activeCategoryTab === 'personal'
+                          ? 'bg-emerald-700 text-white shadow-xs'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      Personal & Guardian ({catCounts.personal})
+                    </button>
+                  )}
+                  {catCounts.academic > 0 && (
+                    <button
+                      onClick={() => setActiveCategoryTab('academic')}
+                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                        activeCategoryTab === 'academic'
+                          ? 'bg-emerald-700 text-white shadow-xs'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      Academic & Quranic ({catCounts.academic})
+                    </button>
+                  )}
+                  {catCounts.scheduling > 0 && (
+                    <button
+                      onClick={() => setActiveCategoryTab('scheduling')}
+                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                        activeCategoryTab === 'scheduling'
+                          ? 'bg-emerald-700 text-white shadow-xs'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      Program & Timing ({catCounts.scheduling})
+                    </button>
+                  )}
+                  {catCounts.custom > 0 && (
+                    <button
+                      onClick={() => setActiveCategoryTab('custom')}
+                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                        activeCategoryTab === 'custom'
+                          ? 'bg-emerald-700 text-white shadow-xs'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      Custom Fields ({catCounts.custom})
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Scrollable Fields Content Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {modalLayoutMode === 'json' ? (
+                  <div className="bg-slate-950 text-emerald-400 p-4 rounded-2xl font-mono text-xs overflow-x-auto border border-slate-800">
+                    <pre>{JSON.stringify(viewingResponse, null, 2)}</pre>
+                  </div>
+                ) : filteredEntries.length === 0 ? (
+                  <div className="py-12 text-center text-slate-400">
+                    <Search className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                    <p className="font-bold text-slate-700 text-sm">No questionnaire fields match "{fieldSearchQuery}"</p>
+                    <p className="text-xs text-slate-400 mt-1">Try clearing your search query or selecting a different category tab.</p>
+                  </div>
+                ) : modalLayoutMode === 'table' ? (
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                        <tr>
+                          <th className="py-2.5 px-4 w-1/3">Field Question</th>
+                          <th className="py-2.5 px-4">Applicant Response</th>
+                          <th className="py-2.5 px-3 text-right w-16">Copy</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredEntries.map(([field, val]) => (
+                          <tr key={field} className="hover:bg-slate-50/60 transition-colors">
+                            <td className="py-2.5 px-4 font-semibold text-slate-700">{field}</td>
+                            <td className="py-2.5 px-4 text-slate-900 font-bold break-words">{String(val)}</td>
+                            <td className="py-2.5 px-3 text-right">
+                              <button
+                                onClick={() => copyToClipboard(String(val), field)}
+                                className="p-1 hover:bg-slate-200 text-slate-400 hover:text-slate-700 rounded transition-colors"
+                                title="Copy Value"
+                              >
+                                {copiedFieldKey === field ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 ) : (
-                  <p className="text-slate-400 py-2">No additional custom questionnaire fields recorded.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    {filteredEntries.map(([field, val]) => (
+                      <div
+                        key={field}
+                        className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:bg-white transition-all shadow-2xs group"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            {field}
+                          </span>
+                          <button
+                            onClick={() => copyToClipboard(String(val), field)}
+                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-200 text-slate-400 hover:text-slate-700 rounded transition-opacity"
+                            title="Copy Value"
+                          >
+                            {copiedFieldKey === field ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        </div>
+                        <div className="text-xs font-bold text-slate-900 break-words leading-relaxed">
+                          {String(val)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
+
+                {/* Internal Admin Review Remarks */}
+                <div className="pt-4 border-t border-slate-200 space-y-2">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Internal Review Notes & Placement Remarks</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Add evaluation comments, Tajweed voice test scores, or next steps..."
+                    value={viewingResponse.notes || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setResponses((prev) =>
+                        prev.map((r) => (r.id === viewingResponse.id ? { ...r, notes: val } : r))
+                      );
+                      setViewingResponse((prev) => (prev ? { ...prev, notes: val } : null));
+                    }}
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Internal Admin Notes */}
-            <div className="space-y-1.5 text-xs">
-              <label className="font-bold text-slate-800">Review Notes & Instructor Remarks</label>
-              <textarea
-                rows={2}
-                placeholder="Add evaluation comments, Tajweed voice test scores, or next steps..."
-                value={viewingResponse.notes || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setResponses((prev) =>
-                    prev.map((r) => (r.id === viewingResponse.id ? { ...r, notes: val } : r))
-                  );
-                  setViewingResponse((prev) => (prev ? { ...prev, notes: val } : null));
-                }}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              />
-            </div>
+              {/* Modal Footer */}
+              <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-600">Update Status:</span>
+                  <select
+                    value={viewingResponse.status}
+                    onChange={(e) => handleStatusChange(viewingResponse.id, e.target.value as any)}
+                    className="px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+                  >
+                    <option value="New">New</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Interview Scheduled">Interview Scheduled</option>
+                    <option value="Admitted">Admitted</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
 
-            {/* Modal Actions */}
-            <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setViewingResponse(null)}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
-              >
-                Close Drawer
-              </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setViewingResponse(null)}
+                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  >
+                    Done & Close
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };

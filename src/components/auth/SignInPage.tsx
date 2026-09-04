@@ -107,6 +107,14 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
     let detectedName = 'Zaid Al-Mansoor';
 
     if (
+      lowerEmail.startsWith('superadmin') ||
+      lowerEmail.includes('superadmin') ||
+      lowerEmail === 'superadmin@ankabit.app' ||
+      lowerEmail === 'superadmin@techmadrasah.com'
+    ) {
+      detectedRole = 'superadmin';
+      detectedName = 'Platform SuperAdmin';
+    } else if (
       lowerEmail.startsWith('admin') ||
       lowerEmail.includes('admin') ||
       lowerEmail.includes('director') ||
@@ -143,19 +151,23 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         type: 'success',
         title: 'Authenticated Successfully',
         message: `Welcome back to your ${
-          detectedRole === 'admin'
+          detectedRole === 'superadmin'
+            ? 'Platform SuperAdmin Console'
+            : detectedRole === 'admin'
             ? 'Administration'
             : detectedRole === 'teacher'
             ? 'Teacher Studio'
             : 'Learning'
-        } Portal!`,
+        }!`,
       });
       setIsSubmitting(false);
 
       if (onSuccess) {
         onSuccess(detectedRole, targetSubdomain);
       } else {
-        if (detectedRole === 'admin') {
+        if (detectedRole === 'superadmin') {
+          router.push('/super-admin');
+        } else if (detectedRole === 'admin') {
           router.push(`/${targetSubdomain}/admin`);
         } else {
           router.push(`/${targetSubdomain}/lms`);

@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
 import { ToastMessage } from '../ui/Toast';
-import { Button, Card, Badge, Input } from '../ui';
+import { Button, Card, Badge, Input, DataTablePagination } from '../ui';
 import {
   Users,
   Award,
@@ -21,7 +21,10 @@ import {
   Code2,
   Settings,
   LogOut,
-  Menu
+  Menu,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
@@ -252,6 +255,20 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
     }
   ]);
 
+  // Pagination for Students
+  const [studentPage, setStudentPage] = useState<number>(1);
+  const [studentPageSize, setStudentPageSize] = useState<number>(6);
+
+  // Submissions sorting & pagination
+  const [submissionSortField, setSubmissionSortField] = useState<'studentName' | 'submittedAt' | 'status'>('submittedAt');
+  const [submissionSortDir, setSubmissionSortDir] = useState<'asc' | 'desc'>('desc');
+  const [submissionPage, setSubmissionPage] = useState<number>(1);
+  const [submissionPageSize, setSubmissionPageSize] = useState<number>(10);
+
+  useEffect(() => {
+    setStudentPage(1);
+  }, [studentSearch, selectedCohort, studentPageSize]);
+
   // Filtered students
   const filteredStudents = useMemo(() => {
     return assignedStudents.filter((std) => {
@@ -262,6 +279,31 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
       return matchesSearch && matchesCohort;
     });
   }, [assignedStudents, studentSearch, selectedCohort]);
+
+  const paginatedStudents = useMemo(() => {
+    const start = (studentPage - 1) * studentPageSize;
+    return filteredStudents.slice(start, start + studentPageSize);
+  }, [filteredStudents, studentPage, studentPageSize]);
+
+  // Filtered & Sorted Submissions
+  const filteredAndSortedSubmissions = useMemo(() => {
+    const result = [...submissions];
+    result.sort((a, b) => {
+      let valA: any = a[submissionSortField] || '';
+      let valB: any = b[submissionSortField] || '';
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return submissionSortDir === 'asc' ? -1 : 1;
+      if (valA > valB) return submissionSortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return result;
+  }, [submissions, submissionSortField, submissionSortDir]);
+
+  const paginatedSubmissions = useMemo(() => {
+    const start = (submissionPage - 1) * submissionPageSize;
+    return filteredAndSortedSubmissions.slice(start, start + submissionPageSize);
+  }, [filteredAndSortedSubmissions, submissionPage, submissionPageSize]);
 
   // Cohort list
   const cohorts = useMemo(() => {
@@ -591,7 +633,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
               {/* Students Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredStudents.map((std) => (
+                {paginatedStudents.map((std) => (
                   <Card
                     key={std.id}
                     className="p-6 bg-white border border-slate-200/90 rounded-2xl hover:shadow-lg transition-all flex flex-col justify-between space-y-4"
@@ -688,6 +730,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   </Card>
                 ))}
               </div>
+
+              {/* Students Pagination */}
+              <DataTablePagination
+                currentPage={studentPage}
+                pageSize={studentPageSize}
+                totalItems={filteredStudents.length}
+                onPageChange={setStudentPage}
+                onPageSizeChange={(newSize) => {
+                  setStudentPageSize(newSize);
+                  setStudentPage(1);
+                }}
+                pageSizeOptions={[6, 12, 24, 48]}
+              />
             </div>
           )}
 
@@ -707,16 +762,73 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                       <tr>
-                        <th className="py-3.5 px-4">Student</th>
+                        <th
+                          onClick={() => {
+                            if (submissionSortField === 'studentName') {
+                              setSubmissionSortDir((p) => (p === 'asc' ? 'desc' : 'asc'));
+                            } else {
+                              setSubmissionSortField('studentName');
+                              setSubmissionSortDir('asc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer select-none hover:text-slate-900"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Student</span>
+                            {submissionSortField === 'studentName' ? (
+                              submissionSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-amber-600" /> : <ArrowDown className="w-3 h-3 text-amber-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
                         <th className="py-3.5 px-4">Surah & Target Ayahs</th>
-                        <th className="py-3.5 px-4">Submitted</th>
+                        <th
+                          onClick={() => {
+                            if (submissionSortField === 'submittedAt') {
+                              setSubmissionSortDir((p) => (p === 'asc' ? 'desc' : 'asc'));
+                            } else {
+                              setSubmissionSortField('submittedAt');
+                              setSubmissionSortDir('asc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer select-none hover:text-slate-900"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Submitted</span>
+                            {submissionSortField === 'submittedAt' ? (
+                              submissionSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-amber-600" /> : <ArrowDown className="w-3 h-3 text-amber-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
                         <th className="py-3.5 px-4">Audio Duration</th>
-                        <th className="py-3.5 px-4">Evaluation Status</th>
+                        <th
+                          onClick={() => {
+                            if (submissionSortField === 'status') {
+                              setSubmissionSortDir((p) => (p === 'asc' ? 'desc' : 'asc'));
+                            } else {
+                              setSubmissionSortField('status');
+                              setSubmissionSortDir('asc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer select-none hover:text-slate-900"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Evaluation Status</span>
+                            {submissionSortField === 'status' ? (
+                              submissionSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-amber-600" /> : <ArrowDown className="w-3 h-3 text-amber-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
                         <th className="py-3.5 px-4 text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700">
-                      {submissions.map((sub) => (
+                      {paginatedSubmissions.map((sub) => (
                         <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="py-4 px-4 font-bold text-slate-900">{sub.studentName}</td>
                           <td className="py-4 px-4">
@@ -757,6 +869,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                     </tbody>
                   </table>
                 </div>
+
+                {/* Submissions Pagination */}
+                <DataTablePagination
+                  currentPage={submissionPage}
+                  pageSize={submissionPageSize}
+                  totalItems={filteredAndSortedSubmissions.length}
+                  onPageChange={setSubmissionPage}
+                  onPageSizeChange={(newSize) => {
+                    setSubmissionPageSize(newSize);
+                    setSubmissionPage(1);
+                  }}
+                  pageSizeOptions={[5, 10, 25, 50]}
+                />
               </Card>
             </div>
           )}

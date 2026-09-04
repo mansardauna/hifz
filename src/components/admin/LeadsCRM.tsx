@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Lead, LeadStatus, PaymentStatus } from '../../types';
 import { api } from '../../services/api';
 import { useTenant } from '../../context/TenantContext';
@@ -15,13 +15,16 @@ import {
   TableBody,
   TableRow,
   TableHead,
-  TableCell
+  TableCell,
+  DataTablePagination
 } from '../ui';
-import { Search } from 'lucide-react';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface LeadsCRMProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
 }
+
+type SortField = 'name' | 'courseInterest' | 'plan' | 'paymentStatus' | 'status';
 
 export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
   const { tenant, direction } = useTenant();
@@ -30,6 +33,12 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+
+  // Sorting and Pagination State
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const fetchLeads = async () => {
     const data = await api.getLeads(tenant.id);
@@ -40,19 +49,67 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
     fetchLeads();
   }, [tenant.id]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, paymentFilter, pageSize]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
   const handleUpdateLeadState = (updated: Lead) => {
     setLeads((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
   };
 
-  const filteredLeads = leads.filter((lead) => {
-    const matchesSearch =
-      (lead.studentName || lead.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.phone.includes(searchTerm);
-    const matchesStatus = statusFilter === 'ALL' || lead.status === statusFilter;
-    const matchesPayment = paymentFilter === 'ALL' || lead.paymentStatus === paymentFilter;
-    return matchesSearch && matchesStatus && matchesPayment;
-  });
+  const filteredAndSortedLeads = useMemo(() => {
+    let result = leads.filter((lead) => {
+      const matchesSearch =
+        (lead.studentName || lead.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.phone.includes(searchTerm);
+      const matchesStatus = statusFilter === 'ALL' || lead.status === statusFilter;
+      const matchesPayment = paymentFilter === 'ALL' || lead.paymentStatus === paymentFilter;
+      return matchesSearch && matchesStatus && matchesPayment;
+    });
+
+    result.sort((a, b) => {
+      let valA: any = '';
+      let valB: any = '';
+
+      if (sortField === 'name') {
+        valA = (a.studentName || a.name || '').toLowerCase();
+        valB = (b.studentName || b.name || '').toLowerCase();
+      } else if (sortField === 'courseInterest') {
+        valA = (a.courseInterest || '').toLowerCase();
+        valB = (b.courseInterest || '').toLowerCase();
+      } else if (sortField === 'plan') {
+        valA = a.planPrice || a.tuitionAmount || 0;
+        valB = b.planPrice || b.tuitionAmount || 0;
+      } else if (sortField === 'paymentStatus') {
+        valA = a.paymentStatus || '';
+        valB = b.paymentStatus || '';
+      } else if (sortField === 'status') {
+        valA = a.status || '';
+        valB = b.status || '';
+      }
+
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [leads, searchTerm, statusFilter, paymentFilter, sortField, sortDirection]);
+
+  const paginatedLeads = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredAndSortedLeads.slice(start, start + pageSize);
+  }, [filteredAndSortedLeads, currentPage, pageSize]);
 
   const renderStatusBadge = (status: LeadStatus) => {
     switch (status) {
@@ -138,63 +195,123 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
       </Card>
 
       {/* Standardized Data Table */}
-      <Table>
-        <TableHeader>
-          <tr>
-            <TableHead>Student Name</TableHead>
-            <TableHead>Course Track</TableHead>
-            <TableHead>Tuition Plan</TableHead>
-            <TableHead>Payment</TableHead>
-            <TableHead>Workflow</TableHead>
-            <TableHead className="text-center">Action</TableHead>
-          </tr>
-        </TableHeader>
-        <TableBody>
-          {filteredLeads.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="p-8 text-center text-slate-400">
-                No student applications match the selected filter.
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredLeads.map((lead) => (
-              <TableRow
-                key={lead.id}
-                onClick={() => setSelectedLead(lead)}
-                className="cursor-pointer"
-              >
-                <TableCell>
-                  <p className="font-bold text-slate-900 text-xs">{lead.studentName || lead.name}</p>
-                  <p className="text-slate-400 text-[11px] mt-0.5">{lead.email} • {lead.phone}</p>
-                </TableCell>
-
-                <TableCell className="font-semibold text-slate-800">
-                  {lead.courseInterest}
-                </TableCell>
-
-                <TableCell>
-                  <p className="font-bold text-slate-900 text-xs">{lead.planName || lead.selectedPlanName || 'Foundational'}</p>
-                  <p className="text-[11px] text-slate-500 font-mono">${lead.planPrice || lead.tuitionAmount || 65}/mo</p>
-                </TableCell>
-
-                <TableCell>{renderPaymentBadge(lead.paymentStatus)}</TableCell>
-
-                <TableCell>{renderStatusBadge(lead.status)}</TableCell>
-
-                <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedLead(lead)}
-                  >
-                    View Details
-                  </Button>
+      <div className="space-y-3">
+        <Table>
+          <TableHeader>
+            <tr>
+              <TableHead onClick={() => handleSort('name')} className="cursor-pointer select-none hover:text-slate-900">
+                <div className="flex items-center gap-1.5">
+                  <span>Student Name</span>
+                  {sortField === 'name' ? (
+                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
+                  )}
+                </div>
+              </TableHead>
+              <TableHead onClick={() => handleSort('courseInterest')} className="cursor-pointer select-none hover:text-slate-900">
+                <div className="flex items-center gap-1.5">
+                  <span>Course Track</span>
+                  {sortField === 'courseInterest' ? (
+                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
+                  )}
+                </div>
+              </TableHead>
+              <TableHead onClick={() => handleSort('plan')} className="cursor-pointer select-none hover:text-slate-900">
+                <div className="flex items-center gap-1.5">
+                  <span>Tuition Plan</span>
+                  {sortField === 'plan' ? (
+                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
+                  )}
+                </div>
+              </TableHead>
+              <TableHead onClick={() => handleSort('paymentStatus')} className="cursor-pointer select-none hover:text-slate-900">
+                <div className="flex items-center gap-1.5">
+                  <span>Payment</span>
+                  {sortField === 'paymentStatus' ? (
+                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
+                  )}
+                </div>
+              </TableHead>
+              <TableHead onClick={() => handleSort('status')} className="cursor-pointer select-none hover:text-slate-900">
+                <div className="flex items-center gap-1.5">
+                  <span>Workflow</span>
+                  {sortField === 'status' ? (
+                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
+                  )}
+                </div>
+              </TableHead>
+              <TableHead className="text-center">Action</TableHead>
+            </tr>
+          </TableHeader>
+          <TableBody>
+            {filteredAndSortedLeads.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="p-8 text-center text-slate-400">
+                  No student applications match the selected filter.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              paginatedLeads.map((lead) => (
+                <TableRow
+                  key={lead.id}
+                  onClick={() => setSelectedLead(lead)}
+                  className="cursor-pointer"
+                >
+                  <TableCell>
+                    <p className="font-bold text-slate-900 text-xs">{lead.studentName || lead.name}</p>
+                    <p className="text-slate-400 text-[11px] mt-0.5">{lead.email} • {lead.phone}</p>
+                  </TableCell>
+
+                  <TableCell className="font-semibold text-slate-800">
+                    {lead.courseInterest}
+                  </TableCell>
+
+                  <TableCell>
+                    <p className="font-bold text-slate-900 text-xs">{lead.planName || lead.selectedPlanName || 'Foundational'}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">${lead.planPrice || lead.tuitionAmount || 65}/mo</p>
+                  </TableCell>
+
+                  <TableCell>{renderPaymentBadge(lead.paymentStatus)}</TableCell>
+
+                  <TableCell>{renderStatusBadge(lead.status)}</TableCell>
+
+                  <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedLead(lead)}
+                    >
+                      View Details
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+
+        {/* DataTablePagination */}
+        <DataTablePagination
+          currentPage={currentPage}
+          pageSize={pageSize}
+          totalItems={filteredAndSortedLeads.length}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1);
+          }}
+          pageSizeOptions={[10, 25, 50, 100]}
+        />
+      </div>
 
       {/* Detailed Lead Profile Modal */}
       {selectedLead && (

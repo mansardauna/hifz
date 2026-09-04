@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type UserRole = 'student' | 'teacher' | 'admin';
+export type UserRole = 'student' | 'teacher' | 'admin' | 'superadmin';
 
 export interface User {
   id: string;
@@ -34,7 +34,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (email: string, role: UserRole, customName?: string) => {
     let resolvedName = customName;
     if (!resolvedName) {
-      if (role === 'teacher') resolvedName = 'Shaykh Bilal Hashmi';
+      if (role === 'superadmin') resolvedName = 'Ankabit SuperAdmin';
+      else if (role === 'teacher') resolvedName = 'Shaykh Bilal Hashmi';
       else if (role === 'admin') resolvedName = 'Sheikh Tariq Al-Mansoor';
       else resolvedName = email.split('@')[0].replace('.', ' ');
     }

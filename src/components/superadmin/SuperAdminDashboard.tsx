@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   PlatformSubscriptionPlan,
   PlatformTenantStats,
@@ -38,18 +39,44 @@ import {
   RefreshCw,
   Eye,
   Sliders,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Lock,
+  KeyRound,
+  LogOut,
 } from 'lucide-react';
-import { Button, Input, Card, Badge, Modal } from '../ui';
+import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
+  const { user, login, logout } = useAuth();
+
+  // Login Gate State (for users navigating directly to /super-admin)
+  const [adminEmailInput, setAdminEmailInput] = useState('superadmin@ankabit.app');
+  const [adminPasswordInput, setAdminPasswordInput] = useState('superadmin123');
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'plans' | 'academies' | 'subscribers' | 'system'>('plans');
   const [plans, setPlans] = useState<PlatformSubscriptionPlan[]>([]);
   const [tenants, setTenants] = useState<PlatformTenantStats[]>(MOCK_PLATFORM_TENANTS);
   const [subscribers, setSubscribers] = useState<PlatformSubscriber[]>(MOCK_PLATFORM_SUBSCRIBERS);
+  
+  // Academies Directory Search, Sort & Pagination
   const [searchQuery, setSearchQuery] = useState('');
   const [planFilter, setPlanFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [academySortField, setAcademySortField] = useState<'name' | 'studentsCount' | 'coursesCount' | 'status'>('name');
+  const [academySortDir, setAcademySortDir] = useState<'asc' | 'desc'>('asc');
+  const [academyPage, setAcademyPage] = useState(1);
+  const [academyPageSize, setAcademyPageSize] = useState(10);
+
+  // Subscribers Table Search, Sort & Pagination
+  const [subscriberSearch, setSubscriberSearch] = useState('');
+  const [subscriberSortField, setSubscriberSortField] = useState<'academyName' | 'planName' | 'amount' | 'currentPeriodEnd' | 'status'>('amount');
+  const [subscriberSortDir, setSubscriberSortDir] = useState<'asc' | 'desc'>('desc');
+  const [subscriberPage, setSubscriberPage] = useState(1);
+  const [subscriberPageSize, setSubscriberPageSize] = useState(10);
 
   // Plan Edit Modal State
   const [editingPlan, setEditingPlan] = useState<PlatformSubscriptionPlan | null>(null);
@@ -199,15 +226,155 @@ export const SuperAdminDashboard: React.FC = () => {
     );
   };
 
-  // Filtered tenants list
-  const filteredTenants = tenants.filter((t) => {
-    const matchesSearch =
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.subdomain.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.ownerEmail.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPlan = planFilter === 'all' || t.planId === planFilter;
-    return matchesSearch && matchesPlan;
-  });
+  // Authentication Handler for SuperAdmin Gate
+  const isSuperAdminAuthenticated = user?.role === 'superadmin';
+
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminEmailInput || !adminPasswordInput) {
+      error('Validation Error', 'Please enter your SuperAdmin email and password.');
+      return;
+    }
+    setIsAuthenticating(true);
+    setTimeout(() => {
+      setIsAuthenticating(false);
+      if (
+        (adminEmailInput.toLowerCase().includes('superadmin') || adminEmailInput === 'admin@ankabit.app') &&
+        adminPasswordInput === 'superadmin123'
+      ) {
+        login(adminEmailInput, 'superadmin', 'Platform SuperAdmin');
+        success('Access Granted', 'Welcome to the Platform SuperAdmin Console.');
+      } else {
+        error('Access Denied', 'Invalid SuperAdmin credentials. Use superadmin@ankabit.app / superadmin123');
+      }
+    }, 400);
+  };
+
+  // Filtered & Sorted Tenants List
+  const filteredAndSortedTenants = useMemo(() => {
+    const list = tenants.filter((t) => {
+      const matchesSearch =
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.subdomain.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.ownerEmail.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPlan = planFilter === 'all' || t.planId === planFilter;
+      const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
+      return matchesSearch && matchesPlan && matchesStatus;
+    });
+
+    list.sort((a, b) => {
+      let valA: any = a[academySortField];
+      let valB: any = b[academySortField];
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return academySortDir === 'asc' ? -1 : 1;
+      if (valA > valB) return academySortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return list;
+  }, [tenants, searchQuery, planFilter, statusFilter, academySortField, academySortDir]);
+
+  const totalAcademyPages = Math.ceil(filteredAndSortedTenants.length / academyPageSize) || 1;
+  const paginatedTenants = useMemo(() => {
+    const start = (academyPage - 1) * academyPageSize;
+    return filteredAndSortedTenants.slice(start, start + academyPageSize);
+  }, [filteredAndSortedTenants, academyPage, academyPageSize]);
+
+  // Filtered & Sorted Subscribers List
+  const filteredAndSortedSubscribers = useMemo(() => {
+    const list = subscribers.filter((s) => {
+      const q = subscriberSearch.toLowerCase();
+      return (
+        s.academyName.toLowerCase().includes(q) ||
+        s.subdomain.toLowerCase().includes(q) ||
+        s.planName.toLowerCase().includes(q) ||
+        s.paymentGateway.toLowerCase().includes(q)
+      );
+    });
+
+    list.sort((a, b) => {
+      let valA: any = a[subscriberSortField];
+      let valB: any = b[subscriberSortField];
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return subscriberSortDir === 'asc' ? -1 : 1;
+      if (valA > valB) return subscriberSortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return list;
+  }, [subscribers, subscriberSearch, subscriberSortField, subscriberSortDir]);
+
+  const totalSubscriberPages = Math.ceil(filteredAndSortedSubscribers.length / subscriberPageSize) || 1;
+  const paginatedSubscribers = useMemo(() => {
+    const start = (subscriberPage - 1) * subscriberPageSize;
+    return filteredAndSortedSubscribers.slice(start, start + subscriberPageSize);
+  }, [filteredAndSortedSubscribers, subscriberPage, subscriberPageSize]);
+
+  // If user is not authenticated as SuperAdmin, render security login card
+  if (!isSuperAdminAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans selection:bg-emerald-100 selection:text-emerald-900">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-600/30">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+            <h1 className="text-xl font-black text-slate-900 tracking-tight">SuperAdmin Access Portal</h1>
+            <p className="text-xs text-slate-500">
+              Enter master platform credentials to access global tenant & billing infrastructure.
+            </p>
+          </div>
+
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">SuperAdmin Email</label>
+              <Input
+                type="email"
+                value={adminEmailInput}
+                onChange={(e) => setAdminEmailInput(e.target.value)}
+                placeholder="superadmin@ankabit.app"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Master Password</label>
+              <Input
+                type="password"
+                value={adminPasswordInput}
+                onChange={(e) => setAdminPasswordInput(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-[11px] text-amber-800 flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Demo Master Creds: <strong className="font-mono">superadmin@ankabit.app</strong> / <strong className="font-mono">superadmin123</strong></span>
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              size="md"
+              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold justify-center shadow-md"
+              disabled={isAuthenticating}
+            >
+              {isAuthenticating ? 'Verifying Security...' : 'Unlock SuperAdmin Console'}
+            </Button>
+          </form>
+
+          <div className="pt-2 text-center">
+            <a href="/login" className="text-xs font-semibold text-slate-500 hover:text-slate-800">
+              ← Return to Academy Login
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
@@ -238,6 +405,18 @@ export const SuperAdminDashboard: React.FC = () => {
             <span className="text-slate-300">|</span>
             <span>LiveKit SFU: <strong className="text-emerald-700">Online</strong></span>
           </div>
+
+          <button
+            onClick={() => {
+              logout();
+              info('Logged Out', 'SuperAdmin session ended.');
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg transition-colors border border-rose-200 shadow-xs cursor-pointer"
+            title="End SuperAdmin Session"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Lock Console</span>
+          </button>
 
           <a
             href="/"
@@ -514,7 +693,10 @@ export const SuperAdminDashboard: React.FC = () => {
                   type="text"
                   placeholder="Search by academy name, subdomain, or director email..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setAcademyPage(1);
+                  }}
                   className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
                 />
               </div>
@@ -522,7 +704,10 @@ export const SuperAdminDashboard: React.FC = () => {
               <div className="flex items-center gap-2">
                 <select
                   value={planFilter}
-                  onChange={(e) => setPlanFilter(e.target.value)}
+                  onChange={(e) => {
+                    setPlanFilter(e.target.value);
+                    setAcademyPage(1);
+                  }}
                   className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium focus:outline-none focus:border-emerald-600 cursor-pointer"
                 >
                   <option value="all">All Plan Tiers</option>
@@ -532,12 +717,28 @@ export const SuperAdminDashboard: React.FC = () => {
                   <option value="enterprise">Global Enterprise</option>
                 </select>
 
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setAcademyPage(1);
+                  }}
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium focus:outline-none focus:border-emerald-600 cursor-pointer"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="active">Active</option>
+                  <option value="trial">Trial</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+
                 <Button
                   variant="secondary"
                   size="sm"
                   onClick={() => {
                     setSearchQuery('');
                     setPlanFilter('all');
+                    setStatusFilter('all');
+                    setAcademyPage(1);
                   }}
                   leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
@@ -551,127 +752,207 @@ export const SuperAdminDashboard: React.FC = () => {
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
+                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200 select-none">
                     <tr>
-                      <th className="py-3.5 px-4">Academy & Subdomain</th>
+                      <th
+                        onClick={() => {
+                          if (academySortField === 'name') {
+                            setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setAcademySortField('name');
+                            setAcademySortDir('asc');
+                          }
+                        }}
+                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Academy & Subdomain</span>
+                          {academySortField === 'name' ? (
+                            academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3.5 px-4">Director / Email</th>
-                      <th className="py-3.5 px-4">Students & Courses</th>
+                      <th
+                        onClick={() => {
+                          if (academySortField === 'studentsCount') {
+                            setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setAcademySortField('studentsCount');
+                            setAcademySortDir('desc');
+                          }
+                        }}
+                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Students & Courses</span>
+                          {academySortField === 'studentsCount' ? (
+                            academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3.5 px-4">Subscription Tier</th>
-                      <th className="py-3.5 px-4">Status</th>
+                      <th
+                        onClick={() => {
+                          if (academySortField === 'status') {
+                            setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setAcademySortField('status');
+                            setAcademySortDir('asc');
+                          }
+                        }}
+                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Status</span>
+                          {academySortField === 'status' ? (
+                            academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3.5 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-700">
-                    {filteredTenants.map((tenant) => (
-                      <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
-                        {/* Academy Name */}
-                        <td className="py-4 px-4">
-                          <div className="font-extrabold text-slate-900 text-sm">{tenant.name}</div>
-                          <div className="flex items-center gap-2 mt-0.5 text-slate-500">
-                            <span className="text-emerald-700 font-mono text-[11px] font-semibold">{tenant.subdomain}.ankabit.app</span>
-                            {tenant.customDomain && (
-                              <>
-                                <span>•</span>
-                                <span className="text-purple-700 text-[11px] font-semibold">{tenant.customDomain}</span>
-                              </>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Director */}
-                        <td className="py-4 px-4">
-                          <div className="font-bold text-slate-900">{tenant.ownerName}</div>
-                          <div className="text-slate-500 text-[11px]">{tenant.ownerEmail}</div>
-                        </td>
-
-                        {/* Students & Courses */}
-                        <td className="py-4 px-4">
-                          <div className="font-extrabold text-slate-900">{tenant.studentsCount} Students</div>
-                          <div className="text-slate-500 text-[11px]">{tenant.coursesCount} Active Courses</div>
-                        </td>
-
-                        {/* Plan selector */}
-                        <td className="py-4 px-4">
-                          <select
-                            value={tenant.planId}
-                            onChange={(e) => handleChangeTenantPlan(tenant.id, e.target.value)}
-                            className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-emerald-800 focus:outline-none focus:border-emerald-600 cursor-pointer"
-                          >
-                            {plans.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                {p.name}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-
-                        {/* Status */}
-                        <td className="py-4 px-4">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                              tenant.status === 'active'
-                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                                : tenant.status === 'trial'
-                                ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                                : 'bg-rose-50 text-rose-800 border border-rose-200'
-                            }`}
-                          >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                tenant.status === 'active'
-                                  ? 'bg-emerald-500'
-                                  : tenant.status === 'trial'
-                                  ? 'bg-amber-500'
-                                  : 'bg-rose-500'
-                              }`}
-                            />
-                            <span className="capitalize">{tenant.status}</span>
-                          </span>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            {/* Live Site */}
-                            <a
-                              href={`/${tenant.subdomain}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                              title="View Academy Public Landing"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-
-                            {/* Direct Admin Access */}
-                            <a
-                              href={`/${tenant.subdomain}/admin`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
-                              title="Impersonate & Open Admin Dashboard"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                            </a>
-
-                            {/* Suspend / Activate Toggle */}
-                            <button
-                              onClick={() => handleToggleTenantStatus(tenant.id)}
-                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
-                                tenant.status === 'active'
-                                  ? 'bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700'
-                                  : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700'
-                              }`}
-                            >
-                              {tenant.status === 'active' ? 'Suspend' : 'Activate'}
-                            </button>
-                          </div>
+                    {paginatedTenants.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-slate-400">
+                          <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                          <p className="font-bold text-sm text-slate-700">No academies found</p>
+                          <p className="text-[11px] text-slate-400">Try adjusting your search or tier filter.</p>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      paginatedTenants.map((tenant) => (
+                        <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
+                          {/* Academy Name */}
+                          <td className="py-4 px-4">
+                            <div className="font-extrabold text-slate-900 text-sm">{tenant.name}</div>
+                            <div className="flex items-center gap-2 mt-0.5 text-slate-500">
+                              <span className="text-emerald-700 font-mono text-[11px] font-semibold">{tenant.subdomain}.ankabit.app</span>
+                              {tenant.customDomain && (
+                                <>
+                                  <span>•</span>
+                                  <span className="text-purple-700 text-[11px] font-semibold">{tenant.customDomain}</span>
+                                </>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Director */}
+                          <td className="py-4 px-4">
+                            <div className="font-bold text-slate-900">{tenant.ownerName}</div>
+                            <div className="text-slate-500 text-[11px]">{tenant.ownerEmail}</div>
+                          </td>
+
+                          {/* Students & Courses */}
+                          <td className="py-4 px-4">
+                            <div className="font-extrabold text-slate-900">{tenant.studentsCount} Students</div>
+                            <div className="text-slate-500 text-[11px]">{tenant.coursesCount} Active Courses</div>
+                          </td>
+
+                          {/* Plan selector */}
+                          <td className="py-4 px-4">
+                            <select
+                              value={tenant.planId}
+                              onChange={(e) => handleChangeTenantPlan(tenant.id, e.target.value)}
+                              className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-emerald-800 focus:outline-none focus:border-emerald-600 cursor-pointer"
+                            >
+                              {plans.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                  {p.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+
+                          {/* Status */}
+                          <td className="py-4 px-4">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                                tenant.status === 'active'
+                                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                  : tenant.status === 'trial'
+                                  ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                  : 'bg-rose-50 text-rose-800 border border-rose-200'
+                              }`}
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  tenant.status === 'active'
+                                    ? 'bg-emerald-500'
+                                    : tenant.status === 'trial'
+                                    ? 'bg-amber-500'
+                                    : 'bg-rose-500'
+                                }`}
+                              />
+                              <span className="capitalize">{tenant.status}</span>
+                            </span>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-4 px-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {/* Live Site */}
+                              <a
+                                href={`/${tenant.subdomain}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                                title="View Academy Public Landing"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+
+                              {/* Direct Admin Access */}
+                              <a
+                                href={`/${tenant.subdomain}/admin`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
+                                title="Impersonate & Open Admin Dashboard"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </a>
+
+                              {/* Suspend / Activate Toggle */}
+                              <button
+                                onClick={() => handleToggleTenantStatus(tenant.id)}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+                                  tenant.status === 'active'
+                                    ? 'bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700'
+                                    : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700'
+                                }`}
+                              >
+                                {tenant.status === 'active' ? 'Suspend' : 'Activate'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
+
+              {/* Academies Pagination Bar */}
+              <DataTablePagination
+                currentPage={academyPage}
+                totalPages={totalAcademyPages}
+                pageSize={academyPageSize}
+                totalItems={filteredAndSortedTenants.length}
+                onPageChange={setAcademyPage}
+                onPageSizeChange={(sz) => {
+                  setAcademyPageSize(sz);
+                  setAcademyPage(1);
+                }}
+              />
             </div>
           </div>
         )}
@@ -679,13 +960,21 @@ export const SuperAdminDashboard: React.FC = () => {
         {/* TAB 3: SUBSCRIBERS & BILLING LEDGER */}
         {activeTab === 'subscribers' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div>
-                <h2 className="text-base font-extrabold text-slate-900">Platform Billing & Subscriber Ledger</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Track recurring subscription payments processed via Stripe and Moyasar.
-                </p>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="flex-1 relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search subscribers by academy name, subdomain, or gateway..."
+                  value={subscriberSearch}
+                  onChange={(e) => {
+                    setSubscriberSearch(e.target.value);
+                    setSubscriberPage(1);
+                  }}
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
+                />
               </div>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -699,45 +988,125 @@ export const SuperAdminDashboard: React.FC = () => {
             <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
+                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200 select-none">
                     <tr>
-                      <th className="py-3.5 px-4">Academy / Tenant</th>
+                      <th
+                        onClick={() => {
+                          if (subscriberSortField === 'academyName') {
+                            setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSubscriberSortField('academyName');
+                            setSubscriberSortDir('asc');
+                          }
+                        }}
+                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Academy / Tenant</span>
+                          {subscriberSortField === 'academyName' ? (
+                            subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3.5 px-4">Plan Tier</th>
-                      <th className="py-3.5 px-4">Amount & Cycle</th>
+                      <th
+                        onClick={() => {
+                          if (subscriberSortField === 'amount') {
+                            setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSubscriberSortField('amount');
+                            setSubscriberSortDir('desc');
+                          }
+                        }}
+                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Amount & Cycle</span>
+                          {subscriberSortField === 'amount' ? (
+                            subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3.5 px-4">Payment Gateway</th>
-                      <th className="py-3.5 px-4">Next Renewal</th>
+                      <th
+                        onClick={() => {
+                          if (subscriberSortField === 'currentPeriodEnd') {
+                            setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSubscriberSortField('currentPeriodEnd');
+                            setSubscriberSortDir('asc');
+                          }
+                        }}
+                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span>Next Renewal</span>
+                          {subscriberSortField === 'currentPeriodEnd' ? (
+                            subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                          )}
+                        </div>
+                      </th>
                       <th className="py-3.5 px-4">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-700">
-                    {subscribers.map((sub) => (
-                      <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-extrabold text-slate-900">{sub.academyName}</div>
-                          <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.ankabit.app</div>
-                        </td>
-                        <td className="py-4 px-4 font-bold text-slate-900">{sub.planName}</td>
-                        <td className="py-4 px-4">
-                          <div className="font-black text-emerald-700 text-sm">
-                            ${sub.amount} <span className="text-xs text-slate-500 font-normal">/ {sub.billingCycle}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] uppercase font-bold text-slate-700">
-                            {sub.paymentGateway}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 text-slate-600">{sub.currentPeriodEnd}</td>
-                        <td className="py-4 px-4">
-                          <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-bold">
-                            {sub.status}
-                          </Badge>
+                    {paginatedSubscribers.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-slate-400">
+                          <CreditCard className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                          <p className="font-bold text-sm text-slate-700">No subscribers found</p>
+                          <p className="text-[11px] text-slate-400">No records match your search criteria.</p>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      paginatedSubscribers.map((sub) => (
+                        <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="py-4 px-4">
+                            <div className="font-extrabold text-slate-900">{sub.academyName}</div>
+                            <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.ankabit.app</div>
+                          </td>
+                          <td className="py-4 px-4 font-bold text-slate-900">{sub.planName}</td>
+                          <td className="py-4 px-4">
+                            <div className="font-black text-emerald-700 text-sm">
+                              ${sub.amount} <span className="text-xs text-slate-500 font-normal">/ {sub.billingCycle}</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] uppercase font-bold text-slate-700">
+                              {sub.paymentGateway}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">{sub.currentPeriodEnd}</td>
+                          <td className="py-4 px-4">
+                            <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-bold">
+                              {sub.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
+
+              {/* Subscribers Pagination Bar */}
+              <DataTablePagination
+                currentPage={subscriberPage}
+                totalPages={totalSubscriberPages}
+                pageSize={subscriberPageSize}
+                totalItems={filteredAndSortedSubscribers.length}
+                onPageChange={setSubscriberPage}
+                onPageSizeChange={(sz) => {
+                  setSubscriberPageSize(sz);
+                  setSubscriberPage(1);
+                }}
+              />
             </div>
           </div>
         )}
