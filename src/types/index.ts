@@ -84,7 +84,7 @@ export interface PaymentGatewayConfig {
 }
 
 export type TenantSubscriptionPlan = 'free' | 'qari' | 'growth' | 'enterprise';
-export type TenantNiche = 'quran' | 'coding' | 'general' | 'language';
+export type TenantNiche = 'madrasat' | 'code_academy' | 'school' | 'quran' | 'coding' | 'general' | 'language';
 
 export interface ClassroomParticipant {
   id: string;
@@ -98,7 +98,7 @@ export interface ClassroomParticipant {
 }
 
 export interface AuthPageCustomization {
-  layout: 'split' | 'card' | 'minimal' | 'banner';
+  layout: 'split' | 'centered_glass' | 'minimal_card' | 'heritage_frame' | 'card' | 'minimal' | 'banner';
   welcomeHeading?: string;
   welcomeSubtitle?: string;
   backgroundImageUrl?: string;

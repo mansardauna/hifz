@@ -262,7 +262,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
     '@type': 'EducationalOrganization',
     name: tenant.name,
     description: tenant.tagline || tenant.aboutText,
-    url: `https://${tenant.subdomain}.techmadrasah.app`,
+    url: `https://${tenant.subdomain}.ankabit.app`,
     logo: tenant.logoUrl,
     address: {
       '@type': 'PostalAddress',

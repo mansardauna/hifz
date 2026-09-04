@@ -34,14 +34,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'TechMadrasah - Custom-Branded Online Academy Infrastructure',
+  title: 'Ankabit LMS - Multi-Tenant Academy Operating System',
   description:
-    'The premier educational SaaS LMS and visual page builder powering Quran institutes, coding bootcamps, and language academies. Custom domains, WebRTC video classrooms, code sandboxes, and autonomous tuition processing.',
-  keywords: ['TechMadrasah', 'Academy OS', 'Quran LMS', 'Coding Bootcamp SaaS', 'Multi-Tenant Academy', 'GrapesJS Builder', 'LiveKit WebRTC'],
+    'The premier educational SaaS LMS powering Madrasats, Code Academies, and Schools. Custom subdomains, WebRTC video classrooms, Monaco code sandboxes, and automated tuition processing.',
+  keywords: ['Ankabit LMS', 'Academy OS', 'Madrasat LMS', 'Code Academy SaaS', 'School SIS', 'Multi-Tenant Academy', 'GrapesJS Builder', 'LiveKit WebRTC'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: 'TechMadrasah',
+    title: 'Ankabit LMS',
     statusBarStyle: 'black-translucent',
   },
   icons: {
@@ -50,9 +50,9 @@ export const metadata: Metadata = {
     apple: '/icons/icon.svg',
   },
   openGraph: {
-    title: 'TechMadrasah - Custom-Branded Online Academy Infrastructure',
-    description: 'Launch your branded online academy with custom domains, real WebRTC classrooms, code sandboxes, and automated tuition billing.',
-    siteName: 'TechMadrasah',
+    title: 'Ankabit LMS - Multi-Tenant Academy Operating System',
+    description: 'Launch your branded Madrasat, Code Academy, or School with custom subdomains, live classrooms, code sandboxes, and automated student management.',
+    siteName: 'Ankabit LMS',
     type: 'website',
   },
 };

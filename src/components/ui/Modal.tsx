@@ -8,6 +8,7 @@ export interface ModalProps {
   description?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -16,8 +17,11 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   description,
   children,
-  maxWidth = 'lg',
+  maxWidth,
+  size,
 }) => {
+  const effectiveSize = size || maxWidth || 'lg';
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -53,18 +57,18 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Dialog */}
       <div
-        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-10 font-sans max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidthClasses[effectiveSize]} bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden z-10 font-sans max-h-[90vh] flex flex-col`}
       >
         {/* Header */}
         {(title || description) && (
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
             <div>
-              {title && <h3 className="text-base font-bold text-slate-900">{title}</h3>}
+              {title && <h3 className="text-base font-extrabold text-slate-900">{title}</h3>}
               {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

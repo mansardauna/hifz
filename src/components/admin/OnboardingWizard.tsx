@@ -26,34 +26,34 @@ const TEMPLATES = [
   {
     id: 'emerald-medina',
     name: 'Emerald Medina Classic',
-    niche: 'quran',
+    niche: 'madrasat',
     desc: 'Authentic Khatam star patterns, Tajweed viewer hero & verse looper.',
     color: '#059669',
-    badge: 'Popular for Quran'
+    badge: 'Madrasat'
   },
   {
     id: 'tech-bootcamp',
     name: 'Modern CodeCraft Bootcamp',
-    niche: 'coding',
+    niche: 'code_academy',
     desc: 'Terminal hero, Monaco sandbox showcase, and developer syllabus.',
     color: '#2563eb',
-    badge: 'Popular for Coding'
+    badge: 'Code Academy'
   },
   {
     id: 'royal-sanad',
     name: 'Royal Gold Sanad Institute',
-    niche: 'quran',
+    niche: 'madrasat',
     desc: 'Wax seal Ijazah badges, Arabesque arches, and luxury gold styling.',
     color: '#d97706',
-    badge: 'Ijazah & Sanad'
+    badge: 'Madrasat'
   },
   {
     id: 'horizon-language',
-    name: 'Horizon Language Academy',
-    niche: 'general',
-    desc: 'Modern minimalist layout with interactive course cards & tutor grid.',
+    name: 'Horizon International School',
+    niche: 'school',
+    desc: 'Modern academic layout with gradebook, attendance roster & tutor grid.',
     color: '#7c3aed',
-    badge: 'General & Languages'
+    badge: 'School'
   }
 ];
 
@@ -62,12 +62,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   // Step 1: Branding
-  const [academyName, setAcademyName] = useState<string>(tenant.name || 'Al-Furqan Academy');
-  const [tagline, setTagline] = useState<string>(tenant.tagline || 'Empowering Authentic Quran & Arabic Education');
+  const [academyName, setAcademyName] = useState<string>(tenant.name || 'Dar Al-Quran Madrasat');
+  const [tagline, setTagline] = useState<string>(tenant.tagline || 'Empowering Authentic Education & Growth');
   const [primaryColor, setPrimaryColor] = useState<string>(tenant.theme?.primaryColor || '#059669');
 
   // Step 2: Niche
-  const [selectedNiche, setSelectedNiche] = useState<TenantNiche>(tenant.niche || 'quran');
+  const [selectedNiche, setSelectedNiche] = useState<TenantNiche>(tenant.niche || 'madrasat');
 
   // Step 3: Tuition Plan
   const [planPrice, setPlanPrice] = useState<number>(65);
@@ -96,7 +96,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
       onAddToast({
         type: 'success',
         title: 'Academy Setup Completed!',
-        message: `${academyName} is now fully configured and live at ${tenant.subdomain}.techmadrasah.app.`,
+        message: `${academyName} is now fully configured and live at ${tenant.subdomain}.ankabit.app.`,
       });
       onComplete();
     }
@@ -210,24 +210,24 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
         {/* Step 2: Niche / Track */}
         {currentStep === 2 && (
           <div className="space-y-5 animate-in fade-in duration-200">
-            <h3 className="text-base font-bold text-slate-900">Select Academy Specialty</h3>
+            <h3 className="text-base font-bold text-slate-900">Select Institution Category</h3>
             <p className="text-xs text-slate-500">Choose the primary track for your curriculum and student workspace.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <button
                 type="button"
-                onClick={() => setSelectedNiche('quran')}
-                className={`p-5 rounded-xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
-                  selectedNiche === 'quran'
+                onClick={() => setSelectedNiche('madrasat')}
+                className={`p-5 rounded-2xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
+                  selectedNiche === 'madrasat' || selectedNiche === 'quran'
                     ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                 }`}
               >
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900">Quran & Islamic Academy</h4>
-                  <p className="text-xs text-slate-600 mt-1">Uthmani Mushaf, Tajweed rules, recitation player, and audio recorder.</p>
+                  <h4 className="font-bold text-sm text-slate-900">Madrasat</h4>
+                  <p className="text-xs text-slate-600 mt-1">Uthmani Mushaf, Tajweed rules, recitation player, live halaqahs, and Sanad generator.</p>
                 </div>
-                {selectedNiche === 'quran' && (
+                {(selectedNiche === 'madrasat' || selectedNiche === 'quran') && (
                   <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                     <CheckCircle2 className="w-4 h-4" /> Selected
                   </span>
@@ -236,18 +236,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
               <button
                 type="button"
-                onClick={() => setSelectedNiche('coding')}
-                className={`p-5 rounded-xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
-                  selectedNiche === 'coding'
+                onClick={() => setSelectedNiche('code_academy')}
+                className={`p-5 rounded-2xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
+                  selectedNiche === 'code_academy' || selectedNiche === 'coding'
                     ? 'border-blue-600 bg-blue-50/70 ring-1 ring-blue-600 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                 }`}
               >
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900">Coding & Tech Academy</h4>
-                  <p className="text-xs text-slate-600 mt-1">Code editor, live sandbox execution, and code challenges.</p>
+                  <h4 className="font-bold text-sm text-slate-900">Code Academy</h4>
+                  <p className="text-xs text-slate-600 mt-1">In-browser code editor, live JS/Python sandbox execution, and coding challenges.</p>
                 </div>
-                {selectedNiche === 'coding' && (
+                {(selectedNiche === 'code_academy' || selectedNiche === 'coding') && (
                   <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-blue-700">
                     <CheckCircle2 className="w-4 h-4" /> Selected
                   </span>
@@ -256,18 +256,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
               <button
                 type="button"
-                onClick={() => setSelectedNiche('general')}
-                className={`p-5 rounded-xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
-                  selectedNiche === 'general'
+                onClick={() => setSelectedNiche('school')}
+                className={`p-5 rounded-2xl border-2 text-start transition-all cursor-pointer flex flex-col justify-between ${
+                  selectedNiche === 'school' || selectedNiche === 'general' || selectedNiche === 'language'
                     ? 'border-purple-600 bg-purple-50/70 ring-1 ring-purple-600 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                 }`}
               >
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900">Language & General</h4>
-                  <p className="text-xs text-slate-600 mt-1">Interactive course modules, live video classes, and PDF assignments.</p>
+                  <h4 className="font-bold text-sm text-slate-900">School</h4>
+                  <p className="text-xs text-slate-600 mt-1">Multi-subject curriculum, gradebook, attendance roster, and parent-teacher portal.</p>
                 </div>
-                {selectedNiche === 'general' && (
+                {(selectedNiche === 'school' || selectedNiche === 'general' || selectedNiche === 'language') && (
                   <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-purple-700">
                     <CheckCircle2 className="w-4 h-4" /> Selected
                   </span>

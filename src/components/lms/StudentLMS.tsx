@@ -118,7 +118,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               </div>
               <div className="min-w-0">
                 <h2 className="font-bold text-xs sm:text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 font-mono truncate">{tenant.subdomain}.techmadrasah.app</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 font-mono truncate">{tenant.subdomain}.ankabit.app</p>
               </div>
             </div>
 

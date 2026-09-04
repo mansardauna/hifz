@@ -23,7 +23,7 @@ import {
   Volume2
 } from 'lucide-react';
 import { InteractiveWhiteboard } from '../../collaboration/InteractiveWhiteboard';
-import { ClassroomParticipant } from '../../types';
+import { ClassroomParticipant, TenantNiche } from '../../types';
 import { Room, RoomEvent, RemoteTrack, RemoteParticipant, Track } from 'livekit-client';
 import { Button, Card, Badge } from '../ui';
 
@@ -32,7 +32,7 @@ interface LiveClassroomHubProps {
   courseTitle?: string;
   userRole?: 'teacher' | 'student';
   currentUserName?: string;
-  niche?: 'quran' | 'coding' | 'general' | 'language';
+  niche?: TenantNiche;
   onLeaveRoom?: () => void;
   renderWorkspacePlugin?: React.ReactNode;
 }
@@ -46,7 +46,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   onLeaveRoom,
   renderWorkspacePlugin
 }) => {
-  const isCoding = niche === 'coding';
+  const isCoding = niche === 'coding' || niche === 'code_academy';
 
   // Classroom Tabs
   const [activeTab, setActiveTab] = useState<'forum' | 'video' | 'agenda' | 'whiteboard' | 'workspace'>('forum');

@@ -24,6 +24,8 @@ export default async function middleware(req: NextRequest) {
   const isRootHost =
     currentHost === 'localhost' ||
     currentHost === '127.0.0.1' ||
+    currentHost === 'ankabit.app' ||
+    currentHost === 'www.ankabit.app' ||
     currentHost === 'techmadrasah.app' ||
     currentHost === 'www.techmadrasah.app' ||
     currentHost === 'hifz.app' ||
@@ -36,9 +38,11 @@ export default async function middleware(req: NextRequest) {
 
   let subdomain: string | null = null;
 
-  // 1. Standard RFC 6761 subdomain: e.g. hifz-academy.techmadrasah.app, code-academy.techmadrasah.app
+  // 1. Standard RFC 6761 subdomain: e.g. hifz-academy.ankabit.app, code-academy.ankabit.app
   if (currentHost.endsWith('.localhost')) {
     subdomain = currentHost.replace('.localhost', '');
+  } else if (currentHost.endsWith('.ankabit.app')) {
+    subdomain = currentHost.replace('.ankabit.app', '');
   } else if (currentHost.endsWith('.techmadrasah.app')) {
     subdomain = currentHost.replace('.techmadrasah.app', '');
   } else if (currentHost.endsWith('.hifz.app')) {

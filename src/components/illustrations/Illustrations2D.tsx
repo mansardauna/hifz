@@ -19,7 +19,7 @@ export const HeroDashboardIllustration: React.FC<{ className?: string }> = ({ cl
     <circle cx="40" cy="22" r="5" fill="#F59E0B" />
     <circle cx="56" cy="22" r="5" fill="#10B981" />
     <rect x="220" y="12" width="360" height="20" rx="6" fill="#F1F5F9" />
-    <text x="270" y="26" fill="#475569" fontSize="10" fontFamily="monospace" fontWeight="600">hifz-academy.techmadrasah.app</text>
+    <text x="270" y="26" fill="#475569" fontSize="10" fontFamily="monospace" fontWeight="600">hifz-academy.ankabit.app</text>
 
     {/* Left Sidebar */}
     <rect x="0" y="44" width="180" height="436" fill="#0F172A" />
@@ -32,21 +32,9 @@ export const HeroDashboardIllustration: React.FC<{ className?: string }> = ({ cl
     <rect x="28" y="130" width="8" height="8" rx="2" fill="#10B981" />
     <text x="44" y="138" fill="#10B981" fontSize="11" fontFamily="sans-serif" fontWeight="600">Quran Classroom</text>
 
-    <rect x="20" y="156" width="140" height="28" rx="6" fill="transparent" />
-    <rect x="28" y="166" width="8" height="8" rx="2" fill="#64748B" />
-    <text x="44" y="174" fill="#94A3B8" fontSize="11" fontFamily="sans-serif" fontWeight="500">Live Video Studio</text>
-
-    <rect x="20" y="192" width="140" height="28" rx="6" fill="transparent" />
-    <rect x="28" y="202" width="8" height="8" rx="2" fill="#64748B" />
-    <text x="44" y="210" fill="#94A3B8" fontSize="11" fontFamily="sans-serif" fontWeight="500">Coding Sandbox</text>
-
-    <rect x="20" y="228" width="140" height="28" rx="6" fill="transparent" />
-    <rect x="28" y="238" width="8" height="8" rx="2" fill="#64748B" />
-    <text x="44" y="246" fill="#94A3B8" fontSize="11" fontFamily="sans-serif" fontWeight="500">Tuition & Invoices</text>
-
     {/* Custom Branded Footer in Sidebar */}
     <rect x="20" y="430" width="140" height="24" rx="4" fill="#1E293B" />
-    <text x="32" y="446" fill="#64748B" fontSize="8" fontFamily="sans-serif" fontWeight="700">POWERED BY TECHMADRASAH</text>
+    <text x="32" y="446" fill="#64748B" fontSize="8" fontFamily="sans-serif" fontWeight="700">POWERED BY ANKABIT LMS</text>
 
     {/* Main Viewport Content */}
     <rect x="204" y="68" width="572" height="180" rx="12" fill="#FFFFFF" stroke="#E2E8F0" />
@@ -118,12 +106,12 @@ export const HeroDashboardIllustration: React.FC<{ className?: string }> = ({ cl
 
 export const MultiTenantNetworkIllustration: React.FC<{ className?: string }> = ({ className = "w-full h-auto" }) => (
   <svg viewBox="0 0 600 360" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    {/* Central Cloud Node: TechMadrasah */}
+    {/* Central Cloud Node: Ankabit LMS */}
     <rect width="600" height="360" rx="16" fill="#FFFFFF" stroke="#E2E8F0" />
     
     <circle cx="300" cy="180" r="58" fill="#0F172A" />
     <circle cx="300" cy="180" r="46" fill="#1E293B" />
-    <text x="248" y="174" fill="#FFFFFF" fontSize="11" fontFamily="sans-serif" fontWeight="800">TECHMADRASAH</text>
+    <text x="252" y="174" fill="#FFFFFF" fontSize="11" fontFamily="sans-serif" fontWeight="800">ANKABIT LMS</text>
     <text x="256" y="190" fill="#10B981" fontSize="9" fontFamily="sans-serif" fontWeight="700">ACADEMY OS</text>
 
     {/* Connecting Curved Lines */}
@@ -136,21 +124,21 @@ export const MultiTenantNetworkIllustration: React.FC<{ className?: string }> = 
     <rect x="30" y="32" width="200" height="76" rx="10" fill="#F0FDF4" stroke="#86EFAC" />
     <circle cx="56" cy="70" r="14" fill="#10B981" />
     <text x="78" y="60" fill="#065F46" fontSize="11" fontFamily="sans-serif" fontWeight="700">Hifz Quran Academy</text>
-    <text x="78" y="74" fill="#047857" fontSize="9" fontFamily="sans-serif">hifz-academy.techmadrasah.app</text>
+    <text x="78" y="74" fill="#047857" fontSize="9" fontFamily="sans-serif">hifz-academy.ankabit.app</text>
     <text x="78" y="88" fill="#64748B" fontSize="9" fontFamily="sans-serif">114 Surahs • 520 Students</text>
 
     {/* Tenant 2: Code Academy */}
     <rect x="370" y="32" width="200" height="76" rx="10" fill="#EFF6FF" stroke="#93C5FD" />
     <circle cx="396" cy="70" r="14" fill="#2563EB" />
     <text x="418" y="60" fill="#1E3A8A" fontSize="11" fontFamily="sans-serif" fontWeight="700">Code Academy</text>
-    <text x="418" y="74" fill="#2563EB" fontSize="9" fontFamily="sans-serif">code-academy.techmadrasah.app</text>
+    <text x="418" y="74" fill="#2563EB" fontSize="9" fontFamily="sans-serif">code-academy.ankabit.app</text>
     <text x="418" y="88" fill="#64748B" fontSize="9" fontFamily="sans-serif">Web Dev Sandbox • 640 Students</text>
 
     {/* Tenant 3: Al-Furqan Islamic School */}
     <rect x="30" y="252" width="200" height="76" rx="10" fill="#F8FAFC" stroke="#CBD5E1" />
     <circle cx="56" cy="290" r="14" fill="#0D9488" />
     <text x="78" y="280" fill="#0F172A" fontSize="11" fontFamily="sans-serif" fontWeight="700">Al-Furqan Academy</text>
-    <text x="78" y="294" fill="#64748B" fontSize="9" fontFamily="sans-serif">al-furqan.techmadrasah.app</text>
+    <text x="78" y="294" fill="#64748B" fontSize="9" fontFamily="sans-serif">al-furqan.ankabit.app</text>
     <text x="78" y="308" fill="#10B981" fontSize="9" fontFamily="sans-serif">Sanad Ijazah Verified</text>
 
     {/* Tenant 4: Bayyinah Arabic Institute */}
@@ -179,7 +167,7 @@ export const AuthHeroIllustration: React.FC<{ className?: string }> = ({ classNa
     <circle cx="100" cy="145" r="16" fill="#10B981" />
     <path d="M94 145L98 149L106 141" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     <text x="126" y="140" fill="#0F172A" fontSize="11" fontFamily="sans-serif" fontWeight="700">Dedicated Isolation</text>
-    <text x="126" y="154" fill="#059669" fontSize="10" fontFamily="sans-serif" fontWeight="600">TechMadrasah Platform</text>
+    <text x="126" y="154" fill="#059669" fontSize="10" fontFamily="sans-serif" fontWeight="600">Ankabit LMS Platform</text>
     <rect x="126" y="164" width="144" height="6" rx="3" fill="#E2E8F0" />
     <rect x="126" y="164" width="138" height="6" rx="3" fill="#10B981" />
 

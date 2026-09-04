@@ -80,7 +80,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                   <Terminal className="w-4 h-4" />
                 </div>
                 <span className="font-extrabold text-white text-base">
-                  {tenant?.name || 'TechMadrasah'}
+                  {tenant?.name || 'Ankabit LMS'}
                 </span>
               </div>
 
@@ -118,7 +118,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                 <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold">
                   <Terminal className="w-3.5 h-3.5 text-emerald-400" />
                 </div>
-                <span className="font-extrabold text-slate-900 text-sm">{tenant?.name || 'TechMadrasah'}</span>
+                <span className="font-extrabold text-slate-900 text-sm">{tenant?.name || 'Ankabit LMS'}</span>
               </div>
               <button
                 onClick={() => router.push('/')}
@@ -144,7 +144,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
               onChange={(e) => setSelectedSubdomain(e.target.value)}
               options={Object.values(MOCK_TENANTS).map((t) => ({
                 value: t.subdomain,
-                label: `${t.name} (${t.subdomain}.techmadrasah.app)`,
+                label: `${t.name} (${t.subdomain}.ankabit.app)`,
               }))}
             />
 
@@ -225,7 +225,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
 
       {/* Footer */}
       <footer className="mt-6 text-center text-xs text-slate-400">
-        © 2026 TechMadrasah Inc. • Educational Platform
+        © 2026 Ankabit LMS Inc. • Educational Platform
       </footer>
     </div>
   );

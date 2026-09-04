@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar, AdminTab } from '../layout/Sidebar';
 import { RealGrapesBuilder } from '../builder/RealGrapesBuilder';
 import { VisualFormBuilder } from '../builder/VisualFormBuilder';
@@ -12,19 +12,24 @@ import { IntegrationsManager } from './IntegrationsManager';
 import { OnboardingWizard } from './OnboardingWizard';
 import { UserProfilePage } from '../profile/UserProfilePage';
 import { PlanUpgradeModal } from './PlanUpgradeModal';
+import { PlatformTourGuide } from './PlatformTourGuide';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { FormResponsesTable } from './FormResponsesTable';
 import { AutomationsManager } from './AutomationsManager';
 import { ChatAnalyticsSummary } from './ChatAnalyticsSummary';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
+import { CommunicationAutomationHub } from './CommunicationAutomationHub';
+import { SanadCertificateBuilder } from './SanadCertificateBuilder';
+import { LockedFeatureCard } from './LockedFeatureCard';
 import { useTenant } from '../../context/TenantContext';
+import { useToast } from '../../context/ToastContext';
 import { ToastMessage } from '../ui/Toast';
 import { Button } from '../ui';
-import { ExternalLink, Menu, SlidersHorizontal, Globe } from 'lucide-react';
+import { ExternalLink, Menu, SlidersHorizontal, Globe, Compass } from 'lucide-react';
 
 interface AdminDashboardProps {
-  onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
+  onAddToast?: (toast: Omit<ToastMessage, 'id'>) => void;
   onViewLiveSite: () => void;
 }
 
@@ -33,12 +38,43 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onViewLiveSite,
 }) => {
   const { tenant, direction, language, setLanguage } = useTenant();
+  const { addToast } = useToast();
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
   const [isPlanUpgradeModalOpen, setIsPlanUpgradeModalOpen] = useState(false);
+  const [isTourGuideOpen, setIsTourGuideOpen] = useState(false);
 
   const plan = tenant.subscriptionPlan || 'free';
+
+  // Helper to check plan hierarchy
+  const isPlanUnlocked = (required?: 'qari' | 'growth' | 'enterprise'): boolean => {
+    if (!required) return true;
+    const tierWeights: Record<string, number> = {
+      free: 1,
+      qari: 2,
+      growth: 3,
+      enterprise: 4,
+    };
+    return (tierWeights[plan] || 1) >= (tierWeights[required] || 1);
+  };
+
+  // Forward toast to either parent callback or universal ToastContext
+  const handleToast = (toast: Omit<ToastMessage, 'id'>) => {
+    if (onAddToast) onAddToast(toast);
+    else addToast(toast);
+  };
+
+  // Check if tour should auto-trigger for fresh academies
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const tourDone = localStorage.getItem('techmadrasah_tour_completed');
+      if (!tourDone) {
+        const timer = setTimeout(() => setIsTourGuideOpen(true), 600);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
 
   // Calculate real dynamic setup wizard completion percentage
   const calculateSetupProgress = () => {
@@ -81,7 +117,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Main Content Workspace */}
       <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
-        {/* Top Header — Highly Responsive on Mobile */}
+        {/* Top Header */}
         <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-20 shadow-xs">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
@@ -92,16 +128,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Desktop Breadcrumb (Hidden completely on mobile screens as requested) */}
+            {/* Desktop Breadcrumb */}
             <div className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-500">
               <span className="font-semibold text-slate-800">{tenant.name}</span>
               <span className="text-slate-300">/</span>
               <span className="text-slate-900 font-bold capitalize text-sm">
-                {isOnboardingWizardOpen ? 'Setup Wizard' : activeTab === 'overview' ? 'Academy Overview & Analytics' : activeTab.replace('_', ' ')}
+                {isOnboardingWizardOpen
+                  ? 'Setup Wizard'
+                  : activeTab === 'overview'
+                  ? 'Academy Overview & Analytics'
+                  : activeTab === 'notifications_hub'
+                  ? 'Email & WhatsApp Notifications'
+                  : activeTab === 'certificate_studio'
+                  ? 'Sanad & Ijazah Studio'
+                  : activeTab.replace('_', ' ')}
               </span>
             </div>
 
-            {/* Mobile Title (Clean, no breadcrumbs) */}
+            {/* Mobile Title */}
             <div className="md:hidden flex items-center gap-1.5 min-w-0">
               <span className="text-xs font-extrabold text-slate-900 truncate">
                 {isOnboardingWizardOpen ? 'Setup' : activeTab === 'overview' ? 'Overview' : activeTab.replace('_', ' ')}
@@ -122,10 +166,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="sm:hidden">{language === 'ar' ? 'EN' : 'عر'}</span>
             </button>
 
+            {/* Interactive Tour Guide Button */}
+            <button
+              type="button"
+              onClick={() => setIsTourGuideOpen(true)}
+              className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center gap-1.5 cursor-pointer select-none min-h-[36px]"
+              title="Launch Platform Tour Guide"
+            >
+              <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span className="hidden sm:inline">Tour Guide</span>
+              <span className="sm:hidden">Tour</span>
+            </button>
+
             {/* Real-time Notification Center */}
             <NotificationCenter onNavigateTab={(tab) => setActiveTab(tab as AdminTab)} />
 
-            {/* Clean Upgrade CTA (No free tier tag, No emojis) */}
+            {/* Upgrade CTA */}
             {plan !== 'enterprise' && (
               <Button
                 variant="outline"
@@ -155,7 +211,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               size="sm"
               onClick={onViewLiveSite}
               rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
-              className="px-2.5 sm:px-3.5"
+              className="px-2.5 sm:px-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
             >
               <span className="hidden sm:inline">Live Site</span>
               <span className="sm:hidden">Live</span>
@@ -167,7 +223,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
           {isOnboardingWizardOpen ? (
             <OnboardingWizard
-              onAddToast={onAddToast}
+              onAddToast={handleToast}
               onComplete={() => {
                 setIsOnboardingWizardOpen(false);
                 setActiveTab('overview');
@@ -178,58 +234,88 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {activeTab === 'overview' && (
                 <AnalyticsDashboard onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
               )}
-              {activeTab === 'analytics' && (
-                <AnalyticsDashboard onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+              {activeTab === 'notifications_hub' && (
+                !isPlanUnlocked('growth') ? (
+                  <LockedFeatureCard
+                    title="Automated Email & WhatsApp Communication Hub"
+                    description="Automate welcome emails with student portal credentials, parent WhatsApp reminders for upcoming halaqahs, and tuition invoice alerts via Resend & Twilio."
+                    requiredPlan="growth"
+                    onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
+                  />
+                ) : (
+                  <CommunicationAutomationHub />
+                )
+              )}
+              {activeTab === 'certificate_studio' && (
+                !isPlanUnlocked('enterprise') ? (
+                  <LockedFeatureCard
+                    title="Sanad & Ijazah Certificate Generator Studio"
+                    description="Create authenticated graduation certificates with authentic Islamic Khatam borders, Sheikh wax seals, and public QR code tamper-proof verification."
+                    requiredPlan="enterprise"
+                    onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
+                  />
+                ) : (
+                  <SanadCertificateBuilder />
+                )
               )}
               {activeTab === 'page_builder' && (
-                <RealGrapesBuilder onAddToast={onAddToast} />
+                <RealGrapesBuilder onAddToast={handleToast} />
               )}
               {activeTab === 'form_builder' && (
-                <VisualFormBuilder onAddToast={onAddToast} />
+                <VisualFormBuilder onAddToast={handleToast} />
               )}
               {activeTab === 'form_responses' && (
-                <FormResponsesTable onAddToast={onAddToast} />
-              )}
-              {activeTab === 'automations' && (
-                <AutomationsManager onAddToast={onAddToast} />
-              )}
-              {activeTab === 'chat_insights' && (
-                <ChatAnalyticsSummary onAddToast={onAddToast} />
+                <FormResponsesTable onAddToast={handleToast} />
               )}
               {activeTab === 'curriculum' && (
-                <CourseBuilder onAddToast={onAddToast} />
+                <CourseBuilder onAddToast={handleToast} />
               )}
               {activeTab === 'classroom' && (
-                <div className="h-[calc(100vh-140px)] min-h-[600px] rounded-2xl overflow-hidden border border-slate-200 shadow-md">
-                  <LiveClassroomHub
-                    roomTitle={`${tenant.name} Live Session`}
-                    courseTitle={tenant.tagline || 'Interactive Curriculum'}
-                    userRole="teacher"
-                    currentUserName="Academy Director"
-                    niche={tenant.niche || 'quran'}
+                !isPlanUnlocked('growth') ? (
+                  <LockedFeatureCard
+                    title="Live Virtual Classroom with Real-time WebRTC"
+                    description="Host HD live halaqah sessions, interactive multi-student recitations, whiteboard tajweed diagrams, and automated attendance logging."
+                    requiredPlan="growth"
+                    onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
                   />
-                </div>
+                ) : (
+                  <div className="h-[calc(100vh-140px)] min-h-[600px] rounded-2xl overflow-hidden border border-slate-200 shadow-md">
+                    <LiveClassroomHub
+                      roomTitle={`${tenant.name} Live Session`}
+                      courseTitle={tenant.tagline || 'Interactive Curriculum'}
+                      userRole="teacher"
+                      currentUserName="Academy Director"
+                      niche={tenant.niche || 'quran'}
+                    />
+                  </div>
+                )
               )}
               {activeTab === 'forum' && (
-                <LMSCommunityForum onAddToast={onAddToast} />
+                !isPlanUnlocked('qari') ? (
+                  <LockedFeatureCard
+                    title="LMS Community & Discussion Forum"
+                    description="Engage students and teachers in dedicated halaqah threads, recitation peer feedback, and community announcements."
+                    requiredPlan="qari"
+                    onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
+                  />
+                ) : (
+                  <LMSCommunityForum onAddToast={handleToast} />
+                )
               )}
               {activeTab === 'pricing' && (
-                <TenantPricingEditor onAddToast={onAddToast} />
+                <TenantPricingEditor onAddToast={handleToast} />
               )}
               {activeTab === 'payment_gateways' && (
-                <PaymentGatewaySetup onAddToast={onAddToast} />
+                <PaymentGatewaySetup onAddToast={handleToast} />
               )}
               {activeTab === 'crm' && (
-                <LeadsCRM onAddToast={onAddToast} />
-              )}
-              {activeTab === 'integrations' && (
-                <IntegrationsManager onAddToast={onAddToast} />
+                <LeadsCRM onAddToast={handleToast} />
               )}
               {activeTab === 'settings' && (
-                <ModernAcademySettings onAddToast={onAddToast} onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+                <ModernAcademySettings onAddToast={handleToast} onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
               )}
               {activeTab === 'profile' && (
-                <UserProfilePage onAddToast={onAddToast} />
+                <UserProfilePage onAddToast={handleToast} />
               )}
             </>
           )}
@@ -240,7 +326,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <PlanUpgradeModal
         isOpen={isPlanUpgradeModalOpen}
         onClose={() => setIsPlanUpgradeModalOpen(false)}
-        onAddToast={onAddToast}
+        onAddToast={handleToast}
+      />
+
+      {/* Interactive Platform Tour Guide */}
+      <PlatformTourGuide
+        isOpen={isTourGuideOpen}
+        onClose={() => setIsTourGuideOpen(false)}
+        onNavigateTab={(tab) => {
+          setIsOnboardingWizardOpen(false);
+          setActiveTab(tab);
+        }}
+        academyName={tenant.name || 'Your Academy'}
       />
     </div>
   );

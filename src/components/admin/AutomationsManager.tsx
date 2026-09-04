@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Zap,
   Play,
@@ -194,7 +194,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
       id: `log-${Date.now()}`,
       automationName: auto.name,
       triggerEvent: `Manual Test Triggered by Admin`,
-      recipient: 'admin@' + tenant.subdomain + '.techmadrasah.app',
+      recipient: 'admin@' + tenant.subdomain + '.ankabit.app',
       status: 'Success',
       executionTimeMs: Math.floor(Math.random() * 200) + 80,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),

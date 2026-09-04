@@ -42,15 +42,15 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
 
         <div className="mb-2">
           <Badge variant="warning">
-            Requires {requiredPlan === 'enterprise' ? 'Enterprise' : 'Growth'} Plan
+            Requires {requiredPlan === 'enterprise' ? 'Enterprise' : requiredPlan === 'growth' ? 'Growth' : 'Qari'} Plan
           </Badge>
         </div>
 
-        <h4 className="text-sm font-bold text-slate-900 max-w-sm">
+        <h4 className="text-base font-extrabold text-slate-900 max-w-sm">
           {title}
         </h4>
 
-        <p className="text-xs text-slate-500 max-w-md mt-1 mb-4">
+        <p className="text-xs text-slate-500 max-w-md mt-1 mb-4 leading-relaxed">
           {description}
         </p>
 
@@ -59,8 +59,9 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
           size="sm"
           onClick={onUpgrade}
           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+          className="font-bold shadow-xs bg-emerald-700 hover:bg-emerald-800 text-white"
         >
-          Upgrade to {requiredPlan === 'enterprise' ? 'Enterprise' : 'Growth'}
+          Upgrade to {requiredPlan === 'enterprise' ? 'Enterprise' : requiredPlan === 'growth' ? 'Growth' : 'Qari'}
         </Button>
       </div>
     </div>

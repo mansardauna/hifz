@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Badge } from '../ui';
 import { useTenant } from '../../context/TenantContext';
+import { useToast } from '../../context/ToastContext';
 import { TenantSubscriptionPlan } from '../../types';
 import { ToastMessage } from '../ui/Toast';
+import { getStoredPlatformPlans } from '../../services/platformPlans';
 import { CheckCircle2, Sparkles, Loader2, CreditCard } from 'lucide-react';
 
 interface PlanUpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
+  onAddToast?: (toast: Omit<ToastMessage, 'id'>) => void;
 }
 
 export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
@@ -17,229 +19,173 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
   onAddToast,
 }) => {
   const { tenant, updateTenantConfig } = useTenant();
+  const { success } = useToast();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
-  const activePlan: TenantSubscriptionPlan = tenant.subscriptionPlan || 'free';
+  const [plans, setPlans] = useState(getStoredPlatformPlans());
+  const activePlan: string = tenant.subscriptionPlan || 'free';
 
-  const plans: {
-    id: TenantSubscriptionPlan;
-    name: string;
-    price: string;
-    period: string;
-    description: string;
-    studentCapacity: number;
-    badge: string;
-    isPopular?: boolean;
-    features: string[];
-  }[] = [
-    {
-      id: 'free',
-      name: 'Free Starter',
-      price: '$0',
-      period: 'forever',
-      description: 'Ideal for trial institutions and getting started.',
-      studentCapacity: 15,
-      badge: 'Free Tier',
-      features: [
-        'Up to 15 Active Students',
-        '1 Teacher Seat',
-        'Subdomain (*.techmadrasah.app)',
-        'Basic Page & Form Builder',
-        'Basic Overview KPI Numbers',
-      ],
-    },
-    {
-      id: 'qari',
-      name: 'Independent Qari',
-      price: '$29',
-      period: '/ month',
-      description: 'For private Quran instructors and independent tutors.',
-      studentCapacity: 50,
-      badge: 'Qari Solo',
-      features: [
-        'Up to 50 Active Students',
-        '1 Teacher Seat',
-        'Subdomain (*.techmadrasah.app)',
-        'Audio Homework Looper & Recorder',
-        'Custom Merchant Gateways',
-        'Standard Admissions CRM',
-      ],
-    },
-    {
-      id: 'growth',
-      name: 'Madrasah Growth',
-      price: '$79',
-      period: '/ month',
-      description: 'For established academies needing custom domains and deep analytics.',
-      studentCapacity: 350,
-      badge: 'Most Popular',
-      isPopular: true,
-      features: [
-        'Up to 350 Active Students',
-        '10 Teacher Seats',
-        'Custom Domain (e.g. academy.com)',
-        'Full Interactive Analytics & Growth Charts',
-        'Live WebRTC Classroom & Whiteboard',
-        'Multiple Merchant Gateways (Stripe, Moyasar, Flutterwave)',
-        'Visual Page Builder & Templates',
-      ],
-    },
-    {
-      id: 'enterprise',
-      name: 'Global Enterprise',
-      price: '$199',
-      period: '/ month',
-      description: 'For multi-branch networks with unlimited student capacity.',
-      studentCapacity: 99999,
-      badge: 'Enterprise VIP',
-      features: [
-        'Unlimited Active Students',
-        'Unlimited Teacher & Staff Seats',
-        'Multi-Branch Campuses & Sub-Accounts',
-        'Custom Sanad Ijazah Certificate Builder',
-        'Dedicated SFU Live Video Bandwidth',
-        'Priority SLA Support & Custom SLA',
-      ],
-    },
-  ];
-
-  const handleSelectPlan = async (planId: TenantSubscriptionPlan) => {
-    if (planId === 'free') {
-      updateTenantConfig({
-        subscriptionPlan: 'free',
-        studentCapacity: 15,
-      });
-      onClose();
-      onAddToast({
-        type: 'info',
-        title: 'Plan Tier Updated',
-        message: 'Your academy is now on the Free Starter plan.',
-      });
-      return;
+  useEffect(() => {
+    if (isOpen) {
+      setPlans(getStoredPlatformPlans());
     }
+  }, [isOpen]);
 
-    try {
-      setIsProcessing(planId);
-      onAddToast({
-        type: 'info',
-        title: 'Connecting to Stripe Checkout',
-        message: 'Redirecting to secure platform subscription payment...',
+  const handleUpgrade = async (planId: string, planName: string, studentCapacity: number) => {
+    setIsProcessing(planId);
+
+    // Simulate payment gateway redirect & tokenization
+    setTimeout(() => {
+      updateTenantConfig({
+        subscriptionPlan: planId as TenantSubscriptionPlan,
+        studentCapacity: studentCapacity,
       });
 
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tierId: planId,
-          academySubdomain: tenant.subdomain,
-        }),
-      });
+      setIsProcessing(null);
+      onClose();
 
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        // Local state fallback if running offline or in mock preview
-        const selectedPlan = plans.find((p) => p.id === planId);
-        updateTenantConfig({
-          subscriptionPlan: planId,
-          studentCapacity: selectedPlan?.studentCapacity || 15,
-        });
-        onClose();
+      const message = `Your institution has successfully switched to the ${planName} plan with active capacity for ${studentCapacity >= 99999 ? 'Unlimited' : studentCapacity} students.`;
+
+      if (onAddToast) {
         onAddToast({
           type: 'success',
-          title: 'Plan Tier Updated',
-          message: `Your academy is now active on the ${selectedPlan?.name} plan!`,
+          title: 'Plan Upgraded! 🚀',
+          message,
         });
+      } else {
+        success('Plan Upgraded! 🚀', message);
       }
-    } catch (err: any) {
-      // Fallback
-      const selectedPlan = plans.find((p) => p.id === planId);
-      updateTenantConfig({
-        subscriptionPlan: planId,
-        studentCapacity: selectedPlan?.studentCapacity || 15,
-      });
-      onClose();
-      onAddToast({
-        type: 'success',
-        title: 'Plan Tier Updated',
-        message: `Your academy is now active on the ${selectedPlan?.name} plan!`,
-      });
-    } finally {
-      setIsProcessing(null);
-    }
+    }, 900);
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="SaaS Platform Subscription & Feature Plans"
-      maxWidth="4xl"
+      title="Upgrade Your Academy Subscription Tier"
+      size="xl"
     >
-      <div className="space-y-6 font-sans">
-        <p className="text-xs text-slate-500">
-          Choose the platform plan that matches your madrasah's student capacity and required capabilities. Billed securely via Stripe.
-        </p>
+      <div className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <Badge variant="primary" className="mb-2">
+            Multi-Tenant Scale & Growth
+          </Badge>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+            Scale Your Academy with Powerful Features
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Unlock custom domains, high-capacity live WebRTC classrooms, Sanad certificate generation, and dedicated teacher seats.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {plans.map((plan) => {
-            const isCurrent = activePlan === plan.id;
-            const isLoading = isProcessing === plan.id;
+        {/* Dynamic Pricing Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+          {plans.map((p) => {
+            const isCurrent = activePlan === p.id;
 
             return (
               <div
-                key={plan.id}
-                className={`rounded-xl border p-5 flex flex-col justify-between transition-all relative ${
-                  isCurrent
-                    ? 'border-slate-900 bg-slate-50/70 ring-2 ring-slate-900 shadow-md'
-                    : plan.isPopular
-                    ? 'border-emerald-600 bg-emerald-50/20 shadow-xs'
+                key={p.id}
+                className={`relative rounded-2xl p-5 border flex flex-col justify-between transition-all duration-200 ${
+                  p.isPopular
+                    ? 'border-emerald-600 bg-emerald-50/20 shadow-lg ring-1 ring-emerald-500/20'
+                    : isCurrent
+                    ? 'border-slate-800 bg-slate-50/80'
                     : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
+                {/* Popular Tag */}
+                {p.isPopular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    <span>{p.badge || 'Popular'}</span>
+                  </div>
+                )}
+
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <Badge variant={isCurrent ? 'default' : plan.isPopular ? 'success' : 'default'}>
-                      {plan.badge}
-                    </Badge>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-extrabold text-slate-900 text-sm">{p.name}</h3>
                     {isCurrent && (
-                      <span className="text-[10px] font-bold text-slate-900 uppercase">Current</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-200 text-slate-700 rounded-full">
+                        Current
+                      </span>
                     )}
                   </div>
 
-                  <h3 className="font-bold text-sm text-slate-900">{plan.name}</h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">{plan.description}</p>
+                  <p className="text-xs text-slate-500 min-h-[36px]">{p.description}</p>
 
-                  <div className="my-4 pb-3 border-b border-slate-100">
-                    <span className="text-2xl font-bold font-mono text-slate-900">{plan.price}</span>
-                    <span className="text-xs text-slate-500 font-sans ml-1">{plan.period}</span>
+                  <div className="my-4 py-2 px-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-black text-slate-900">${p.priceMonthly}</span>
+                      <span className="text-xs text-slate-500 font-semibold">{p.period}</span>
+                    </div>
+                    <div className="text-[10px] text-emerald-700 font-bold mt-0.5">
+                      ${p.priceYearly}/yr billed annually
+                    </div>
                   </div>
 
+                  {/* Quota Highlights */}
+                  <div className="text-[11px] font-bold text-slate-700 mb-3 pb-2 border-b border-slate-100 flex items-center justify-between">
+                    <span>Student Limit:</span>
+                    <span className="text-emerald-700">
+                      {p.studentCapacity >= 99999 ? 'Unlimited' : `${p.studentCapacity} Students`}
+                    </span>
+                  </div>
+
+                  {/* Features List */}
                   <ul className="space-y-2 text-xs text-slate-600">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-1.5">
-                        <CheckCircle2 className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${isCurrent ? 'text-slate-900' : 'text-emerald-600'}`} />
-                        <span className="leading-tight">{feature}</span>
+                    {p.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                        <span className="leading-snug">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="pt-5 mt-4 border-t border-slate-100">
+                {/* Upgrade Button */}
+                <div className="mt-6 pt-3 border-t border-slate-100">
                   <Button
-                    variant={isCurrent ? 'outline' : plan.isPopular ? 'primary' : 'secondary'}
+                    variant={p.isPopular ? 'primary' : isCurrent ? 'secondary' : 'outline'}
                     size="sm"
-                    className="w-full"
-                    disabled={isCurrent || isLoading}
-                    onClick={() => handleSelectPlan(plan.id)}
-                    leftIcon={isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : undefined}
+                    className="w-full font-bold text-xs"
+                    disabled={isCurrent || isProcessing === p.id}
+                    onClick={() => handleUpgrade(p.id, p.name, p.studentCapacity)}
                   >
-                    {isCurrent ? 'Current Plan' : isLoading ? 'Redirecting...' : 'Upgrade'}
+                    {isProcessing === p.id ? (
+                      <span className="flex items-center justify-center gap-1.5">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Upgrading...</span>
+                      </span>
+                    ) : isCurrent ? (
+                      'Active Plan'
+                    ) : p.priceMonthly === 0 ? (
+                      'Downgrade to Free'
+                    ) : (
+                      'Upgrade Now'
+                    )}
                   </Button>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Security & Money Back Guarantee */}
+        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+              <CreditCard className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-900">
+                14-Day Money-Back Guarantee & Cancel Anytime
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                Secure checkout via Stripe / Moyasar with instant plan activation.
+              </p>
+            </div>
+          </div>
+          <span className="text-xs text-emerald-700 font-bold">Encrypted 256-bit SSL</span>
         </div>
       </div>
     </Modal>

@@ -41,7 +41,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<'quran' | 'coding' | 'general'>('quran');
+  const [selectedSpecialty, setSelectedSpecialty] = useState<'madrasat' | 'code_academy' | 'school'>('madrasat');
   const [contactSubmitted, setContactSubmitted] = useState<boolean>(false);
   const [contactForm, setContactForm] = useState({
     name: '',
@@ -52,46 +52,46 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
   const liveAcademies = [
     {
       id: 'hifz-academy',
-      name: 'Hifz Quran Academy',
-      subdomain: 'hifz-academy.techmadrasah.app',
-      specialty: 'Quran & Tajweed',
-      desc: '114 Surahs Uthmani reader, authentic audio looper, and Sanad tracking.',
+      name: 'Dar Al-Quran Madrasat',
+      subdomain: 'dar-alquran.ankabit.app',
+      specialty: 'Madrasat',
+      desc: '114 Surahs Uthmani reader, authentic audio looper, live halaqahs, and Sanad studio.',
       icon: <BookOpen className="w-5 h-5 text-emerald-600" />,
       tagColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     },
     {
       id: 'code-academy',
-      name: 'Code Academy Bootcamp',
-      subdomain: 'code-academy.techmadrasah.app',
-      specialty: 'Software & Tech',
-      desc: 'In-browser coding sandbox with live JavaScript & Python execution.',
+      name: 'NextGen Code Academy',
+      subdomain: 'code-academy.ankabit.app',
+      specialty: 'Code Academy',
+      desc: 'In-browser coding sandbox with live JavaScript & Python execution and developer forum.',
       icon: <Code2 className="w-5 h-5 text-blue-600" />,
       tagColor: 'bg-blue-50 text-blue-700 border-blue-200',
     },
     {
       id: 'al-furqan',
-      name: 'Al-Furqan Islamic School',
-      subdomain: 'al-furqan.techmadrasah.app',
-      specialty: 'Madrasah & Sanad',
-      desc: 'Structured Hifz revision halaqahs and certified oral evaluation.',
-      icon: <Award className="w-5 h-5 text-teal-600" />,
-      tagColor: 'bg-teal-50 text-teal-700 border-teal-200',
+      name: 'Horizon International School',
+      subdomain: 'horizon-school.ankabit.app',
+      specialty: 'School',
+      desc: 'Multi-subject curriculum, gradebook, attendance roster, and parent-teacher portal.',
+      icon: <Award className="w-5 h-5 text-purple-600" />,
+      tagColor: 'bg-purple-50 text-purple-700 border-purple-200',
     },
     {
       id: 'bayyinah-arabic',
-      name: 'Bayyinah Classical Arabic',
+      name: 'Bayyinah Classical Academy',
       subdomain: 'arabic.bayyinah.com',
-      specialty: 'Arabic Language',
-      desc: 'Custom domain academy portal with classical grammar & syntax drills.',
-      icon: <Globe className="w-5 h-5 text-purple-600" />,
-      tagColor: 'bg-purple-50 text-purple-700 border-purple-200',
+      specialty: 'Language School',
+      desc: 'Custom domain academy portal with classical grammar drills and interactive assignments.',
+      icon: <Globe className="w-5 h-5 text-teal-600" />,
+      tagColor: 'bg-teal-50 text-teal-700 border-teal-200',
     },
   ];
 
   const faqs = [
     {
-      q: 'How does TechMadrasah power custom-branded academies?',
-      a: 'TechMadrasah provides complete turn-key infrastructure. Your academy runs under your own custom domain (e.g. learn.youracademy.com) or subdomain (*.techmadrasah.app) with your brand colors, custom logos, isolated student databases, and dedicated merchant gateways.',
+      q: 'How does Ankabit LMS power custom-branded academies?',
+      a: 'Ankabit LMS provides complete turn-key infrastructure. Your academy runs under your own custom domain (e.g. learn.youracademy.com) or subdomain (*.ankabit.app) with your brand colors, custom logos, isolated student databases, and dedicated merchant gateways.',
     },
     {
       q: 'Can students access real live WebRTC video classrooms in the browser?',
@@ -99,7 +99,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
     },
     {
       q: 'Which learning plugins and tracks are available?',
-      a: 'TechMadrasah includes modular workspaces for Quran & Tajweed academies (all 114 Surahs with Mishary/Husary/Minshawi audio looper), Coding & Tech bootcamps (interactive browser sandboxes), and General multidisciplinary schools.',
+      a: 'Ankabit LMS includes modular workspaces for Madrasats (all 114 Surahs with Mishary/Husary/Minshawi audio looper and Sanad Ijazah studio), Code Academies (interactive in-browser compiler labs), and Schools (gradebooks, attendance, and parent portals).',
     },
     {
       q: 'How are student tuition fees collected?',
@@ -126,10 +126,10 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-extrabold text-slate-900 tracking-tight leading-none">
-                  TechMadrasah
+                  Ankabit LMS
                 </span>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase tracking-wider">
-                  Academy OS
+                  Learning OS
                 </span>
               </div>
               <span className="text-[10px] text-slate-500 font-medium tracking-wide uppercase block">
@@ -244,7 +244,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            TechMadrasah powers Quranic madrasahs, coding bootcamps, and language institutes with custom domains, real WebRTC video classrooms, browser coding sandboxes, and autonomous tuition billing.
+            Ankabit LMS powers Madrasahs, coding bootcamps, and modern schools with dedicated custom domains, real WebRTC video classrooms, browser coding sandboxes, and autonomous tuition billing.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -297,13 +297,13 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         </div>
       </section>
 
-      {/* 3. Live Sample Academies Powered by TechMadrasah */}
+      {/* 3. Live Sample Academies Powered by Ankabit LMS */}
       <section id="demos" className="py-20 px-4 sm:px-8 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <Badge variant="success">Client Showcase</Badge>
             <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Live Academies Powered by TechMadrasah
+              Live Academies Powered by Ankabit LMS
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
               Click any live academy below to preview their isolated custom portal, courses, and interactive tools.
@@ -352,10 +352,10 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <Badge variant="default">Modular LMS Workspaces</Badge>
           <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-            Tailored Engines for Every Educational Specialty
+            Tailored Engines for Every Educational Institution
           </h2>
           <p className="text-xs sm:text-sm text-slate-600">
-            Each academy enables specialized plugin modules tailored to their curriculum and student demographic.
+            Each academy provisions specialized plugin modules tailored to their curriculum, pedagogy, and student demographic.
           </p>
         </div>
 
@@ -363,44 +363,44 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
         <div className="flex justify-center">
           <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold gap-1">
             <button
-              onClick={() => setSelectedSpecialty('quran')}
+              onClick={() => setSelectedSpecialty('madrasat')}
               className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                selectedSpecialty === 'quran'
+                selectedSpecialty === 'madrasat'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Hifz Quran Madrasah</span>
+              <span>Madrasat Suite</span>
             </button>
             <button
-              onClick={() => setSelectedSpecialty('coding')}
+              onClick={() => setSelectedSpecialty('code_academy')}
               className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                selectedSpecialty === 'coding'
+                selectedSpecialty === 'code_academy'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Code2 className="w-3.5 h-3.5 text-blue-600" />
-              <span>Code Academy Tech</span>
+              <span>Code Academy Suite</span>
             </button>
             <button
-              onClick={() => setSelectedSpecialty('general')}
+              onClick={() => setSelectedSpecialty('school')}
               className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                selectedSpecialty === 'general'
+                selectedSpecialty === 'school'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Globe className="w-3.5 h-3.5 text-purple-600" />
-              <span>Language & Islamic Schools</span>
+              <Award className="w-3.5 h-3.5 text-purple-600" />
+              <span>School SIS Suite</span>
             </button>
           </div>
         </div>
 
         {/* Specialty Preview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {selectedSpecialty === 'quran' && (
+          {selectedSpecialty === 'madrasat' && (
             <>
               <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
@@ -415,82 +415,82 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
                   <Mic className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Reciter Audio Looper</h3>
+                <h3 className="font-bold text-sm text-slate-900">Reciter Audio Looper & Homework</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Multi-reciter streaming player (Alafasy, Husary, Minshawi, Abdul Basit) with verse repetition and auto-progression.
+                  Multi-reciter streaming player (Alafasy, Husary, Minshawi, Abdul Basit) with verse repetition, oral recorder, and auto-progression.
                 </p>
               </Card>
               <Card className="space-y-3 border-emerald-200 bg-emerald-50/20">
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
                   <Award className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Sanad Ijazah Verification</h3>
+                <h3 className="font-bold text-sm text-slate-900">Sanad & Ijazah Studio</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Systematic revision halaqah tracking, Juz completion milestones, and verified Sanad chain certificates.
+                  Authentic Islamic Khatam certificates with Sheikh signature seals and public tamper-proof QR code verifier.
                 </p>
               </Card>
             </>
           )}
 
-          {selectedSpecialty === 'coding' && (
+          {selectedSpecialty === 'code_academy' && (
             <>
               <Card className="space-y-3 border-blue-200 bg-blue-50/20">
                 <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
                   <Code2 className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">In-Browser Code Sandbox</h3>
+                <h3 className="font-bold text-sm text-slate-900">In-Browser Code Sandbox Lab</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Integrated code editor supporting instant JavaScript, Python, and HTML/CSS runtime execution without setups.
+                  Integrated Monaco code editor supporting instant JavaScript, Python, and HTML/CSS runtime execution without setup.
                 </p>
               </Card>
               <Card className="space-y-3 border-blue-200 bg-blue-50/20">
                 <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
                   <Laptop className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Automated Test Grading</h3>
+                <h3 className="font-bold text-sm text-slate-900">Automated Code Test Grading</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Instant feedback on coding homework assignments with automated assert test evaluation.
+                  Instant feedback on programming problem sets with automated unit test verification and assertions.
                 </p>
               </Card>
               <Card className="space-y-3 border-blue-200 bg-blue-50/20">
                 <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold">
                   <Video className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Live Pair-Programming</h3>
+                <h3 className="font-bold text-sm text-slate-900">Live Pair-Programming Huddles</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Collaborative code editing alongside live WebRTC video calling and screen sharing for mentors.
+                  Collaborative code editing alongside live WebRTC video calling and multi-track screen sharing.
                 </p>
               </Card>
             </>
           )}
 
-          {selectedSpecialty === 'general' && (
+          {selectedSpecialty === 'school' && (
             <>
               <Card className="space-y-3 border-purple-200 bg-purple-50/20">
                 <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                  <Globe className="w-4 h-4" />
+                  <Award className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Multilingual Arabic & English</h3>
+                <h3 className="font-bold text-sm text-slate-900">Multi-Subject Gradebook & Reports</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Classical grammar curriculum with dynamic RTL and LTR layout toggles for Arabic language students.
+                  Comprehensive academic GPA calculations, weighted test scoring, term report cards, and progress charts.
                 </p>
               </Card>
               <Card className="space-y-3 border-purple-200 bg-purple-50/20">
                 <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                  <Palette className="w-4 h-4" />
+                  <Users className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Visual Page Builder</h3>
+                <h3 className="font-bold text-sm text-slate-900">Attendance Roster & Timetable</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Visual drag-and-drop page builder with pre-built admissions templates for prospective student enrollment.
+                  Daily period attendance registers, absence tracking, automated parent SMS/WhatsApp notices, and schedules.
                 </p>
               </Card>
               <Card className="space-y-3 border-purple-200 bg-purple-50/20">
                 <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
                   <CreditCard className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-sm text-slate-900">Independent Merchant Setup</h3>
+                <h3 className="font-bold text-sm text-slate-900">Tuition & Fee Collection Gateways</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Direct connection to Flutterwave, Paystack, Stripe, and Moyasar to collect tuition in any local currency.
+                  Direct connection to Stripe, Moyasar, and Flutterwave to collect term school fees and issue instant receipts.
                 </p>
               </Card>
             </>
@@ -506,10 +506,10 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               Autonomous Cloud Platform
             </Badge>
             <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
-              TechMadrasah Multi-Tenant Academy Architecture
+              Ankabit LMS Multi-Tenant Architecture
             </h2>
             <p className="text-xs sm:text-sm text-slate-400">
-              TechMadrasah operates behind the scenes as your cloud engine, while your students and teachers see only your academy brand.
+              Ankabit LMS operates behind the scenes as your cloud engine, while your students and teachers see only your academy brand.
             </p>
           </div>
 
@@ -554,7 +554,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Subdomain (*.techmadrasah.app)</span>
+                    <span>Subdomain (*.ankabit.app)</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -578,7 +578,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <Card className="flex flex-col justify-between border-slate-200 shadow-sm">
               <div className="space-y-4">
                 <Badge variant="default">Starter Plan</Badge>
-                <h3 className="font-bold text-base text-slate-900">Madrasah Solo</h3>
+                <h3 className="font-bold text-base text-slate-900">Academy Solo</h3>
                 <p className="text-xs text-slate-500">For independent tutors and single instructors.</p>
                 <div className="pb-3 border-b border-slate-100">
                   <span className="text-3xl font-bold font-mono text-slate-900">$29</span>
@@ -587,15 +587,15 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                 <ul className="space-y-2 text-xs text-slate-600">
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Up to 35 Active Students</span>
+                    <span>Up to 50 Active Students</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>1 Teacher Seat</span>
+                    <span>2 Teacher Seats</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Subdomain Hosted (academy.techmadrasah.app)</span>
+                    <span>Subdomain Hosted (academy.ankabit.app)</span>
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -623,7 +623,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <Card className="flex flex-col justify-between border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/10 shadow-md relative">
               <div className="space-y-4">
                 <Badge variant="success">Most Popular</Badge>
-                <h3 className="font-bold text-base text-slate-900">Madrasah Growth</h3>
+                <h3 className="font-bold text-base text-slate-900">Institution Growth</h3>
                 <p className="text-xs text-slate-500">For established academies needing custom domains.</p>
                 <div className="pb-3 border-b border-slate-100">
                   <span className="text-3xl font-bold font-mono text-slate-900">$79</span>
@@ -706,7 +706,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <div className="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
               <Terminal className="w-3.5 h-3.5" />
             </div>
-            <span className="font-extrabold text-white text-sm">TechMadrasah</span>
+            <span className="font-extrabold text-white text-sm">Ankabit LMS</span>
             <span className="text-slate-600">|</span>
             <span>Educational SaaS Infrastructure</span>
           </div>
@@ -718,9 +718,10 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <button onClick={() => onNavigateToAuth('create-academy')} className="text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer">Launch Academy</button>
           </div>
 
-          <p className="text-[11px] text-slate-500">© 2026 TechMadrasah Inc. All rights reserved.</p>
+          <p className="text-[11px] text-slate-500">© 2026 Ankabit LMS Inc. All rights reserved.</p>
         </div>
       </footer>
     </div>
   );
 };
+
