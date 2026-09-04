@@ -476,7 +476,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   }}
                   className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none ${
                     isActive
-                      ? 'bg-amber-600 text-white shadow-md font-bold'
+                      ? 'bg-[var(--color-primary,#d97706)] text-white shadow-md font-bold'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
                 >

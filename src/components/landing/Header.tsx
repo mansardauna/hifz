@@ -21,14 +21,25 @@ export const Header: React.FC = () => {
             onClick={() => router.push(`/${tenant.subdomain}`)}
             className="flex items-center gap-3 hover:opacity-90 transition-opacity text-start cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-md overflow-hidden shadow-xs border border-slate-200 flex items-center justify-center bg-emerald-50 text-emerald-800 font-bold text-lg shrink-0">
-              {tenant.faviconUrl}
-            </div>
+            {tenant.logoUrl || (tenant.faviconUrl && (tenant.faviconUrl.startsWith('http') || tenant.faviconUrl.startsWith('/'))) ? (
+              <img
+                src={tenant.logoUrl || tenant.faviconUrl}
+                alt={tenant.name}
+                className="w-9 h-9 rounded-xl object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200 flex items-center justify-center bg-[var(--color-primary,#047857)] text-white font-black text-sm shrink-0">
+                {tenant.name ? tenant.name.charAt(0) : 'A'}
+              </div>
+            )}
             <div>
               <h1 className={`font-bold text-slate-900 text-sm sm:text-base leading-tight font-display ${isAr ? 'font-arabic text-lg' : ''}`}>
                 {isAr ? tenant.nameAr : tenant.name}
               </h1>
-              <p className="text-[11px] text-emerald-700 font-mono hidden sm:block">{tenant.subdomain}.hifz.app</p>
+              <p className="text-[11px] text-emerald-700 font-mono hidden sm:block">{tenant.subdomain}.ankabit.app</p>
             </div>
           </button>
         </div>

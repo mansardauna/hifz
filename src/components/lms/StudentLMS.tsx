@@ -164,7 +164,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   onClick={() => handleStudentNavClick(item.id)}
                   className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none ${
                     isActive
-                      ? 'bg-white/10 text-white shadow-xs font-bold ring-1 ring-white/10'
+                      ? 'bg-[var(--color-primary,#047857)] text-white shadow-sm font-bold'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
                 >

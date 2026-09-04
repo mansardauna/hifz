@@ -161,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="h-16 px-4 sm:px-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950/50">
           {(!collapsed || isOpenOnMobile) && (
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-emerald-700 flex items-center justify-center font-bold text-white shadow-md shadow-emerald-700/20 shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-primary,#047857)] flex items-center justify-center font-bold text-white shadow-md shrink-0">
                 {tenant.name.charAt(0)}
               </div>
               <div className="min-w-0">
@@ -183,15 +183,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Mobile Close Button */}
           <button
             onClick={onCloseMobile}
-            className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white cursor-pointer"
+            className="lg:hidden p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
             aria-label="Close sidebar"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Scrollable Navigation */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
+        <div className="flex-1 overflow-y-auto p-3.5 space-y-4">
           {/* Direct Live Site Link */}
           <div>
             {(!collapsed || isOpenOnMobile) ? (
@@ -200,7 +200,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700/60 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-[var(--color-primary,#10b981)] animate-pulse"></span>
                   <span>View Public Academy</span>
                 </div>
                 <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white" />
@@ -237,7 +237,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onClick={() => handleItemClick(item)}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none ${
                         isActive
-                          ? 'bg-white/10 text-white shadow-xs font-bold ring-1 ring-white/10'
+                          ? 'bg-[var(--color-primary,#047857)] text-white shadow-sm font-bold'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                       }`}
                       title={collapsed ? item.label : undefined}

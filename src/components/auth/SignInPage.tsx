@@ -201,7 +201,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className={`w-full px-3.5 py-2 pl-9 pr-10 rounded-xl border text-xs focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition-colors placeholder:text-slate-400 ${
+            className={`w-full px-3.5 py-2.5 pl-9 pr-10 rounded-xl border text-xs sm:text-sm focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20 transition-colors placeholder:text-slate-400 ${
               isGlass ? 'bg-white/90 border-white/40 text-slate-900' : 'border-slate-300 bg-white text-slate-900'
             }`}
           />
@@ -211,7 +211,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
           >
-            {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
       </div>
@@ -230,7 +230,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         type="submit"
         variant="primary"
         size="md"
-        className="w-full justify-center shadow-md bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+        className="w-full justify-center shadow-md text-white font-bold"
         disabled={isSubmitting}
         rightIcon={<ArrowRight className="w-4 h-4" />}
       >
@@ -249,7 +249,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         <Sparkles className="w-3 h-3 text-amber-500 animate-pulse" />
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5">
+      <div className="grid grid-cols-3 gap-2">
         {DEMO_PERSONAS.map((p) => {
           const Icon = p.icon;
           const isSelected = email === p.email;
@@ -258,19 +258,19 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
               key={p.role}
               type="button"
               onClick={() => selectPersona(p)}
-              className={`p-2 rounded-xl text-left border transition-all cursor-pointer select-none ${
+              className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer select-none ${
                 isSelected
                   ? 'border-emerald-600 bg-emerald-50/70 shadow-xs ring-1 ring-emerald-500/30'
                   : 'border-slate-200 bg-slate-50 hover:bg-slate-100/80'
               }`}
             >
               <div className="flex items-center gap-1.5 mb-1">
-                <div className={`w-5 h-5 rounded-md ${p.avatarBg} text-white flex items-center justify-center`}>
+                <div className={`w-5 h-5 rounded-md ${p.avatarBg} text-white flex items-center justify-center shrink-0`}>
                   <Icon className="w-3 h-3" />
                 </div>
                 <span className="text-[10px] font-extrabold text-slate-900 truncate">{p.badge}</span>
               </div>
-              <p className="text-[9px] text-slate-500 truncate">{p.name.split(' ')[0]}</p>
+              <p className="text-[10px] text-slate-500 truncate">{p.name.split(' ')[0]}</p>
             </button>
           );
         })}
@@ -279,16 +279,16 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col justify-between p-3 sm:p-6 selection:bg-emerald-100 selection:text-emerald-900 relative">
+    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col justify-between p-3 sm:p-6 sm:py-8 selection:bg-emerald-100 selection:text-emerald-900 relative">
       {/* Clean Top Navigation Bar */}
-      <div className="w-full max-w-4xl mx-auto mb-4 flex items-center justify-between px-2">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-black text-sm shadow-sm">
+      <div className="w-full max-w-6xl mx-auto mb-3 flex items-center justify-between px-2">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[var(--color-primary,#047857)] text-white flex items-center justify-center font-black text-sm shadow-sm">
             {tenant?.name?.charAt(0) || 'A'}
           </div>
           <div>
-            <span className="font-extrabold text-slate-800 text-sm block leading-none">{tenant?.name || 'Ankabit LMS'}</span>
-            <span className="text-[10px] text-emerald-700 font-mono">{tenant?.subdomain || 'demo'}.ankabit.app</span>
+            <span className="font-extrabold text-slate-900 text-sm sm:text-base block leading-none">{tenant?.name || 'Ankabit LMS'}</span>
+            <span className="text-[10px] sm:text-[11px] text-emerald-700 font-mono">{tenant?.subdomain || 'demo'}.ankabit.app</span>
           </div>
         </div>
 
@@ -301,69 +301,72 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         </button>
       </div>
 
-      {/* Main Container by Selected Layout */}
-      <div className="flex-1 flex items-center justify-center">
-        {/* LAYOUT 1: SPLIT MODERN */}
+      {/* Main Container - High Capacity Large Frame (fills almost entire screen) */}
+      <div className="flex-1 flex items-center justify-center my-2">
+        {/* LAYOUT 1: SPLIT MODERN (Large Screen-Filling 6XL Card) */}
         {activeLayout === 'split' && (
-          <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 rounded-3xl bg-white border border-slate-200/80 shadow-2xl shadow-slate-200/60 overflow-hidden">
-            {/* Left Hero */}
-            <div className="hidden lg:flex flex-col justify-between p-8 bg-slate-900 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="w-full max-w-6xl min-h-[82vh] grid grid-cols-1 lg:grid-cols-12 rounded-3xl bg-white border border-slate-200/90 shadow-2xl shadow-slate-200/80 overflow-hidden">
+            {/* Left Hero (5 Columns) */}
+            <div className="lg:col-span-5 hidden lg:flex flex-col justify-between p-8 sm:p-10 bg-slate-950 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-primary,#047857)]/15 rounded-full blur-3xl pointer-events-none" />
 
               <div className="space-y-4 relative z-10">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--color-primary,#047857)] text-white flex items-center justify-center font-bold text-base shadow-md">
                     {tenant?.name?.charAt(0) || 'H'}
                   </div>
                   <div>
-                    <span className="font-black text-white text-base block leading-none">
+                    <span className="font-black text-white text-lg block leading-tight">
                       {tenant?.name || 'Ankabit LMS'}
                     </span>
-                    <span className="text-[10px] text-emerald-400 font-mono">
+                    <span className="text-xs text-emerald-400 font-mono">
                       {tenant?.subdomain}.ankabit.app
                     </span>
                   </div>
                 </div>
 
-                <div className="pt-2">
-                  <h2 className="text-2xl font-black tracking-tight text-white leading-tight">
+                <div className="pt-3">
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-snug">
                     {authConfig?.welcomeHeading || 'Welcome to Your Academy Workspace'}
                   </h2>
-                  <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
                     {authConfig?.welcomeSubtitle || 'Enter your credentials to access live halaqahs, recitation records, and student portals.'}
                   </p>
                 </div>
               </div>
 
               {/* 2D Vector Illustration */}
-              <div className="my-6 max-w-[240px] mx-auto">
+              <div className="my-4 max-w-[280px] mx-auto">
                 <AuthHeroIllustration className="w-full h-auto" />
               </div>
 
               {/* Calligraphy Quote */}
-              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 text-center space-y-1 relative z-10 shadow-inner">
-                <p className="font-serif text-lg text-emerald-300 font-bold">
+              <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1 relative z-10 shadow-inner">
+                <p className="font-serif text-xl text-emerald-300 font-bold">
                   {authConfig?.calligraphyText || 'وَقُل رَّبِّ زِدْنِي عِلْمًا'}
                 </p>
-                <p className="text-[10px] text-slate-400 italic">
+                <p className="text-[11px] text-slate-400 italic">
                   {authConfig?.calligraphyTranslation || '“And say: My Lord, increase me in knowledge” • Surah Taha: 114'}
                 </p>
               </div>
             </div>
 
-            {/* Right Form Card */}
-            <div className="p-6 sm:p-10 flex flex-col justify-between space-y-6">
+            {/* Right Form Card (7 Columns) */}
+            <div className="lg:col-span-7 p-8 sm:p-14 flex flex-col justify-between space-y-6">
               <div>
-                <div className="flex items-center gap-2 mb-4 lg:hidden">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">
+                <div className="flex items-center gap-2.5 mb-6 lg:hidden">
+                  <div className="w-9 h-9 rounded-xl bg-[var(--color-primary,#047857)] text-white flex items-center justify-center font-bold text-sm">
                     {tenant?.name?.charAt(0) || 'H'}
                   </div>
-                  <span className="font-extrabold text-slate-900 text-sm">{tenant?.name}</span>
+                  <div>
+                    <span className="font-extrabold text-slate-900 text-sm block">{tenant?.name}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{tenant?.subdomain}.ankabit.app</span>
+                  </div>
                 </div>
 
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Sign In</h1>
-                <p className="text-xs text-slate-500 mt-1 mb-6">
-                  Sign in to access student recitation tracker, curriculum, and live sessions.
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Sign In</h1>
+                <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-8">
+                  Sign in to access your student recitation tracker, curriculum, and live sessions.
                 </p>
 
                 {renderFormFields()}
@@ -376,27 +379,27 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
         {/* LAYOUT 2: MEDINA CENTERED GLASS */}
         {activeLayout === 'centered_glass' && (
-          <div className="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-slate-900/90 backdrop-blur-xl border border-emerald-500/30 text-white shadow-2xl shadow-emerald-950/40 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="w-full max-w-2xl min-h-[78vh] p-8 sm:p-12 rounded-3xl bg-slate-950/90 backdrop-blur-xl border border-emerald-500/30 text-white shadow-2xl shadow-emerald-950/40 relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 space-y-6">
               <div className="text-center space-y-2">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-700/80 border border-emerald-400/40 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-700/30 font-bold text-xl">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary,#047857)] border border-emerald-400/40 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-700/30 font-bold text-2xl">
                   {tenant?.name?.charAt(0) || 'H'}
                 </div>
-                <h2 className="text-xl font-black tracking-tight text-white">{tenant?.name}</h2>
-                <div className="text-xs text-emerald-300 font-serif font-bold">
+                <h2 className="text-2xl font-black tracking-tight text-white">{tenant?.name}</h2>
+                <div className="text-sm text-emerald-300 font-serif font-bold">
                   بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white text-slate-900 shadow-xl space-y-4">
-                <h3 className="text-sm font-extrabold text-slate-900">Sign In to Your Account</h3>
+              <div className="p-6 sm:p-8 rounded-2xl bg-white text-slate-900 shadow-xl space-y-4">
+                <h3 className="text-base font-extrabold text-slate-900">Sign In to Your Account</h3>
                 {renderFormFields()}
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/60">
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80">
                 {renderPersonaSwitcher()}
               </div>
             </div>
@@ -405,21 +408,21 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
         {/* LAYOUT 3: MINIMALIST CLEAN CARD */}
         {activeLayout === 'minimal_card' && (
-          <div className="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-xl space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-emerald-700/20">
+          <div className="w-full max-w-xl min-h-[75vh] p-8 sm:p-12 rounded-3xl bg-white border border-slate-200/90 shadow-2xl space-y-6 flex flex-col justify-between">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary,#047857)] text-white flex items-center justify-center font-bold text-lg shadow-md">
                 {tenant?.name?.charAt(0) || 'H'}
               </div>
               <div>
-                <h2 className="font-extrabold text-base text-slate-900 leading-tight">{tenant?.name}</h2>
+                <h2 className="font-extrabold text-lg text-slate-900 leading-tight">{tenant?.name}</h2>
                 <p className="text-xs text-slate-500">Student & Instructor Portal</p>
               </div>
             </div>
 
             <div>
-              <h1 className="text-xl font-black text-slate-900">Sign In</h1>
-              <p className="text-xs text-slate-500 mt-1 mb-5">
-                Enter your registered credentials below.
+              <h1 className="text-2xl font-black text-slate-900">Sign In</h1>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-6">
+                Enter your registered credentials below to access your courses.
               </p>
               {renderFormFields()}
             </div>
@@ -430,8 +433,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
         {/* LAYOUT 4: HERITAGE ARABESQUE FRAME */}
         {activeLayout === 'heritage_frame' && (
-          <div className="w-full max-w-lg p-3 bg-gradient-to-br from-amber-600 via-emerald-800 to-amber-700 rounded-3xl shadow-2xl">
-            <div className="p-6 sm:p-8 bg-white rounded-2xl border-4 border-amber-400/40 relative space-y-6">
+          <div className="w-full max-w-2xl min-h-[78vh] p-4 bg-gradient-to-br from-amber-600 via-emerald-800 to-amber-700 rounded-3xl shadow-2xl flex items-center justify-center">
+            <div className="w-full p-8 sm:p-12 bg-white rounded-2xl border-4 border-amber-400/40 relative space-y-6">
               {/* Corner Arabesque Ornaments */}
               <div className="absolute top-2 left-2 text-amber-500 font-mono text-xs select-none">❖</div>
               <div className="absolute top-2 right-2 text-amber-500 font-mono text-xs select-none">❖</div>
@@ -439,11 +442,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
               <div className="absolute bottom-2 right-2 text-amber-500 font-mono text-xs select-none">❖</div>
 
               <div className="text-center space-y-1.5">
-                <div className="font-serif text-sm font-bold text-emerald-800">
+                <div className="font-serif text-base font-bold text-emerald-800">
                   بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                 </div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight">{tenant?.name}</h2>
-                <p className="text-[11px] text-amber-700 font-bold uppercase tracking-wider">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">{tenant?.name}</h2>
+                <p className="text-xs text-amber-700 font-bold uppercase tracking-wider">
                   Quranic Learning Management System
                 </p>
               </div>
@@ -456,7 +459,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
       </div>
 
       {/* Footer */}
-      <footer className="mt-6 text-center text-xs text-slate-500 space-y-1">
+      <footer className="mt-4 text-center text-xs text-slate-500 space-y-1">
         <p>© 2026 Ankabit LMS • Multi-Tenant Academy Operating System</p>
       </footer>
     </div>

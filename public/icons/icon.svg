@@ -1,7 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="108" fill="#047857"/>
-  <rect x="24" y="24" width="464" height="464" rx="84" fill="none" stroke="#f59e0b" stroke-width="12" stroke-dasharray="16 8"/>
-  <path d="M256 70 L268 110 L310 122 L268 134 L256 174 L244 134 L202 122 L244 110 Z" fill="#f59e0b"/>
-  <path d="M256 160 C180 160 120 220 120 300 C120 380 180 430 256 430 C200 400 180 340 180 295 C180 230 215 180 256 160 Z" fill="#fbbf24"/>
-  <text x="256" y="340" font-family="'Amiri', serif" font-size="160" font-weight="bold" fill="#ffffff" text-anchor="middle">ح</text>
+  <rect width="512" height="512" rx="128" fill="#0f172a"/>
+  <!-- Subtle Spider Web Geometric Radial Lines -->
+  <circle cx="256" cy="270" r="190" fill="none" stroke="#10b981" stroke-width="2" stroke-opacity="0.25"/>
+  <circle cx="256" cy="270" r="130" fill="none" stroke="#10b981" stroke-width="2" stroke-opacity="0.3"/>
+  <circle cx="256" cy="270" r="70" fill="none" stroke="#10b981" stroke-width="2" stroke-opacity="0.35"/>
+  <line x1="256" y1="80" x2="256" y2="460" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.2"/>
+  <line x1="80" y1="270" x2="432" y2="270" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.2"/>
+  <line x1="130" y1="144" x2="382" y2="396" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.2"/>
+  <line x1="130" y1="396" x2="382" y2="144" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.2"/>
+
+  <!-- Geometric Modern Spider (Ankabit) -->
+  <!-- Head & Cephalothorax -->
+  <circle cx="256" cy="200" r="32" fill="#10b981"/>
+  <!-- Eyes -->
+  <circle cx="244" cy="186" r="5" fill="#ffffff"/>
+  <circle cx="268" cy="186" r="5" fill="#ffffff"/>
+  
+  <!-- Abdomen -->
+  <ellipse cx="256" cy="295" rx="52" ry="72" fill="#059669"/>
+  <ellipse cx="256" cy="295" rx="36" ry="52" fill="#10b981"/>
+  <!-- Tech Abdomen Geometric Pattern -->
+  <path d="M256 245 V345 M234 280 H278 M240 315 H272" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- 8 Spider Legs (Sharp Geometric SaaS Aesthetic) -->
+  <!-- Pair 1 (Top Front) -->
+  <path d="M230 190 C180 130 140 140 80 180" fill="none" stroke="#10b981" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M282 190 C332 130 372 140 432 180" fill="none" stroke="#10b981" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Pair 2 (Upper Middle) -->
+  <path d="M216 220 C150 200 100 230 64 280" fill="none" stroke="#10b981" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M296 220 C362 200 412 230 448 280" fill="none" stroke="#10b981" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Pair 3 (Lower Middle) -->
+  <path d="M216 280 C150 300 110 370 88 430" fill="none" stroke="#059669" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M296 280 C362 300 402 370 424 430" fill="none" stroke="#059669" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Pair 4 (Rear) -->
+  <path d="M228 335 C190 380 160 430 150 460" fill="none" stroke="#059669" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M284 335 C322 380 352 430 362 460" fill="none" stroke="#059669" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

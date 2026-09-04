@@ -89,18 +89,42 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
   }, [currentSubdomain]);
 
+  const hexToRgb = (hex: string): string => {
+    let clean = hex.replace('#', '');
+    if (clean.length === 3) {
+      clean = clean.split('').map((c) => c + c).join('');
+    }
+    const num = parseInt(clean, 16);
+    if (isNaN(num)) return '13, 148, 136'; // fallback to teal
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `${r}, ${g}, ${b}`;
+  };
+
   const injectCssVariables = (config: TenantConfig) => {
     if (typeof document === 'undefined') return;
 
     const root = document.documentElement;
-    root.style.setProperty('--color-primary', config.theme.primaryColor);
-    root.style.setProperty('--color-primary-hover', config.theme.primaryHover);
-    root.style.setProperty('--color-secondary', config.theme.secondaryColor);
-    root.style.setProperty('--color-accent', config.theme.accentColor);
-    root.style.setProperty('--color-bg', config.theme.backgroundColor);
-    root.style.setProperty('--color-surface', config.theme.surfaceColor);
-    root.style.setProperty('--color-text', config.theme.textColor);
-    root.style.setProperty('--tenant-radius', config.theme.borderRadius);
+    const primaryHex = config.theme?.primaryColor || (config as any).brandColor || '#047857';
+    const primaryHoverHex = config.theme?.primaryHover || '#065f46';
+    const primaryRgb = hexToRgb(primaryHex);
+
+    root.style.setProperty('--color-primary', primaryHex);
+    root.style.setProperty('--color-primary-hover', primaryHoverHex);
+    root.style.setProperty('--color-primary-rgb', primaryRgb);
+    root.style.setProperty('--color-primary-50', `rgba(${primaryRgb}, 0.05)`);
+    root.style.setProperty('--color-primary-100', `rgba(${primaryRgb}, 0.12)`);
+    root.style.setProperty('--color-primary-500', primaryHex);
+    root.style.setProperty('--color-primary-600', primaryHex);
+    root.style.setProperty('--color-primary-700', primaryHoverHex);
+
+    root.style.setProperty('--color-secondary', config.theme?.secondaryColor || '#d97706');
+    root.style.setProperty('--color-accent', config.theme?.accentColor || '#0284c7');
+    root.style.setProperty('--color-bg', config.theme?.backgroundColor || '#f8fafc');
+    root.style.setProperty('--color-surface', config.theme?.surfaceColor || '#ffffff');
+    root.style.setProperty('--color-text', config.theme?.textColor || '#0f172a');
+    root.style.setProperty('--tenant-radius', config.theme?.borderRadius || '0.75rem');
 
     document.title = `${config.name} • Ankabit LMS`;
 
