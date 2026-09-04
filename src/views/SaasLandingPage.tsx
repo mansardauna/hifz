@@ -51,6 +51,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
+  const [isDemoDropdownOpen, setIsDemoDropdownOpen] = useState<boolean>(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState<'madrasat' | 'code_academy' | 'school'>('madrasat');
   const [contactSubmitted, setContactSubmitted] = useState<boolean>(false);
   const [contactForm, setContactForm] = useState({
@@ -60,6 +61,39 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
     specialty: 'madrasat',
     message: '',
   });
+
+  const demoOptions = [
+    {
+      id: 'hifz-academy',
+      title: 'Madrasat LMS',
+      subtitle: 'Dar Al-Quran Academy',
+      desc: '114 Surahs Medina Mushaf, audio reciter looper, Tajweed grading & live halaqahs.',
+      badge: 'Quran & Tajweed',
+      badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      icon: BookOpen,
+      iconColor: 'bg-emerald-100 text-emerald-700',
+    },
+    {
+      id: 'code-academy',
+      title: 'Code Academy LMS',
+      subtitle: 'NextGen Tech Academy',
+      desc: 'In-browser Monaco code sandbox, JS/Python runner, problem sets & PR reviews.',
+      badge: 'Coding Sandbox',
+      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
+      icon: Code2,
+      iconColor: 'bg-blue-100 text-blue-700',
+    },
+    {
+      id: 'al-furqan',
+      title: 'School SIS LMS',
+      subtitle: 'Horizon International School',
+      desc: 'Multi-subject gradebook, attendance roster, term GPA reports & parent portal.',
+      badge: 'Academic SIS',
+      badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
+      icon: Award,
+      iconColor: 'bg-purple-100 text-purple-700',
+    },
+  ];
 
   const liveAcademies = [
     {
@@ -245,7 +279,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             Ankabit LMS powers Madrasahs, coding bootcamps, and modern schools with dedicated custom domains, real WebRTC video classrooms, browser coding sandboxes, and autonomous tuition billing.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 relative">
             <Button
               variant="primary"
               size="lg"
@@ -255,15 +289,64 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             >
               Launch Your Branded Academy
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => onNavigateToDemo('hifz-academy')}
-              leftIcon={<Sparkles className="w-4 h-4 text-emerald-600" />}
-              className="w-full sm:w-auto bg-white"
-            >
-              Explore Hifz Quran Academy Demo
-            </Button>
+
+            {/* Interactive Demo Selector Dropdown */}
+            <div className="relative w-full sm:w-auto">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setIsDemoDropdownOpen(!isDemoDropdownOpen)}
+                leftIcon={<Sparkles className="w-4 h-4 text-emerald-600" />}
+                rightIcon={<ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isDemoDropdownOpen ? 'rotate-180' : ''}`} />}
+                className="w-full sm:w-auto bg-white justify-between sm:justify-center border-slate-300 hover:border-slate-400 font-bold"
+              >
+                Explore Live LMS Demos
+              </Button>
+
+              {/* Dropdown Menu */}
+              {isDemoDropdownOpen && (
+                <div className="absolute top-full sm:left-1/2 sm:-translate-x-1/2 mt-2 w-full sm:w-88 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Select Academy LMS Experience
+                  </div>
+                  <div className="space-y-1">
+                    {demoOptions.map((opt) => {
+                      const Icon = opt.icon;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setIsDemoDropdownOpen(false);
+                            onNavigateToDemo(opt.id);
+                          }}
+                          className="w-full p-3 rounded-xl hover:bg-slate-50 text-left transition-colors flex items-start gap-3 cursor-pointer group border border-transparent hover:border-slate-200"
+                        >
+                          <div className={`w-9 h-9 rounded-xl ${opt.iconColor} flex items-center justify-center shrink-0 mt-0.5 shadow-xs`}>
+                            <Icon className="w-4.5 h-4.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between">
+                              <span className="font-extrabold text-xs text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                {opt.title}
+                              </span>
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${opt.badgeColor}`}>
+                                {opt.badge}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">{opt.subtitle}</p>
+                            <p className="text-[10px] text-slate-400 leading-tight mt-0.5 line-clamp-1">{opt.desc}</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-slate-100 px-3 py-1 flex items-center justify-between text-[10px] text-slate-500">
+                    <span>⚡ Instant switch to student/teacher/admin</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
