@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
 import { ToastMessage } from '../ui/Toast';
@@ -33,6 +33,18 @@ import {
   Check,
   AlertTriangle,
   FolderGit2,
+  Mic,
+  MicOff,
+  Square,
+  Trash2,
+  Volume2,
+  Phone,
+  Mail,
+  Send,
+  Sparkles,
+  Filter,
+  ShieldAlert,
+  AlertCircle
 } from 'lucide-react';
 import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
@@ -55,6 +67,9 @@ interface AssignedStudent {
   lastEvaluationStatus: 'Mumtaz' | 'Jayyid Jiddan' | 'Jayyid' | 'Pending Review' | 'Approved PR' | 'Grade A+';
   recentGrade: string;
   parentPhone: string;
+  enrollmentStatus?: 'active' | 'leave' | 'graduated' | 'pending';
+  attendanceAttentionReason?: 'missed_latest' | 'missed_yesterday' | 'left_early' | 'none';
+  consecutiveAbsences?: number;
 }
 
 interface StudentSubmission {
@@ -77,6 +92,8 @@ interface StudentSubmission {
   conceptMasteryRating?: number;
   analyticalRating?: number;
   teacherRemarks?: string;
+  teacherAudioFeedbackUrl?: string;
+  teacherAudioFeedbackDuration?: number;
   mistakeTags?: string[];
 }
 
@@ -115,15 +132,29 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
   const [evaluationNotes, setEvaluationNotes] = useState('');
   const [selectedMistakeTags, setSelectedMistakeTags] = useState<string[]>([]);
 
-  // Attendance Sheet State
-  const [attendanceDate, setAttendanceDate] = useState('2026-09-04');
+  // Teacher Voice Feedback Recording State
+  const [isRecordingVoiceFeedback, setIsRecordingVoiceFeedback] = useState(false);
+  const [voiceFeedbackUrl, setVoiceFeedbackUrl] = useState<string | null>(null);
+  const [voiceFeedbackDuration, setVoiceFeedbackDuration] = useState<number>(0);
+  const [isPlayingVoiceFeedback, setIsPlayingVoiceFeedback] = useState<boolean>(false);
+  const voiceMediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const voiceChunksRef = useRef<Blob[]>([]);
+  const voiceTimerRef = useRef<any>(null);
+  const voiceAudioPlayerRef = useRef<HTMLAudioElement | null>(null);
+
+  // Attendance Sheet & Smart Filter State
+  const [attendanceDate, setAttendanceDate] = useState('2026-09-07');
+  const [attendanceEnrollmentFilter, setAttendanceEnrollmentFilter] = useState<'active' | 'all' | 'leave' | 'graduated'>('active');
+  const [attendanceCohortFilter, setAttendanceCohortFilter] = useState<string>('all');
+  const [attendanceSearch, setAttendanceSearch] = useState<string>('');
+  const [attendanceSubTab, setAttendanceSubTab] = useState<'roster' | 'attention'>('roster');
   const [attendanceState, setAttendanceState] = useState<Record<string, 'present' | 'late' | 'absent' | 'excused'>>({
     'std-1': 'present',
     'std-2': 'present',
     'std-3': 'late',
     'std-4': 'present',
     'std-5': 'excused',
-    'std-6': 'present'
+    'std-6': 'absent'
   });
 
   // Mock Assigned Students tailored per Academy Niche
@@ -143,7 +174,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Today, 09:30 AM',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Approved PR (100%)',
-          parentPhone: '+1 (555) 304-9912'
+          parentPhone: '+1 (555) 304-9912',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'none',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-2',
@@ -158,7 +192,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Yesterday, 04:15 PM',
           lastEvaluationStatus: 'Approved PR',
           recentGrade: 'Approved PR (98%)',
-          parentPhone: '+1 (555) 819-2044'
+          parentPhone: '+1 (555) 819-2044',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'none',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-3',
@@ -173,7 +210,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Sep 2, 2026',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Refactor Required (84%)',
-          parentPhone: '+1 (555) 902-1845'
+          parentPhone: '+1 (555) 902-1845',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'missed_yesterday',
+          consecutiveAbsences: 2
         },
         {
           id: 'std-4',
@@ -188,7 +228,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Today, 10:15 AM',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Approved PR (92%)',
-          parentPhone: '+1 (555) 441-9923'
+          parentPhone: '+1 (555) 441-9923',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'left_early',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-5',
@@ -203,7 +246,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Sep 1, 2026',
           lastEvaluationStatus: 'Approved PR',
           recentGrade: 'Approved PR (100%)',
-          parentPhone: '+1 (555) 773-1029'
+          parentPhone: '+1 (555) 773-1029',
+          enrollmentStatus: 'leave',
+          attendanceAttentionReason: 'none',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-6',
@@ -218,7 +264,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Aug 30, 2026',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Pending Review',
-          parentPhone: '+1 (555) 662-8819'
+          parentPhone: '+1 (555) 662-8819',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'missed_latest',
+          consecutiveAbsences: 1
         }
       ];
     }
@@ -238,7 +287,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Today, 09:30 AM',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Grade A+ (98%)',
-          parentPhone: '+1 (555) 304-9912'
+          parentPhone: '+1 (555) 304-9912',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'none',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-2',
@@ -253,7 +305,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Yesterday, 04:15 PM',
           lastEvaluationStatus: 'Grade A+',
           recentGrade: 'Grade A+ (99%)',
-          parentPhone: '+1 (555) 819-2044'
+          parentPhone: '+1 (555) 819-2044',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'none',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-3',
@@ -268,7 +323,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Sep 2, 2026',
           lastEvaluationStatus: 'Grade A+',
           recentGrade: 'Grade A- (89%)',
-          parentPhone: '+1 (555) 902-1845'
+          parentPhone: '+1 (555) 902-1845',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'missed_yesterday',
+          consecutiveAbsences: 2
         },
         {
           id: 'std-4',
@@ -283,7 +341,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Today, 10:15 AM',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Grade B+ (88%)',
-          parentPhone: '+1 (555) 441-9923'
+          parentPhone: '+1 (555) 441-9923',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'left_early',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-5',
@@ -298,7 +359,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Sep 1, 2026',
           lastEvaluationStatus: 'Grade A+',
           recentGrade: 'Grade A+ (97%)',
-          parentPhone: '+1 (555) 773-1029'
+          parentPhone: '+1 (555) 773-1029',
+          enrollmentStatus: 'leave',
+          attendanceAttentionReason: 'none',
+          consecutiveAbsences: 0
         },
         {
           id: 'std-6',
@@ -313,7 +377,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           lastRecitationDate: 'Aug 30, 2026',
           lastEvaluationStatus: 'Pending Review',
           recentGrade: 'Grade B (82%)',
-          parentPhone: '+1 (555) 662-8819'
+          parentPhone: '+1 (555) 662-8819',
+          enrollmentStatus: 'active',
+          attendanceAttentionReason: 'missed_latest',
+          consecutiveAbsences: 1
         }
       ];
     }
@@ -333,7 +400,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         lastRecitationDate: 'Today, 09:30 AM',
         lastEvaluationStatus: 'Pending Review',
         recentGrade: 'Mumtaz (A+)',
-        parentPhone: '+1 (555) 304-9912'
+        parentPhone: '+1 (555) 304-9912',
+        enrollmentStatus: 'active',
+        attendanceAttentionReason: 'none',
+        consecutiveAbsences: 0
       },
       {
         id: 'std-2',
@@ -348,7 +418,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         lastRecitationDate: 'Yesterday, 04:15 PM',
         lastEvaluationStatus: 'Mumtaz',
         recentGrade: 'Mumtaz (A+)',
-        parentPhone: '+1 (555) 819-2044'
+        parentPhone: '+1 (555) 819-2044',
+        enrollmentStatus: 'active',
+        attendanceAttentionReason: 'none',
+        consecutiveAbsences: 0
       },
       {
         id: 'std-3',
@@ -363,7 +436,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         lastRecitationDate: 'Sep 2, 2026',
         lastEvaluationStatus: 'Jayyid Jiddan',
         recentGrade: 'Jayyid Jiddan (A)',
-        parentPhone: '+1 (555) 902-1845'
+        parentPhone: '+1 (555) 902-1845',
+        enrollmentStatus: 'active',
+        attendanceAttentionReason: 'missed_yesterday',
+        consecutiveAbsences: 2
       },
       {
         id: 'std-4',
@@ -378,7 +454,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         lastRecitationDate: 'Today, 10:15 AM',
         lastEvaluationStatus: 'Pending Review',
         recentGrade: 'Jayyid (B)',
-        parentPhone: '+1 (555) 441-9923'
+        parentPhone: '+1 (555) 441-9923',
+        enrollmentStatus: 'active',
+        attendanceAttentionReason: 'left_early',
+        consecutiveAbsences: 0
       },
       {
         id: 'std-5',
@@ -393,7 +472,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         lastRecitationDate: 'Sep 1, 2026',
         lastEvaluationStatus: 'Mumtaz',
         recentGrade: 'Mumtaz (A+)',
-        parentPhone: '+1 (555) 773-1029'
+        parentPhone: '+1 (555) 773-1029',
+        enrollmentStatus: 'leave',
+        attendanceAttentionReason: 'none',
+        consecutiveAbsences: 0
       },
       {
         id: 'std-6',
@@ -408,7 +490,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         lastRecitationDate: 'Aug 30, 2026',
         lastEvaluationStatus: 'Pending Review',
         recentGrade: 'Jayyid (B)',
-        parentPhone: '+1 (555) 662-8819'
+        parentPhone: '+1 (555) 662-8819',
+        enrollmentStatus: 'active',
+        attendanceAttentionReason: 'missed_latest',
+        consecutiveAbsences: 1
       }
     ];
   });
@@ -612,6 +697,143 @@ impl ThreadPool {
     return ['all', ...Array.from(set)];
   }, [assignedStudents]);
 
+  // Filtered attendance roster (defaults to active in session to prevent overwhelm)
+  const filteredAttendanceStudents = useMemo(() => {
+    return assignedStudents.filter((s) => {
+      // 1. Enrollment status filter
+      if (attendanceEnrollmentFilter === 'active' && s.enrollmentStatus && s.enrollmentStatus !== 'active') {
+        return false;
+      }
+      if (attendanceEnrollmentFilter === 'leave' && s.enrollmentStatus !== 'leave') {
+        return false;
+      }
+      if (attendanceEnrollmentFilter === 'graduated' && s.enrollmentStatus !== 'graduated') {
+        return false;
+      }
+
+      // 2. Cohort filter
+      if (attendanceCohortFilter !== 'all' && s.cohort !== attendanceCohortFilter) {
+        return false;
+      }
+
+      // 3. Search query
+      if (attendanceSearch.trim()) {
+        const q = attendanceSearch.toLowerCase();
+        return (
+          s.name.toLowerCase().includes(q) ||
+          s.email.toLowerCase().includes(q) ||
+          s.cohort.toLowerCase().includes(q)
+        );
+      }
+
+      return true;
+    });
+  }, [assignedStudents, attendanceEnrollmentFilter, attendanceCohortFilter, attendanceSearch]);
+
+  // Students requiring attendance intervention
+  const attentionStudents = useMemo(() => {
+    return assignedStudents.filter(
+      (s) =>
+        s.attendanceAttentionReason ||
+        (s.consecutiveAbsences && s.consecutiveAbsences >= 2) ||
+        (s.attendancePercent && s.attendancePercent < 75)
+    );
+  }, [assignedStudents]);
+
+  // Handle Voice Feedback Recording
+  const startVoiceFeedbackRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      voiceMediaRecorderRef.current = mediaRecorder;
+      voiceChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          voiceChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(voiceChunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        setVoiceFeedbackUrl(url);
+      };
+
+      mediaRecorder.start();
+      setIsRecordingVoiceFeedback(true);
+      setVoiceFeedbackDuration(0);
+
+      voiceTimerRef.current = setInterval(() => {
+        setVoiceFeedbackDuration((prev) => prev + 1);
+      }, 1000);
+    } catch (err) {
+      onAddToast({
+        type: 'error',
+        title: 'Microphone Permission Required',
+        message: 'Please allow microphone permissions to record spoken feedback.',
+      });
+    }
+  };
+
+  const stopVoiceFeedbackRecording = () => {
+    if (voiceMediaRecorderRef.current && isRecordingVoiceFeedback) {
+      voiceMediaRecorderRef.current.stop();
+      voiceMediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      setIsRecordingVoiceFeedback(false);
+      if (voiceTimerRef.current) clearInterval(voiceTimerRef.current);
+    }
+  };
+
+  const deleteVoiceFeedback = () => {
+    if (voiceAudioPlayerRef.current) {
+      voiceAudioPlayerRef.current.pause();
+    }
+    setVoiceFeedbackUrl(null);
+    setVoiceFeedbackDuration(0);
+    setIsPlayingVoiceFeedback(false);
+  };
+
+  const togglePlayVoiceFeedbackPreview = () => {
+    if (!voiceFeedbackUrl) return;
+    if (isPlayingVoiceFeedback) {
+      voiceAudioPlayerRef.current?.pause();
+      setIsPlayingVoiceFeedback(false);
+    } else {
+      if (voiceAudioPlayerRef.current) {
+        voiceAudioPlayerRef.current.src = voiceFeedbackUrl;
+        voiceAudioPlayerRef.current.play();
+        setIsPlayingVoiceFeedback(true);
+      }
+    }
+  };
+
+  // Handle Parent WhatsApp & Email Alerts
+  const handleSendParentWhatsApp = (std: AssignedStudent) => {
+    const reasonText =
+      std.attendanceAttentionReason === 'missed_latest'
+        ? `missed today's mandatory class session.`
+        : std.attendanceAttentionReason === 'missed_yesterday'
+        ? `has missed 2 consecutive class sessions.`
+        : `was unable to complete today's class (departed early).`;
+
+    const text = `Assalamu Alaikum / Dear Parent of ${std.name},\nThis is an automated attendance notice from ${tenant.name}. Please be advised that ${std.name} ${reasonText}\nPlease connect with faculty if an excused leave is required.`;
+    const cleanPhone = std.parentPhone.replace(/[^0-9]/g, '');
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    onAddToast({
+      type: 'success',
+      title: 'WhatsApp Alert Opened',
+      message: `Direct message generated for ${std.name}'s parent / guardian.`,
+    });
+  };
+
+  const handleSendParentEmail = (std: AssignedStudent) => {
+    const subject = `Attendance Alert: ${std.name} - ${tenant.name}`;
+    const body = `Dear Parent/Guardian,\n\nWe noticed that ${std.name} has missed recent class sessions at ${tenant.name}.\n\nCurrent Attendance: ${std.attendancePercent}%\n\nPlease contact us if this absence is excused.\n\nBest regards,\n${user?.name || teacherPersona.defaultName}\n${teacherPersona.title}`;
+    window.location.href = `mailto:${std.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   // Handle open grading modal
   const handleOpenGrading = (sub: StudentSubmission) => {
     setSelectedSubmission(sub);
@@ -623,6 +845,9 @@ impl ThreadPool {
     setAnalyticalRating(sub.analyticalRating || 5);
     setEvaluationScore(sub.currentScore || 95);
     setEvaluationNotes(sub.teacherRemarks || '');
+    setVoiceFeedbackUrl(sub.teacherAudioFeedbackUrl || null);
+    setVoiceFeedbackDuration(sub.teacherAudioFeedbackDuration || 0);
+    setIsPlayingVoiceFeedback(false);
     setSelectedVerdict(
       isCodingNiche ? 'Approved PR' : isSchoolNiche ? 'Grade A+' : 'Mumtaz'
     );
@@ -650,6 +875,8 @@ impl ThreadPool {
               conceptMasteryRating,
               analyticalRating,
               teacherRemarks: evaluationNotes,
+              teacherAudioFeedbackUrl: voiceFeedbackUrl || undefined,
+              teacherAudioFeedbackDuration: voiceFeedbackDuration || undefined,
               mistakeTags: selectedMistakeTags
             }
           : sub
@@ -672,11 +899,13 @@ impl ThreadPool {
     onAddToast({
       type: 'success',
       title: 'Evaluation Published',
-      message: `Grade (${selectedVerdict}) published for ${selectedSubmission.studentName}. Student portal updated.`
+      message: `Grade (${selectedVerdict}) ${voiceFeedbackUrl ? 'with voice memo ' : ''}published for ${selectedSubmission.studentName}. Student portal updated.`
     });
 
     setSelectedSubmission(null);
     setIsPlayingAudio(false);
+    setIsRecordingVoiceFeedback(false);
+    setVoiceFeedbackUrl(null);
   };
 
   // Toggle Mistake / Rubric Tag
@@ -1199,15 +1428,23 @@ impl ThreadPool {
                             {sub.submittedAt}
                           </td>
                           <td className="py-3.5 px-4">
-                            <Badge
-                              variant={
-                                sub.status === 'Graded'
-                                  ? 'success'
-                                  : 'warning'
-                              }
-                            >
-                              {sub.currentGrade || sub.status}
-                            </Badge>
+                            <div className="flex flex-col gap-1 items-start">
+                              <Badge
+                                variant={
+                                  sub.status === 'Graded'
+                                    ? 'success'
+                                    : 'warning'
+                                }
+                              >
+                                {sub.currentGrade || sub.status}
+                              </Badge>
+                              {sub.teacherAudioFeedbackUrl && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">
+                                  <Volume2 className="w-2.5 h-2.5" />
+                                  Voice Note ({sub.teacherAudioFeedbackDuration || 15}s)
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3.5 px-4 text-right">
                             <Button
@@ -1258,73 +1495,347 @@ impl ThreadPool {
           {/* TAB 4: ATTENDANCE SHEET */}
           {activeTab === 'attendance' && (
             <div className="space-y-6">
+              {/* Header & Subtabs */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Daily Roll Call & Attendance Log</h2>
-                  <p className="text-xs text-slate-500">Record punctuality, track attendance percentages, and notify parents.</p>
+                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Daily Roll Call & Attendance Control</h2>
+                  <p className="text-xs text-slate-500">
+                    Showing active students in session by default to avoid clutter. Filter by halaqah, bulk-mark status, or review students needing attention.
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <Input
-                    type="date"
-                    value={attendanceDate}
-                    onChange={(e) => setAttendanceDate(e.target.value)}
-                    className="w-40"
-                  />
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={handleSaveAttendance}
-                    leftIcon={<CheckCircle2 className="w-4 h-4" />}
-                    className="font-bold text-xs"
+                <div className="flex items-center gap-2 bg-slate-200/80 p-1 rounded-2xl shrink-0">
+                  <button
+                    onClick={() => setAttendanceSubTab('roster')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer select-none ${
+                      attendanceSubTab === 'roster'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
                   >
-                    Save Roll Call
-                  </Button>
+                    Roll Call Roster ({filteredAttendanceStudents.length})
+                  </button>
+
+                  <button
+                    onClick={() => setAttendanceSubTab('attention')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer select-none ${
+                      attendanceSubTab === 'attention'
+                        ? 'bg-rose-600 text-white shadow-xs'
+                        : 'text-rose-700 hover:bg-rose-100/60'
+                    }`}
+                  >
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>Needing Attention ({attentionStudents.length})</span>
+                  </button>
                 </div>
               </div>
 
-              <Card className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                    <tr>
-                      <th className="py-3 px-4">Student</th>
-                      <th className="py-3 px-4">Cohort</th>
-                      <th className="py-3 px-4 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {assignedStudents.map((std) => (
-                      <tr key={std.id} className="hover:bg-slate-50">
-                        <td className="py-3.5 px-4 font-bold text-slate-900">{std.name}</td>
-                        <td className="py-3.5 px-4 text-slate-500">{std.cohort}</td>
-                        <td className="py-3.5 px-4">
-                          <div className="flex items-center justify-center gap-2">
-                            {(['present', 'late', 'excused', 'absent'] as const).map((status) => (
-                              <button
-                                key={status}
-                                onClick={() => setAttendance(std.id, status)}
-                                className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
-                                  attendanceState[std.id] === status
-                                    ? status === 'present'
-                                      ? 'bg-emerald-600 text-white shadow-xs'
-                                      : status === 'late'
-                                      ? 'bg-amber-500 text-slate-950 font-bold'
-                                      : status === 'excused'
-                                      ? 'bg-blue-600 text-white'
-                                      : 'bg-rose-600 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                }`}
+              {/* Smart Filter & Control Bar */}
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  {/* Left Filters */}
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {/* Enrollment Status Filter */}
+                    <div className="flex items-center gap-1 bg-slate-100 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs">
+                      <Filter className="w-3.5 h-3.5 text-slate-500" />
+                      <span className="font-semibold text-slate-600 text-[11px]">Enrollment:</span>
+                      <select
+                        value={attendanceEnrollmentFilter}
+                        onChange={(e) => setAttendanceEnrollmentFilter(e.target.value as any)}
+                        className="bg-transparent text-slate-900 font-bold text-xs focus:outline-none cursor-pointer"
+                      >
+                        <option value="active">Active (In-Session Only)</option>
+                        <option value="all">All Enrolled</option>
+                        <option value="leave">On Leave / Paused</option>
+                        <option value="graduated">Graduated / Alumni</option>
+                      </select>
+                    </div>
+
+                    {/* Class / Halaqah Filter */}
+                    <div className="flex items-center gap-1 bg-slate-100 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs">
+                      <span className="font-semibold text-slate-600 text-[11px]">Halaqah / Class:</span>
+                      <select
+                        value={attendanceCohortFilter}
+                        onChange={(e) => setAttendanceCohortFilter(e.target.value)}
+                        className="bg-transparent text-slate-900 font-bold text-xs focus:outline-none cursor-pointer max-w-[180px] truncate"
+                      >
+                        {cohorts.map((c) => (
+                          <option key={c} value={c}>
+                            {c === 'all' ? 'All Cohorts & Circles' : c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Search */}
+                    <div className="w-44 sm:w-56">
+                      <Input
+                        placeholder="Search student..."
+                        value={attendanceSearch}
+                        onChange={(e) => setAttendanceSearch(e.target.value)}
+                        leftIcon={<Search className="w-3.5 h-3.5 text-slate-400" />}
+                        className="py-1 text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right Actions & Date */}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="date"
+                      value={attendanceDate}
+                      onChange={(e) => setAttendanceDate(e.target.value)}
+                      className="w-36 text-xs"
+                    />
+
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSaveAttendance}
+                      leftIcon={<CheckCircle2 className="w-4 h-4" />}
+                      className="font-bold text-xs shadow-xs"
+                    >
+                      Save Roll Call
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Bulk Actions Bar */}
+                {attendanceSubTab === 'roster' && (
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span>
+                      Displaying <strong className="text-slate-900">{filteredAttendanceStudents.length}</strong> active students in current filter
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updates: Record<string, 'present' | 'late' | 'absent' | 'excused'> = {};
+                          filteredAttendanceStudents.forEach((std) => {
+                            updates[std.id] = 'present';
+                          });
+                          setAttendanceState((prev) => ({ ...prev, ...updates }));
+                          onAddToast({
+                            type: 'success',
+                            title: 'Marked All Present',
+                            message: `Marked all ${filteredAttendanceStudents.length} students in filter as Present.`,
+                          });
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer text-[11px]"
+                      >
+                        ✓ Mark All in Filter Present
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updates: Record<string, 'present' | 'late' | 'absent' | 'excused'> = {};
+                          filteredAttendanceStudents.forEach((std) => {
+                            updates[std.id] = 'excused';
+                          });
+                          setAttendanceState((prev) => ({ ...prev, ...updates }));
+                          onAddToast({
+                            type: 'info',
+                            title: 'Marked All Excused',
+                            message: `Marked all ${filteredAttendanceStudents.length} students in filter as Excused.`,
+                          });
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 font-bold border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer text-[11px]"
+                      >
+                        Mark All Excused
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sub-view 1: Standard Roll Call Roster */}
+              {attendanceSubTab === 'roster' && (
+                <Card className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                        <tr>
+                          <th className="py-3 px-4">Student</th>
+                          <th className="py-3 px-4">Cohort / Halaqah</th>
+                          <th className="py-3 px-4 text-center">Enrollment</th>
+                          <th className="py-3 px-4 text-center">Term Attendance %</th>
+                          <th className="py-3 px-4 text-center">Daily Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredAttendanceStudents.map((std) => (
+                          <tr key={std.id} className="hover:bg-slate-50">
+                            <td className="py-3.5 px-4 font-bold text-slate-900">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                  {std.avatar}
+                                </div>
+                                <div>
+                                  <span>{std.name}</span>
+                                  <span className="text-[10px] text-slate-400 font-mono block">{std.email}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-600 font-medium">{std.cohort}</td>
+                            <td className="py-3.5 px-4 text-center">
+                              <Badge
+                                variant={
+                                  std.enrollmentStatus === 'active' || !std.enrollmentStatus
+                                    ? 'success'
+                                    : std.enrollmentStatus === 'leave'
+                                    ? 'warning'
+                                    : 'default'
+                                }
+                                className="capitalize text-[10px]"
                               >
-                                {status}
-                              </button>
-                            ))}
+                                {std.enrollmentStatus || 'Active'}
+                              </Badge>
+                            </td>
+                            <td className="py-3.5 px-4 text-center font-mono font-bold text-slate-800">
+                              {std.attendancePercent}%
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <div className="flex items-center justify-center gap-1.5">
+                                {(['present', 'late', 'excused', 'absent'] as const).map((status) => (
+                                  <button
+                                    key={status}
+                                    onClick={() => setAttendance(std.id, status)}
+                                    className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+                                      attendanceState[std.id] === status
+                                        ? status === 'present'
+                                          ? 'bg-emerald-600 text-white shadow-xs'
+                                          : status === 'late'
+                                          ? 'bg-amber-500 text-slate-950 font-bold'
+                                          : status === 'excused'
+                                          ? 'bg-blue-600 text-white'
+                                          : 'bg-rose-600 text-white'
+                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                  >
+                                    {status}
+                                  </button>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+              )}
+
+              {/* Sub-view 2: Students Needing Attention */}
+              {attendanceSubTab === 'attention' && (
+                <div className="space-y-4">
+                  <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-3">
+                    <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <h4 className="text-xs sm:text-sm font-bold text-rose-950">
+                        Attendance Disruption & At-Risk Students Requiring Faculty Intervention
+                      </h4>
+                      <p className="text-xs text-rose-800 leading-relaxed">
+                        These students missed the latest concluded live class, missed yesterday's session, or departed early before completion. Use the quick buttons below to notify parents directly via WhatsApp or Email.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {attentionStudents.map((std) => {
+                      const isMissedLatest = std.attendanceAttentionReason === 'missed_latest';
+                      const isMissedYesterday = std.attendanceAttentionReason === 'missed_yesterday';
+                      const isLeftEarly = std.attendanceAttentionReason === 'left_early';
+
+                      return (
+                        <Card key={std.id} className="p-5 bg-white border border-rose-200 shadow-xs space-y-4 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-9 h-9 rounded-full bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                                  {std.avatar}
+                                </div>
+                                <div className="min-w-0">
+                                  <h4 className="font-bold text-xs sm:text-sm text-slate-900 truncate">{std.name}</h4>
+                                  <p className="text-[11px] text-slate-500 truncate">{std.cohort}</p>
+                                </div>
+                              </div>
+
+                              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
+                                {std.attendancePercent}%
+                              </span>
+                            </div>
+
+                            {/* Attention Reason Pill */}
+                            <div className="p-2.5 rounded-xl text-xs font-semibold space-y-1 border bg-slate-50">
+                              {isMissedLatest && (
+                                <div className="text-rose-800 flex items-center gap-1.5 font-bold">
+                                  <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
+                                  Missed Latest Concluded Class
+                                </div>
+                              )}
+                              {isMissedYesterday && (
+                                <div className="text-amber-800 flex items-center gap-1.5 font-bold">
+                                  <span className="w-2 h-2 rounded-full bg-amber-600" />
+                                  Missed Yesterday ({std.consecutiveAbsences || 2} Consecutive Missed)
+                                </div>
+                              )}
+                              {isLeftEarly && (
+                                <div className="text-purple-800 flex items-center gap-1.5 font-bold">
+                                  <span className="w-2 h-2 rounded-full bg-purple-600" />
+                                  Incomplete Class (Left 20m Early)
+                                </div>
+                              )}
+                              <p className="text-[10px] text-slate-500 font-normal">
+                                Parent Phone: <span className="font-mono font-semibold">{std.parentPhone}</span>
+                              </p>
+                            </div>
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Card>
+
+                          {/* Quick Actions */}
+                          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleSendParentWhatsApp(std)}
+                              className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                              title="Send WhatsApp Parent Alert"
+                            >
+                              <Phone className="w-3.5 h-3.5" />
+                              <span>WhatsApp</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleSendParentEmail(std)}
+                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
+                              title="Send Email Notice"
+                            >
+                              <Mail className="w-3.5 h-3.5 text-slate-600" />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAttendance(std.id, 'excused');
+                                onAddToast({
+                                  type: 'info',
+                                  title: 'Marked Excused',
+                                  message: `${std.name} absence recorded as Excused.`,
+                                });
+                              }}
+                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer border border-slate-200"
+                              title="Excuse Absence"
+                            >
+                              Excuse
+                            </button>
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1616,7 +2127,7 @@ impl ThreadPool {
                 </div>
               </div>
 
-              {/* Feedback Notes */}
+              {/* Feedback Notes (Written) */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-800 block">
                   {isCodingNiche ? 'Senior Mentor Code Review Comments' : isSchoolNiche ? 'Faculty Feedback & Rubric Notes' : 'Sheikh Remarks & Direct Feedback'}
@@ -1634,6 +2145,133 @@ impl ThreadPool {
                   }
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-sans"
                 />
+              </div>
+
+              {/* Ustaz Spoken Voice Feedback / Audio Correction Note */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-600/10 text-emerald-700 flex items-center justify-center">
+                      <Mic className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900">
+                        {isCodingNiche ? 'Mentor Voice Note' : isSchoolNiche ? 'Instructor Audio Remark' : 'Sheikh Spoken Voice Remark (Audio Note)'}
+                      </h4>
+                      <p className="text-[10px] text-slate-500">
+                        Attach high-resolution spoken Tajweed or rubric guidance alongside your written evaluation.
+                      </p>
+                    </div>
+                  </div>
+
+                  {voiceFeedbackUrl && (
+                    <span className="text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200">
+                      {voiceFeedbackDuration}s recorded
+                    </span>
+                  )}
+                </div>
+
+                {/* Recorder Actions & Preview */}
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  {/* Hidden Audio Player for Preview */}
+                  <audio
+                    ref={voiceAudioPlayerRef}
+                    onEnded={() => setIsPlayingVoiceFeedback(false)}
+                  />
+
+                  {/* 1. Live Recording State */}
+                  {isRecordingVoiceFeedback ? (
+                    <div className="flex items-center gap-3 w-full bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
+                      <div className="flex items-center gap-2 text-rose-600 text-xs font-bold animate-pulse">
+                        <span className="w-3 h-3 rounded-full bg-rose-500 inline-block animate-ping" />
+                        <span>Recording Ustaz Audio Note...</span>
+                        <span className="font-mono bg-rose-200/80 px-2 py-0.5 rounded text-rose-900 font-black">
+                          {String(Math.floor(voiceFeedbackDuration / 60)).padStart(2, '0')}:
+                          {String(voiceFeedbackDuration % 60).padStart(2, '0')}
+                        </span>
+                      </div>
+
+                      <div className="flex-1 flex items-center gap-0.5 justify-center h-4">
+                        {[40, 70, 30, 90, 60, 100, 45, 80, 50, 95, 35, 75].map((h, i) => (
+                          <div
+                            key={i}
+                            className="w-1 bg-rose-400 rounded-full animate-pulse"
+                            style={{
+                              height: `${h}%`,
+                              animationDelay: `${i * 70}ms`,
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={stopVoiceFeedbackRecording}
+                        leftIcon={<Square className="w-3.5 h-3.5 fill-current" />}
+                        className="text-xs font-bold"
+                      >
+                        Stop Recording
+                      </Button>
+                    </div>
+                  ) : voiceFeedbackUrl ? (
+                    /* 2. Recorded Preview State */
+                    <div className="flex items-center justify-between w-full bg-white border border-emerald-200 p-2.5 rounded-xl shadow-xs">
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={togglePlayVoiceFeedbackPreview}
+                          className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
+                        >
+                          {isPlayingVoiceFeedback ? (
+                            <Square className="w-3.5 h-3.5 fill-current" />
+                          ) : (
+                            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                          )}
+                        </button>
+                        <div>
+                          <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <span>Voice Remark Attached</span>
+                            <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-bold">
+                              Ready
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-400 font-mono">
+                            Click play to preview oral correction before publishing.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={deleteVoiceFeedback}
+                          leftIcon={<Trash2 className="w-3.5 h-3.5 text-rose-500" />}
+                          className="text-xs text-rose-600 hover:bg-rose-50"
+                        >
+                          Delete & Re-record
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* 3. Idle / Start Recording State */
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={startVoiceFeedbackRecording}
+                        leftIcon={<Mic className="w-3.5 h-3.5 text-emerald-600" />}
+                        className="font-bold text-xs bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-800"
+                      >
+                        Record Audio Feedback Note
+                      </Button>
+                      <span className="text-[11px] text-slate-400">
+                        Microphone will capture oral articulation & tajweed corrections.
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

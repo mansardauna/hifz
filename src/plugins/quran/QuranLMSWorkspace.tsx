@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { QuranViewer } from '../../components/lms/QuranViewer';
-import { AudioRecitationPlayer } from '../../components/lms/AudioRecitationPlayer';
 import { MOCK_SURAHS } from '../../services/mockData';
 import { Surah, Ayah } from '../../types';
 import { BookOpen } from 'lucide-react';
@@ -52,23 +51,13 @@ export const QuranLMSWorkspace: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Quran Viewer */}
+      {/* Main Quran Viewer with Side-Docked Audio Toolbox */}
       <QuranViewer
         activeAyahNumber={selectedAyah?.number || null}
         onSelectAyah={handleSelectAyah}
         isPlaying={isPlaying}
         onTogglePlay={handleTogglePlay}
       />
-
-      {/* Audio Recitation Player & Looper */}
-      <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
-        <AudioRecitationPlayer
-          currentAyah={selectedAyah}
-          isPlaying={isPlaying}
-          onTogglePlay={handleTogglePlay}
-          onAddToast={(toast) => console.log('Audio Player Toast:', toast)}
-        />
-      </div>
     </div>
   );
 };
