@@ -52,9 +52,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
   const { login } = useAuth();
 
   const isCodingNiche = tenant?.niche === 'coding' || tenant?.niche === 'code_academy' || tenant?.subdomain?.includes('code');
-  const isSchoolNiche = tenant?.niche === 'school' || tenant?.subdomain?.includes('school') || tenant?.subdomain?.includes('horizon') || tenant?.subdomain?.includes('al-furqan');
-  const isMadrasatNiche = (tenant?.niche === 'madrasat' || tenant?.niche === 'quran' || tenant?.subdomain?.includes('hifz') || tenant?.subdomain?.includes('quran') || tenant?.subdomain?.includes('dar-al')) && !isCodingNiche && !isSchoolNiche;
-  const isPlatformLogin = !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo' || (!isCodingNiche && !isSchoolNiche && !isMadrasatNiche);
+  const isSchoolNiche = (tenant?.niche === 'school' || tenant?.subdomain?.includes('horizon') || tenant?.subdomain?.includes('oxford')) && !isCodingNiche && tenant?.niche !== 'quran' && tenant?.niche !== 'madrasat';
+  const isMadrasatNiche = (tenant?.niche === 'madrasat' || tenant?.niche === 'quran' || tenant?.subdomain?.includes('hifz') || tenant?.subdomain?.includes('quran') || tenant?.subdomain?.includes('al-furqan') || tenant?.subdomain?.includes('dar-al') || tenant?.subdomain?.includes('bayyinah')) && !isCodingNiche && !isSchoolNiche;
+  const isPlatformLogin = !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo';
 
   const activeLayout: LayoutType =
     (tenant?.authCustomization?.layout as LayoutType) || 'split';

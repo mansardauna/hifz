@@ -116,6 +116,8 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const localStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
   const livekitRoomRef = useRef<Room | null>(null);
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
 
@@ -179,7 +181,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // WebRTC & Camera Initialization
+  // WebRTC & Camera Initialization (Dual Engine: LiveKit Cloud SFU + Real Browser WebRTC Mesh)
   const handleStartCall = async () => {
     setIsInCall(true);
     setActiveTab('video');
@@ -193,7 +195,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         localVideoRef.current.srcObject = stream;
       }
 
-      // Audio analyser
+      // Audio analyser for real-time mic visualizer
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioCtx) {
         const audioCtx = new AudioCtx();
@@ -217,74 +219,178 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         requestAnimationFrame(checkLevel);
       }
 
-      // Connect to LiveKit Cloud WebRTC SFU
       const roomName = `room-${roomTitle.toLowerCase().replace(/\s+/g, '-')}`;
+
+      // 1. Direct WebRTC Peer Connection with BroadcastChannel Cross-Tab Signaling
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        const bc = new BroadcastChannel(`hifz_webrtc_${roomName}`);
+        broadcastChannelRef.current = bc;
+
+        const pc = new RTCPeerConnection({
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' }
+          ]
+        });
+        peerConnectionRef.current = pc;
+
+        // Add local tracks to WebRTC peer connection
+        stream.getTracks().forEach((track) => {
+          pc.addTrack(track, stream);
+        });
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate && bc) {
+            bc.postMessage({
+              type: 'ice_candidate',
+              candidate: event.candidate,
+              sender: currentUserName
+            });
+          }
+        };
+
+        pc.ontrack = (event) => {
+          if (remoteVideoRef.current && event.streams[0]) {
+            remoteVideoRef.current.srcObject = event.streams[0];
+            setHasRemoteVideo(true);
+            setIsConnectedToSFU(true);
+          }
+        };
+
+        bc.onmessage = async (e) => {
+          const data = e.data;
+          if (!data || data.sender === currentUserName) return;
+
+          if (data.type === 'peer_join') {
+            setRemoteParticipantName(data.sender);
+            try {
+              const offer = await pc.createOffer();
+              await pc.setLocalDescription(offer);
+              bc.postMessage({
+                type: 'peer_offer',
+                sdp: offer,
+                sender: currentUserName
+              });
+            } catch (err) {
+              console.warn('WebRTC offer error:', err);
+            }
+          } else if (data.type === 'peer_offer') {
+            setRemoteParticipantName(data.sender);
+            try {
+              await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+              const answer = await pc.createAnswer();
+              await pc.setLocalDescription(answer);
+              bc.postMessage({
+                type: 'peer_answer',
+                sdp: answer,
+                sender: currentUserName
+              });
+            } catch (err) {
+              console.warn('WebRTC answer error:', err);
+            }
+          } else if (data.type === 'peer_answer') {
+            setRemoteParticipantName(data.sender);
+            try {
+              await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            } catch (err) {
+              console.warn('WebRTC set remote description error:', err);
+            }
+          } else if (data.type === 'ice_candidate') {
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+            } catch (err) {
+              console.warn('WebRTC candidate error:', err);
+            }
+          } else if (data.type === 'chat_message') {
+            setForumMessages((prev) => [...prev, data.message]);
+          } else if (data.type === 'peer_leave') {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = null;
+            }
+            setHasRemoteVideo(false);
+            setRemoteParticipantName(null);
+          }
+        };
+
+        // Announce presence to other peers in room
+        bc.postMessage({
+          type: 'peer_join',
+          sender: currentUserName,
+          role: userRole
+        });
+      }
+
+      // 2. Connect to LiveKit Cloud WebRTC SFU (if configured)
       const tokenRes = await fetch(
         `/api/livekit/token?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(currentUserName)}`
       );
       if (tokenRes.ok) {
-        const { token, wsUrl } = await tokenRes.json();
-        if (token && wsUrl) {
-          const room = new Room({
-            adaptiveStream: true,
-            dynacast: true,
-          });
-          livekitRoomRef.current = room;
+        const { token, wsUrl, isFallback } = await tokenRes.json();
+        if (token && wsUrl && !isFallback) {
+          try {
+            const room = new Room({
+              adaptiveStream: true,
+              dynacast: true,
+            });
+            livekitRoomRef.current = room;
 
-          // Wire remote participant track events
-          room.on(RoomEvent.Connected, () => {
-            setIsConnectedToSFU(true);
-            // Check if participants are already present in room
-            room.remoteParticipants.forEach((participant) => {
-              setRemoteParticipantName(participant.name || participant.identity);
-              participant.trackPublications.forEach((pub) => {
-                if (pub.isSubscribed && pub.track) {
-                  if (pub.track.kind === Track.Kind.Video && remoteVideoRef.current) {
-                    pub.track.attach(remoteVideoRef.current);
-                    setHasRemoteVideo(true);
+            // Wire remote participant track events
+            room.on(RoomEvent.Connected, () => {
+              setIsConnectedToSFU(true);
+              room.remoteParticipants.forEach((participant) => {
+                setRemoteParticipantName(participant.name || participant.identity);
+                participant.trackPublications.forEach((pub) => {
+                  if (pub.isSubscribed && pub.track) {
+                    if (pub.track.kind === Track.Kind.Video && remoteVideoRef.current) {
+                      pub.track.attach(remoteVideoRef.current);
+                      setHasRemoteVideo(true);
+                    }
+                    if (pub.track.kind === Track.Kind.Audio && remoteAudioRef.current) {
+                      pub.track.attach(remoteAudioRef.current);
+                    }
                   }
-                  if (pub.track.kind === Track.Kind.Audio && remoteAudioRef.current) {
-                    pub.track.attach(remoteAudioRef.current);
-                  }
-                }
+                });
               });
             });
-          });
 
-          room.on(RoomEvent.ParticipantConnected, (participant: RemoteParticipant) => {
-            setRemoteParticipantName(participant.name || participant.identity);
-          });
+            room.on(RoomEvent.ParticipantConnected, (participant: RemoteParticipant) => {
+              setRemoteParticipantName(participant.name || participant.identity);
+            });
 
-          room.on(RoomEvent.ParticipantDisconnected, () => {
-            if (room.remoteParticipants.size === 0) {
-              setRemoteParticipantName(null);
-              setHasRemoteVideo(false);
-            }
-          });
+            room.on(RoomEvent.ParticipantDisconnected, () => {
+              if (room.remoteParticipants.size === 0) {
+                setRemoteParticipantName(null);
+                setHasRemoteVideo(false);
+              }
+            });
 
-          room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
-            setRemoteParticipantName(participant.name || participant.identity);
-            if (track.kind === Track.Kind.Video && remoteVideoRef.current) {
-              track.attach(remoteVideoRef.current);
-              setHasRemoteVideo(true);
-            } else if (track.kind === Track.Kind.Audio && remoteAudioRef.current) {
-              track.attach(remoteAudioRef.current);
-            }
-          });
+            room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
+              setRemoteParticipantName(participant.name || participant.identity);
+              if (track.kind === Track.Kind.Video && remoteVideoRef.current) {
+                track.attach(remoteVideoRef.current);
+                setHasRemoteVideo(true);
+              } else if (track.kind === Track.Kind.Audio && remoteAudioRef.current) {
+                track.attach(remoteAudioRef.current);
+              }
+            });
 
-          room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
-            track.detach();
-            if (track.kind === Track.Kind.Video) {
-              setHasRemoteVideo(false);
-            }
-          });
+            room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
+              track.detach();
+              if (track.kind === Track.Kind.Video) {
+                setHasRemoteVideo(false);
+              }
+            });
 
-          await room.connect(wsUrl, token);
-          await room.localParticipant.enableCameraAndMicrophone();
+            await room.connect(wsUrl, token);
+            await room.localParticipant.enableCameraAndMicrophone();
+          } catch (e) {
+            console.warn('LiveKit cloud connection notice (using P2P mesh):', e);
+          }
         }
       }
     } catch (err) {
-      console.warn('LiveKit SFU connection error:', err);
+      console.warn('Camera & WebRTC connection error:', err);
     }
   };
 
@@ -294,6 +400,18 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     setRemoteParticipantName(null);
     setHasRemoteVideo(false);
 
+    if (broadcastChannelRef.current) {
+      broadcastChannelRef.current.postMessage({
+        type: 'peer_leave',
+        sender: currentUserName
+      });
+      broadcastChannelRef.current.close();
+      broadcastChannelRef.current = null;
+    }
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+      peerConnectionRef.current = null;
+    }
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
@@ -367,16 +485,21 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     e.preventDefault();
     if (!messageInput.trim()) return;
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setForumMessages([
-      ...forumMessages,
-      {
-        id: `msg-${Date.now()}`,
-        sender: currentUserName,
-        role: userRole,
-        text: messageInput.trim(),
-        time: now,
-      }
-    ]);
+    const newMsg = {
+      id: `msg-${Date.now()}`,
+      sender: currentUserName,
+      role: userRole,
+      text: messageInput.trim(),
+      time: now,
+    };
+    setForumMessages((prev) => [...prev, newMsg]);
+    if (broadcastChannelRef.current) {
+      broadcastChannelRef.current.postMessage({
+        type: 'chat_message',
+        message: newMsg,
+        sender: currentUserName
+      });
+    }
     setMessageInput('');
   };
 

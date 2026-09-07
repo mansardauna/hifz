@@ -53,7 +53,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     if (typeof window !== 'undefined') {
-      window.location.href = '/login';
+      try {
+        localStorage.removeItem('auth_user');
+        sessionStorage.removeItem('auth_user');
+      } catch (e) {}
+
+      const pathname = window.location.pathname;
+      const segments = pathname.split('/').filter(Boolean);
+      const rootRoutes = ['login', 'register', 'create-academy', 'super-admin', 'verify'];
+      if (segments.length > 0 && !rootRoutes.includes(segments[0])) {
+        const subdomain = segments[0];
+        window.location.href = `/${subdomain}/login`;
+      } else {
+        window.location.href = '/login';
+      }
     }
   };
 

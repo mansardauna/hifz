@@ -26,16 +26,28 @@ interface TenantContextType {
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentSubdomain, setCurrentSubdomain] = useState<string>('al-furqan');
-  const [tenant, setTenant] = useState<TenantConfig>(MOCK_TENANTS['al-furqan']);
+  const [currentSubdomain, setCurrentSubdomain] = useState<string>('hifz-academy');
+  const [tenant, setTenant] = useState<TenantConfig>(MOCK_TENANTS['hifz-academy']);
   const [courses, setCourses] = useState<Course[]>(MOCK_COURSES);
   const [activeRole, setActiveRole] = useState<AppRole>('saas_home');
   const [direction, setDirection] = useState<Direction>('ltr');
   const [language, setLanguage] = useState<AppLanguage>('en');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Auto-detect subdomain from window.location in real multi-tenant deployment
+  // Auto-detect subdomain from window.location pathname or hostname in real multi-tenant deployment
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(Boolean);
+    const rootRoutes = ['login', 'register', 'create-academy', 'super-admin', 'verify', 'api'];
+    if (segments.length > 0 && !rootRoutes.includes(segments[0])) {
+      const detected = segments[0];
+      if (MOCK_TENANTS[detected]) {
+        setCurrentSubdomain(detected);
+        return;
+      }
+    }
+
     const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length > 2 && parts[0] !== 'www' && !host.endsWith('.vercel.app')) {
