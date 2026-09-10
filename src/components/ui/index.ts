@@ -8,3 +8,4 @@ export * from './Toast';
 export * from './LoadingSpinner';
 export * from './DataTablePagination';
 export * from './PWAInstallToast';
+export * from './AppPreloader';

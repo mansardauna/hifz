@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
-import { ToastMessage } from '../ui/Toast';
-import { Button, Input, Card, Badge } from '../ui';
+import { Button, Input, Card, Badge, AppPreloader, ToastMessage } from '../ui';
 import { LockedFeatureCard } from './LockedFeatureCard';
 import { AuthPageCustomization, FormFieldConfig } from '../../types';
 import {
@@ -104,6 +103,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
   const [fontFamily, setFontFamily] = useState<string>(tenant.theme?.fontFamily || 'Poppins');
   const [borderRadius, setBorderRadius] = useState<string>(tenant.theme?.borderRadius || '0.5rem');
   const [customCss, setCustomCss] = useState<string>(tenant.customCss || '');
+
+  // Preloader Customization
+  const [preloaderText, setPreloaderText] = useState<string>(tenant.preloaderCustomization?.customText || 'Loading academy...');
+  const [preloaderTextAr, setPreloaderTextAr] = useState<string>(tenant.preloaderCustomization?.customTextAr || 'جارٍ تحميل المنصة...');
+  const [preloaderShowLogo, setPreloaderShowLogo] = useState<boolean>(tenant.preloaderCustomization?.showLogo ?? true);
+  const [isPreviewingPreloader, setIsPreviewingPreloader] = useState<boolean>(false);
 
   // Auth Layout Customization
   const [authLayout, setAuthLayout] = useState<'split' | 'centered_glass' | 'minimal_card' | 'heritage_frame'>(
@@ -231,8 +236,15 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         borderRadius,
       },
       customCss,
+      preloaderCustomization: {
+        enabled: true,
+        customText: preloaderText,
+        customTextAr: preloaderTextAr,
+        showLogo: preloaderShowLogo,
+        blurIntensity: 'subtle',
+      },
     });
-    success('Theme & Branding Applied', 'Colors, sidebar background, logo, unique favicon, and font styles updated across all views.');
+    success('Theme & Branding Applied', 'Colors, sidebar background, logo, preloader, and font styles updated across all views.');
   };
 
   const handleSaveAuthLayout = () => {
@@ -824,6 +836,61 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 </div>
               </div>
 
+              {/* Preloader & Loading Animation Settings */}
+              <div className="pt-4 border-t border-slate-200 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      <span>Branded Preloader & Page Loading Transition</span>
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      Customize the gentle, softly blurred loading animation displayed on page transitions across your academy.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPreviewingPreloader(true);
+                      setTimeout(() => setIsPreviewingPreloader(false), 2000);
+                    }}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>Test Preview (2s)</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input
+                    label="Preloader Text (English)"
+                    value={preloaderText}
+                    onChange={(e) => setPreloaderText(e.target.value)}
+                    placeholder="e.g. Loading your courses..."
+                  />
+
+                  <Input
+                    label="Preloader Text (Arabic)"
+                    value={preloaderTextAr}
+                    onChange={(e) => setPreloaderTextAr(e.target.value)}
+                    placeholder="مثال: جارٍ تحميل الأكاديمية..."
+                    dir="rtl"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={preloaderShowLogo}
+                      onChange={(e) => setPreloaderShowLogo(e.target.checked)}
+                      className="w-4 h-4 text-emerald-600 rounded"
+                    />
+                    <span>Display Academy Logo / Brand Insignia on Preloader</span>
+                  </label>
+                </div>
+              </div>
+
               <div className="pt-3">
                 <label className="block text-xs font-bold text-slate-700 mb-1">Custom CSS Overrides</label>
                 <textarea
@@ -1367,6 +1434,9 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           </div>
         </div>
       )}
+
+      {/* Live Preview of Preloader */}
+      {isPreviewingPreloader && <AppPreloader forceShow={true} />}
     </div>
   );
 };

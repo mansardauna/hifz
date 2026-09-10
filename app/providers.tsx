@@ -5,6 +5,7 @@ import { AuthProvider } from '../src/context/AuthContext';
 import { TenantProvider } from '../src/context/TenantContext';
 import { ToastProvider } from '../src/context/ToastContext';
 import { PWAInstallToast } from '../src/components/ui/PWAInstallToast';
+import { AppPreloader } from '../src/components/ui/AppPreloader';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -21,6 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ToastProvider>
       <AuthProvider>
         <TenantProvider>
+          <AppPreloader />
           {children}
           <PWAInstallToast />
         </TenantProvider>

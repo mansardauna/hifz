@@ -109,6 +109,15 @@ export interface AuthPageCustomization {
   customAuthFields?: FormFieldConfig[];
 }
 
+export interface PreloaderCustomization {
+  enabled?: boolean;
+  customText?: string;
+  customTextAr?: string;
+  showLogo?: boolean;
+  blurIntensity?: 'subtle' | 'medium' | 'high';
+  animationStyle?: 'pulse' | 'orbit' | 'bar' | 'minimal';
+}
+
 export interface TenantConfig {
   id: string;
   name: string;
@@ -142,6 +151,7 @@ export interface TenantConfig {
   subscriptionPlan?: TenantSubscriptionPlan;
   studentCapacity?: number;
   authCustomization?: AuthPageCustomization;
+  preloaderCustomization?: PreloaderCustomization;
 }
 
 export interface Lesson {

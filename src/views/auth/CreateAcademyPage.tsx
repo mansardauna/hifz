@@ -143,6 +143,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
           defaultDirection: 'ltr',
         };
         localStorage.setItem(`tenant_config_${subdomain}`, JSON.stringify(cleanTenant));
+        localStorage.setItem(`tenant_admin_email_${email.toLowerCase().trim()}`, subdomain);
       } catch (e) {}
     }
 
