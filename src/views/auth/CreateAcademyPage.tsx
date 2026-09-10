@@ -99,6 +99,60 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
     setSubdomain(val);
   };
 
+  // Real-time Subdomain Availability Check
+  const subdomainCheck = React.useMemo(() => {
+    const trimmed = subdomain.toLowerCase().trim();
+    if (!trimmed) return { status: 'empty', message: '' };
+    if (trimmed.length < 3) return { status: 'invalid', message: 'Subdomain must be at least 3 characters.' };
+
+    const reservedSubdomains = [
+      'al-furqan',
+      'hifz-academy',
+      'code-academy',
+      'school-demo',
+      'super-admin',
+      'platform',
+      'demo',
+      'api',
+      'admin',
+      'mail',
+      'auth',
+      'login',
+      'register',
+      'root',
+    ];
+
+    if (reservedSubdomains.includes(trimmed)) {
+      return { status: 'taken', message: `"${trimmed}" is a reserved platform name. Please choose another.` };
+    }
+
+    if (typeof window !== 'undefined') {
+      const exists = localStorage.getItem(`tenant_config_${trimmed}`);
+      if (exists) {
+        return { status: 'taken', message: `Subdomain "${trimmed}" is already registered.` };
+      }
+    }
+
+    return { status: 'available', message: `${trimmed}.ankabit.app is available!` };
+  }, [subdomain]);
+
+  // Real-time Email Availability Check
+  const emailCheck = React.useMemo(() => {
+    const trimmed = email.toLowerCase().trim();
+    if (!trimmed || !trimmed.includes('@')) return { status: 'empty', message: '' };
+
+    if (typeof window !== 'undefined') {
+      const existingSubdomain = localStorage.getItem(`tenant_admin_email_${trimmed}`);
+      if (existingSubdomain) {
+        return {
+          status: 'taken',
+          message: `An academy is already registered with ${trimmed}. Please sign in instead.`,
+        };
+      }
+    }
+    return { status: 'available', message: '' };
+  }, [email]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!academyName || !subdomain || !adminName || !email || !password) {
@@ -110,46 +164,34 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
       return;
     }
 
+    if (subdomainCheck.status === 'taken') {
+      onAddToast({
+        type: 'error',
+        title: 'Subdomain Already Taken',
+        message: `The subdomain "${subdomain}" is already in use. Please choose a unique subdomain.`,
+      });
+      return;
+    }
+
+    if (emailCheck.status === 'taken') {
+      onAddToast({
+        type: 'warning',
+        title: 'Account Already Exists',
+        message: `An account with email "${email}" is already registered. Please sign in to your existing academy.`,
+        action: {
+          label: 'Sign In to Dashboard',
+          onClick: () => router.push('/login'),
+        },
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     const selectedConfig = institutionConfigs[institutionType];
 
-    // Save clean tenant configuration locally for immediate isolated multi-tenant session
-    if (typeof window !== 'undefined') {
-      try {
-        const cleanTenant = {
-          id: `tenant-${subdomain}`,
-          name: academyName,
-          subdomain,
-          niche: institutionType,
-          theme: {
-            primaryColor: selectedConfig.brandColor,
-            primaryHover: selectedConfig.brandColor,
-            secondaryColor: '#0f172a',
-            accentColor: '#10b981',
-            backgroundColor: '#ffffff',
-            surfaceColor: '#f8fafc',
-            textColor: '#0f172a',
-            borderRadius: 'rounded-xl',
-            fontFamily: 'Inter',
-          },
-          subscriptionPlan: 'free',
-          pageBlocks: [],
-          pricingPlans: [],
-          paymentGateways: [],
-          forms: [],
-          customFormFields: [],
-          contactEmail: email,
-          contactPhone: '',
-          defaultDirection: 'ltr',
-        };
-        localStorage.setItem(`tenant_config_${subdomain}`, JSON.stringify(cleanTenant));
-        localStorage.setItem(`tenant_admin_email_${email.toLowerCase().trim()}`, subdomain);
-      } catch (e) {}
-    }
-
     try {
-      // 1. Create Tenant Record in Backend/DB
-      await fetch('/api/tenant', {
+      // 1. Create Tenant Record in Backend/DB with conflict check
+      const tenantRes = await fetch('/api/tenant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -160,8 +202,18 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
         }),
       });
 
-      // 2. Create Admin Account in Backend/DB
-      await fetch('/api/auth', {
+      if (tenantRes.status === 409) {
+        setIsSubmitting(false);
+        onAddToast({
+          type: 'error',
+          title: 'Subdomain Conflict',
+          message: `The subdomain "${subdomain}" is already taken in the database. Please select another.`,
+        });
+        return;
+      }
+
+      // 2. Create Admin Account in Backend/DB with user check
+      const authRes = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -173,6 +225,54 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
           subdomain,
         }),
       });
+
+      if (authRes.status === 409) {
+        setIsSubmitting(false);
+        onAddToast({
+          type: 'warning',
+          title: 'User Email Already Exists',
+          message: `An account with email "${email}" already exists. Please sign in.`,
+          action: {
+            label: 'Go to Sign In',
+            onClick: () => router.push('/login'),
+          },
+        });
+        return;
+      }
+
+      // Save clean tenant configuration locally for immediate isolated multi-tenant session
+      if (typeof window !== 'undefined') {
+        try {
+          const cleanTenant = {
+            id: `tenant-${subdomain}`,
+            name: academyName,
+            subdomain,
+            niche: institutionType,
+            theme: {
+              primaryColor: selectedConfig.brandColor,
+              primaryHover: selectedConfig.brandColor,
+              secondaryColor: '#0f172a',
+              accentColor: '#10b981',
+              backgroundColor: '#ffffff',
+              surfaceColor: '#f8fafc',
+              textColor: '#0f172a',
+              borderRadius: 'rounded-xl',
+              fontFamily: 'Inter',
+            },
+            subscriptionPlan: 'free',
+            pageBlocks: [],
+            pricingPlans: [],
+            paymentGateways: [],
+            forms: [],
+            customFormFields: [],
+            contactEmail: email,
+            contactPhone: '',
+            defaultDirection: 'ltr',
+          };
+          localStorage.setItem(`tenant_config_${subdomain}`, JSON.stringify(cleanTenant));
+          localStorage.setItem(`tenant_admin_email_${email.toLowerCase().trim()}`, subdomain);
+        } catch (e) {}
+      }
 
       // 3. Update Client Session State
       register(adminName, email, 'admin', subdomain);
@@ -346,11 +446,19 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                     leftIcon={<Building2 className="w-4 h-4" />}
                   />
 
-                  <div className="w-full space-y-2 font-sans">
+                  <div className="w-full space-y-1.5 font-sans">
                     <label htmlFor="subdomain-input" className="block text-xs sm:text-sm font-semibold text-slate-700">
                       Subdomain
                     </label>
-                    <div className="relative flex items-center rounded-xl border border-slate-300 hover:border-slate-400 bg-white overflow-hidden focus-within:border-[var(--color-primary,#047857)] focus-within:ring-2 focus-within:ring-[var(--color-primary,#047857)]/15 transition-colors">
+                    <div
+                      className={`relative flex items-center rounded-xl border bg-white overflow-hidden transition-colors ${
+                        subdomainCheck.status === 'taken' || subdomainCheck.status === 'invalid'
+                          ? 'border-rose-400 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20'
+                          : subdomainCheck.status === 'available'
+                          ? 'border-emerald-500 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-500/20'
+                          : 'border-slate-300 hover:border-slate-400 focus-within:border-emerald-600'
+                      }`}
+                    >
                       <div className="pl-3.5 pr-1 flex items-center pointer-events-none text-slate-400">
                         <Globe className="w-4 h-4" />
                       </div>
@@ -367,6 +475,20 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                         .ankabit.app
                       </span>
                     </div>
+
+                    {/* Subdomain Status Hint */}
+                    {subdomainCheck.status !== 'empty' && (
+                      <p
+                        className={`text-[11px] font-semibold flex items-center gap-1 ${
+                          subdomainCheck.status === 'taken' || subdomainCheck.status === 'invalid'
+                            ? 'text-rose-600'
+                            : 'text-emerald-700'
+                        }`}
+                      >
+                        <span>{subdomainCheck.status === 'available' ? '✓' : '⚠️'}</span>
+                        <span>{subdomainCheck.message}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -381,15 +503,23 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                     leftIcon={<User className="w-4 h-4" />}
                   />
 
-                  <Input
-                    label="Email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@academy.com"
-                    leftIcon={<Mail className="w-4 h-4" />}
-                  />
+                  <div className="space-y-1">
+                    <Input
+                      label="Email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="admin@academy.com"
+                      leftIcon={<Mail className="w-4 h-4" />}
+                    />
+                    {emailCheck.status === 'taken' && (
+                      <p className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                        <span>⚠️</span>
+                        <span>{emailCheck.message}</span>
+                      </p>
+                    )}
+                  </div>
 
                   <Input
                     label="Password"

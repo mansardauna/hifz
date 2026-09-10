@@ -89,8 +89,25 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
   const isCodingNiche = activeSubdomain.includes('code') || tenant?.niche === 'coding';
   const isSchoolNiche = activeSubdomain.includes('school') || activeSubdomain.includes('horizon') || tenant?.niche === 'school';
   const isMadrasatNiche = !isCodingNiche && !isSchoolNiche;
-
   const authConfig = tenant?.authCustomization;
+
+  const emailCheck = React.useMemo(() => {
+    const trimmed = email.toLowerCase().trim();
+    if (!trimmed || !trimmed.includes('@')) return { status: 'empty', message: '' };
+
+    if (typeof window !== 'undefined') {
+      const existingUser =
+        localStorage.getItem(`registered_user_${activeSubdomain}_${trimmed}`) ||
+        localStorage.getItem(`user_account_${trimmed}`);
+      if (existingUser) {
+        return {
+          status: 'taken',
+          message: `An account with ${trimmed} already exists. Please log in.`,
+        };
+      }
+    }
+    return { status: 'available', message: '' };
+  }, [email, activeSubdomain]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,13 +120,39 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
       return;
     }
 
+    if (emailCheck.status === 'taken') {
+      onAddToast({
+        type: 'warning',
+        title: 'Account Already Exists',
+        message: `An account with email "${email}" is already registered. Please sign in instead.`,
+        action: {
+          label: 'Sign In Now',
+          onClick: () => router.push(isPlatformSignup ? '/login' : `/${activeSubdomain}/login`),
+        },
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(
+            `registered_user_${activeSubdomain}_${email.toLowerCase().trim()}`,
+            JSON.stringify({ name, email, role: 'student', subdomain: activeSubdomain })
+          );
+          localStorage.setItem(
+            `user_account_${email.toLowerCase().trim()}`,
+            JSON.stringify({ name, email, role: 'student', subdomain: activeSubdomain })
+          );
+        } catch (e) {}
+      }
+
       setTenantBySubdomain(activeSubdomain);
       register(name, email, 'student', activeSubdomain);
       onAddToast({
         type: 'success',
-        title: 'Account Created',
+        title: 'Account Created 🎉',
         message: `Welcome, ${name}! Your student registration is complete.`,
       });
       setIsSubmitting(false);
@@ -262,15 +305,23 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
                     leftIcon={<Phone className="w-4 h-4" />}
                   />
 
-                  <Input
-                    label="Email Address"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="student@example.com"
-                    leftIcon={<Mail className="w-4 h-4" />}
-                  />
+                  <div className="space-y-1">
+                    <Input
+                      label="Email Address"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="student@example.com"
+                      leftIcon={<Mail className="w-4 h-4" />}
+                    />
+                    {emailCheck.status === 'taken' && (
+                      <p className="text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                        <span>⚠️</span>
+                        <span>{emailCheck.message}</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <Input

@@ -13,76 +13,29 @@ import {
   Volume2,
   Users,
   CreditCard,
-  BookOpen
+  BookOpen,
+  Radio,
 } from 'lucide-react';
-import { requestBrowserNotificationPermission, sendBrowserNotification } from '../ui/Toast';
-
-export interface AppNotification {
-  id: string;
-  category: 'system' | 'submissions' | 'leads' | 'tuition';
-  type: 'info' | 'success' | 'warning' | 'error';
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-  linkTab?: string;
-}
-
-const INITIAL_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: 'notif-1',
-    category: 'leads',
-    type: 'success',
-    title: 'New Student Application',
-    message: 'Fatima Zahra submitted an admission form for the Summer Memorization Track.',
-    timestamp: '5 mins ago',
-    read: false,
-    linkTab: 'crm',
-  },
-  {
-    id: 'notif-2',
-    category: 'submissions',
-    type: 'info',
-    title: 'Audio Recitation Awaiting Review',
-    message: 'Yusuf Mansoor recorded Surah Al-Mulk (Ayahs 1-10) for Tajweed grading.',
-    timestamp: '25 mins ago',
-    read: false,
-    linkTab: 'curriculum',
-  },
-  {
-    id: 'notif-3',
-    category: 'tuition',
-    type: 'success',
-    title: 'Tuition Payment Received',
-    message: '$65.00 payment received from Bilal Khan via Stripe for Tajweed Track.',
-    timestamp: '2 hours ago',
-    read: false,
-    linkTab: 'pricing',
-  },
-  {
-    id: 'notif-4',
-    category: 'system',
-    type: 'warning',
-    title: 'Custom Domain SSL Renewal',
-    message: 'Wildcard SSL certificate for academy.com is actively secured and validated.',
-    timestamp: '1 day ago',
-    read: true,
-    linkTab: 'settings',
-  },
-];
+import { useNotifications, AppNotificationItem } from '../../context/NotificationContext';
 
 interface NotificationCenterProps {
   onNavigateTab?: (tab: string) => void;
 }
 
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNavigateTab }) => {
-  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    clearAll,
+    enablePushNotifications,
+    pushEnabled,
+  } = useNotifications();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<'all' | 'unread' | 'submissions' | 'leads'>('all');
-  const [pushEnabled, setPushEnabled] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -94,26 +47,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  const handleClearAll = () => {
-    setNotifications([]);
-  };
-
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  };
-
   const handleEnablePush = async () => {
-    const granted = await requestBrowserNotificationPermission();
-    setPushEnabled(granted);
-    if (granted) {
-      sendBrowserNotification('Notifications Active', 'You will receive real-time updates for submissions and admissions.');
-    }
+    await enablePushNotifications();
   };
 
   const filteredNotifications = notifications.filter((n) => {
@@ -123,7 +58,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
     return true;
   });
 
-  const getCategoryIcon = (category: AppNotification['category']) => {
+  const getCategoryIcon = (category: AppNotificationItem['category']) => {
     switch (category) {
       case 'submissions':
         return <BookOpen className="w-3.5 h-3.5 text-blue-500" />;
@@ -131,6 +66,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
         return <Users className="w-3.5 h-3.5 text-emerald-500" />;
       case 'tuition':
         return <CreditCard className="w-3.5 h-3.5 text-amber-500" />;
+      case 'classroom':
+        return <Radio className="w-3.5 h-3.5 text-rose-500" />;
       case 'system':
       default:
         return <Sparkles className="w-3.5 h-3.5 text-purple-500" />;
@@ -171,7 +108,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
             <div className="flex items-center gap-1">
               {unreadCount > 0 && (
                 <button
-                  onClick={handleMarkAllRead}
+                  onClick={markAllAsRead}
                   className="p-1 text-slate-500 hover:text-slate-800 text-[11px] font-semibold flex items-center gap-1 hover:bg-slate-200/60 rounded px-2 py-0.5 transition-colors cursor-pointer"
                   title="Mark all as read"
                 >
@@ -181,7 +118,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
               )}
               {notifications.length > 0 && (
                 <button
-                  onClick={handleClearAll}
+                  onClick={clearAll}
                   className="p-1 text-slate-400 hover:text-rose-600 text-[11px] rounded hover:bg-rose-50 transition-colors cursor-pointer"
                   title="Clear all notifications"
                 >
@@ -239,7 +176,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
                 <div
                   key={n.id}
                   onClick={() => {
-                    handleMarkAsRead(n.id);
+                    markAsRead(n.id);
                     if (n.linkTab && onNavigateTab) {
                       onNavigateTab(n.linkTab);
                       setIsOpen(false);

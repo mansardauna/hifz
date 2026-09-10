@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { Button, Input, Card, Badge, AppPreloader, ToastMessage } from '../ui';
 import { LockedFeatureCard } from './LockedFeatureCard';
 import { AuthPageCustomization, FormFieldConfig } from '../../types';
@@ -78,6 +79,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 }) => {
   const { tenant, updateTenantConfig } = useTenant();
   const { success, error, info } = useToast();
+  const { triggerEventNotification } = useNotifications();
   const plan = tenant.subscriptionPlan || 'free';
   const isCustomDomainUnlocked = plan === 'growth' || plan === 'enterprise';
 
@@ -219,7 +221,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       contactEmail: contactEmail,
       customDomain: customDomain || undefined,
     });
-    success('Settings Saved', 'Academy profile and general contact details updated.');
+    triggerEventNotification('settings_saved');
   };
 
   const handleSaveBranding = () => {
@@ -244,7 +246,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         blurIntensity: 'subtle',
       },
     });
-    success('Theme & Branding Applied', 'Colors, sidebar background, logo, preloader, and font styles updated across all views.');
+    triggerEventNotification('settings_saved');
   };
 
   const handleSaveAuthLayout = () => {

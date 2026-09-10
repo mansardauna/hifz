@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { AuthProvider } from '../src/context/AuthContext';
 import { TenantProvider } from '../src/context/TenantContext';
 import { ToastProvider } from '../src/context/ToastContext';
+import { NotificationProvider } from '../src/context/NotificationContext';
 import { PWAInstallToast } from '../src/components/ui/PWAInstallToast';
 import { AppPreloader } from '../src/components/ui/AppPreloader';
 
@@ -22,9 +23,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ToastProvider>
       <AuthProvider>
         <TenantProvider>
-          <AppPreloader />
-          {children}
-          <PWAInstallToast />
+          <NotificationProvider>
+            <AppPreloader />
+            {children}
+            <PWAInstallToast />
+          </NotificationProvider>
         </TenantProvider>
       </AuthProvider>
     </ToastProvider>

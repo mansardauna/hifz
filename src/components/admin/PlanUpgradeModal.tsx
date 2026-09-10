@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Badge } from '../ui';
 import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { TenantSubscriptionPlan } from '../../types';
 import { ToastMessage } from '../ui/Toast';
 import { getStoredPlatformPlans } from '../../services/platformPlans';
@@ -30,6 +31,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
 }) => {
   const { tenant, updateTenantConfig } = useTenant();
   const { success } = useToast();
+  const { triggerEventNotification } = useNotifications();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [plans, setPlans] = useState(getStoredPlatformPlans());
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
@@ -99,17 +101,10 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
       setIsProcessing(null);
       onClose();
 
-      const message = `Your institution has successfully switched to the ${planName} plan with active capacity for ${studentCapacity >= 99999 ? 'Unlimited' : studentCapacity} students.`;
-
-      if (onAddToast) {
-        onAddToast({
-          type: 'success',
-          title: 'Plan Upgraded! 🚀',
-          message,
-        });
-      } else {
-        success('Plan Upgraded! 🚀', message);
-      }
+      triggerEventNotification('plan_upgraded', {
+        planName,
+        capacity: studentCapacity >= 99999 ? 'Unlimited' : studentCapacity,
+      });
     }, 900);
   };
 

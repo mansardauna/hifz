@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PricingPlan, Lead } from '../../types';
 import { useTenant } from '../../context/TenantContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { ToastMessage } from '../ui/Toast';
 import { api } from '../../services/api';
 import { Modal, Button, Input, Select, Card, Badge } from '../ui';
@@ -31,6 +32,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
 }) => {
   const router = useRouter();
   const { tenant } = useTenant();
+  const { triggerEventNotification } = useNotifications();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [activePlan, setActivePlan] = useState<PricingPlan>(
     selectedPlan || tenant.pricingPlans[0] || {
@@ -101,10 +103,10 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
         ...newStudent,
       });
 
-      onAddToast({
-        type: 'success',
-        title: 'Enrollment Confirmed',
-        message: `Welcome to ${tenant.name}! Your enrollment has been processed.`,
+      triggerEventNotification('payment_received', {
+        amount: `$${activePlan.priceMonthly}`,
+        payerName: studentData.name,
+        gateway: studentData.paymentMethod.toUpperCase(),
       });
 
       setStep(4);
