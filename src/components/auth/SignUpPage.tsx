@@ -27,14 +27,19 @@ import {
 interface SignUpPageProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
   onSuccess?: (role: UserRole, subdomain: string) => void;
+  isPlatformLevel?: boolean;
 }
 
-export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess }) => {
+export const SignUpPage: React.FC<SignUpPageProps> = ({
+  onAddToast,
+  onSuccess,
+  isPlatformLevel = false
+}) => {
   const router = useRouter();
   const { tenant, setTenantBySubdomain } = useTenant();
   const { register } = useAuth();
 
-  const isPlatformSignup = !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo';
+  const isPlatformSignup = isPlatformLevel || !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo';
   const isDemoAcademy = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo'].includes(tenant?.subdomain || '');
 
   const [name, setName] = useState<string>('');
@@ -43,6 +48,42 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
   const [phone, setPhone] = useState<string>('');
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>(tenant?.subdomain || 'hifz-academy');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Discover user-created custom academies from localStorage
+  const allAcademyOptions = React.useMemo(() => {
+    const map = new Map<string, { value: string; label: string }>();
+
+    // Base mock tenants
+    Object.values(MOCK_TENANTS).forEach((t) => {
+      map.set(t.subdomain, {
+        value: t.subdomain,
+        label: `${t.name} (${t.customDomain || `${t.subdomain}.edu`})`,
+      });
+    });
+
+    // Add local created academies
+    if (typeof window !== 'undefined') {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('tenant_config_')) {
+            const raw = localStorage.getItem(key);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (parsed && parsed.subdomain) {
+                map.set(parsed.subdomain, {
+                  value: parsed.subdomain,
+                  label: `${parsed.name || parsed.subdomain} (${parsed.customDomain || `${parsed.subdomain}.edu`})`,
+                });
+              }
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    return Array.from(map.values());
+  }, []);
 
   const activeSubdomain = isPlatformSignup ? selectedSubdomain : (tenant?.subdomain || 'hifz-academy');
   const isCodingNiche = activeSubdomain.includes('code') || tenant?.niche === 'coding';
@@ -197,10 +238,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                     label="Select Academy Domain"
                     value={selectedSubdomain}
                     onChange={(e) => setSelectedSubdomain(e.target.value)}
-                    options={Object.values(MOCK_TENANTS).map((t) => ({
-                      value: t.subdomain,
-                      label: `${t.name} (${t.subdomain}.ankabit.app)`,
-                    }))}
+                    options={allAcademyOptions}
                   />
                 )}
 

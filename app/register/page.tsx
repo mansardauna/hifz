@@ -8,5 +8,5 @@ export default function RegisterPage() {
     console.log('Register Toast:', toast);
   };
 
-  return <SignUpPage onAddToast={handleAddToast} />;
+  return <SignUpPage onAddToast={handleAddToast} isPlatformLevel={true} />;
 }

@@ -8,5 +8,5 @@ export default function LoginPage() {
     console.log('Login Toast:', toast);
   };
 
-  return <SignInPage onAddToast={handleAddToast} />;
+  return <SignInPage onAddToast={handleAddToast} isPlatformLevel={true} />;
 }
