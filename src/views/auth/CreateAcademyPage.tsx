@@ -8,16 +8,12 @@ import {
   Mail,
   Lock,
   User,
-  CheckCircle2,
   ArrowRight,
   Sparkles,
-  ShieldCheck,
   Code2,
   BookOpen,
-  GraduationCap,
   School as SchoolIcon,
   Check,
-  Zap,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button, Input, Card, Badge } from '../../components/ui';
@@ -222,33 +218,33 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                 <span>{currentConfig.subtitle}</span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Auto-provisions subdomain, course builder, WebRTC video rooms, and merchant gateway.
+                Subdomain, live virtual rooms, course builder, and payments included.
               </p>
             </div>
           </div>
 
-          {/* Right Form Wizard (7 Columns) */}
-          <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-between space-y-6">
+          {/* Right Form Container (7 Columns) */}
+          <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
             <div className="space-y-6">
               <div className="space-y-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700">
-                    Step 1 of 2 • Academy Provisioning
+                  <span className="text-xs font-bold text-emerald-700">
+                    Academy Setup
                   </span>
-                  <span className="text-xs text-slate-400">Takes &lt; 30 seconds</span>
+                  <span className="text-xs text-slate-400">&lt; 30 seconds</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  Create Your Institution
+                  Create Your Academy
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500">
-                  Select your academy track and specify your custom subdomain & administrator credentials.
+                  Select your track and enter your academy credentials to get started.
                 </p>
               </div>
 
-              {/* STEP 1: Institution Track Cards */}
+              {/* Institution Track Cards */}
               <div className="space-y-2">
-                <label className="block text-xs font-black uppercase tracking-wider text-slate-700">
-                  1. Choose Institution Specialty
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
+                  Select Track
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {[
@@ -263,7 +259,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                         key={id}
                         type="button"
                         onClick={() => handleTypeSelect(id as any)}
-                        className={`p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer select-none flex flex-col justify-between min-h-[115px] ${
+                        className={`p-3.5 rounded-2xl border-2 text-left transition-all cursor-pointer select-none flex flex-col justify-between min-h-[110px] ${
                           isSelected
                             ? 'border-slate-900 bg-slate-900 text-white shadow-lg ring-2 ring-slate-900/20'
                             : 'border-slate-200 bg-white hover:border-slate-300 text-slate-900'
@@ -272,7 +268,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <div
-                              className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-xs`}
+                              className="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-xs"
                               style={{ backgroundColor: config.brandColor }}
                             >
                               <Icon className="w-4 h-4" />
@@ -292,11 +288,11 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                 </div>
               </div>
 
-              {/* STEP 2: Academy Name & Subdomain */}
-              <form onSubmit={handleSubmit} className="space-y-4 pt-1">
+              {/* Academy Details Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
-                    label="Academy / Institution Name"
+                    label="Academy Name"
                     type="text"
                     required
                     value={academyName}
@@ -310,20 +306,24 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                     leftIcon={<Building2 className="w-4 h-4" />}
                   />
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Free Dedicated Subdomain
+                  <div className="w-full space-y-2 font-sans">
+                    <label htmlFor="subdomain-input" className="block text-xs sm:text-sm font-semibold text-slate-700">
+                      Subdomain
                     </label>
-                    <div className="flex items-center rounded-xl border border-slate-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-emerald-600 focus-within:border-emerald-600 shadow-xs h-10">
+                    <div className="relative flex items-center rounded-xl border border-slate-300 hover:border-slate-400 bg-white overflow-hidden focus-within:border-[var(--color-primary,#047857)] focus-within:ring-2 focus-within:ring-[var(--color-primary,#047857)]/15 transition-colors">
+                      <div className="pl-3.5 pr-1 flex items-center pointer-events-none text-slate-400">
+                        <Globe className="w-4 h-4" />
+                      </div>
                       <input
+                        id="subdomain-input"
                         type="text"
                         required
                         value={subdomain}
                         onChange={handleSubdomainChange}
                         placeholder={currentConfig.placeholderSubdomain}
-                        className="w-full px-3 py-2 text-xs text-slate-900 focus:outline-none placeholder:text-slate-400 font-mono"
+                        className="w-full px-2 py-2.5 text-xs sm:text-sm text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-400 font-mono"
                       />
-                      <span className="px-3 py-2 bg-slate-100 border-l border-slate-200 text-slate-600 text-xs font-mono font-bold select-none shrink-0">
+                      <span className="px-3 py-2.5 bg-slate-50 border-l border-slate-200 text-slate-500 text-xs sm:text-sm font-mono font-medium select-none shrink-0">
                         .ankabit.app
                       </span>
                     </div>
@@ -332,27 +332,27 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <Input
-                    label="Admin Full Name"
+                    label="Full Name"
                     type="text"
                     required
                     value={adminName}
                     onChange={(e) => setAdminName(e.target.value)}
-                    placeholder="e.g. Dr. Tariq Mansoor"
+                    placeholder="e.g. Tariq Mansoor"
                     leftIcon={<User className="w-4 h-4" />}
                   />
 
                   <Input
-                    label="Official Work Email"
+                    label="Email"
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@youracademy.com"
+                    placeholder="admin@academy.com"
                     leftIcon={<Mail className="w-4 h-4" />}
                   />
 
                   <Input
-                    label="Admin Password"
+                    label="Password"
                     type="password"
                     required
                     value={password}
@@ -362,12 +362,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                   />
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Free 14-day full tier trial • No credit card required</span>
-                  </div>
-
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
                   <Button
                     type="submit"
                     variant="primary"
@@ -375,9 +370,9 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                     disabled={isSubmitting}
                     isLoading={isSubmitting}
                     rightIcon={<ArrowRight className="w-4 h-4" />}
-                    className="w-full sm:w-auto font-bold shadow-md"
+                    className="w-full sm:w-auto font-bold shadow-md px-6"
                   >
-                    {isSubmitting ? 'Provisioning Academy...' : 'Launch Academy Portal'}
+                    {isSubmitting ? 'Creating Academy...' : 'Launch Academy'}
                   </Button>
                 </div>
               </form>
@@ -385,8 +380,9 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
             {/* Bottom Sign In Link */}
             <div className="pt-4 border-t border-slate-200/80 text-center text-xs text-slate-500">
-              Already provisioned an academy?{' '}
+              Already have an academy?{' '}
               <button
+                type="button"
                 onClick={() => router.push('/login')}
                 className="font-bold text-emerald-700 hover:underline cursor-pointer"
               >
@@ -399,7 +395,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
       {/* Footer */}
       <footer className="mt-4 text-center text-xs text-slate-500 space-y-1">
-        <p>© 2026 Ankabit LMS • The Autonomous Multi-Tenant Educational Operating System</p>
+        <p>© 2026 Ankabit LMS • Autonomous Multi-Tenant Educational Operating System</p>
       </footer>
     </div>
   );
