@@ -19,6 +19,7 @@ import {
   Globe,
   Code2,
   Terminal,
+  ExternalLink
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AnkabitLogo, AnkabitSpiderIcon } from '../brand/AnkabitLogo';
@@ -55,25 +56,28 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
   const isSchoolNiche = (tenant?.niche === 'school' || tenant?.subdomain?.includes('horizon') || tenant?.subdomain?.includes('oxford')) && !isCodingNiche && tenant?.niche !== 'quran' && tenant?.niche !== 'madrasat';
   const isMadrasatNiche = (tenant?.niche === 'madrasat' || tenant?.niche === 'quran' || tenant?.subdomain?.includes('hifz') || tenant?.subdomain?.includes('quran') || tenant?.subdomain?.includes('al-furqan') || tenant?.subdomain?.includes('dar-al') || tenant?.subdomain?.includes('bayyinah')) && !isCodingNiche && !isSchoolNiche;
   const isPlatformLogin = !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo';
+  const isDemoAcademy = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo'].includes(tenant?.subdomain || '');
 
   const activeLayout: LayoutType =
     (tenant?.authCustomization?.layout as LayoutType) || 'split';
 
-  const defaultEmail = isCodingNiche
-    ? 'mentee@code-academy.com'
-    : isSchoolNiche
-    ? 'student@horizon-school.com'
-    : 'student@hifz-academy.com';
+  const defaultEmail = isDemoAcademy
+    ? isCodingNiche
+      ? 'mentee@code-academy.com'
+      : isSchoolNiche
+      ? 'student@horizon-school.com'
+      : 'student@hifz-academy.com'
+    : '';
 
   const [email, setEmail] = useState<string>(defaultEmail);
-  const [password, setPassword] = useState<string>('password123');
+  const [password, setPassword] = useState<string>(isDemoAcademy ? 'password123' : '');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const authConfig = tenant?.authCustomization;
   const primaryColor = tenant.theme?.primaryColor || '#059669';
 
-  // Dynamic Demo Personas tailored per Niche
+  // Demo Personas
   const demoPersonas: DemoPersona[] = useMemo(() => {
     if (isCodingNiche) {
       return [
@@ -99,38 +103,38 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
           email: 'admin@code-academy.com',
           badge: 'Academy Admin',
           icon: Shield,
-          avatarBg: 'bg-slate-900',
+          avatarBg: 'bg-slate-800',
         },
       ];
-    }
-    if (isSchoolNiche) {
+    } else if (isSchoolNiche) {
       return [
         {
           role: 'student',
-          name: 'Zaid Al-Mansoor',
+          name: 'Sara Ibrahim',
           email: 'student@horizon-school.com',
-          badge: 'Enrolled Student',
+          badge: 'Grade 11 Student',
           icon: GraduationCap,
           avatarBg: 'bg-purple-600',
         },
         {
           role: 'teacher',
-          name: 'Dr. Eleanor Vance',
-          email: 'faculty@horizon-school.com',
-          badge: 'Faculty HOD',
-          icon: Award,
-          avatarBg: 'bg-violet-600',
+          name: 'Dr. Robert Jenkins',
+          email: 'teacher@horizon-school.com',
+          badge: 'Faculty Member',
+          icon: BookOpen,
+          avatarBg: 'bg-amber-600',
         },
         {
           role: 'admin',
-          name: 'Principal Office',
+          name: 'Principal Reynolds',
           email: 'admin@horizon-school.com',
           badge: 'School Admin',
           icon: Shield,
-          avatarBg: 'bg-slate-900',
+          avatarBg: 'bg-slate-800',
         },
       ];
     }
+
     return [
       {
         role: 'student',
@@ -142,19 +146,19 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
       },
       {
         role: 'teacher',
-        name: 'Shaykh Bilal Hashmi',
+        name: 'Ustadh Bilal Hashmi',
         email: 'teacher@hifz-academy.com',
-        badge: 'Sheikh / Teacher',
+        badge: 'Sanad Teacher',
         icon: BookOpen,
-        avatarBg: 'bg-amber-600',
+        avatarBg: 'bg-teal-600',
       },
       {
         role: 'admin',
-        name: 'Sheikh Tariq (Director)',
+        name: 'Sheikh Tariq Al-Mansoor',
         email: 'admin@hifz-academy.com',
-        badge: 'Academy Admin',
+        badge: 'Academy Dean',
         icon: Shield,
-        avatarBg: 'bg-indigo-600',
+        avatarBg: 'bg-slate-800',
       },
     ];
   }, [isCodingNiche, isSchoolNiche]);
@@ -164,7 +168,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
     setPassword('password123');
     onAddToast({
       type: 'info',
-      title: `${p.badge} Selected`,
+      title: `Selected ${p.badge}`,
       message: `Loaded credentials for ${p.name}.`,
     });
   };
@@ -184,7 +188,10 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
     const lowerEmail = email.toLowerCase().trim();
     let detectedRole: UserRole = 'student';
-    let detectedName = 'Zaid Al-Mansoor';
+
+    // Derive name gracefully
+    const namePart = lowerEmail.split('@')[0].replace(/[._-]/g, ' ');
+    let detectedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
 
     if (
       lowerEmail.startsWith('superadmin') ||
@@ -198,104 +205,81 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
       lowerEmail.startsWith('admin') ||
       lowerEmail.includes('admin') ||
       lowerEmail.includes('director') ||
-      lowerEmail.includes('principal')
+      lowerEmail.includes('principal') ||
+      lowerEmail.includes('dean')
     ) {
       detectedRole = 'admin';
-      detectedName = isCodingNiche
-        ? 'Bootcamp Director'
-        : isSchoolNiche
-        ? 'Principal Office'
-        : 'Sheikh Tariq Al-Mansoor';
+      if (lowerEmail.includes('tariq')) detectedName = 'Sheikh Tariq Al-Mansoor';
+      else if (lowerEmail.includes('reynolds')) detectedName = 'Principal Reynolds';
+      else if (lowerEmail.includes('bootcamp')) detectedName = 'Bootcamp Director';
+      else detectedName = `${tenant?.name || 'Academy'} Administrator`;
     } else if (
       lowerEmail.startsWith('teacher') ||
+      lowerEmail.includes('teacher') ||
+      lowerEmail.includes('ustadh') ||
       lowerEmail.includes('instructor') ||
       lowerEmail.includes('mentor') ||
-      lowerEmail.includes('faculty') ||
-      lowerEmail.includes('shaykh') ||
-      lowerEmail.includes('ustadh')
+      lowerEmail.includes('faculty')
     ) {
       detectedRole = 'teacher';
-      detectedName = isCodingNiche
-        ? 'Alex Chen (Staff Architect)'
-        : isSchoolNiche
-        ? 'Dr. Eleanor Vance'
-        : 'Shaykh Bilal Hashmi';
-    }
-
-    let targetSubdomain = tenant?.subdomain || 'hifz-academy';
-    if (lowerEmail.includes('code')) {
-      targetSubdomain = 'code-academy';
-    } else if (lowerEmail.includes('horizon') || lowerEmail.includes('school')) {
-      targetSubdomain = 'al-furqan';
-    } else if (lowerEmail.includes('bayyinah')) {
-      targetSubdomain = 'bayyinah-arabic';
-    } else if (lowerEmail.includes('hifz') || lowerEmail.includes('quran')) {
-      targetSubdomain = 'hifz-academy';
+      if (lowerEmail.includes('bilal')) detectedName = 'Ustadh Bilal Hashmi';
+      else if (lowerEmail.includes('chen') || lowerEmail.includes('mentor')) detectedName = 'Alex Chen';
+      else if (lowerEmail.includes('jenkins')) detectedName = 'Dr. Robert Jenkins';
+      else detectedName = 'Faculty Instructor';
+    } else {
+      detectedRole = 'student';
+      if (lowerEmail.includes('zaid')) detectedName = 'Zaid Al-Mansoor';
+      else if (lowerEmail.includes('sara')) detectedName = 'Sara Ibrahim';
     }
 
     setTimeout(() => {
-      setTenantBySubdomain(targetSubdomain);
       login(email, detectedRole, detectedName);
 
       onAddToast({
         type: 'success',
-        title: 'Authenticated Successfully',
-        message: `Welcome to your ${
-          detectedRole === 'superadmin'
-            ? 'Platform SuperAdmin Console'
-            : detectedRole === 'admin'
-            ? 'Administration Workspace'
-            : detectedRole === 'teacher'
-            ? 'Instructor Studio'
-            : 'Learning Portal'
-        }!`,
+        title: 'Signed In Successfully',
+        message: `Welcome back, ${detectedName}!`,
       });
+
       setIsSubmitting(false);
 
+      const targetSubdomain = tenant?.subdomain || 'hifz-academy';
       if (onSuccess) {
         onSuccess(detectedRole, targetSubdomain);
       } else {
-        if (detectedRole === 'superadmin') {
-          router.push('/super-admin');
-        } else if (detectedRole === 'admin') {
+        if (detectedRole === 'admin' || detectedRole === 'superadmin') {
           router.push(`/${targetSubdomain}/admin`);
         } else {
           router.push(`/${targetSubdomain}/lms`);
         }
       }
-    }, 400);
+    }, 450);
   };
 
-  // Reusable Form Markup
-  const renderFormFields = (isGlass = false) => (
+  // Reusable Form Inputs
+  const renderFormFields = () => (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         label="Email Address"
         type="email"
-        required
+        placeholder="you@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="name@example.com"
-        leftIcon={<Mail className="w-4 h-4" />}
-        className={isGlass ? 'bg-white/90 text-slate-900 border-white/40' : ''}
+        leftIcon={<Mail className="w-4 h-4 text-slate-400" />}
+        required
       />
 
-      <div>
-        <label className={`block text-xs font-semibold mb-1 ${isGlass ? 'text-slate-800' : 'text-slate-700'}`}>
-          Password
-        </label>
+      <div className="space-y-1">
+        <label className="block text-xs font-bold text-slate-700">Password</label>
         <div className="relative">
           <input
             type={showPassword ? 'text' : 'password'}
-            required
+            placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className={`w-full px-3.5 py-2.5 pl-9 pr-10 rounded-xl border text-xs sm:text-sm focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20 transition-colors placeholder:text-slate-400 ${
-              isGlass ? 'bg-white/90 border-white/40 text-slate-900' : 'border-slate-300 bg-white text-slate-900'
-            }`}
+            required
+            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all pr-10"
           />
-          <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
@@ -308,90 +292,130 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
 
       <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
         <label className="flex items-center gap-1.5 cursor-pointer select-none">
-          <input type="checkbox" defaultChecked className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-600" />
-          <span>Remember me</span>
+          <input type="checkbox" defaultChecked className="w-3.5 h-3.5 text-emerald-600 rounded" />
+          <span>Remember session</span>
         </label>
-        <a href="#" className="font-semibold text-emerald-700 hover:underline">
-          Forgot password?
-        </a>
+        <span className="hover:text-emerald-700 cursor-pointer font-medium">Forgot password?</span>
       </div>
 
       <Button
         type="submit"
         variant="primary"
-        size="md"
-        className="w-full justify-center shadow-md text-white font-bold"
-        disabled={isSubmitting}
+        size="lg"
+        isLoading={isSubmitting}
+        className="w-full mt-2 font-black shadow-md bg-emerald-700 hover:bg-emerald-800 text-white"
         rightIcon={<ArrowRight className="w-4 h-4" />}
       >
-        {isSubmitting ? 'Authenticating...' : 'Sign In to Portal'}
+        Sign In to Portal
       </Button>
+
+      <div className="text-center pt-2">
+        <p className="text-xs text-slate-500">
+          Need a student account?{' '}
+          <button
+            type="button"
+            onClick={() => router.push(isPlatformLogin ? '/signup' : `/${tenant?.subdomain}/signup`)}
+            className="text-emerald-700 font-bold hover:underline cursor-pointer"
+          >
+            Register here
+          </button>
+        </p>
+      </div>
     </form>
   );
 
-  // Persona Quick Switcher Bar
-  const renderPersonaSwitcher = () => (
-    <div className="pt-4 border-t border-slate-200/80 space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">
-          Demo 1-Click Role Switcher
-        </span>
-        <Sparkles className="w-3 h-3 text-amber-500 animate-pulse" />
-      </div>
+  // Demo Persona Switcher (only shown for demo instances)
+  const renderPersonaSwitcher = () => {
+    if (!isDemoAcademy) return null;
+    return (
+      <div className="pt-4 border-t border-slate-200/60 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-amber-500" />
+            <span>Instant Demo Accounts</span>
+          </span>
+          <span className="text-[10px] text-slate-400 font-mono">1-Click Auto-Fill</span>
+        </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        {demoPersonas.map((p) => {
-          const Icon = p.icon;
-          const isSelected = email === p.email;
-          return (
-            <button
-              key={p.role}
-              type="button"
-              onClick={() => selectPersona(p)}
-              className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer select-none ${
-                isSelected
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
-                  : 'border-slate-200 bg-slate-50 hover:bg-slate-100/80 text-slate-900'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 mb-1">
-                <div className={`w-5 h-5 rounded-md ${isSelected ? 'bg-white/20' : p.avatarBg} text-white flex items-center justify-center shrink-0`}>
-                  <Icon className="w-3 h-3" />
+        <div className="grid grid-cols-3 gap-2">
+          {demoPersonas.map((p) => {
+            const Icon = p.icon;
+            const isSelected = email === p.email;
+            return (
+              <button
+                key={p.role}
+                type="button"
+                onClick={() => selectPersona(p)}
+                className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer select-none ${
+                  isSelected
+                    ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
+                    : 'border-slate-200 bg-slate-50 hover:bg-slate-100/80 text-slate-900'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className={`w-5 h-5 rounded-md ${isSelected ? 'bg-white/20' : p.avatarBg} text-white flex items-center justify-center shrink-0`}>
+                    <Icon className="w-3 h-3" />
+                  </div>
+                  <span className={`text-[10px] font-extrabold truncate ${isSelected ? 'text-white' : 'text-slate-900'}`}>{p.badge}</span>
                 </div>
-                <span className={`text-[10px] font-extrabold truncate ${isSelected ? 'text-white' : 'text-slate-900'}`}>{p.badge}</span>
-              </div>
-              <p className={`text-[10px] truncate ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>{p.name.split(' ')[0]}</p>
-            </button>
-          );
-        })}
+                <p className={`text-[10px] truncate ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>{p.name.split(' ')[0]}</p>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col justify-between p-3 sm:p-6 sm:py-8 selection:bg-emerald-100 selection:text-emerald-900 relative">
       {/* Top Header Navigation */}
       <div className="w-full max-w-6xl mx-auto mb-3 flex items-center justify-between px-2">
-        <div className="cursor-pointer" onClick={() => router.push('/')}>
-          <AnkabitLogo size="md" />
+        <div
+          className="cursor-pointer flex items-center gap-2.5"
+          onClick={() => router.push(isPlatformLogin ? '/' : `/${tenant?.subdomain}`)}
+        >
+          {isPlatformLogin ? (
+            <AnkabitLogo size="md" />
+          ) : tenant.logoUrl ? (
+            <img src={tenant.logoUrl} alt={tenant.name} className="h-8 w-auto object-contain rounded" />
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-black text-sm shadow-sm">
+                {tenant?.name?.charAt(0) || 'A'}
+              </div>
+              <span className="font-extrabold text-slate-900 text-base">{tenant?.name}</span>
+            </div>
+          )}
         </div>
 
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push(isPlatformLogin ? '/' : `/${tenant?.subdomain}`)}
           className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs cursor-pointer transition-all hover:border-slate-300"
         >
           <Globe className="w-3.5 h-3.5 text-slate-400" />
-          <span>Platform Home</span>
+          <span>{isPlatformLogin ? 'Platform Home' : 'Academy Home'}</span>
         </button>
       </div>
 
-      {/* Main Container - High Capacity Large Screen-Filling 6XL Card */}
+      {/* Main Container - Split View or Glass layouts */}
       <div className="flex-1 flex items-center justify-center my-2">
         {/* LAYOUT 1: SPLIT MODERN */}
         {activeLayout === 'split' && (
           <div className="w-full max-w-6xl min-h-[82vh] grid grid-cols-1 lg:grid-cols-12 rounded-3xl bg-white border border-slate-200/90 shadow-2xl shadow-slate-200/80 overflow-hidden">
-            {/* Left Hero (5 Columns) - Dynamically Morphs per Niche */}
-            <div className="lg:col-span-5 hidden lg:flex flex-col justify-between p-8 sm:p-10 bg-slate-950 text-white relative overflow-hidden">
+            {/* Left Hero (5 Columns) */}
+            <div
+              className="lg:col-span-5 hidden lg:flex flex-col justify-between p-8 sm:p-10 bg-slate-950 text-white relative overflow-hidden"
+              style={
+                authConfig?.backgroundImageUrl
+                  ? {
+                      backgroundImage: `linear-gradient(to bottom, rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.95)), url(${authConfig.backgroundImageUrl})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }
+                  : undefined
+              }
+            >
               <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-primary,#047857)]/15 rounded-full blur-3xl pointer-events-none" />
 
               <div className="space-y-4 relative z-10">
@@ -405,52 +429,56 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
                         {isPlatformLogin ? 'Ankabit LMS' : tenant?.name}
                       </span>
                       <span className="text-xs text-emerald-400 font-mono">
-                        {isPlatformLogin ? 'cloud.ankabit.app' : `${tenant?.subdomain}.ankabit.app`}
+                        {tenant?.customDomain || (isPlatformLogin ? 'cloud.ankabit.app' : `${tenant?.subdomain}.edu`)}
                       </span>
                     </div>
                   </div>
 
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white border border-white/15 uppercase">
-                    {isCodingNiche ? 'Code Lab' : isSchoolNiche ? 'School SIS' : isMadrasatNiche ? 'Madrasat' : 'Learning OS'}
+                    {isCodingNiche ? 'Code Lab' : isSchoolNiche ? 'School SIS' : isMadrasatNiche ? 'Madrasat' : 'Learning Portal'}
                   </span>
                 </div>
 
                 <div className="pt-2">
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
-                    {isCodingNiche
-                      ? 'NextGen Code Bootcamp Portal'
-                      : isSchoolNiche
-                      ? 'Academic Faculty & Student SIS'
-                      : isMadrasatNiche
-                      ? (authConfig?.welcomeHeading || 'Dar Al-Quran Academy Portal')
-                      : 'The Autonomous Educational OS'}
+                    {authConfig?.welcomeHeading ||
+                      (isCodingNiche
+                        ? 'NextGen Code Bootcamp Portal'
+                        : isSchoolNiche
+                        ? 'Academic Faculty & Student SIS'
+                        : isMadrasatNiche
+                        ? 'Dar Al-Quran Academy Portal'
+                        : `${tenant?.name || 'Academy'} Portal`)}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-                    {isCodingNiche
-                      ? 'Access browser code sandboxes, algorithm test assertions, and live peer programming huddles.'
-                      : isSchoolNiche
-                      ? 'View term GPA gradebooks, standardized exam results, and schedule parent-teacher meetings.'
-                      : isMadrasatNiche
-                      ? (authConfig?.welcomeSubtitle || 'Enter your credentials to access live halaqahs, recitation records, and student portals.')
-                      : 'Dedicated custom domains, LiveKit WebRTC video classrooms, and autonomous tuition billing.'}
+                    {authConfig?.welcomeSubtitle ||
+                      (isCodingNiche
+                        ? 'Access browser code sandboxes, algorithm test assertions, and live peer programming huddles.'
+                        : isSchoolNiche
+                        ? 'View term GPA gradebooks, standardized exam results, and schedule parent-teacher meetings.'
+                        : isMadrasatNiche
+                        ? 'Enter your credentials to access live halaqahs, recitation records, and student portals.'
+                        : 'Sign in to access your enrolled courses, collaborative virtual classrooms, and academic transcripts.')}
                   </p>
                 </div>
               </div>
 
-              {/* Dynamic 2D Vector Illustration per Niche */}
-              <div className="my-4 max-w-[290px] mx-auto">
-                {isCodingNiche ? (
-                  <CodeAcademyArtIllustration className="w-full h-auto drop-shadow-xl" />
-                ) : isSchoolNiche ? (
-                  <SchoolSisArtIllustration className="w-full h-auto drop-shadow-xl" />
-                ) : isMadrasatNiche ? (
-                  <MadrasatArtIllustration className="w-full h-auto drop-shadow-xl" />
-                ) : (
-                  <MultiTenantNetworkIllustration className="w-full h-auto drop-shadow-xl" />
-                )}
-              </div>
+              {/* Dynamic 2D Vector Illustration per Niche (only if no background image) */}
+              {!authConfig?.backgroundImageUrl && (
+                <div className="my-4 max-w-[290px] mx-auto">
+                  {isCodingNiche ? (
+                    <CodeAcademyArtIllustration className="w-full h-auto drop-shadow-xl" />
+                  ) : isSchoolNiche ? (
+                    <SchoolSisArtIllustration className="w-full h-auto drop-shadow-xl" />
+                  ) : isMadrasatNiche ? (
+                    <MadrasatArtIllustration className="w-full h-auto drop-shadow-xl" />
+                  ) : (
+                    <MultiTenantNetworkIllustration className="w-full h-auto drop-shadow-xl" />
+                  )}
+                </div>
+              )}
 
-              {/* Side Card Bottom Banner (Islamic only on Madrasat; Neutral elsewhere) */}
+              {/* Side Card Bottom Banner */}
               <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1 relative z-10 shadow-inner">
                 {isMadrasatNiche ? (
                   <>
@@ -470,22 +498,13 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
                       Automated AST test runner & live pair programming
                     </p>
                   </>
-                ) : isSchoolNiche ? (
-                  <>
-                    <p className="text-xs font-bold text-purple-300 uppercase tracking-wider">
-                      Excellence in Academics & Leadership
-                    </p>
-                    <p className="text-[11px] text-slate-400">
-                      Standardized grading scale & cumulative GPA tracking
-                    </p>
-                  </>
                 ) : (
                   <>
                     <p className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
-                      Multi-Tenant Cloud Infrastructure
+                      Academic Excellence & Integrity
                     </p>
                     <p className="text-[11px] text-slate-400">
-                      99.98% Uptime SLA • Zero commission direct payment routing
+                      Live interactive sessions & continuous progress monitoring
                     </p>
                   </>
                 )}
@@ -500,8 +519,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
                     {tenant?.name?.charAt(0) || 'A'}
                   </div>
                   <div>
-                    <span className="font-extrabold text-slate-900 text-sm block">{tenant?.name || 'Ankabit LMS'}</span>
-                    <span className="text-[10px] text-slate-500 font-mono">{tenant?.subdomain || 'demo'}.ankabit.app</span>
+                    <span className="font-extrabold text-slate-900 text-sm block">{tenant?.name || 'Academy Portal'}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{tenant?.subdomain || 'portal'}.edu</span>
                   </div>
                 </div>
 
@@ -518,15 +537,14 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
           </div>
         )}
 
-        {/* LAYOUT 2: MEDINA CENTERED GLASS */}
+        {/* LAYOUT 2: CENTERED GLASS */}
         {activeLayout === 'centered_glass' && (
-          <div className="w-full max-w-2xl min-h-[78vh] p-8 sm:p-12 rounded-3xl bg-slate-950/90 backdrop-blur-xl border border-emerald-500/30 text-white shadow-2xl shadow-emerald-950/40 relative overflow-hidden flex flex-col justify-between">
+          <div className="w-full max-w-2xl min-h-[78vh] p-8 sm:p-12 rounded-3xl bg-slate-950/90 backdrop-blur-xl border border-emerald-500/30 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 space-y-6">
               <div className="text-center space-y-2">
-                <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary,#047857)] border border-emerald-400/40 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-700/30 font-bold text-2xl">
+                <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary,#047857)] border border-emerald-400/40 text-white flex items-center justify-center mx-auto shadow-lg font-bold text-2xl">
                   {tenant?.name?.charAt(0) || 'H'}
                 </div>
                 <h2 className="text-2xl font-black tracking-tight text-white">{tenant?.name}</h2>
@@ -540,9 +558,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
                 {renderFormFields()}
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80">
-                {renderPersonaSwitcher()}
-              </div>
+              {renderPersonaSwitcher()}
             </div>
           </div>
         )}
@@ -576,11 +592,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         {activeLayout === 'heritage_frame' && (
           <div className="w-full max-w-2xl min-h-[78vh] p-4 bg-gradient-to-br from-amber-600 via-emerald-800 to-amber-700 rounded-3xl shadow-2xl flex items-center justify-center">
             <div className="w-full p-8 sm:p-12 bg-white rounded-2xl border-4 border-amber-400/40 relative space-y-6">
-              <div className="absolute top-2 left-2 text-amber-500 font-mono text-xs select-none">❖</div>
-              <div className="absolute top-2 right-2 text-amber-500 font-mono text-xs select-none">❖</div>
-              <div className="absolute bottom-2 left-2 text-amber-500 font-mono text-xs select-none">❖</div>
-              <div className="absolute bottom-2 right-2 text-amber-500 font-mono text-xs select-none">❖</div>
-
               <div className="text-center space-y-1.5">
                 <div className="font-serif text-base font-bold text-emerald-800">
                   بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -598,9 +609,13 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onAddToast, onSuccess })
         )}
       </div>
 
-      {/* Footer */}
+      {/* White-labeled Footer */}
       <footer className="mt-4 text-center text-xs text-slate-500 space-y-1">
-        <p>© 2026 Ankabit LMS • Multi-Tenant Academy Operating System</p>
+        <p>
+          {isPlatformLogin
+            ? `© ${new Date().getFullYear()} Ankabit LMS • Multi-Tenant Academy Operating System`
+            : `© ${new Date().getFullYear()} ${tenant?.name || 'Academy'}. All rights reserved.`}
+        </p>
       </footer>
     </div>
   );

@@ -17,15 +17,14 @@ import {
   Compass,
   Check,
 } from 'lucide-react';
-import { Button, Badge } from '../ui';
+import { Button } from '../ui';
 
 interface TourStep {
   id: number;
   title: string;
   tabTarget: AdminTab;
   badge: string;
-  description: string;
-  tips: string[];
+  shortDesc: string;
   icon: any;
   actionText: string;
 }
@@ -33,93 +32,57 @@ interface TourStep {
 const TOUR_STEPS: TourStep[] = [
   {
     id: 1,
-    title: 'Academy Overview & Metrics',
+    title: 'Academy Overview',
     tabTarget: 'overview',
-    badge: 'Step 1 of 6',
-    description:
-      'Monitor your student admissions funnel, active enrolled learners, tuition payments collected, and high-level KPI trends in real-time.',
-    tips: [
-      'Track monthly tuition revenue and pending applications',
-      'Filter admissions by recent submissions and status',
-      'Inspect quick health indicators across all courses',
-    ],
+    badge: '1 of 6',
+    shortDesc: 'Track your student admissions funnel, active enrollments, and tuition revenue trends in real time.',
     icon: LayoutDashboard,
-    actionText: 'View Metrics Workspace',
+    actionText: 'Open Overview',
   },
   {
     id: 2,
-    title: 'Visual Drag-and-Drop Page Builder',
+    title: 'Visual Page Builder',
     tabTarget: 'page_builder',
-    badge: 'Step 2 of 6',
-    description:
-      'Customize your public academy landing page with modern Tailwind CSS blocks, khatam star patterns, hero calligraphy, and live responsive preview.',
-    tips: [
-      'Use GrapesJS visual canvas to rearrange sections',
-      'Toggle desktop, tablet, and mobile device viewports',
-      'Save instantly to local storage and your cloud database',
-    ],
+    badge: '2 of 6',
+    shortDesc: 'Customize landing pages with drag-and-drop Tailwind blocks, calligraphy hero, and live preview.',
     icon: Layers,
-    actionText: 'Open Page Builder',
+    actionText: 'Open Builder',
   },
   {
     id: 3,
-    title: 'Admissions Form Builder & Submissions',
+    title: 'Admissions Form Builder',
     tabTarget: 'form_builder',
-    badge: 'Step 3 of 6',
-    description:
-      'Create custom student registration forms with Arabic/English questions, file uploads, and inspect incoming responses in isolated sortable tables.',
-    tips: [
-      'Drag and reorder form input fields',
-      'View individual responses with sortable columns and dynamic charts',
-      'Export lead submissions to CSV anytime',
-    ],
+    badge: '3 of 6',
+    shortDesc: 'Create intake questionnaires, customize themes, and collect student leads with live test preview.',
     icon: FileCheck,
-    actionText: 'Build Admission Form',
+    actionText: 'Open Form Builder',
   },
   {
     id: 4,
-    title: 'Live WebRTC Classroom & Whiteboard',
+    title: 'Live WebRTC Classroom',
     tabTarget: 'classroom',
-    badge: 'Step 4 of 6',
-    description:
-      'Host interactive Halaqah sessions with live multi-party video, integrated audio Quran verse looper, screen sharing, and collaborative whiteboard.',
-    tips: [
-      'Low-latency WebRTC powered by LiveKit Cloud',
-      'Draw Tajweed annotations and highlight verses live',
-      'Students can raise hands and record recitations',
-    ],
+    badge: '4 of 6',
+    shortDesc: 'Host interactive Halaqah sessions with live multi-party video, audio verse looper, and whiteboard.',
     icon: Video,
-    actionText: 'Enter Live Classroom',
+    actionText: 'Enter Classroom',
   },
   {
     id: 5,
-    title: 'Community Forum & Student Huddle',
+    title: 'Community Forum',
     tabTarget: 'forum',
-    badge: 'Step 5 of 6',
-    description:
-      'Foster student discussion and peer learning with dedicated channels, verified instructor badges, markdown replies, and upvoting.',
-    tips: [
-      'Create topic channels for Tajweed Q&A, Memorization Tips, and Announcements',
-      'Instructors can pin important homework threads',
-      'Real-time replies with rich text support',
-    ],
+    badge: '5 of 6',
+    shortDesc: 'Foster student discussions and homework Q&A with instructor badges, replies, and upvoting.',
     icon: MessageSquare,
-    actionText: 'Explore Community Forum',
+    actionText: 'Open Forum',
   },
   {
     id: 6,
-    title: 'Tuition Packages & Merchant Gateways',
+    title: 'Tuition & Payment Gateways',
     tabTarget: 'pricing',
-    badge: 'Step 6 of 6',
-    description:
-      'Set up student tuition subscription plans and connect Stripe, Moyasar (Mada/Apple Pay), or bank transfer gateways.',
-    tips: [
-      'Offer monthly and yearly tuition packages',
-      'Automate invoice generation and receipts',
-      'Upgrade your academy tier for custom domains & enterprise features',
-    ],
+    badge: '6 of 6',
+    shortDesc: 'Set up tuition tiers and connect Stripe, Moyasar (Mada/Apple Pay), or bank transfer gateways.',
     icon: CreditCard,
-    actionText: 'Configure Pricing & Gateways',
+    actionText: 'Open Gateways',
   },
 ];
 
@@ -138,7 +101,6 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
 }) => {
   const { success } = useToast();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   const currentStep = TOUR_STEPS[currentStepIndex];
   const isLastStep = currentStepIndex === TOUR_STEPS.length - 1;
@@ -163,19 +125,14 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
   };
 
   const handleCompleteTour = () => {
-    if (dontShowAgain && typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
       localStorage.setItem('techmadrasah_tour_completed', 'true');
     }
-    success('Tour Completed! 🎉', `Welcome aboard to ${academyName}! Your academy is ready for students.`);
+    success('Tour Completed! 🎉', `Welcome to ${academyName}! Your academy workspace is ready.`);
     onClose();
   };
 
-  const handleJumpToStep = (index: number) => {
-    setCurrentStepIndex(index);
-    onNavigateTab(TOUR_STEPS[index].tabTarget);
-  };
-
-  // Keyboard navigation (Escape to close, Arrow keys for step navigation)
+  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
@@ -196,153 +153,89 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in font-sans">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-2xl w-full overflow-hidden flex flex-col relative transform transition-all">
-        {/* Top Gradient Banner */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 p-6 text-white relative">
-          {/* Close button */}
+    <div className="fixed inset-0 z-50 pointer-events-none flex items-end sm:items-start justify-center sm:justify-start p-4 sm:p-8 font-sans">
+      {/* Chrome-Style Floating Spotlight Tooltip */}
+      <div className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-slate-900/95 text-white backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80 p-4 sm:p-5 relative animate-in fade-in slide-in-from-bottom-3 duration-200 sm:ml-64 sm:mt-16">
+        {/* Pointing Caret Arrow */}
+        <div className="hidden sm:block absolute -left-2.5 top-6 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[10px] border-r-slate-900/95" />
+
+        {/* Header with Step Counter and Close */}
+        <div className="flex items-center justify-between gap-3 mb-2.5">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
+              <StepIcon className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                Step {currentStep.badge}
+              </span>
+              <h4 className="text-sm font-bold text-white leading-snug">
+                {currentStep.title}
+              </h4>
+            </div>
+          </div>
+
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 p-1.5 rounded-full bg-black/20 hover:bg-black/30 text-white transition-colors cursor-pointer"
-            aria-label="Close tour"
+            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            aria-label="Dismiss tour"
+            title="Dismiss tour"
           >
             <X className="w-4 h-4" />
           </button>
-
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
-              <Compass className="w-6 h-6 text-emerald-200" />
-            </div>
-            <div>
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-200 block">
-                Interactive Platform Tour
-              </span>
-              <h2 className="text-lg sm:text-xl font-black text-white leading-tight">
-                Welcome to {academyName}!
-              </h2>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-[11px] font-bold text-emerald-100 mb-1.5">
-              <span>{currentStep.badge}</span>
-              <span>{Math.round(((currentStepIndex + 1) / TOUR_STEPS.length) * 100)}% Complete</span>
-            </div>
-            <div className="w-full bg-emerald-950/40 rounded-full h-2 overflow-hidden border border-white/10">
-              <div
-                className="bg-emerald-300 h-full rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${((currentStepIndex + 1) / TOUR_STEPS.length) * 100}%` }}
-              />
-            </div>
-          </div>
         </div>
 
-        {/* Step Navigation Dots Bar */}
-        <div className="bg-slate-50 border-b border-slate-200 px-6 py-2.5 flex items-center justify-between overflow-x-auto">
-          <div className="flex items-center gap-2">
-            {TOUR_STEPS.map((step, idx) => (
+        {/* Concise Micro-copy */}
+        <p className="text-xs text-slate-300 leading-relaxed mb-4">
+          {currentStep.shortDesc}
+        </p>
+
+        {/* Step Progress Dots & Navigation Buttons */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
+          <div className="flex items-center gap-1.5">
+            {TOUR_STEPS.map((s, idx) => (
               <button
-                key={step.id}
-                onClick={() => handleJumpToStep(idx)}
-                className={`w-7 h-7 rounded-full text-xs font-black transition-all flex items-center justify-center cursor-pointer ${
+                key={s.id}
+                onClick={() => {
+                  setCurrentStepIndex(idx);
+                  onNavigateTab(TOUR_STEPS[idx].tabTarget);
+                }}
+                className={`h-1.5 rounded-full transition-all cursor-pointer ${
                   idx === currentStepIndex
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-105'
+                    ? 'w-5 bg-emerald-400'
                     : idx < currentStepIndex
-                    ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
-                    : 'bg-slate-200 text-slate-500 hover:bg-slate-300'
+                    ? 'w-2 bg-emerald-600'
+                    : 'w-2 bg-slate-700'
                 }`}
-                title={step.title}
-              >
-                {idx < currentStepIndex ? <Check className="w-3.5 h-3.5" /> : idx + 1}
-              </button>
+                aria-label={`Go to step ${idx + 1}`}
+              />
             ))}
           </div>
-
-          <span className="text-xs font-bold text-slate-500 hidden sm:inline">
-            Click any step to jump
-          </span>
-        </div>
-
-        {/* Step Content Body */}
-        <div className="p-6 sm:p-8 space-y-5 text-slate-800">
-          <div className="flex items-start gap-4">
-            <div className="p-3.5 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 shrink-0">
-              <StepIcon className="w-7 h-7" />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-slate-900">{currentStep.title}</h3>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                {currentStep.description}
-              </p>
-            </div>
-          </div>
-
-          {/* Key Tips Box */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block">
-              Pro-Tips & Highlights
-            </span>
-            {currentStep.tips.map((tip, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>{tip}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Jump to Workspace CTA */}
-          <div className="flex items-center justify-between p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
-            <span className="text-xs font-bold text-emerald-900">
-              Ready to explore this tool right now?
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                onNavigateTab(currentStep.tabTarget);
-                onClose();
-              }}
-              className="text-emerald-700 border-emerald-300 hover:bg-emerald-100 font-bold text-xs"
-            >
-              {currentStep.actionText}
-            </Button>
-          </div>
-        </div>
-
-        {/* Footer Controls */}
-        <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between gap-4">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-slate-600 font-medium">
-            <input
-              type="checkbox"
-              checked={dontShowAgain}
-              onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-            />
-            <span>Don't show automatically on next login</span>
-          </label>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="text-[11px] font-medium text-slate-400 hover:text-slate-200 transition-colors cursor-pointer px-2 py-1"
+            >
+              Skip
+            </button>
+
             {currentStepIndex > 0 && (
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
                 onClick={handlePrevious}
-                leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}
+                className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer"
               >
                 Back
-              </Button>
+              </button>
             )}
 
-            <Button
-              variant="primary"
-              size="sm"
+            <button
               onClick={handleNext}
-              rightIcon={isLastStep ? <Rocket className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
             >
-              {isLastStep ? 'Finish & Start Building' : 'Next Step'}
-            </Button>
+              <span>{isLastStep ? 'Finish' : 'Next'}</span>
+              {isLastStep ? <Check className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+            </button>
           </div>
         </div>
       </div>

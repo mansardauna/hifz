@@ -13,6 +13,7 @@ import {
   Sparkles,
   Globe,
   Building,
+  CheckCircle2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AnkabitLogo } from '../brand/AnkabitLogo';
@@ -33,6 +34,9 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
   const { tenant, setTenantBySubdomain } = useTenant();
   const { register } = useAuth();
 
+  const isPlatformSignup = !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo';
+  const isDemoAcademy = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo'].includes(tenant?.subdomain || '');
+
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -40,9 +44,12 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>(tenant?.subdomain || 'hifz-academy');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const isCodingNiche = selectedSubdomain.includes('code');
-  const isSchoolNiche = selectedSubdomain.includes('school') || selectedSubdomain.includes('horizon') || selectedSubdomain.includes('al-furqan');
+  const activeSubdomain = isPlatformSignup ? selectedSubdomain : (tenant?.subdomain || 'hifz-academy');
+  const isCodingNiche = activeSubdomain.includes('code') || tenant?.niche === 'coding';
+  const isSchoolNiche = activeSubdomain.includes('school') || activeSubdomain.includes('horizon') || tenant?.niche === 'school';
   const isMadrasatNiche = !isCodingNiche && !isSchoolNiche;
+
+  const authConfig = tenant?.authCustomization;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,8 +64,8 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
 
     setIsSubmitting(true);
     setTimeout(() => {
-      setTenantBySubdomain(selectedSubdomain);
-      register(name, email, 'student', selectedSubdomain);
+      setTenantBySubdomain(activeSubdomain);
+      register(name, email, 'student', activeSubdomain);
       onAddToast({
         type: 'success',
         title: 'Account Created',
@@ -67,27 +74,41 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
       setIsSubmitting(false);
 
       if (onSuccess) {
-        onSuccess('student', selectedSubdomain);
+        onSuccess('student', activeSubdomain);
       } else {
-        router.push(`/${selectedSubdomain}/lms`);
+        router.push(`/${activeSubdomain}/lms`);
       }
-    }, 500);
+    }, 450);
   };
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col justify-between p-3 sm:p-6 sm:py-8 selection:bg-emerald-100 selection:text-emerald-900 relative">
       {/* Top Header Navigation */}
       <div className="w-full max-w-6xl mx-auto mb-3 flex items-center justify-between px-2">
-        <div className="cursor-pointer" onClick={() => router.push('/')}>
-          <AnkabitLogo size="md" />
+        <div
+          className="cursor-pointer flex items-center gap-2.5"
+          onClick={() => router.push(isPlatformSignup ? '/' : `/${tenant?.subdomain}`)}
+        >
+          {isPlatformSignup ? (
+            <AnkabitLogo size="md" />
+          ) : tenant.logoUrl ? (
+            <img src={tenant.logoUrl} alt={tenant.name} className="h-8 w-auto object-contain rounded" />
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-black text-sm shadow-sm">
+                {tenant?.name?.charAt(0) || 'A'}
+              </div>
+              <span className="font-extrabold text-slate-900 text-base">{tenant?.name}</span>
+            </div>
+          )}
         </div>
 
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push(isPlatformSignup ? '/' : `/${tenant?.subdomain}`)}
           className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs cursor-pointer transition-all hover:border-slate-300"
         >
           <Globe className="w-3.5 h-3.5 text-slate-400" />
-          <span>Platform Home</span>
+          <span>{isPlatformSignup ? 'Platform Home' : 'Academy Home'}</span>
         </button>
       </div>
 
@@ -95,34 +116,57 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
       <div className="flex-1 flex items-center justify-center my-2">
         <div className="w-full max-w-6xl min-h-[82vh] grid grid-cols-1 lg:grid-cols-12 rounded-3xl bg-white border border-slate-200/90 shadow-2xl shadow-slate-200/80 overflow-hidden">
           {/* Left Hero Visual Card (5 Columns) */}
-          <div className="hidden lg:flex lg:col-span-5 flex-col justify-between p-8 sm:p-10 bg-slate-950 text-white relative overflow-hidden">
+          <div
+            className="hidden lg:flex lg:col-span-5 flex-col justify-between p-8 sm:p-10 bg-slate-950 text-white relative overflow-hidden"
+            style={
+              authConfig?.backgroundImageUrl
+                ? {
+                    backgroundImage: `linear-gradient(to bottom, rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.95)), url(${authConfig.backgroundImageUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }
+                : undefined
+            }
+          >
             <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="space-y-4 relative z-10">
-              <AnkabitLogo size="md" textColor="text-white" />
+              {isPlatformSignup ? (
+                <AnkabitLogo size="md" textColor="text-white" />
+              ) : (
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-md">
+                    {tenant?.name?.charAt(0) || 'A'}
+                  </div>
+                  <span className="font-extrabold text-white text-base">{tenant?.name}</span>
+                </div>
+              )}
 
               <div className="pt-2">
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
-                  Join Your Academy Portal
+                  {authConfig?.welcomeHeading || `Join ${tenant?.name || 'Your Academy'}`}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-                  Enroll in curriculum courses, access interactive live classrooms, and collaborate with your teachers.
+                  {authConfig?.welcomeSubtitle ||
+                    'Enroll in curriculum courses, access interactive live classrooms, and collaborate with your teachers.'}
                 </p>
               </div>
             </div>
 
-            {/* Dynamic Niche Vector Illustration */}
-            <div className="my-4 max-w-[290px] mx-auto">
-              {isCodingNiche ? (
-                <CodeAcademyArtIllustration className="w-full h-auto drop-shadow-xl" />
-              ) : isSchoolNiche ? (
-                <SchoolSisArtIllustration className="w-full h-auto drop-shadow-xl" />
-              ) : isMadrasatNiche ? (
-                <MadrasatArtIllustration className="w-full h-auto drop-shadow-xl" />
-              ) : (
-                <MultiTenantNetworkIllustration className="w-full h-auto drop-shadow-xl" />
-              )}
-            </div>
+            {/* Dynamic Niche Vector Illustration (if no background image) */}
+            {!authConfig?.backgroundImageUrl && (
+              <div className="my-4 max-w-[290px] mx-auto">
+                {isCodingNiche ? (
+                  <CodeAcademyArtIllustration className="w-full h-auto drop-shadow-xl" />
+                ) : isSchoolNiche ? (
+                  <SchoolSisArtIllustration className="w-full h-auto drop-shadow-xl" />
+                ) : isMadrasatNiche ? (
+                  <MadrasatArtIllustration className="w-full h-auto drop-shadow-xl" />
+                ) : (
+                  <MultiTenantNetworkIllustration className="w-full h-auto drop-shadow-xl" />
+                )}
+              </div>
+            )}
 
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center space-y-1 relative z-10 shadow-inner">
               <p className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
@@ -148,15 +192,17 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
-                <Select
-                  label="Select Academy Domain"
-                  value={selectedSubdomain}
-                  onChange={(e) => setSelectedSubdomain(e.target.value)}
-                  options={Object.values(MOCK_TENANTS).map((t) => ({
-                    value: t.subdomain,
-                    label: `${t.name} (${t.subdomain}.ankabit.app)`,
-                  }))}
-                />
+                {isPlatformSignup && (
+                  <Select
+                    label="Select Academy Domain"
+                    value={selectedSubdomain}
+                    onChange={(e) => setSelectedSubdomain(e.target.value)}
+                    options={Object.values(MOCK_TENANTS).map((t) => ({
+                      value: t.subdomain,
+                      label: `${t.name} (${t.subdomain}.ankabit.app)`,
+                    }))}
+                  />
+                )}
 
                 <Input
                   label="Full Name"
@@ -164,7 +210,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Zayd Al-Mansoor"
+                  placeholder="e.g. Bilal Ibrahim"
                   leftIcon={<User className="w-4 h-4" />}
                 />
 
@@ -203,7 +249,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                   type="submit"
                   variant="primary"
                   size="lg"
-                  className="w-full justify-center shadow-md font-bold text-white"
+                  className="w-full justify-center shadow-md font-bold text-white bg-emerald-700 hover:bg-emerald-800"
                   disabled={isSubmitting}
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
@@ -217,19 +263,21 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
                 Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => router.push('/login')}
-                  className="font-bold text-slate-900 hover:underline cursor-pointer"
+                  onClick={() => router.push(isPlatformSignup ? '/login' : `/${tenant?.subdomain}/login`)}
+                  className="font-bold text-emerald-700 hover:underline cursor-pointer"
                 >
                   Sign In
                 </button>
               </span>
-              <button
-                type="button"
-                onClick={() => router.push('/create-academy')}
-                className="font-semibold text-emerald-700 hover:underline cursor-pointer"
-              >
-                Launch Your Academy &rarr;
-              </button>
+              {isPlatformSignup && (
+                <button
+                  type="button"
+                  onClick={() => router.push('/create-academy')}
+                  className="font-semibold text-emerald-700 hover:underline cursor-pointer"
+                >
+                  Launch Your Academy &rarr;
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -237,7 +285,11 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onAddToast, onSuccess })
 
       {/* Footer */}
       <footer className="mt-4 text-center text-xs text-slate-500 space-y-1">
-        <p>© 2026 Ankabit LMS • Multi-Tenant Academy Operating System</p>
+        <p>
+          {isPlatformSignup
+            ? `© ${new Date().getFullYear()} Ankabit LMS • Multi-Tenant Academy Operating System`
+            : `© ${new Date().getFullYear()} ${tenant?.name || 'Academy'}. All rights reserved.`}
+        </p>
       </footer>
     </div>
   );

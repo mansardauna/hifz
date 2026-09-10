@@ -24,32 +24,41 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>({
-    id: 'usr-demo',
-    name: 'Zaid Al-Mansoor',
-    email: 'student@hifz-academy.com',
-    role: 'student',
-    tenantId: 'tenant-1',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('auth_user');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+    }
+    return null;
   });
 
   const login = (email: string, role: UserRole, customName?: string) => {
     let resolvedName = customName;
     if (!resolvedName) {
-      if (role === 'superadmin') resolvedName = 'Ankabit SuperAdmin';
-      else if (role === 'teacher') resolvedName = 'Shaykh Bilal Hashmi';
-      else if (role === 'admin') resolvedName = 'Sheikh Tariq Al-Mansoor';
-      else resolvedName = email.split('@')[0].replace('.', ' ');
+      const emailUser = email.split('@')[0];
+      resolvedName = emailUser
+        .split(/[._-]/)
+        .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+        .join(' ');
     }
 
-    setUser({
+    const newUser: User = {
       id: `usr-${Date.now()}`,
       name: resolvedName,
       email,
       role,
       tenantId: 'tenant-1',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-    });
+      avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(resolvedName)}`,
+    };
+
+    setUser(newUser);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('auth_user', JSON.stringify(newUser));
+      } catch (e) {}
+    }
   };
 
   const logout = () => {
@@ -73,14 +82,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = (name: string, email: string, role: UserRole, tenantId: string) => {
-    setUser({
+    const newUser: User = {
       id: `usr-${Date.now()}`,
       name,
       email,
       role,
       tenantId,
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-    });
+      avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
+    };
+    setUser(newUser);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('auth_user', JSON.stringify(newUser));
+      } catch (e) {}
+    }
   };
 
   return (

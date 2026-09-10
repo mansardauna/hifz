@@ -115,6 +115,9 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
   const [welcomeSubtitle, setWelcomeSubtitle] = useState<string>(
     tenant.authCustomization?.welcomeSubtitle || 'Enter your account credentials to access your courses, classroom huddles, and student records.'
   );
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(
+    tenant.authCustomization?.backgroundImageUrl || ''
+  );
   const [calligraphyText, setCalligraphyText] = useState<string>(
     tenant.authCustomization?.calligraphyText || 'وَقُل رَّبِّ زِدْنِي عِلْمًا'
   );
@@ -240,10 +243,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         welcomeSubtitle,
         calligraphyText,
         calligraphyTranslation,
+        backgroundImageUrl: backgroundImageUrl || undefined,
       },
       customFormFields: customFields,
     });
-    success('Login Experience Updated', 'Authentication layout and registration fields updated.');
+    success('Login Experience Updated', 'Authentication layout, custom background image, and registration fields updated.');
   };
 
   const handleVerifyCustomDomain = () => {
@@ -1153,12 +1157,35 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 type="text"
                 value={welcomeHeading}
                 onChange={(e) => setWelcomeHeading(e.target.value)}
+                placeholder="e.g. Welcome to Your Academy Workspace"
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Calligraphy Verse Quote</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Welcome Subtitle Instructions</label>
+              <input
+                type="text"
+                value={welcomeSubtitle}
+                onChange={(e) => setWelcomeSubtitle(e.target.value)}
+                placeholder="e.g. Enter credentials to access live halaqahs..."
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Auth Hero Background Image URL</label>
+              <input
+                type="url"
+                value={backgroundImageUrl}
+                onChange={(e) => setBackgroundImageUrl(e.target.value)}
+                placeholder="https://images.unsplash.com/photo-... or custom uploaded URL"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Calligraphy Verse Quote / Tagline</label>
               <input
                 type="text"
                 value={calligraphyText}

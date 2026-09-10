@@ -277,6 +277,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
     })),
   };
 
+  const isDemoTenant = Boolean(
+    tenant.subdomain === 'hifz-academy' ||
+    tenant.subdomain === 'al-furqan' ||
+    tenant.subdomain === 'madrasat-demo' ||
+    tenant.subdomain === 'code-academy' ||
+    tenant.subdomain === 'school-demo' ||
+    tenant.subdomain.includes('demo')
+  );
+
+  const hasPublishedContent = Boolean(liveHtml || (tenant.pageBlocks && tenant.pageBlocks.length > 0));
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900" dir={direction}>
       {/* Schema.org Structured Data for SEO */}
@@ -295,6 +306,41 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
           <div>
             {liveCss && <style>{liveCss}</style>}
             <div dangerouslySetInnerHTML={{ __html: liveHtml }} />
+          </div>
+        ) : !isDemoTenant && !hasPublishedContent ? (
+          /* Clean Unbuilt / Construction State for Real User Academies */
+          <div className="max-w-4xl mx-auto px-4 py-24 text-center space-y-6">
+            <div className="w-20 h-20 rounded-3xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
+              <Wand2 className="w-10 h-10" />
+            </div>
+            <div className="space-y-2">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                Portal In Setup
+              </span>
+              <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+                {tenant.name}
+              </h1>
+              <p className="text-slate-500 text-sm sm:text-base max-w-xl mx-auto">
+                Welcome to our institution portal. The custom landing page is currently being crafted by our administration team.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+              <a
+                href={`/${tenant.subdomain}/admin`}
+                className="px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all"
+              >
+                <Layers className="w-4 h-4" />
+                <span>Build Landing Page</span>
+              </a>
+              <a
+                href={`/${tenant.subdomain}/login`}
+                className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-bold text-sm shadow-xs flex items-center gap-2 transition-all"
+              >
+                <Users className="w-4 h-4" />
+                <span>Student / Staff Portal</span>
+              </a>
+            </div>
           </div>
         ) : (
           <>

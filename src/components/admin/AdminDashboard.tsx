@@ -207,17 +207,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="sm:hidden">{setupProgress.percentage}%</span>
             </Button>
 
-            {/* Guided Tour Trigger Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsTourGuideOpen(true)}
-              leftIcon={<Compass className="w-3.5 h-3.5 text-emerald-600" />}
-              className="px-2.5 sm:px-3.5 font-bold hidden md:inline-flex"
-            >
-              Tour Guide
-            </Button>
-
             {/* Live Site CTA */}
             <Button
               variant="primary"
