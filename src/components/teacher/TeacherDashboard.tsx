@@ -44,12 +44,16 @@ import {
   Sparkles,
   Filter,
   ShieldAlert,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  PhoneOff
 } from 'lucide-react';
-import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
+import { LiveClassroomHub, StudentLevelTier } from '../classroom/LiveClassroomHub';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
 import { QuranLMSWorkspace } from '../../plugins/quran/QuranLMSWorkspace';
 import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
+import { SchoolLMSWorkspace } from '../../plugins/school/SchoolLMSWorkspace';
+import { classroomSessionService, LiveClassSession } from '../../services/classroomSessionService';
 
 export type TeacherTab = 'students' | 'grading' | 'attendance' | 'classroom' | 'forum' | 'curriculum' | 'settings';
 
@@ -970,13 +974,74 @@ impl ThreadPool {
       classroomName: 'Live Video Halaqah',
       forumName: 'Halaqah Group Forum',
       curriculumName: 'Mushaf Reader & Tajweed',
-      evaluateAction: 'Rate Recitation',
-      studentsMetric: 'Assigned Students',
-      pendingMetric: 'Pending Recitations',
-      masteryMetric: 'Memorization Mastery',
-      masteryValue: '92%',
     };
   }, [isCodingNiche, isSchoolNiche]);
+
+  // Live Classroom Host State & Lifecycle
+  const [activeTeacherSession, setActiveTeacherSession] = useState<LiveClassSession | null>(null);
+  const [sessionTitleInput, setSessionTitleInput] = useState<string>('');
+  const [sessionLevelInput, setSessionLevelInput] = useState<StudentLevelTier | 'all'>('all');
+  const [sessionCohortInput, setSessionCohortInput] = useState<string>('all');
+  const [targetStudentIds, setTargetStudentIds] = useState<string[]>([]);
+  const [isCopiedInvite, setIsCopiedInvite] = useState<boolean>(false);
+
+  // Sync existing sessions on mount
+  useEffect(() => {
+    const existingSessions = classroomSessionService.getSessions(tenant.subdomain);
+    const myActive = existingSessions.find((s) => s.status === 'live');
+    if (myActive) {
+      setActiveTeacherSession(myActive);
+    }
+  }, [tenant.subdomain]);
+
+  const handleLaunchSession = () => {
+    const newSession: LiveClassSession = {
+      id: `room-${tenant.subdomain}-${Date.now().toString().slice(-6)}`,
+      title: sessionTitleInput.trim() || (isCodingNiche ? 'Live Mentor Pairing & Code Review' : isSchoolNiche ? 'Live Virtual Academic Lecture' : 'Live Quran Halaqah & Tajweed'),
+      courseTitle: isCodingNiche ? 'Full-Stack Software Engineering' : isSchoolNiche ? 'Academic Faculty Hall' : 'Tajweed & Sanad Mastery',
+      teacherId: user?.id || 'teacher-host',
+      teacherName: user?.name || teacherPersona.defaultName,
+      targetLevel: sessionLevelInput,
+      targetCohort: sessionCohortInput === 'all' ? 'All Cohorts / Halaqahs' : sessionCohortInput,
+      allowedStudentIds: targetStudentIds,
+      startedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'live',
+      subdomain: tenant.subdomain,
+      niche: tenant.niche
+    };
+    classroomSessionService.startSession(newSession);
+    setActiveTeacherSession(newSession);
+    onAddToast({
+      type: 'success',
+      title: 'Classroom Launched & Broadcasted!',
+      message: `Session is live. Enrolled students will receive the live notification and can auto-join.`
+    });
+  };
+
+  const handleEndSession = () => {
+    if (activeTeacherSession) {
+      classroomSessionService.endSession(tenant.subdomain, activeTeacherSession.id);
+      setActiveTeacherSession(null);
+      onAddToast({
+        type: 'info',
+        title: 'Session Concluded',
+        message: 'Live class session ended and broadcasted to all connected students.'
+      });
+    }
+  };
+
+  const handleCopyInviteLink = () => {
+    if (!activeTeacherSession) return;
+    const link = classroomSessionService.generateInviteLink(tenant.subdomain, activeTeacherSession.id);
+    navigator.clipboard.writeText(link);
+    setIsCopiedInvite(true);
+    setTimeout(() => setIsCopiedInvite(false), 2500);
+    onAddToast({
+      type: 'success',
+      title: 'Direct Student Link Copied!',
+      message: 'Invite link copied to clipboard. Share with your student(s).'
+    });
+  };
 
   return (
     <div className="h-screen w-screen overflow-hidden flex bg-slate-100 font-sans text-slate-900" dir={direction}>
@@ -1479,16 +1544,224 @@ impl ThreadPool {
             </div>
           )}
 
-          {/* TAB 3: LIVE CLASSROOM / PAIR ROOM */}
+          {/* TAB 3: LIVE CLASSROOM / HOST STUDIO */}
           {activeTab === 'classroom' && (
             <div className="space-y-4">
-              <LiveClassroomHub
-                userRole="teacher"
-                currentUserName={user?.name || teacherPersona.defaultName}
-                niche={tenant.niche}
-                roomTitle={isCodingNiche ? 'Live Mentor Pairing & Code Review' : isSchoolNiche ? 'Live Virtual Lecture Room' : 'Live Quran Halaqah'}
-                courseTitle={isCodingNiche ? 'Full-Stack Software Engineering' : isSchoolNiche ? 'Academic Faculty Hall' : 'Tajweed & Sanad Mastery'}
-              />
+              {!activeTeacherSession ? (
+                /* Live Session Creator & Launcher Console */
+                <Card className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-4xl mx-auto space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center font-bold shadow-md shrink-0">
+                        <Radio className="w-6 h-6 animate-pulse" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-slate-900 tracking-tight">
+                          {isCodingNiche ? 'Launch Live Engineering Huddle / Pair Room' : isSchoolNiche ? 'Start Academic Virtual Lecture' : 'Start Live Quran Halaqah'}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Configure session topics, select student level & cohort, and generate direct student access links.
+                        </p>
+                      </div>
+                    </div>
+
+                    <Badge variant="primary" className="font-bold text-xs shrink-0">
+                      Host: {user?.name || teacherPersona.defaultName}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Session Title */}
+                    <div className="space-y-1.5 md:col-span-2">
+                      <label className="text-xs font-bold text-slate-800">Live Session Title / Topic</label>
+                      <input
+                        type="text"
+                        value={sessionTitleInput}
+                        onChange={(e) => setSessionTitleInput(e.target.value)}
+                        placeholder={
+                          isCodingNiche
+                            ? 'e.g. React 19 Server Actions & Optimistic UI Architecture Review'
+                            : isSchoolNiche
+                            ? 'e.g. Unit 5: Taylor & Maclaurin Series Derivation Lecture'
+                            : 'e.g. Surah Al-Mulk: Tajweed Makharij & Ahkam Al-Nun Oral Halaqah'
+                        }
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+                      />
+                    </div>
+
+                    {/* Level Classification Target */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-800">Target Student Level Tier</label>
+                      <select
+                        value={sessionLevelInput}
+                        onChange={(e) => setSessionLevelInput(e.target.value as any)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                      >
+                        <option value="all">All Student Levels (Mixed Cohort)</option>
+                        <option value="beginner">
+                          {isMadrasatNiche ? 'Level 1 - Noorani Qaidah & Makharij (Beginner)' : isCodingNiche ? 'Level 1 - Core Fundamentals & JS' : 'Grade 9 - Foundation Core'}
+                        </option>
+                        <option value="intermediate">
+                          {isMadrasatNiche ? 'Level 2 - Juz Amma & Tajweed Application' : isCodingNiche ? 'Level 2 - Full-Stack React & APIs' : 'Grade 11 - Honors & AP'}
+                        </option>
+                        <option value="advanced">
+                          {isMadrasatNiche ? 'Level 3 - Hifz Revision & Sanad Ijazah' : isCodingNiche ? 'Level 3 - Systems & Cloud Architect' : 'Grade 12 - Senior Capstone'}
+                        </option>
+                      </select>
+                    </div>
+
+                    {/* Cohort / Halaqah Filter */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-800">Target Cohort / Group</label>
+                      <select
+                        value={sessionCohortInput}
+                        onChange={(e) => setSessionCohortInput(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                      >
+                        <option value="all">All Enrolled Cohorts</option>
+                        {isMadrasatNiche ? (
+                          <>
+                            <option value="Halaqah Al-Nour (Morning)">Halaqah Al-Nour (Morning)</option>
+                            <option value="Halaqah Al-Furqan (Evening)">Halaqah Al-Furqan (Evening)</option>
+                            <option value="Hifz Intensive Track">Hifz Intensive Track</option>
+                          </>
+                        ) : isCodingNiche ? (
+                          <>
+                            <option value="Full-Stack Next.js Bootcamp">Full-Stack Next.js Bootcamp</option>
+                            <option value="Frontend Engineering Cohort">Frontend Engineering Cohort</option>
+                            <option value="Cloud Architecture Masterclass">Cloud Architecture Masterclass</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="Grade 11 - Section A (Honors)">Grade 11 - Section A (Honors)</option>
+                            <option value="Grade 11 - Section B">Grade 11 - Section B</option>
+                            <option value="AP Calculus Cohort">AP Calculus Cohort</option>
+                          </>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Specific Student Selection Option */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-800">
+                        Assign Specific Students (Optional, leave empty for all in cohort):
+                      </label>
+                      <span className="text-[11px] text-slate-500 font-mono">
+                        {targetStudentIds.length === 0 ? 'All Enrolled' : `${targetStudentIds.length} Selected`}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-200">
+                      {assignedStudents.map((std) => {
+                        const isChecked = targetStudentIds.includes(std.id);
+                        return (
+                          <label
+                            key={std.id}
+                            className={`p-2 rounded-lg border text-xs flex items-center gap-2 cursor-pointer transition-all ${
+                              isChecked
+                                ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setTargetStudentIds((prev) => [...prev, std.id]);
+                                } else {
+                                  setTargetStudentIds((prev) => prev.filter((id) => id !== std.id));
+                                }
+                              }}
+                              className="rounded text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <span className="truncate">{std.name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Launch Actions */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <p className="text-xs text-slate-500">
+                      When started, active students will see a real-time auto-join banner and can access via shareable URL.
+                    </p>
+
+                    <Button
+                      variant="primary"
+                      onClick={handleLaunchSession}
+                      leftIcon={<Play className="w-4 h-4" />}
+                      className="px-6 py-3 font-extrabold text-xs shadow-md"
+                    >
+                      🚀 Launch & Broadcast Live Class
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                /* Active Session Host Deck & Live Class Hub */
+                <div className="space-y-3">
+                  {/* Floating Persistent Host Control Bar */}
+                  <div className="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-lg border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-extrabold text-white text-sm truncate">{activeTeacherSession.title}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Live Host Active
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                          Target: <strong className="text-slate-300">{activeTeacherSession.targetCohort}</strong> • Level: <strong className="text-slate-300">{activeTeacherSession.targetLevel.toUpperCase()}</strong>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleCopyInviteLink}
+                        leftIcon={isCopiedInvite ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700 font-bold text-xs"
+                      >
+                        {isCopiedInvite ? 'Link Copied!' : 'Copy Student Invite Link'}
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={handleEndSession}
+                        leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
+                        className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                      >
+                        End Class Session
+                      </Button>
+                    </div>
+                  </div>
+
+                  <LiveClassroomHub
+                    userRole="teacher"
+                    currentUserName={user?.name || teacherPersona.defaultName}
+                    niche={tenant.niche}
+                    roomTitle={activeTeacherSession.title}
+                    courseTitle={activeTeacherSession.courseTitle || `${tenant.name} Live Studio`}
+                    studentLevel={activeTeacherSession.targetLevel !== 'all' ? activeTeacherSession.targetLevel : 'intermediate'}
+                    renderWorkspacePlugin={
+                      isSchoolNiche ? (
+                        <SchoolLMSWorkspace onAddToast={onAddToast} />
+                      ) : isCodingNiche ? (
+                        <CodingSandboxWorkspace />
+                      ) : (
+                        <QuranLMSWorkspace />
+                      )
+                    }
+                  />
+                </div>
+              )}
             </div>
           )}
 

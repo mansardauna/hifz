@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Ayah } from '../../types';
 import { QuranViewer } from './QuranViewer';
 import { AudioRecitationPlayer } from './AudioRecitationPlayer';
@@ -25,10 +25,18 @@ import {
   MessageSquare,
   GraduationCap,
   FileCheck2,
-  Calendar
+  Calendar,
+  Sparkles,
+  Volume2,
+  Clock,
+  CheckCircle2,
+  Play,
+  Copy,
+  Check,
+  Users
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { LiveClassroomHub } from '../classroom/LiveClassroomHub';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { LiveClassroomHub, StudentLevelTier } from '../classroom/LiveClassroomHub';
 import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
 import { SchoolCoursesView } from '../../plugins/school/SchoolCoursesView';
 import { SchoolAssignmentsPortal } from '../../plugins/school/SchoolAssignmentsPortal';
@@ -38,6 +46,7 @@ import { SchoolLMSWorkspace } from '../../plugins/school/SchoolLMSWorkspace';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
 import { TeacherDashboard } from '../teacher/TeacherDashboard';
+import { classroomSessionService, LiveClassSession } from '../../services/classroomSessionService';
 
 export type StudentTab =
   | 'courses'
@@ -60,6 +69,7 @@ interface StudentLMSProps {
 
 export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { tenant, direction, language, setLanguage } = useTenant();
   const { user, logout } = useAuth();
 
@@ -77,6 +87,53 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const [selectedAyah, setSelectedAyah] = useState<Ayah | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+
+  // Active Live Classroom Session state
+  const [activeLiveSession, setActiveLiveSession] = useState<LiveClassSession | null>(null);
+  const [studentLevel, setStudentLevel] = useState<StudentLevelTier>('intermediate');
+
+  // Auto-detect URL query params (?tab=classroom&roomId=...) on mount
+  useEffect(() => {
+    const tabParam = searchParams?.get('tab') as StudentTab | null;
+    const roomIdParam = searchParams?.get('roomId');
+    if (tabParam && tabParam === 'classroom') {
+      setActiveTab('classroom');
+    }
+    if (roomIdParam) {
+      setActiveTab('classroom');
+    }
+  }, [searchParams]);
+
+  // Sync active sessions and listen for real-time teacher broadcasts
+  useEffect(() => {
+    const checkActiveSession = () => {
+      const active = classroomSessionService.getActiveSessionForStudent(
+        tenant.subdomain,
+        user?.id,
+        user?.cohort,
+        studentLevel
+      );
+      setActiveLiveSession(active);
+    };
+
+    checkActiveSession();
+
+    // Subscribe to cross-tab BroadcastChannel events
+    const unsubscribe = classroomSessionService.subscribe((event) => {
+      if (event.type === 'SESSION_STARTED') {
+        checkActiveSession();
+        onAddToast({
+          type: 'info',
+          title: 'Live Class Started!',
+          message: `${event.session?.teacherName || 'Instructor'} has opened the live virtual room.`
+        });
+      } else if (event.type === 'SESSION_ENDED') {
+        checkActiveSession();
+      }
+    });
+
+    return () => unsubscribe();
+  }, [tenant.subdomain, user?.id, user?.cohort, studentLevel]);
 
   const toggleLanguage = () => {
     const nextLang = language === 'ar' ? 'en' : 'ar';
@@ -324,6 +381,36 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           </div>
         </header>
 
+        {/* Floating Active Live Class Alert Ribbon */}
+        {activeLiveSession && activeTab !== 'classroom' && (
+          <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white px-4 py-2.5 shadow-md flex items-center justify-between gap-3 text-xs shrink-0 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse shrink-0" />
+              <div className="min-w-0">
+                <span className="font-extrabold uppercase tracking-wider text-[10px] bg-white/20 px-1.5 py-0.5 rounded mr-2">
+                  Live Now
+                </span>
+                <span className="font-bold truncate">
+                  {activeLiveSession.teacherName} started <span className="underline">{activeLiveSession.title}</span>
+                </span>
+                {activeLiveSession.targetCohort && (
+                  <span className="opacity-80 ml-2 hidden sm:inline font-mono">
+                    ({activeLiveSession.targetCohort})
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveTab('classroom')}
+              className="px-3 py-1 bg-white text-emerald-950 hover:bg-emerald-50 rounded-xl font-extrabold text-xs transition-transform active:scale-95 shadow-sm cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            >
+              <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+              <span>Auto-Join Class &rarr;</span>
+            </button>
+          </div>
+        )}
+
         {/* Tab Viewport Main Content */}
         <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
           {/* School Niche Specific Views */}
@@ -345,31 +432,110 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
             <SchoolTimetableView />
           )}
 
-          {/* Live Virtual Classroom (Adapts dynamically to niche) */}
+          {/* Live Virtual Classroom (Auto-Connects to Active Session or Renders Waiting Lobby) */}
           {activeTab === 'classroom' && (
             <div className="h-[calc(100vh-140px)] min-h-[600px] rounded-2xl overflow-hidden border border-slate-200 shadow-md">
-              <LiveClassroomHub
-                roomTitle={`${tenant.name} Live Lecture`}
-                courseTitle={tenant.tagline || 'Interactive Learning Session'}
-                userRole="student"
-                currentUserName={user?.name || (isSchoolNiche ? 'Alex Mercer' : 'Enrolled Student')}
-                niche={isCodingNiche ? 'coding' : isSchoolNiche ? 'school' : 'quran'}
-                onLeaveRoom={() => setActiveTab(isCodingNiche ? 'coding' : isSchoolNiche ? 'courses' : 'quran')}
-                renderWorkspacePlugin={
-                  isSchoolNiche ? (
-                    <SchoolLMSWorkspace onAddToast={onAddToast} />
-                  ) : isCodingNiche ? (
-                    <CodingSandboxWorkspace />
-                  ) : (
-                    <QuranViewer
-                      activeAyahNumber={selectedAyah?.number || null}
-                      onSelectAyah={handleSelectAyah}
-                      isPlaying={isPlaying}
-                      onTogglePlay={handleTogglePlay}
-                    />
-                  )
-                }
-              />
+              {activeLiveSession ? (
+                <LiveClassroomHub
+                  roomTitle={activeLiveSession.title}
+                  courseTitle={activeLiveSession.courseTitle || `${tenant.name} Virtual Hall`}
+                  userRole="student"
+                  currentUserName={user?.name || (isSchoolNiche ? 'Alex Mercer' : 'Enrolled Student')}
+                  niche={isCodingNiche ? 'coding' : isSchoolNiche ? 'school' : 'quran'}
+                  studentLevel={activeLiveSession.targetLevel !== 'all' ? activeLiveSession.targetLevel : studentLevel}
+                  onLeaveRoom={() => setActiveTab(isCodingNiche ? 'coding' : isSchoolNiche ? 'courses' : 'quran')}
+                  renderWorkspacePlugin={
+                    isSchoolNiche ? (
+                      <SchoolLMSWorkspace onAddToast={onAddToast} />
+                    ) : isCodingNiche ? (
+                      <CodingSandboxWorkspace />
+                    ) : (
+                      <QuranViewer
+                        activeAyahNumber={selectedAyah?.number || null}
+                        onSelectAyah={handleSelectAyah}
+                        isPlaying={isPlaying}
+                        onTogglePlay={handleTogglePlay}
+                      />
+                    )
+                  }
+                />
+              ) : (
+                /* Virtual Classroom Waiting Lobby */
+                <div className="h-full bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center space-y-6">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700 shadow-2xl">
+                      <Radio className="w-10 h-10 text-emerald-400 animate-pulse" />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-5 w-5 bg-emerald-500"></span>
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-w-md">
+                    <h3 className="text-xl font-black text-white tracking-tight">Virtual Classroom Waiting Lobby</h3>
+                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                      Awaiting instructor (<strong className="text-slate-200">{isSchoolNiche ? 'Dr. Eleanor Vance' : isCodingNiche ? 'Sarah Jenkins' : 'Shaykh Abdul Rahman'}</strong>) to start the live class session for your account.
+                    </p>
+                  </div>
+
+                  {/* Student Account Binding Info */}
+                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 max-w-md w-full text-left space-y-2.5">
+                    <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
+                      <span className="text-slate-400">Authenticated Student:</span>
+                      <span className="font-bold text-white font-mono">{user?.name || 'Alex Mercer'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
+                      <span className="text-slate-400">Class / Cohort ID:</span>
+                      <span className="font-bold text-emerald-400 font-mono">{user?.cohort || 'Cohort-2026-Alpha'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-400">Classroom Signal:</span>
+                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-400">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        Listening for Host...
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-2">
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        // Force join mock room if student wants to enter sandbox immediately
+                        const mockSession: LiveClassSession = {
+                          id: `room-${tenant.subdomain}-101`,
+                          title: isSchoolNiche ? 'Academic Virtual Lecture' : isCodingNiche ? 'Live Mentor Pairing' : 'Daily Live Halaqah',
+                          courseTitle: tenant.tagline || 'Interactive Learning Cohort',
+                          teacherId: 'teacher-1',
+                          teacherName: isSchoolNiche ? 'Dr. Eleanor Vance' : isCodingNiche ? 'Sarah Jenkins' : 'Shaykh Abdul Rahman',
+                          targetLevel: 'intermediate',
+                          targetCohort: 'Cohort-2026-Alpha',
+                          allowedStudentIds: [],
+                          startedAt: new Date().toLocaleTimeString(),
+                          status: 'live',
+                          subdomain: tenant.subdomain,
+                          niche: tenant.niche
+                        };
+                        classroomSessionService.startSession(mockSession);
+                        setActiveLiveSession(mockSession);
+                      }}
+                      leftIcon={<Play className="w-4 h-4" />}
+                      className="font-bold text-xs"
+                    >
+                      Enter Standby Classroom
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => setActiveTab(defaultTab)}
+                      className="text-slate-300 border-slate-700 hover:bg-slate-800 text-xs font-bold"
+                    >
+                      Return to Dashboard
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

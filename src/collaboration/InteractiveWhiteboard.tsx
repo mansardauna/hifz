@@ -19,7 +19,7 @@ import {
   Share2
 } from 'lucide-react';
 
-export type ToolType = 'pen' | 'highlighter' | 'rect' | 'circle' | 'line' | 'arrow' | 'eraser' | 'laser';
+export type ToolType = 'pen' | 'highlighter' | 'rect' | 'circle' | 'line' | 'arrow' | 'text' | 'eraser' | 'laser';
 
 interface DrawAction {
   tool: ToolType;
@@ -27,6 +27,7 @@ interface DrawAction {
   size: number;
   points: { x: number; y: number }[];
   text?: string;
+  fontSize?: number;
 }
 
 interface InteractiveWhiteboardProps {
@@ -49,6 +50,13 @@ const COLOR_PALETTE = [
 
 const STROKE_SIZES = [2, 4, 8, 14];
 
+export const getFontSizeForSize = (size: number): number => {
+  if (size <= 2) return 16;
+  if (size <= 4) return 22;
+  if (size <= 8) return 32;
+  return 48;
+};
+
 export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
   roomName = 'Classroom Whiteboard',
   teacherName = 'Ustadh / Instructor',
@@ -56,6 +64,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
   className = '',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const textInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [currentTool, setCurrentTool] = useState<ToolType>('pen');
   const [currentColor, setCurrentColor] = useState<string>('#059669');
   const [currentSize, setCurrentSize] = useState<number>(4);
@@ -67,9 +76,17 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
   const [isLaserActive, setIsLaserActive] = useState<boolean>(false);
   const [laserPos, setLaserPos] = useState<{ x: number; y: number } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [textInput, setTextInput] = useState<{ x: number; y: number; value: string } | null>(null);
   const [remoteCursors, setRemoteCursors] = useState<{ id: string; name: string; x: number; y: number; color: string }[]>([
     { id: '1', name: teacherName, x: 220, y: 180, color: '#059669' }
   ]);
+
+  // Focus text input when opened
+  useEffect(() => {
+    if (textInput && textInputRef.current) {
+      textInputRef.current.focus();
+    }
+  }, [textInput]);
 
   // Redraw full canvas
   const redrawCanvas = useCallback(() => {
@@ -169,6 +186,15 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
         ctx.moveTo(end.x, end.y);
         ctx.lineTo(end.x - headlen * Math.cos(angle + Math.PI / 6), end.y - headlen * Math.sin(angle + Math.PI / 6));
         ctx.stroke();
+      } else if (act.tool === 'text' && act.text) {
+        const fontSize = act.fontSize || getFontSizeForSize(act.size);
+        ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`;
+        ctx.textBaseline = 'top';
+        const lines = act.text.split('\n');
+        const lineHeight = fontSize * 1.3;
+        lines.forEach((line, idx) => {
+          ctx.fillText(line, act.points[0].x, act.points[0].y + idx * lineHeight);
+        });
       }
 
       ctx.restore();
@@ -197,6 +223,22 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [redrawCanvas]);
 
+  const commitCurrentText = useCallback(() => {
+    if (textInput && textInput.value.trim()) {
+      const newAction: DrawAction = {
+        tool: 'text',
+        color: currentColor,
+        size: currentSize,
+        fontSize: getFontSizeForSize(currentSize),
+        points: [{ x: textInput.x, y: textInput.y }],
+        text: textInput.value,
+      };
+      setActions((prev) => [...prev, newAction]);
+      setUndoneActions([]);
+    }
+    setTextInput(null);
+  }, [textInput, currentColor, currentSize]);
+
   const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -215,6 +257,23 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
       setIsLaserActive(true);
       setLaserPos(coords);
       return;
+    }
+
+    if (currentTool === 'text') {
+      if (textInput) {
+        commitCurrentText();
+      }
+      setTextInput({
+        x: coords.x,
+        y: coords.y,
+        value: '',
+      });
+      return;
+    }
+
+    // If typing was open and clicked canvas with another tool, commit it
+    if (textInput) {
+      commitCurrentText();
     }
 
     setIsDrawing(true);
@@ -261,6 +320,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
   };
 
   const handleUndo = () => {
+    if (textInput) commitCurrentText();
     if (actions.length === 0) return;
     const last = actions[actions.length - 1];
     setActions((prev) => prev.slice(0, prev.length - 1));
@@ -268,6 +328,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
   };
 
   const handleRedo = () => {
+    if (textInput) commitCurrentText();
     if (undoneActions.length === 0) return;
     const next = undoneActions[undoneActions.length - 1];
     setUndoneActions((prev) => prev.slice(0, prev.length - 1));
@@ -276,12 +337,14 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
 
   const handleClear = () => {
     if (window.confirm('Are you sure you want to clear the entire whiteboard canvas?')) {
+      setTextInput(null);
       setActions([]);
       setUndoneActions([]);
     }
   };
 
   const handleExportImage = () => {
+    if (textInput) commitCurrentText();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/png');
@@ -298,7 +361,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
         {/* Left: Tool Selection */}
         <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
           <button
-            onClick={() => setCurrentTool('pen')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('pen'); }}
             title="Pen / Marker"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'pen' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -307,7 +370,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             <Pencil className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setCurrentTool('highlighter')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('highlighter'); }}
             title="Highlighter"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'highlighter' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -316,7 +379,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             <Highlighter className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setCurrentTool('rect')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('rect'); }}
             title="Rectangle"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'rect' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -325,7 +388,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             <Square className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setCurrentTool('circle')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('circle'); }}
             title="Circle"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'circle' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -334,7 +397,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             <Circle className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setCurrentTool('arrow')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('arrow'); }}
             title="Arrow"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'arrow' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -343,7 +406,16 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             <ArrowRight className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setCurrentTool('laser')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('text'); }}
+            title="Text Tool (Click canvas to type)"
+            className={`p-2 rounded-lg transition-all ${
+              currentTool === 'text' ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400' : 'text-slate-300 hover:text-white hover:bg-slate-700'
+            }`}
+          >
+            <Type className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('laser'); }}
             title="Laser Pointer"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'laser' ? 'bg-red-600 text-white shadow-sm animate-pulse' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -352,7 +424,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             <Sparkles className="w-4 h-4 text-red-400" />
           </button>
           <button
-            onClick={() => setCurrentTool('eraser')}
+            onClick={() => { if (textInput) commitCurrentText(); setCurrentTool('eraser'); }}
             title="Eraser"
             className={`p-2 rounded-lg transition-all ${
               currentTool === 'eraser' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-300 hover:text-white hover:bg-slate-700'
@@ -464,6 +536,60 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
             className="absolute pointer-events-none w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500/80 shadow-[0_0_20px_6px_rgba(239,68,68,0.9)] animate-ping"
             style={{ left: laserPos.x, top: laserPos.y }}
           />
+        )}
+
+        {/* Inline Text Input Overlay */}
+        {textInput && (
+          <div
+            className="absolute z-30 flex flex-col items-start"
+            style={{
+              left: Math.max(10, Math.min(textInput.x, (canvasRef.current?.width || 600) - 260)),
+              top: Math.max(10, Math.min(textInput.y, (canvasRef.current?.height || 400) - 100)),
+            }}
+          >
+            <div className="relative bg-white/95 rounded-xl border-2 border-emerald-500 shadow-2xl p-2 min-w-[240px] max-w-[400px] backdrop-blur-sm animate-in fade-in zoom-in-95 duration-150">
+              <textarea
+                ref={textInputRef}
+                value={textInput.value}
+                onChange={(e) => setTextInput((prev) => (prev ? { ...prev, value: e.target.value } : null))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    commitCurrentText();
+                  } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    setTextInput(null);
+                  }
+                }}
+                placeholder="Type here (Enter to save, Shift+Enter for new line)..."
+                rows={Math.max(2, textInput.value.split('\n').length)}
+                className="w-full bg-transparent border-0 resize-none outline-none font-semibold leading-relaxed"
+                style={{
+                  color: currentColor,
+                  fontSize: `${getFontSizeForSize(currentSize)}px`,
+                }}
+              />
+              <div className="flex items-center justify-between pt-1 mt-1 border-t border-slate-100 text-[11px] text-slate-500">
+                <span className="text-[10px] text-slate-400">Press Enter to place</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setTextInput(null)}
+                    className="px-2 py-0.5 rounded text-slate-500 hover:bg-slate-100 font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={commitCurrentText}
+                    className="px-2.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors shadow-sm"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Simulated Remote Teacher/Student Cursor */}

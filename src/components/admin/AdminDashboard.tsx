@@ -65,16 +65,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     else addToast(toast);
   };
 
-  // Check if tour should auto-trigger for fresh academies
+  // Setup Wizard & Tour Guide Lifecycle Orchestration
+  // Setup Wizard pops up by default first; Tour Guide waits until setup is complete
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const tourDone = localStorage.getItem('techmadrasah_tour_completed');
-      if (!tourDone) {
-        const timer = setTimeout(() => setIsTourGuideOpen(true), 600);
-        return () => clearTimeout(timer);
+      const setupCompleted = localStorage.getItem(`setup_completed_${tenant.subdomain}`);
+      const setupDismissed = localStorage.getItem(`setup_dismissed_${tenant.subdomain}`);
+      const progress = calculateSetupProgress();
+      if (!setupCompleted && !setupDismissed && progress.percentage < 100) {
+        setIsOnboardingWizardOpen(true);
       }
     }
-  }, []);
+  }, [tenant.subdomain]);
 
   // Calculate real dynamic setup wizard completion percentage
   const calculateSetupProgress = () => {
@@ -205,6 +207,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <span className="sm:hidden">{setupProgress.percentage}%</span>
             </Button>
 
+            {/* Guided Tour Trigger Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsTourGuideOpen(true)}
+              leftIcon={<Compass className="w-3.5 h-3.5 text-emerald-600" />}
+              className="px-2.5 sm:px-3.5 font-bold hidden md:inline-flex"
+            >
+              Tour Guide
+            </Button>
+
             {/* Live Site CTA */}
             <Button
               variant="primary"
@@ -226,7 +239,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               onAddToast={handleToast}
               onComplete={() => {
                 setIsOnboardingWizardOpen(false);
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem(`setup_completed_${tenant.subdomain}`, 'true');
+                }
                 setActiveTab('overview');
+                // Automatically launch the Guided Tour now that setup is complete!
+                setTimeout(() => setIsTourGuideOpen(true), 400);
               }}
             />
           ) : (

@@ -9,6 +9,8 @@ export interface User {
   role: UserRole;
   tenantId: string;
   avatarUrl?: string;
+  cohort?: string;
+  level?: string;
 }
 
 interface AuthContextType {
