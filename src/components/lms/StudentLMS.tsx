@@ -193,14 +193,15 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
       {isMobileNavOpen && (
         <div
           onClick={() => setIsMobileNavOpen(false)}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          aria-hidden="true"
         />
       )}
 
       {/* 1. Student Left Sidebar (Fixed & Non-Scrolling) */}
       <aside
         style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
-        className={`w-64 xl:w-72 h-full flex flex-col justify-between text-slate-200 border-r border-slate-800 shrink-0 select-none z-30 transition-transform duration-300 ${
+        className={`w-64 sm:w-72 max-w-[85vw] h-[100dvh] lg:h-full flex flex-col justify-between text-slate-200 border-r border-slate-800 shrink-0 select-none z-50 transition-transform duration-300 ${
           isMobileNavOpen
             ? 'fixed inset-y-0 left-0 shadow-2xl translate-x-0'
             : 'hidden lg:flex'

@@ -1,14 +1,14 @@
 {
-  "name": "Hifz - Sanad-Verified Quran & Arabic Academy Platform",
-  "short_name": "Hifz",
-  "description": "Sanad-Verified Quran & Arabic Academy LMS Platform with Tajweed Reader, Audio Recorder, and Admissions CRM",
+  "name": "Ankabit LMS - Multi-Tenant Academy Operating System",
+  "short_name": "Ankabit LMS",
+  "description": "The premier multi-tenant white-label academy LMS platform for Quran Madrasats, Code Bootcamps, and K-12 Schools.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#047857",
-  "theme_color": "#047857",
+  "background_color": "#0f172a",
+  "theme_color": "#059669",
   "orientation": "portrait-primary",
   "scope": "/",
-  "categories": ["education", "lifestyle", "productivity"],
+  "categories": ["education", "productivity", "utilities"],
   "icons": [
     {
       "src": "/icons/icon.svg",

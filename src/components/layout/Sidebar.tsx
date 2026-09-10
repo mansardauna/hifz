@@ -143,15 +143,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpenOnMobile && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          aria-hidden="true"
         />
       )}
 
       {/* Sidebar Container */}
       <aside
         style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
-        className={`fixed lg:static top-0 left-0 bottom-0 z-50 flex flex-col border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 ${
-          collapsed && !isOpenOnMobile ? 'w-20' : 'w-72'
+        className={`fixed lg:static top-0 left-0 bottom-0 z-50 flex flex-col border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 h-[100dvh] lg:h-auto overflow-hidden ${
+          collapsed && !isOpenOnMobile ? 'w-20' : 'w-72 max-w-[85vw]'
         } ${
           isOpenOnMobile
             ? 'translate-x-0 shadow-2xl'
