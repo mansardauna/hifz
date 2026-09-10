@@ -40,7 +40,8 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
   const [institutionType, setInstitutionType] = useState<'madrasat' | 'code_academy' | 'school'>('madrasat');
   const [academyName, setAcademyName] = useState<string>('');
-  const [subdomain, setSubdomain] = useState<string>('dar-alquran');
+  const [subdomain, setSubdomain] = useState<string>('');
+  const [isSubdomainCustomized, setIsSubdomainCustomized] = useState<boolean>(false);
   const [adminName, setAdminName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -90,14 +91,11 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
   const handleTypeSelect = (type: 'madrasat' | 'code_academy' | 'school') => {
     setInstitutionType(type);
-    if (!academyName || academyName === institutionConfigs[institutionType].placeholderName) {
-      setAcademyName(institutionConfigs[type].placeholderName);
-      setSubdomain(institutionConfigs[type].placeholderSubdomain);
-    }
   };
 
   const handleSubdomainChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    setIsSubdomainCustomized(true);
+    const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 24);
     setSubdomain(val);
   };
 
@@ -297,9 +295,17 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                     required
                     value={academyName}
                     onChange={(e) => {
-                      setAcademyName(e.target.value);
-                      if (!subdomain || subdomain === currentConfig.placeholderSubdomain) {
-                        setSubdomain(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 20));
+                      const val = e.target.value;
+                      setAcademyName(val);
+                      if (!isSubdomainCustomized) {
+                        const slug = val
+                          .toLowerCase()
+                          .replace(/[^a-z0-9\s-]/g, '')
+                          .trim()
+                          .replace(/[\s_]+/g, '-')
+                          .replace(/-+/g, '-')
+                          .slice(0, 24);
+                        setSubdomain(slug);
                       }
                     }}
                     placeholder={currentConfig.placeholderName}

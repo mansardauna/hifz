@@ -60,97 +60,83 @@ interface FormResponsesTableProps {
 
 type SortField = 'studentName' | 'email' | 'submittedAt' | 'status' | string;
 
+import { MOCK_TENANTS } from '../../services/mockData';
+
+const DEMO_RESPONSES: FormResponse[] = [
+  {
+    id: 'resp-101',
+    formId: 'form-admissions',
+    formTitle: 'Direct Admissions & Evaluation Inquiry',
+    studentName: 'Zaid Al-Harithi',
+    email: 'zaid.harithi@example.com',
+    phone: '+966 50 123 4567',
+    submittedAt: '2026-09-02 14:30',
+    status: 'New',
+    data: {
+      'Parent / Guardian Name': 'Ibrahim Al-Harithi',
+      'Current Juz Memorized': '6 - 15 Juz',
+      'Preferred Class Timing': 'Evening (Isha-Night)',
+      'Selected Plan': 'Intensive Hifz Program ($140/mo)',
+      'Target Goal': 'Complete memorization of Surah Al-Kahf to An-Nas'
+    },
+    notes: 'Strong Tajweed foundation from local mosque.'
+  },
+  {
+    id: 'resp-102',
+    formId: 'form-admissions',
+    formTitle: 'Direct Admissions & Evaluation Inquiry',
+    studentName: 'Amina Khatun',
+    email: 'amina.khatun@example.co.uk',
+    phone: '+44 7700 900123',
+    submittedAt: '2026-09-01 09:15',
+    status: 'Under Review',
+    data: {
+      'Parent / Guardian Name': 'Farooq Khatun',
+      'Current Juz Memorized': '1 - 5 Juz',
+      'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
+      'Selected Plan': 'Foundational Tajweed Track ($65/mo)',
+      'Target Goal': 'Correct Makharij and learn Tuhfat al-Atfal'
+    },
+    notes: 'Scheduled for voice assessment.'
+  },
+  {
+    id: 'resp-103',
+    formId: 'form-placement',
+    formTitle: 'Tajweed & Memorization Placement Evaluation',
+    studentName: 'Tariq Mansoor',
+    email: 'tariq.mansoor@example.com',
+    phone: '+1 (555) 234-8899',
+    submittedAt: '2026-08-30 18:45',
+    status: 'Admitted',
+    data: {
+      'Current Juz Memorized': 'Complete Quran (30 Juz)',
+      'Familiarity with Tajweed Rules': 'Advanced (Studied Tuhfah/Jazariyyah)',
+      'Preferred Class Timing': 'Evening (Isha-Night)',
+      'Personal Memorization Goal': 'Obtain Sanad connected to Prophet Muhammad (PBUH)'
+    },
+    notes: 'Passed oral recitation check with 98% accuracy.'
+  }
+];
+
 export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToast }) => {
   const { tenant, language } = useTenant();
   const isAr = language === 'ar';
 
-  const [responses, setResponses] = useState<FormResponse[]>([
-    {
-      id: 'resp-101',
-      formId: 'form-admissions',
-      formTitle: 'Direct Admissions & Evaluation Inquiry',
-      studentName: 'Zaid Al-Harithi',
-      email: 'zaid.harithi@example.com',
-      phone: '+966 50 123 4567',
-      submittedAt: '2026-09-02 14:30',
-      status: 'New',
-      data: {
-        'Parent / Guardian Name': 'Ibrahim Al-Harithi',
-        'Current Juz Memorized': '6 - 15 Juz',
-        'Preferred Class Timing': 'Evening (Isha-Night)',
-        'Selected Plan': 'Intensive Hifz Program ($140/mo)',
-        'Target Goal': 'Complete memorization of Surah Al-Kahf to An-Nas'
-      },
-      notes: 'Strong Tajweed foundation from local mosque.'
-    },
-    {
-      id: 'resp-102',
-      formId: 'form-admissions',
-      formTitle: 'Direct Admissions & Evaluation Inquiry',
-      studentName: 'Amina Khatun',
-      email: 'amina.khatun@example.co.uk',
-      phone: '+44 7700 900123',
-      submittedAt: '2026-09-01 09:15',
-      status: 'Under Review',
-      data: {
-        'Parent / Guardian Name': 'Farooq Khatun',
-        'Current Juz Memorized': '1 - 5 Juz',
-        'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
-        'Selected Plan': 'Foundational Tajweed Track ($65/mo)',
-        'Target Goal': 'Correct Makharij and learn Tuhfat al-Atfal'
-      },
-      notes: 'Scheduled for voice assessment.'
-    },
-    {
-      id: 'resp-103',
-      formId: 'form-placement',
-      formTitle: 'Tajweed & Memorization Placement Evaluation',
-      studentName: 'Tariq Mansoor',
-      email: 'tariq.mansoor@example.com',
-      phone: '+1 (555) 234-8899',
-      submittedAt: '2026-08-30 18:45',
-      status: 'Admitted',
-      data: {
-        'Current Juz Memorized': 'Complete Quran (30 Juz)',
-        'Familiarity with Tajweed Rules': 'Advanced (Studied Tuhfah/Jazariyyah)',
-        'Preferred Class Timing': 'Evening (Isha-Night)',
-        'Personal Memorization Goal': 'Obtain Sanad connected to Prophet Muhammad (PBUH)'
-      },
-      notes: 'Passed oral recitation check with 98% accuracy.'
-    },
-    {
-      id: 'resp-104',
-      formId: 'form-summer-camp',
-      formTitle: 'Summer Intensive Hifz Camp Registration',
-      studentName: 'Bilal Faris',
-      email: 'bilal.faris@example.com',
-      phone: '+971 50 998 7766',
-      submittedAt: '2026-08-28 11:20',
-      status: 'Interview Scheduled',
-      data: {
-        'Student Age': '10 - 13 Years',
-        'Summer Memorization Goal': '2 New Juz',
-        'Emergency Phone Number': '+971 50 111 2233'
-      },
-      notes: 'Interview scheduled for Sept 5th.'
-    },
-    {
-      id: 'resp-105',
-      formId: 'form-scholarship',
-      formTitle: 'Tuition Assistance & Scholarship Request',
-      studentName: 'Yusuf Kareem',
-      email: 'yusuf.kareem@example.com',
-      phone: '+1 (555) 876-5432',
-      submittedAt: '2026-08-25 16:10',
-      status: 'Admitted',
-      data: {
-        'Number of Students Enrolling': '2 Students',
-        'Requested Assistance Level': 'Partial Scholarship (50% Off)',
-        'Statement of Need': 'Family committed to full-time daily attendance.'
-      },
-      notes: 'Approved for 50% tuition subsidy.'
+  const isDemoTenant = Boolean(
+    MOCK_TENANTS[tenant.subdomain] ||
+    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
+    tenant.subdomain.includes('demo')
+  );
+
+  const [responses, setResponses] = useState<FormResponse[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`);
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
     }
-  ]);
+    return isDemoTenant ? DEMO_RESPONSES : [];
+  });
 
   // Load persistent submissions from localStorage on mount and when tenant changes
   useEffect(() => {
@@ -158,24 +144,17 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
       try {
         const stored = localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`);
         if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setResponses((prev) => {
-              const combined = [...parsed];
-              prev.forEach((p) => {
-                if (!combined.some((c) => c.id === p.id)) {
-                  combined.push(p);
-                }
-              });
-              return combined;
-            });
-          }
+          setResponses(JSON.parse(stored));
+        } else if (!isDemoTenant) {
+          setResponses([]);
+        } else {
+          setResponses(DEMO_RESPONSES);
         }
       } catch (e) {
-        console.warn('Error loading form responses from storage:', e);
+        console.warn('Failed to parse cached responses:', e);
       }
     }
-  }, [tenant.subdomain]);
+  }, [tenant.subdomain, isDemoTenant]);
 
   // Available forms list from tenant
   const tenantForms: FormConfig[] = useMemo(() => {

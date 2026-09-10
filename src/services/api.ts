@@ -43,8 +43,53 @@ class HifzApiClient {
     let resolvedKey = subdomain;
     if (resolvedKey === 'hifz') resolvedKey = 'hifz-academy';
     if (resolvedKey === 'code') resolvedKey = 'code-academy';
-    const tenant = MOCK_TENANTS[resolvedKey] || MOCK_TENANTS['hifz-academy'] || MOCK_TENANTS['al-furqan'];
-    return Promise.resolve({ ...tenant });
+    const mockTenant = MOCK_TENANTS[resolvedKey];
+    if (mockTenant) {
+      return Promise.resolve({ ...mockTenant });
+    }
+
+    // Default clean, unpopulated configuration for real signed-up user academies
+    const primaryColor = subdomain.includes('code') ? '#2563eb' : subdomain.includes('school') ? '#7c3aed' : '#059669';
+    const cleanTenant: TenantConfig = {
+      id: `tenant-${subdomain}`,
+      name: subdomain
+        .split('-')
+        .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+        .join(' '),
+      nameAr: subdomain,
+      tagline: 'Autonomous Educational Institution',
+      taglineAr: 'منصة تعليمية ذكية',
+      subdomain: subdomain,
+      customDomain: `${subdomain}.ankabit.app`,
+      niche: subdomain.includes('code') ? 'coding' : subdomain.includes('school') ? 'school' : 'madrasat',
+      logoUrl: '',
+      faviconUrl: '',
+      theme: {
+        primaryColor,
+        primaryHover: subdomain.includes('code') ? '#1d4ed8' : subdomain.includes('school') ? '#6d28d9' : '#047857',
+        secondaryColor: '#0f172a',
+        accentColor: '#10b981',
+        backgroundColor: '#ffffff',
+        surfaceColor: '#f8fafc',
+        textColor: '#0f172a',
+        borderRadius: 'rounded-xl',
+        fontFamily: 'Inter',
+      },
+      heroBadgeText: 'Admissions Open',
+      heroBadgeTextAr: 'التسجيل متاح',
+      aboutText: 'Welcome to our academy portal.',
+      aboutTextAr: 'مرحباً بكم في منصتنا التعليمية.',
+      admissionsOpen: true,
+      pageBlocks: [],
+      contactEmail: `admin@${subdomain}.ankabit.app`,
+      contactPhone: '',
+      defaultDirection: 'ltr',
+      pricingPlans: [],
+      paymentGateways: [],
+      customFormFields: [],
+      subscriptionPlan: 'free',
+    };
+    return Promise.resolve(cleanTenant);
   }
 
   // Submit dynamic admissions/contact form to PHP backend
@@ -156,7 +201,11 @@ class HifzApiClient {
       }
     }
 
-    return MOCK_LEADS.filter((lead) => lead.tenantId === tenantId);
+    const isDemo = Boolean(MOCK_TENANTS[tenantId] || ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo'].includes(tenantId));
+    if (isDemo) {
+      return MOCK_LEADS.filter((lead) => lead.tenantId === tenantId);
+    }
+    return [];
   }
 
   // Update lead status via PUT to PHP API
@@ -201,7 +250,11 @@ class HifzApiClient {
       }
     }
 
-    return MOCK_COURSES.filter((c) => c.tenantId === tenantId);
+    const isDemo = Boolean(MOCK_TENANTS[tenantId] || ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo'].includes(tenantId));
+    if (isDemo) {
+      return MOCK_COURSES.filter((c) => c.tenantId === tenantId);
+    }
+    return [];
   }
 
   // Update course hierarchy / modules in PHP API

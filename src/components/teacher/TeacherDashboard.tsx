@@ -55,6 +55,8 @@ import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorksp
 import { SchoolLMSWorkspace } from '../../plugins/school/SchoolLMSWorkspace';
 import { classroomSessionService, LiveClassSession } from '../../services/classroomSessionService';
 
+import { MOCK_TENANTS } from '../../services/mockData';
+
 export type TeacherTab = 'students' | 'grading' | 'attendance' | 'classroom' | 'forum' | 'curriculum' | 'settings';
 
 interface AssignedStudent {
@@ -161,8 +163,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
     'std-6': 'absent'
   });
 
-  // Mock Assigned Students tailored per Academy Niche
+  const isDemoTenant = Boolean(
+    MOCK_TENANTS[tenant.subdomain] ||
+    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
+    tenant.subdomain.includes('demo')
+  );
+
+  // Mock Assigned Students tailored per Academy Niche (empty for real signups)
   const [assignedStudents, setAssignedStudents] = useState<AssignedStudent[]>(() => {
+    if (!isDemoTenant) return [];
     if (isCodingNiche) {
       return [
         {
@@ -502,8 +511,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
     ];
   });
 
-  // Mock Submissions tailored per Academy Niche
+  // Mock Submissions tailored per Academy Niche (empty for real signups)
   const [submissions, setSubmissions] = useState<StudentSubmission[]>(() => {
+    if (!isDemoTenant) return [];
     if (isCodingNiche) {
       return [
         {

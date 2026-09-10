@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Course, RecitationSubmission } from '../../types';
-import { MOCK_COURSES, MOCK_RECITATIONS } from '../../services/mockData';
+import { MOCK_COURSES, MOCK_RECITATIONS, MOCK_TENANTS } from '../../services/mockData';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
 import {
@@ -24,32 +24,42 @@ interface StudentProgressProps {
 }
 
 export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast }) => {
-  const { tenant, language, direction } = useTenant();
+  const { tenant, language, direction, courses: contextCourses } = useTenant();
 
   const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
   const isAr = language === 'ar';
 
+  const isDemoTenant = Boolean(
+    MOCK_TENANTS[tenant.subdomain] ||
+    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
+    tenant.subdomain.includes('demo')
+  );
+
   // Filter courses strictly by tenant niche
   const tenantCourses = useMemo(() => {
-    return MOCK_COURSES.filter((c) =>
-      isCodingNiche ? c.tenantId === 'tenant-code' : c.tenantId !== 'tenant-code'
-    );
-  }, [isCodingNiche]);
+    if (isDemoTenant) {
+      return MOCK_COURSES.filter((c) =>
+        isCodingNiche ? c.tenantId === 'tenant-code' : c.tenantId !== 'tenant-code'
+      );
+    }
+    return contextCourses;
+  }, [isDemoTenant, isCodingNiche, contextCourses]);
 
   const [courses, setCourses] = useState<Course[]>(tenantCourses);
-  const [recitations, setRecitations] = useState<RecitationSubmission[]>(MOCK_RECITATIONS);
+  const [recitations, setRecitations] = useState<RecitationSubmission[]>(isDemoTenant ? MOCK_RECITATIONS : []);
 
-  const activeCourse = courses[0] || tenantCourses[0] || MOCK_COURSES[0];
+  const activeCourse = courses[0];
 
   // Calculate Granular Progress Metrics
-  const totalLessons = activeCourse.modules.reduce((acc, m) => acc + m.lessons.length, 0);
-  const completedLessons = activeCourse.modules.reduce(
+  const totalLessons = activeCourse?.modules?.reduce((acc, m) => acc + m.lessons.length, 0) || 0;
+  const completedLessons = activeCourse?.modules?.reduce(
     (acc, m) => acc + m.lessons.filter((l) => l.completed).length,
     0
-  );
-  const courseProgressPercent = Math.round((completedLessons / Math.max(totalLessons, 1)) * 100);
+  ) || 0;
+  const courseProgressPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   const handleToggleLessonComplete = (modId: string, lesId: string) => {
+    if (!activeCourse) return;
     const updatedModules = activeCourse.modules.map((m) => {
       if (m.id === modId) {
         return {
@@ -60,11 +70,11 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast }) 
               onAddToast({
                 type: 'success',
                 title: nextState
-                  ? (isAr ? 'تم إكمال الدرس البرمجي!' : 'Lesson Completed!')
+                  ? (isAr ? 'تم إكمال الدرس!' : 'Lesson Completed!')
                   : (isAr ? 'تم إلغاء تحديد الدرس' : 'Lesson Marked Incomplete'),
                 message: isAr
                   ? 'تم تحديث نسبة تقدمك في المنهج تلقائياً'
-                  : 'Your granular course progress has been recalculated.',
+                  : 'Your course progress has been recalculated.',
               });
               return { ...l, completed: nextState };
             }
@@ -78,6 +88,20 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast }) 
     const updatedCourse = { ...activeCourse, modules: updatedModules };
     setCourses((prev) => prev.map((c) => (c.id === activeCourse.id ? updatedCourse : c)));
   };
+
+  if (!activeCourse) {
+    return (
+      <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center space-y-3" dir={direction}>
+        <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+          <BookOpen className="w-7 h-7" />
+        </div>
+        <h3 className="text-base font-bold text-slate-900">No Enrolled Courses Yet</h3>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          You are not currently enrolled in any active course tracks. Once your instructor or academy assigns courses, your milestones will appear here.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans" dir={direction}>

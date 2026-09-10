@@ -1,5 +1,5 @@
 import React from 'react';
-import { MOCK_ANALYTICS } from '../../services/mockData';
+import { MOCK_ANALYTICS, MOCK_TENANTS } from '../../services/mockData';
 import { useTenant } from '../../context/TenantContext';
 import { Card, Badge, Button } from '../ui';
 import { LockedFeatureCard } from './LockedFeatureCard';
@@ -15,16 +15,46 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
   const plan = tenant.subscriptionPlan || 'free';
   const isChartsUnlocked = plan === 'growth' || plan === 'enterprise';
 
+  const isDemoTenant = Boolean(
+    MOCK_TENANTS[tenant.subdomain] ||
+    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
+    tenant.subdomain.includes('demo')
+  );
+
+  const stats = isDemoTenant
+    ? MOCK_ANALYTICS
+    : {
+        totalLeads: 0,
+        enrolledStudents: 0,
+        recitationSubmissions: 0,
+        completionRatePercent: 0,
+        monthlyRevenue: 0,
+        monthlyEnrollment: [
+          { month: 'Jan', leads: 0, enrolled: 0 },
+          { month: 'Feb', leads: 0, enrolled: 0 },
+          { month: 'Mar', leads: 0, enrolled: 0 },
+          { month: 'Apr', leads: 0, enrolled: 0 },
+          { month: 'May', leads: 0, enrolled: 0 },
+          { month: 'Jun', leads: 0, enrolled: 0 },
+        ],
+        juzDistribution: [
+          { range: '1-5 Units', students: 0 },
+          { range: '6-15 Units', students: 0 },
+          { range: '16-25 Units', students: 0 },
+          { range: '26-30 Units', students: 0 },
+        ],
+      };
+
   return (
     <div className="space-y-6 font-sans" dir={direction}>
       {/* Top Numeric KPI Cards — Accessible across all tiers including Free */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <Card className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500">Total Student Inquiries</p>
-            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{MOCK_ANALYTICS.totalLeads}</h3>
+            <p className="text-xs font-semibold text-slate-500">Total Inquiries / Leads</p>
+            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{stats.totalLeads}</h3>
             <span className="inline-flex items-center text-xs font-semibold text-emerald-600 mt-1">
-              <TrendingUp className="w-3.5 h-3.5 mr-1" /> +18.4% this month
+              <TrendingUp className="w-3.5 h-3.5 mr-1" /> {isDemoTenant ? '+18.4% this month' : 'No inquiries yet'}
             </span>
           </div>
           <div className="p-3 bg-slate-100 text-slate-800 rounded-lg">
@@ -34,10 +64,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
 
         <Card className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500">Active Enrolled Students</p>
-            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{MOCK_ANALYTICS.enrolledStudents}</h3>
+            <p className="text-xs font-semibold text-slate-500">Enrolled Students</p>
+            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{stats.enrolledStudents}</h3>
             <span className="inline-flex items-center text-xs font-semibold text-emerald-600 mt-1">
-              <TrendingUp className="w-3.5 h-3.5 mr-1" /> 71.7% Conversion Rate
+              <TrendingUp className="w-3.5 h-3.5 mr-1" /> {isDemoTenant ? '71.7% Conversion Rate' : '0% Active'}
             </span>
           </div>
           <div className="p-3 bg-slate-100 text-slate-800 rounded-lg">
@@ -47,10 +77,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
 
         <Card className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500">Graded Submissions</p>
-            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{MOCK_ANALYTICS.recitationSubmissions}</h3>
+            <p className="text-xs font-semibold text-slate-500">Student Submissions</p>
+            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{stats.recitationSubmissions}</h3>
             <span className="inline-flex items-center text-xs font-semibold text-blue-600 mt-1">
-              +42 submissions this week
+              {isDemoTenant ? '+42 submissions this week' : '0 pending review'}
             </span>
           </div>
           <div className="p-3 bg-slate-100 text-slate-800 rounded-lg">
@@ -60,10 +90,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
 
         <Card className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500">Course Completion Rate</p>
-            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{MOCK_ANALYTICS.completionRatePercent}%</h3>
+            <p className="text-xs font-semibold text-slate-500">Completion Rate</p>
+            <h3 className="text-2xl font-bold font-mono text-slate-900 mt-1">{stats.completionRatePercent}%</h3>
             <span className="inline-flex items-center text-xs font-semibold text-purple-600 mt-1">
-              Active progress tracks
+              {isDemoTenant ? 'Active progress tracks' : 'Fresh academy portal'}
             </span>
           </div>
           <div className="p-3 bg-slate-100 text-slate-800 rounded-lg">
@@ -113,7 +143,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
 
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={MOCK_ANALYTICS.monthlyEnrollment}>
+                <AreaChart data={stats.monthlyEnrollment}>
                   <defs>
                     <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#0f172a" stopOpacity={0.8}/>
@@ -169,7 +199,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onOpenUp
 
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={MOCK_ANALYTICS.juzDistribution}>
+                <BarChart data={stats.juzDistribution}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                   <XAxis dataKey="range" stroke="#64748b" fontSize={11} />
                   <YAxis stroke="#64748b" fontSize={11} />

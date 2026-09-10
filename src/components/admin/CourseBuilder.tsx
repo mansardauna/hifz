@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Course, Module, Lesson } from '../../types';
-import { MOCK_COURSES } from '../../services/mockData';
+import { MOCK_COURSES, MOCK_TENANTS } from '../../services/mockData';
 import { api } from '../../services/api';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
@@ -26,23 +26,54 @@ interface CourseBuilderProps {
 }
 
 export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
-  const { tenant, language, direction } = useTenant();
+  const { tenant, language, direction, courses: contextCourses } = useTenant();
 
   const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
   const isAr = language === 'ar';
 
-  const tenantCourses = useMemo(() => {
-    return MOCK_COURSES.filter((c) =>
-      isCodingNiche ? c.tenantId === 'tenant-code' : c.tenantId !== 'tenant-code'
-    );
-  }, [isCodingNiche]);
+  const isDemoTenant = Boolean(
+    MOCK_TENANTS[tenant.subdomain] ||
+    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
+    tenant.subdomain.includes('demo')
+  );
 
-  const [courses, setCourses] = useState<Course[]>(tenantCourses);
-  const [activeCourseId, setActiveCourseId] = useState<string>(tenantCourses[0]?.id || MOCK_COURSES[0].id);
+  const initialCourses = useMemo(() => {
+    if (isDemoTenant) {
+      return MOCK_COURSES.filter((c) =>
+        isCodingNiche ? c.tenantId === 'tenant-code' : c.tenantId !== 'tenant-code'
+      );
+    }
+    return contextCourses.length > 0 ? contextCourses : [];
+  }, [isDemoTenant, isCodingNiche, contextCourses]);
+
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [activeCourseId, setActiveCourseId] = useState<string>(initialCourses[0]?.id || '');
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const activeCourse = courses.find((c) => c.id === activeCourseId) || courses[0] || tenantCourses[0];
+  const handleCreateCourse = () => {
+    const newCourse: Course = {
+      id: `course-${Date.now()}`,
+      tenantId: tenant.id || tenant.subdomain,
+      title: isCodingNiche ? 'New Software Development Track' : 'New Curriculum Track',
+      titleAr: isCodingNiche ? 'مسار برمجي جديد' : 'منهج تعليمي جديد',
+      description: 'Course curriculum overview and syllabus description.',
+      descriptionAr: 'نظرة عامة على المنهج التدريبي ومفردات المسار التعليمي.',
+      instructorName: tenant.name || 'Academy Instructor',
+      instructorNameAr: 'مدرس الأكاديمية',
+      level: 'Beginner',
+      durationWeeks: 12,
+      sessionsPerWeek: 3,
+      price: 99,
+      enrolledStudentsCount: 0,
+      imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=80',
+      modules: [],
+    };
+    setCourses([newCourse]);
+    setActiveCourseId(newCourse.id);
+  };
+
+  const activeCourse = courses.find((c) => c.id === activeCourseId) || courses[0];
 
   const handleSaveCourse = async () => {
     setIsSaving(true);
@@ -145,28 +176,52 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
         </button>
       </div>
 
-      {/* Course Selection Tabs */}
-      {courses.length > 1 && (
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          {courses.map((course) => (
-            <button
-              key={course.id}
-              onClick={() => setActiveCourseId(course.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                activeCourse.id === course.id
-                  ? isCodingNiche ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-900 text-white shadow-xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              {isAr ? course.titleAr || course.title : course.title}
-            </button>
-          ))}
+      {/* Empty State when no courses created */}
+      {courses.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center space-y-4 shadow-xs">
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+            <BookOpen className="w-8 h-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">No Courses or Tracks Created Yet</h3>
+            <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+              Start building your academy curriculum. You can add tracks, modules, lessons, audio recitation materials, or coding sandbox exercises.
+            </p>
+          </div>
+          <button
+            onClick={handleCreateCourse}
+            className={`px-6 py-3 rounded-xl text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer ${
+              isCodingNiche ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'
+            }`}
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create First Course Track</span>
+          </button>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Course Selection Tabs */}
+          {courses.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+              {courses.map((course) => (
+                <button
+                  key={course.id}
+                  onClick={() => setActiveCourseId(course.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    activeCourse?.id === course.id
+                      ? isCodingNiche ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  {isAr ? course.titleAr || course.title : course.title}
+                </button>
+              ))}
+            </div>
+          )}
 
-      {/* Curriculum Hierarchy Modules */}
-      <div className="space-y-4">
-        {activeCourse?.modules?.map((module, modIdx) => (
+          {/* Curriculum Hierarchy Modules */}
+          <div className="space-y-4">
+            {activeCourse?.modules?.map((module, modIdx) => (
           <div key={module.id} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -239,6 +294,8 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
           <span>Add New Curriculum Module</span>
         </button>
       </div>
+        </>
+      )}
     </div>
   );
 };

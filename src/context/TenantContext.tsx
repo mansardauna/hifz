@@ -28,7 +28,7 @@ const TenantContext = createContext<TenantContextType | undefined>(undefined);
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentSubdomain, setCurrentSubdomain] = useState<string>('hifz-academy');
   const [tenant, setTenant] = useState<TenantConfig>(MOCK_TENANTS['hifz-academy']);
-  const [courses, setCourses] = useState<Course[]>(MOCK_COURSES);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [activeRole, setActiveRole] = useState<AppRole>('saas_home');
   const [direction, setDirection] = useState<Direction>('ltr');
   const [language, setLanguage] = useState<AppLanguage>('en');
@@ -42,20 +42,16 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const rootRoutes = ['login', 'register', 'create-academy', 'super-admin', 'verify', 'api'];
     if (segments.length > 0 && !rootRoutes.includes(segments[0])) {
       const detected = segments[0];
-      if (MOCK_TENANTS[detected]) {
-        setCurrentSubdomain(detected);
-        return;
-      }
+      setCurrentSubdomain(detected);
+      return;
     }
 
     const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length > 2 && parts[0] !== 'www' && !host.endsWith('.vercel.app')) {
       const detectedSubdomain = parts[0];
-      if (MOCK_TENANTS[detectedSubdomain]) {
-        setCurrentSubdomain(detectedSubdomain);
-        setActiveRole('landing');
-      }
+      setCurrentSubdomain(detectedSubdomain);
+      setActiveRole('landing');
     }
   }, []);
 
@@ -97,7 +93,14 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setLanguage(mergedConfig.defaultDirection === 'rtl' ? 'ar' : 'en');
       }
       injectCssVariables(mergedConfig);
-      setIsLoading(false);
+
+      // Load tenant-specific courses
+      api.getCourses(mergedConfig.id || currentSubdomain).then((loadedCourses) => {
+        setCourses(loadedCourses);
+        setIsLoading(false);
+      }).catch(() => {
+        setIsLoading(false);
+      });
     });
   }, [currentSubdomain]);
 
