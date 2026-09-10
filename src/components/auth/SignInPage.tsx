@@ -57,12 +57,20 @@ export const SignInPage: React.FC<SignInPageProps> = ({
   const { tenant, setTenantBySubdomain } = useTenant();
   const { login } = useAuth();
 
-  const isPlatformLogin = isPlatformLevel || !tenant?.subdomain || tenant?.subdomain === 'platform' || tenant?.subdomain === 'demo';
-
+  const isPlatformLogin = isPlatformLevel || !tenant?.subdomain || tenant?.subdomain === 'platform';
+  
   const isCodingNiche = tenant?.niche === 'coding' || tenant?.niche === 'code_academy' || tenant?.subdomain?.includes('code');
   const isSchoolNiche = (tenant?.niche === 'school' || tenant?.subdomain?.includes('horizon') || tenant?.subdomain?.includes('oxford')) && !isCodingNiche && tenant?.niche !== 'quran' && tenant?.niche !== 'madrasat';
   const isMadrasatNiche = (tenant?.niche === 'madrasat' || tenant?.niche === 'quran' || tenant?.subdomain?.includes('hifz') || tenant?.subdomain?.includes('quran') || tenant?.subdomain?.includes('al-furqan') || tenant?.subdomain?.includes('dar-al') || tenant?.subdomain?.includes('bayyinah')) && !isCodingNiche && !isSchoolNiche;
-  const isDemoAcademy = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo'].includes(tenant?.subdomain || '');
+
+  // Only show demo personas if specifically on an interactive demo subdomain and NOT on the central platform login
+  const isDemoAcademy = !isPlatformLogin && (
+    tenant?.subdomain === 'demo' ||
+    tenant?.subdomain === 'madrasat-demo' ||
+    tenant?.subdomain === 'school-demo' ||
+    tenant?.subdomain === 'code-demo' ||
+    tenant?.subdomain?.endsWith('-demo')
+  );
 
   const activeLayout: LayoutType =
     (tenant?.authCustomization?.layout as LayoutType) || 'split';
