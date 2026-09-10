@@ -221,7 +221,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               </div>
               <div className="min-w-0">
                 <h2 className="font-bold text-xs sm:text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 font-mono truncate">{tenant.subdomain}.ankabit.app</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 font-mono truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
               </div>
             </div>
 
@@ -240,12 +240,12 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           <div className="p-3.5 mx-3.5 my-3.5 bg-slate-800/60 rounded-2xl border border-slate-700/60">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                {user?.name?.charAt(0).toUpperCase() || (isSchoolNiche ? 'A' : 'M')}
+                {user?.name?.charAt(0).toUpperCase() || 'S'}
               </div>
               <div className="min-w-0">
-                <p className="font-bold text-xs sm:text-sm text-white truncate">{user?.name || (isSchoolNiche ? 'Alex Mercer (Grade 11)' : 'Enrolled Student')}</p>
+                <p className="font-bold text-xs sm:text-sm text-white truncate">{user?.name || user?.email || 'Enrolled Student'}</p>
                 <Badge variant="success">
-                  {isSchoolNiche ? "Dean's Honor Roll" : 'Active Learner'}
+                  {isSchoolNiche ? 'Enrolled Student' : isCodingNiche ? 'Active Developer' : 'Active Learner'}
                 </Badge>
               </div>
             </div>
@@ -440,7 +440,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   roomTitle={activeLiveSession.title}
                   courseTitle={activeLiveSession.courseTitle || `${tenant.name} Virtual Hall`}
                   userRole="student"
-                  currentUserName={user?.name || (isSchoolNiche ? 'Alex Mercer' : 'Enrolled Student')}
+                  currentUserName={user?.name || 'Enrolled Student'}
                   niche={isCodingNiche ? 'coding' : isSchoolNiche ? 'school' : 'quran'}
                   studentLevel={activeLiveSession.targetLevel !== 'all' ? activeLiveSession.targetLevel : studentLevel}
                   onLeaveRoom={() => setActiveTab(isCodingNiche ? 'coding' : isSchoolNiche ? 'courses' : 'quran')}
@@ -475,7 +475,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <div className="space-y-2 max-w-md">
                     <h3 className="text-xl font-black text-white tracking-tight">Virtual Classroom Waiting Lobby</h3>
                     <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                      Awaiting instructor (<strong className="text-slate-200">{isSchoolNiche ? 'Dr. Eleanor Vance' : isCodingNiche ? 'Sarah Jenkins' : 'Shaykh Abdul Rahman'}</strong>) to start the live class session for your account.
+                      Awaiting instructor (<strong className="text-slate-200">{isSchoolNiche ? 'Faculty Instructor' : isCodingNiche ? 'Lead Mentor' : 'Ustadh / Instructor'}</strong>) to start the live class session for your account.
                     </p>
                   </div>
 
@@ -483,11 +483,11 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 max-w-md w-full text-left space-y-2.5">
                     <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
                       <span className="text-slate-400">Authenticated Student:</span>
-                      <span className="font-bold text-white font-mono">{user?.name || 'Alex Mercer'}</span>
+                      <span className="font-bold text-white font-mono">{user?.name || user?.email || 'Enrolled Student'}</span>
                     </div>
                     <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
-                      <span className="text-slate-400">Class / Cohort ID:</span>
-                      <span className="font-bold text-emerald-400 font-mono">{user?.cohort || 'Cohort-2026-Alpha'}</span>
+                      <span className="text-slate-400">Class / Cohort:</span>
+                      <span className="font-bold text-emerald-400 font-mono">{user?.cohort || 'Assigned Cohort'}</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-slate-400">Classroom Signal:</span>
@@ -502,15 +502,15 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     <Button
                       variant="primary"
                       onClick={() => {
-                        // Force join mock room if student wants to enter sandbox immediately
+                        // Enter standby room
                         const mockSession: LiveClassSession = {
-                          id: `room-${tenant.subdomain}-101`,
+                          id: `room-${tenant.subdomain}-${Date.now().toString().slice(-4)}`,
                           title: isSchoolNiche ? 'Academic Virtual Lecture' : isCodingNiche ? 'Live Mentor Pairing' : 'Daily Live Halaqah',
-                          courseTitle: tenant.tagline || 'Interactive Learning Cohort',
+                          courseTitle: tenant.tagline || `${tenant.name} Class`,
                           teacherId: 'teacher-1',
-                          teacherName: isSchoolNiche ? 'Dr. Eleanor Vance' : isCodingNiche ? 'Sarah Jenkins' : 'Shaykh Abdul Rahman',
+                          teacherName: isSchoolNiche ? 'Faculty Instructor' : isCodingNiche ? 'Lead Mentor' : 'Ustadh / Instructor',
                           targetLevel: 'intermediate',
-                          targetCohort: 'Cohort-2026-Alpha',
+                          targetCohort: user?.cohort || 'Assigned Cohort',
                           allowedStudentIds: [],
                           startedAt: new Date().toLocaleTimeString(),
                           status: 'live',

@@ -167,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="min-w-0">
                 <h2 className="font-extrabold text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] text-slate-400 truncate">{tenant.subdomain}.ankabit.app</p>
+                <p className="text-[10px] text-slate-400 truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
               </div>
             </div>
           )}

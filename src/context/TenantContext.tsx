@@ -6,6 +6,58 @@ import { api } from '../services/api';
 export type AppRole = 'saas_home' | 'landing' | 'admin' | 'student' | 'signin' | 'signup' | 'create_academy' | 'forgot-password';
 export type AppLanguage = 'en' | 'ar';
 
+export const DEMO_SUBDOMAINS = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo', 'demo'];
+export const isDemoTenant = (subdomain?: string): boolean =>
+  DEMO_SUBDOMAINS.includes(subdomain || '') || (subdomain || '').endsWith('-demo');
+
+export const createCleanTenantConfig = (subdomain: string): TenantConfig => {
+  const isCoding = subdomain.includes('code');
+  const isSchool = subdomain.includes('school') || subdomain.includes('horizon');
+  const primaryColor = isCoding ? '#2563eb' : isSchool ? '#7c3aed' : '#059669';
+  const name = subdomain
+    .split('-')
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(' ');
+
+  return {
+    id: `tenant-${subdomain}`,
+    name,
+    nameAr: subdomain,
+    tagline: 'Autonomous Educational Institution',
+    taglineAr: 'منصة تعليمية ذكية',
+    subdomain,
+    customDomain: `${subdomain}.edu`,
+    niche: isCoding ? 'coding' : isSchool ? 'school' : 'madrasat',
+    logoUrl: '',
+    faviconUrl: '',
+    theme: {
+      primaryColor,
+      primaryHover: isCoding ? '#1d4ed8' : isSchool ? '#6d28d9' : '#047857',
+      secondaryColor: '#0f172a',
+      accentColor: '#10b981',
+      backgroundColor: '#ffffff',
+      surfaceColor: '#f8fafc',
+      textColor: '#0f172a',
+      borderRadius: 'rounded-xl',
+      fontFamily: 'Inter',
+    },
+    heroBadgeText: 'Admissions Open',
+    heroBadgeTextAr: 'التسجيل متاح',
+    aboutText: `Welcome to ${name}.`,
+    aboutTextAr: `مرحباً بكم في ${name}.`,
+    admissionsOpen: true,
+    pageBlocks: [],
+    pricingPlans: [],
+    paymentGateways: [],
+    forms: [],
+    customFormFields: [],
+    subscriptionPlan: 'free',
+    contactEmail: `admin@${subdomain}.edu`,
+    contactPhone: '',
+    defaultDirection: 'ltr',
+  };
+};
+
 interface TenantContextType {
   tenant: TenantConfig;
   courses: Course[];
@@ -142,7 +194,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     root.style.setProperty('--color-text', config.theme?.textColor || '#0f172a');
     root.style.setProperty('--tenant-radius', config.theme?.borderRadius || '0.75rem');
 
-    document.title = `${config.name} • Ankabit LMS`;
+    const isPlatformHost = !config.subdomain || config.subdomain === 'platform' || config.subdomain === 'demo';
+    document.title = isPlatformHost ? `${config.name} • Ankabit LMS` : `${config.name} | Academy Portal`;
 
     // Dynamically inject tenant unique favicon in browser tab
     const faviconUrl = config.faviconUrl || config.logoUrl || '/icons/icon.svg';
@@ -156,14 +209,25 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const setTenantBySubdomain = (subdomain: string) => {
-    const base = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
-    let merged = base;
+    let base = MOCK_TENANTS[subdomain];
+    if (!base) {
+      base = createCleanTenantConfig(subdomain);
+    }
+    let merged = { ...base };
     if (typeof window !== 'undefined') {
       try {
         const cachedJson = localStorage.getItem(`tenant_config_${subdomain}`);
         const cachedHtml = localStorage.getItem(`tenant_customHtml_${subdomain}`);
+        const cachedCss = localStorage.getItem(`tenant_customCss_${subdomain}`);
+        const cachedSchema = localStorage.getItem(`tenant_schema_${subdomain}`);
         if (cachedJson) merged = { ...merged, ...JSON.parse(cachedJson) };
         if (cachedHtml) merged.customHtml = cachedHtml;
+        if (cachedCss) merged.customCss = cachedCss;
+        if (cachedSchema) {
+          try {
+            merged.landingPageSchema = JSON.parse(cachedSchema);
+          } catch (e) {}
+        }
       } catch (e) {}
     }
     setCurrentSubdomain(subdomain);
@@ -202,24 +266,6 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
       }
 
-      // Persist to backend API asynchronously
-      fetch('/api/tenant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subdomain: updated.subdomain,
-          name: updated.name,
-          customHtml: updated.customHtml,
-          customCss: updated.customCss,
-          settings: {
-            landingPageSchema: updated.landingPageSchema,
-            forms: updated.forms,
-            customFormFields: updated.customFormFields,
-            pricingPlans: updated.pricingPlans,
-          },
-        }),
-      }).catch((err) => console.warn('Backend tenant sync notice:', err));
-
       return updated;
     });
   };
@@ -229,7 +275,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateCustomFormFields = (fields: FormFieldConfig[]) => {
-    setTenant((prev) => ({ ...prev, customFormFields: fields }));
+    updateTenantConfig({ customFormFields: fields });
   };
 
   return (

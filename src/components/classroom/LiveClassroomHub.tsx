@@ -71,7 +71,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   roomTitle = 'Live Interactive Session',
   courseTitle = 'Curriculum & Live Coaching',
   userRole = 'student',
-  currentUserName = 'Alex Mercer',
+  currentUserName = 'Student',
   niche = 'coding',
   studentLevel = 'intermediate',
   onLeaveRoom,

@@ -1084,7 +1084,7 @@ impl ThreadPool {
               </div>
               <div className="min-w-0">
                 <h2 className="font-bold text-xs sm:text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] sm:text-[11px] text-white/60 font-mono truncate">{tenant.subdomain}.ankabit.app</p>
+                <p className="text-[10px] sm:text-[11px] text-white/60 font-mono truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
               </div>
             </div>
 
@@ -2174,7 +2174,7 @@ impl ThreadPool {
 
               <div className="space-y-4">
                 <Input label="Instructor Full Name" defaultValue={user?.name || teacherPersona.defaultName} />
-                <Input label="Email Address" defaultValue={user?.email || 'faculty@academy.ankabit.app'} disabled />
+                <Input label="Email Address" defaultValue={user?.email || `faculty@${tenant.customDomain || `${tenant.subdomain}.edu`}`} disabled />
                 <Input label="Academic Qualification / Lineage" defaultValue={teacherPersona.title} />
                 <Input label="Direct Contact WhatsApp" defaultValue="+1 (555) 234-8910" />
               </div>

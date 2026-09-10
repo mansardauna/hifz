@@ -39,7 +39,7 @@ export const Header: React.FC = () => {
               <h1 className={`font-bold text-slate-900 text-sm sm:text-base leading-tight font-display ${isAr ? 'font-arabic text-lg' : ''}`}>
                 {isAr ? tenant.nameAr : tenant.name}
               </h1>
-              <p className="text-[11px] text-emerald-700 font-mono hidden sm:block">{tenant.subdomain}.ankabit.app</p>
+              <p className="text-[11px] text-emerald-700 font-mono hidden sm:block">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
             </div>
           </button>
         </div>

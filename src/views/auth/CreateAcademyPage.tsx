@@ -27,7 +27,7 @@ import { TenantNiche } from '../../types';
 
 interface CreateAcademyPageProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
-  onSuccess: () => void;
+  onSuccess?: (subdomain?: string) => void;
 }
 
 export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
@@ -113,6 +113,39 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
     setIsSubmitting(true);
     const selectedConfig = institutionConfigs[institutionType];
 
+    // Save clean tenant configuration locally for immediate isolated multi-tenant session
+    if (typeof window !== 'undefined') {
+      try {
+        const cleanTenant = {
+          id: `tenant-${subdomain}`,
+          name: academyName,
+          subdomain,
+          niche: institutionType,
+          theme: {
+            primaryColor: selectedConfig.brandColor,
+            primaryHover: selectedConfig.brandColor,
+            secondaryColor: '#0f172a',
+            accentColor: '#10b981',
+            backgroundColor: '#ffffff',
+            surfaceColor: '#f8fafc',
+            textColor: '#0f172a',
+            borderRadius: 'rounded-xl',
+            fontFamily: 'Inter',
+          },
+          subscriptionPlan: 'free',
+          pageBlocks: [],
+          pricingPlans: [],
+          paymentGateways: [],
+          forms: [],
+          customFormFields: [],
+          contactEmail: email,
+          contactPhone: '',
+          defaultDirection: 'ltr',
+        };
+        localStorage.setItem(`tenant_config_${subdomain}`, JSON.stringify(cleanTenant));
+      } catch (e) {}
+    }
+
     try {
       // 1. Create Tenant Record in Backend/DB
       await fetch('/api/tenant', {
@@ -150,14 +183,14 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
       });
 
       setIsSubmitting(false);
-      onSuccess();
-      router.push(`/${subdomain}/admin`);
+      if (onSuccess) onSuccess(subdomain);
+      else router.push(`/${subdomain}/admin`);
     } catch (err: any) {
       console.warn('Academy setup network error, using client fallback:', err);
       register(adminName, email, 'admin', subdomain);
       setIsSubmitting(false);
-      onSuccess();
-      router.push(`/${subdomain}/admin`);
+      if (onSuccess) onSuccess(subdomain);
+      else router.push(`/${subdomain}/admin`);
     }
   };
 

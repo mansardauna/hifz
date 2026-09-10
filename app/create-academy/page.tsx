@@ -11,8 +11,12 @@ export default function CreateAcademyRoutePage() {
     console.log('Create Academy Toast:', toast);
   };
 
-  const handleSuccess = () => {
-    router.push('/al-furqan/admin');
+  const handleSuccess = (subdomain?: string) => {
+    if (subdomain) {
+      router.push(`/${subdomain}/admin`);
+    } else {
+      router.push('/login');
+    }
   };
 
   return <CreateAcademyPage onAddToast={handleAddToast} onSuccess={handleSuccess} />;

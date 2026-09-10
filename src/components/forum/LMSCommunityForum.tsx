@@ -34,7 +34,7 @@ export interface ForumReply {
   authorAvatar?: string;
   content: string;
   createdAt: string;
-  upvotes: number;
+  upvotes?: number;
   isUpvoted?: boolean;
   isAcceptedAnswer?: boolean;
 }
@@ -235,7 +235,20 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
         }
       ];
 
-  const [posts, setPosts] = useState<ForumPost[]>(INITIAL_POSTS);
+  const isDemo = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo'].includes(tenant.subdomain) || tenant.subdomain.includes('demo');
+
+  const [posts, setPosts] = useState<ForumPost[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`tenant_forum_posts_${tenant.subdomain}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+    }
+    return isDemo ? INITIAL_POSTS : [];
+  });
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activePostId, setActivePostId] = useState<string | null>(null);
@@ -257,7 +270,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
         const stored = localStorage.getItem(`tenant_forum_posts_${tenant.subdomain}`);
         if (stored) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             setPosts(parsed);
           }
         }

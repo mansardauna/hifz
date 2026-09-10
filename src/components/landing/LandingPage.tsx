@@ -606,7 +606,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
                         aria-invalid={!!errors.studentName}
                         value={formData.studentName || ''}
                         onChange={(e) => handleInputChange('studentName', e.target.value)}
-                        placeholder={isAr ? 'مثال: محمد عبد الله' : 'e.g. Alex Mercer'}
+                        placeholder={isAr ? 'مثال: محمد عبد الله' : 'e.g. Full Name'}
                         className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
                       />
                       {errors.studentName && (
