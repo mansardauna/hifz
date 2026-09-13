@@ -5,6 +5,8 @@ import {
   PlatformSubscriber,
   SuperAdminGatewaySettings,
   SuperAdminUser,
+  SuperAdminInfrastructureSettings,
+  SuperAdminPaymentSettings,
 } from '../types/superAdmin';
 
 export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
@@ -448,7 +450,7 @@ export const getStoredSuperAdminUsers = () => {
   return DEFAULT_SUPERADMIN_USERS;
 };
 
-export const saveSuperAdminUsers = (users: typeof DEFAULT_SUPERADMIN_USERS) => {
+export const saveSuperAdminUsers = (users: SuperAdminUser[]) => {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY_SUPER_USERS, JSON.stringify(users));
@@ -456,4 +458,108 @@ export const saveSuperAdminUsers = (users: typeof DEFAULT_SUPERADMIN_USERS) => {
     console.warn('Error saving superadmin users:', e);
   }
 };
+
+export const DEFAULT_SUPERADMIN_INFRASTRUCTURE: SuperAdminInfrastructureSettings = {
+  database: {
+    provider: 'supabase',
+    supabaseUrl: 'https://demo-project.supabase.co',
+    supabaseAnonKey: '',
+    supabaseServiceRoleKey: '',
+    connectionString: 'postgresql://postgres:[PASSWORD]@db.pooler.supabase.com:6543/postgres',
+    ssl: true,
+    poolSize: 20,
+  },
+  livekit: {
+    serverUrl: 'wss://livekit.ankabit.app',
+    apiKey: '',
+    apiSecret: '',
+    region: 'eu-central-1',
+  },
+  storage: {
+    provider: 'cloudflare_r2',
+    bucketName: 'ankabit-quran-assets',
+    region: 'auto',
+    accessKeyId: '',
+    secretAccessKey: '',
+    endpoint: 'https://r2.cloudflarestorage.com',
+    publicCdnUrl: 'https://cdn.ankabit.app',
+  },
+};
+
+const STORAGE_KEY_INFRASTRUCTURE = 'ankabit_superadmin_infrastructure';
+
+export const getStoredSuperAdminInfrastructure = (): SuperAdminInfrastructureSettings => {
+  if (typeof window === 'undefined') return DEFAULT_SUPERADMIN_INFRASTRUCTURE;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_INFRASTRUCTURE);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.database && parsed.livekit && parsed.storage) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error reading superadmin infrastructure:', e);
+  }
+  return DEFAULT_SUPERADMIN_INFRASTRUCTURE;
+};
+
+export const saveSuperAdminInfrastructure = (infra: SuperAdminInfrastructureSettings) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY_INFRASTRUCTURE, JSON.stringify(infra));
+  } catch (e) {
+    console.warn('Error saving superadmin infrastructure:', e);
+  }
+};
+
+export const DEFAULT_SUPERADMIN_PAYMENT_GATEWAYS: SuperAdminPaymentSettings = {
+  stripe: {
+    enabled: true,
+    publishableKey: '',
+    secretKey: '',
+    webhookSecret: '',
+  },
+  moyasar: {
+    enabled: true,
+    publishableKey: '',
+    secretKey: '',
+  },
+  flutterwave: {
+    enabled: false,
+    publicKey: '',
+    secretKey: '',
+    encryptionKey: '',
+  },
+  paypal: {
+    enabled: false,
+    clientId: '',
+    clientSecret: '',
+    mode: 'live',
+  },
+};
+
+const STORAGE_KEY_PAYMENTS = 'ankabit_superadmin_payment_gateways';
+
+export const getStoredSuperAdminPaymentGateways = (): SuperAdminPaymentSettings => {
+  if (typeof window === 'undefined') return DEFAULT_SUPERADMIN_PAYMENT_GATEWAYS;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PAYMENTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.stripe && parsed.moyasar) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error reading superadmin payments:', e);
+  }
+  return DEFAULT_SUPERADMIN_PAYMENT_GATEWAYS;
+};
+
+export const saveSuperAdminPaymentGateways = (payments: SuperAdminPaymentSettings) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY_PAYMENTS, JSON.stringify(payments));
+  } catch (e) {
+    console.warn('Error saving superadmin payments:', e);
+  }
+};
+
 

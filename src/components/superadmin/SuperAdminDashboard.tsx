@@ -8,6 +8,8 @@ import {
   SuperAdminUser,
   SuperAdminRole,
   SuperAdminGatewaySettings,
+  SuperAdminInfrastructureSettings,
+  SuperAdminPaymentSettings,
 } from '../../types/superAdmin';
 import {
   getStoredPlatformPlans,
@@ -16,7 +18,13 @@ import {
   saveSuperAdminGateways,
   getStoredSuperAdminUsers,
   saveSuperAdminUsers,
+  getStoredSuperAdminInfrastructure,
+  saveSuperAdminInfrastructure,
+  getStoredSuperAdminPaymentGateways,
+  saveSuperAdminPaymentGateways,
   DEFAULT_SUPERADMIN_GATEWAYS,
+  DEFAULT_SUPERADMIN_INFRASTRUCTURE,
+  DEFAULT_SUPERADMIN_PAYMENT_GATEWAYS,
   MOCK_PLATFORM_TENANTS,
   MOCK_PLATFORM_SUBSCRIBERS,
 } from '../../services/platformPlans';
@@ -67,6 +75,10 @@ import {
   Cpu,
   Database,
   Radio,
+  HardDrive,
+  Wallet,
+  Shield,
+  Save,
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
@@ -86,11 +98,16 @@ export const SuperAdminDashboard: React.FC = () => {
   // Active View Navigation
   const [activeTab, setActiveTab] = useState<'overview' | 'plans' | 'academies' | 'gateways' | 'roles' | 'subscribers' | 'settings'>('overview');
   
+  // Active Settings Sub-Section
+  const [settingsSubTab, setSettingsSubTab] = useState<'infrastructure' | 'payments' | 'announcements'>('infrastructure');
+
   const [plans, setPlans] = useState<PlatformSubscriptionPlan[]>([]);
   const [tenants, setTenants] = useState<PlatformTenantStats[]>(MOCK_PLATFORM_TENANTS);
   const [subscribers, setSubscribers] = useState<PlatformSubscriber[]>(MOCK_PLATFORM_SUBSCRIBERS);
   const [staffUsers, setStaffUsers] = useState<SuperAdminUser[]>([]);
   const [gatewaySettings, setGatewaySettings] = useState<SuperAdminGatewaySettings>(DEFAULT_SUPERADMIN_GATEWAYS);
+  const [infraSettings, setInfraSettings] = useState<SuperAdminInfrastructureSettings>(DEFAULT_SUPERADMIN_INFRASTRUCTURE);
+  const [paymentSettings, setPaymentSettings] = useState<SuperAdminPaymentSettings>(DEFAULT_SUPERADMIN_PAYMENT_GATEWAYS);
   
   // Academies Directory Search, Sort & Pagination
   const [searchQuery, setSearchQuery] = useState('');
@@ -131,10 +148,11 @@ export const SuperAdminDashboard: React.FC = () => {
   const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
 
   useEffect(() => {
-    const loadedPlans = getStoredPlatformPlans();
-    setPlans(loadedPlans);
+    setPlans(getStoredPlatformPlans());
     setStaffUsers(getStoredSuperAdminUsers());
     setGatewaySettings(getStoredSuperAdminGateways());
+    setInfraSettings(getStoredSuperAdminInfrastructure());
+    setPaymentSettings(getStoredSuperAdminPaymentGateways());
   }, []);
 
   // Calculate high-level financial & tenant statistics
@@ -295,6 +313,16 @@ export const SuperAdminDashboard: React.FC = () => {
   const handleSaveGlobalGateways = () => {
     saveSuperAdminGateways(gatewaySettings);
     success('Gateways Saved', 'Platform SuperAdmin shared credentials have been updated.');
+  };
+
+  const handleSaveInfrastructure = () => {
+    saveSuperAdminInfrastructure(infraSettings);
+    success('Infrastructure Saved', 'Database, LiveKit SFU, and CDN Storage endpoints have been updated.');
+  };
+
+  const handleSavePaymentGateways = () => {
+    saveSuperAdminPaymentGateways(paymentSettings);
+    success('Payment Gateways Saved', 'Platform master Stripe, Moyasar, Flutterwave, and PayPal keys saved.');
   };
 
   const handleSendPlatformTest = async (channel: 'email' | 'whatsapp') => {
@@ -584,7 +612,7 @@ export const SuperAdminDashboard: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* SUPERADMIN LEFT SIDEBAR */}
+      {/* SUPERADMIN LEFT SIDEBAR (No Numbers / Ultra Clean) */}
       {/* ========================================================= */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
@@ -611,13 +639,13 @@ export const SuperAdminDashboard: React.FC = () => {
 
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 md:hidden"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 md:hidden cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links (Clean - No counter badges) */}
           <nav className="p-3 space-y-1">
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Platform Controls
@@ -658,9 +686,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 <Layers className="w-4 h-4 text-emerald-400" />
                 <span>Subscription Plans</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-emerald-400 border border-slate-700">
-                {plans.length}
-              </span>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'plans' ? 'text-white' : 'text-slate-500'}`} />
             </button>
 
             {/* Academies */}
@@ -679,9 +705,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 <Building2 className="w-4 h-4 text-emerald-400" />
                 <span>Academies Directory</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-700">
-                {tenants.length}
-              </span>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'academies' ? 'text-white' : 'text-slate-500'}`} />
             </button>
 
             {/* Gateways */}
@@ -698,9 +722,9 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Sliders className="w-4 h-4 text-emerald-400" />
-                <span>Platform Gateways</span>
+                <span>Communication Gateways</span>
               </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'gateways' ? 'text-white' : 'text-slate-500'}`} />
             </button>
 
             {/* Roles & Team */}
@@ -719,9 +743,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 <Users className="w-4 h-4 text-emerald-400" />
                 <span>Roles & Staff</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-700">
-                {staffUsers.length}
-              </span>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'roles' ? 'text-white' : 'text-slate-500'}`} />
             </button>
 
             {/* Subscribers */}
@@ -740,9 +762,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 <CreditCard className="w-4 h-4 text-emerald-400" />
                 <span>Billing & Subscribers</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-700">
-                {subscribers.length}
-              </span>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'subscribers' ? 'text-white' : 'text-slate-500'}`} />
             </button>
 
             <div className="pt-4 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -763,7 +783,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Settings className="w-4 h-4 text-emerald-400" />
-                <span>Settings & Status</span>
+                <span>Settings & API Integrations</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'settings' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -828,7 +848,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     ? 'SuperAdmin Staff & Access'
                     : activeTab === 'subscribers'
                     ? 'Subscribers & Revenue Ledger'
-                    : 'Platform Settings & Server Status'}
+                    : 'Platform Settings & API Integrations'}
                 </h1>
               </div>
             </div>
@@ -961,16 +981,13 @@ export const SuperAdminDashboard: React.FC = () => {
                       const heightPercent = Math.max(15, Math.round((point.mrr / maxMonthlyMRR) * 100));
                       return (
                         <div key={idx} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer h-full justify-end">
-                          {/* Tooltip on hover */}
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black bg-slate-900 text-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
                             ${point.mrr.toLocaleString()}
                           </div>
-                          {/* Bar */}
                           <div
                             style={{ height: `${heightPercent}%` }}
                             className="w-full max-w-[42px] bg-gradient-to-t from-emerald-600 to-teal-400 rounded-t-lg transition-all group-hover:from-emerald-700 group-hover:to-teal-500 shadow-xs"
                           />
-                          {/* Label */}
                           <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-900">
                             {point.month}
                           </span>
@@ -1046,7 +1063,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     onClick={() => setActiveTab('academies')}
                     className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50"
                   >
-                    View All Academies ({tenants.length})
+                    View All Academies
                   </Button>
                 </div>
 
@@ -2025,131 +2042,739 @@ export const SuperAdminDashboard: React.FC = () => {
           )}
 
           {/* ========================================================= */}
-          {/* TAB: SETTINGS & INFRASTRUCTURE STATUS */}
+          {/* TAB: SETTINGS & API INTEGRATIONS (COMPLETE CONFIGURABLE PANELS) */}
           {/* ========================================================= */}
           {activeTab === 'settings' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Global Broadcast Announcement */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                <div className="flex items-center gap-2 text-emerald-700">
-                  <Zap className="w-5 h-5" />
-                  <h3 className="text-base font-extrabold text-slate-900">Global Platform Announcement Banner</h3>
-                </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Broadcast an urgent alert, planned maintenance notice, or feature release banner across all tenant admin dashboards.
-                </p>
+            <div className="space-y-6">
+              {/* Settings Sub-Tab Navigation Bar */}
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto">
+                <button
+                  onClick={() => setSettingsSubTab('infrastructure')}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    settingsSubTab === 'infrastructure'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                  }`}
+                >
+                  <Server className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Backend & Cloud Infrastructure</span>
+                </button>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Announcement Content</label>
-                  <textarea
-                    rows={3}
-                    value={globalAnnouncement}
-                    onChange={(e) => setGlobalAnnouncement(e.target.value)}
-                    placeholder="e.g. Scheduled database maintenance this Sunday at 02:00 AM UTC. Live classes will not be interrupted."
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
-                  />
-                </div>
+                <button
+                  onClick={() => setSettingsSubTab('payments')}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    settingsSubTab === 'payments'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                  }`}
+                >
+                  <Wallet className="w-3.5 h-3.5 text-teal-400" />
+                  <span>Platform Payment Gateways (Stripe / Moyasar / PayPal)</span>
+                </button>
 
-                <div className="flex items-center justify-end gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setGlobalAnnouncement('')}
-                    className="border-slate-300 text-slate-700 hover:bg-slate-50"
-                  >
-                    Clear
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => {
-                      setIsSavingAnnouncement(true);
-                      setTimeout(() => {
-                        setIsSavingAnnouncement(false);
-                        success('Broadcast Sent', 'Announcement published across all academy dashboards.');
-                      }, 500);
-                    }}
-                    isLoading={isSavingAnnouncement}
-                    className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
-                  >
-                    Publish Broadcast
-                  </Button>
-                </div>
+                <button
+                  onClick={() => setSettingsSubTab('announcements')}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    settingsSubTab === 'announcements'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                  }`}
+                >
+                  <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Announcements & Emergency Maintenance</span>
+                </button>
               </div>
 
-              {/* Platform Health & Infrastructure Monitors (Moved from top nav) */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                <div className="flex items-center gap-2 text-sky-700">
-                  <Server className="w-5 h-5" />
-                  <h3 className="text-base font-extrabold text-slate-900">Infrastructure Health & Clusters</h3>
-                </div>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Live status monitors for backend microservices, real-time media clusters, database nodes, and caches.
-                </p>
-
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                    <div className="flex items-center gap-2.5">
-                      <Database className="w-4 h-4 text-emerald-600" />
-                      <div>
-                        <div className="font-bold text-slate-800">PostgreSQL Primary Cluster</div>
-                        <div className="text-[10px] text-slate-400">Supabase High-Availability Pool</div>
-                      </div>
+              {/* SUB-TAB 1: BACKEND CLOUD INFRASTRUCTURE CONFIGURATION */}
+              {settingsSubTab === 'infrastructure' && (
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div>
+                      <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                        <Server className="w-5 h-5 text-emerald-700" />
+                        <span>Core Cloud Microservices & Database API Endpoints</span>
+                      </h2>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Configure production connection strings, media servers, and object storage buckets for all tenant platforms.
+                      </p>
                     </div>
-                    <span className="text-[11px] font-mono text-emerald-700 font-extrabold flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Connected (1.1ms)
-                    </span>
+
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSaveInfrastructure}
+                      leftIcon={<Save className="w-4 h-4" />}
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                    >
+                      Save Infrastructure Config
+                    </Button>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                    <div className="flex items-center gap-2.5">
-                      <Radio className="w-4 h-4 text-emerald-600" />
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* PANEL 1: POSTGRESQL & SUPABASE CLUSTER */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2 text-emerald-700">
+                          <Database className="w-5 h-5" />
+                          <h3 className="font-extrabold text-sm text-slate-900">PostgreSQL Primary Database</h3>
+                        </div>
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="Connected"></span>
+                      </div>
+
                       <div>
-                        <div className="font-bold text-slate-800">LiveKit SFU Media Edge</div>
-                        <div className="text-[10px] text-slate-400">WebRTC Video & Voice Rooms</div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Database Engine Provider</label>
+                        <select
+                          value={infraSettings.database.provider}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              database: { ...infraSettings.database, provider: e.target.value as 'supabase' | 'custom_postgres' },
+                            })
+                          }
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                        >
+                          <option value="supabase">Supabase High-Availability Postgres</option>
+                          <option value="custom_postgres">Self-Hosted PostgreSQL / AWS RDS / Neon</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Supabase Project API URL</label>
+                        <input
+                          type="text"
+                          value={infraSettings.database.supabaseUrl}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              database: { ...infraSettings.database, supabaseUrl: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="https://xyzdb.supabase.co"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Public API Key</label>
+                        <input
+                          type="password"
+                          value={infraSettings.database.supabaseAnonKey}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              database: { ...infraSettings.database, supabaseAnonKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="eyJhbGciOiJIUzI1Ni..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Supabase Service Role Secret Key</label>
+                        <input
+                          type="password"
+                          value={infraSettings.database.supabaseServiceRoleKey}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              database: { ...infraSettings.database, supabaseServiceRoleKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="eyJhbGciOiJIUzI1Ni...service_role"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Direct Pooler Connection String (DATABASE_URL)</label>
+                        <textarea
+                          rows={2}
+                          value={infraSettings.database.connectionString}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              database: { ...infraSettings.database, connectionString: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="postgresql://postgres:[PASSWORD]@aws-0.pooler.supabase.com:6543/postgres"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={infraSettings.database.ssl}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, ssl: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Require SSL / TLS Encrypted Pool</span>
+                        </label>
+                        <span className="text-[11px] text-emerald-700 font-bold font-mono">1.1ms Latency</span>
                       </div>
                     </div>
-                    <span className="text-[11px] font-mono text-emerald-700 font-extrabold flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Online (4 Nodes)
-                    </span>
-                  </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                    <div className="flex items-center gap-2.5">
-                      <Cpu className="w-4 h-4 text-emerald-600" />
+                    {/* PANEL 2: LIVEKIT SFU MEDIA EDGE */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2 text-teal-700">
+                          <Radio className="w-5 h-5" />
+                          <h3 className="font-extrabold text-sm text-slate-900">LiveKit SFU WebRTC Edge</h3>
+                        </div>
+                        <Badge variant="success" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
+                          4 Nodes Healthy
+                        </Badge>
+                      </div>
+
                       <div>
-                        <div className="font-bold text-slate-800">Audio Looper & CDN Storage</div>
-                        <div className="text-[10px] text-slate-400">S3 / Cloudflare Edge Cache</div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">LiveKit SFU Server URL (WebSocket)</label>
+                        <input
+                          type="text"
+                          value={infraSettings.livekit.serverUrl}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              livekit: { ...infraSettings.livekit, serverUrl: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-teal-600"
+                          placeholder="wss://livekit.ankabit.app"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Master LiveKit API Key (LIVEKIT_API_KEY)</label>
+                        <input
+                          type="text"
+                          value={infraSettings.livekit.apiKey}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              livekit: { ...infraSettings.livekit, apiKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-teal-600"
+                          placeholder="API..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">LiveKit API Secret (LIVEKIT_API_SECRET)</label>
+                        <input
+                          type="password"
+                          value={infraSettings.livekit.apiSecret}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              livekit: { ...infraSettings.livekit, apiSecret: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-teal-600"
+                          placeholder="secret_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Media Edge Region</label>
+                        <input
+                          type="text"
+                          value={infraSettings.livekit.region}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              livekit: { ...infraSettings.livekit, region: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-teal-600"
+                          placeholder="eu-central-1"
+                        />
+                      </div>
+
+                      <div className="p-3 bg-teal-50/70 border border-teal-200 rounded-xl text-xs text-teal-900 space-y-1">
+                        <div className="font-bold flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" />
+                          <span>WebRTC Mesh & SFU Auto-Scaling Active</span>
+                        </div>
+                        <p className="text-[11px] text-teal-800">
+                          Supports 250+ concurrent interactive live Quran recitation classrooms per node.
+                        </p>
                       </div>
                     </div>
-                    <span className="text-[11px] font-mono text-emerald-700 font-extrabold flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                      Operational
-                    </span>
+
+                    {/* PANEL 3: AUDIO RECORDER, HOMEWORK & CDN STORAGE */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2 text-sky-700">
+                          <HardDrive className="w-5 h-5" />
+                          <h3 className="font-extrabold text-sm text-slate-900">Audio Looper & Asset CDN</h3>
+                        </div>
+                        <Badge variant="info" className="bg-sky-50 text-sky-700 border-sky-200 text-[10px]">
+                          Edge Cache Active
+                        </Badge>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Storage Provider</label>
+                        <select
+                          value={infraSettings.storage.provider}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              storage: { ...infraSettings.storage, provider: e.target.value as 's3' | 'cloudflare_r2' | 'supabase_storage' },
+                            })
+                          }
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-sky-600"
+                        >
+                          <option value="cloudflare_r2">Cloudflare R2 Object Storage (Zero Egress Fee)</option>
+                          <option value="s3">Amazon S3 Standard Bucket</option>
+                          <option value="supabase_storage">Supabase Built-in S3 Storage</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Bucket Name</label>
+                          <input
+                            type="text"
+                            value={infraSettings.storage.bucketName}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                storage: { ...infraSettings.storage, bucketName: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
+                            placeholder="ankabit-assets"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Region</label>
+                          <input
+                            type="text"
+                            value={infraSettings.storage.region}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                storage: { ...infraSettings.storage, region: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-sky-600"
+                            placeholder="auto / us-east-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">S3 / R2 Access Key ID</label>
+                        <input
+                          type="text"
+                          value={infraSettings.storage.accessKeyId}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              storage: { ...infraSettings.storage, accessKeyId: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
+                          placeholder="r2_access_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">S3 / R2 Secret Access Key</label>
+                        <input
+                          type="password"
+                          value={infraSettings.storage.secretAccessKey}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              storage: { ...infraSettings.storage, secretAccessKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
+                          placeholder="secret_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Public CDN Delivery URL Base</label>
+                        <input
+                          type="text"
+                          value={infraSettings.storage.publicCdnUrl}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              storage: { ...infraSettings.storage, publicCdnUrl: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
+                          placeholder="https://cdn.ankabit.app"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="pt-2 border-t border-slate-100">
-                  <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-slate-800">
-                    <input
-                      type="checkbox"
-                      checked={maintenanceMode}
-                      onChange={(e) => {
-                        setMaintenanceMode(e.target.checked);
-                        if (e.target.checked) {
-                          warning('Emergency Mode Enabled', 'Platform is currently restricted to SuperAdmins only.');
-                        } else {
-                          success('Platform Live', 'Maintenance mode has been disabled.');
-                        }
-                      }}
-                      className="w-4 h-4 text-emerald-600 rounded"
-                    />
-                    <span>Enable Platform Maintenance Mode (Locks tenant logins)</span>
-                  </label>
+              {/* SUB-TAB 2: PLATFORM MASTER PAYMENT GATEWAYS */}
+              {settingsSubTab === 'payments' && (
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div>
+                      <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                        <Wallet className="w-5 h-5 text-emerald-700" />
+                        <span>Platform Master Payment Gateways (SaaS Subscription Billing)</span>
+                      </h2>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Configure master merchant accounts to accept automated subscription fees from tenant institutions (Stripe, Moyasar Mada/Visa, Flutterwave, and PayPal).
+                      </p>
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSavePaymentGateways}
+                      leftIcon={<Save className="w-4 h-4" />}
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                    >
+                      Save Payment Gateways
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* STRIPE */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-indigo-600" />
+                          <h3 className="font-extrabold text-sm text-slate-900">Stripe Billing Engine</h3>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={paymentSettings.stripe.enabled}
+                            onChange={(e) =>
+                              setPaymentSettings({
+                                ...paymentSettings,
+                                stripe: { ...paymentSettings.stripe, enabled: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Enabled</span>
+                        </label>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Stripe Publishable Key</label>
+                        <input
+                          type="text"
+                          value={paymentSettings.stripe.publishableKey}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              stripe: { ...paymentSettings.stripe, publishableKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-indigo-600"
+                          placeholder="pk_live_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Stripe Secret Key</label>
+                        <input
+                          type="password"
+                          value={paymentSettings.stripe.secretKey}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              stripe: { ...paymentSettings.stripe, secretKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-indigo-600"
+                          placeholder="sk_live_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Stripe Webhook Signing Secret</label>
+                        <input
+                          type="password"
+                          value={paymentSettings.stripe.webhookSecret}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              stripe: { ...paymentSettings.stripe, webhookSecret: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-indigo-600"
+                          placeholder="whsec_..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* MOYASAR */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="w-5 h-5 text-emerald-600" />
+                          <h3 className="font-extrabold text-sm text-slate-900">Moyasar (Saudi Mada, Apple Pay & Visa)</h3>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={paymentSettings.moyasar.enabled}
+                            onChange={(e) =>
+                              setPaymentSettings({
+                                ...paymentSettings,
+                                moyasar: { ...paymentSettings.moyasar, enabled: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Enabled</span>
+                        </label>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Moyasar Publishable Key</label>
+                        <input
+                          type="text"
+                          value={paymentSettings.moyasar.publishableKey}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              moyasar: { ...paymentSettings.moyasar, publishableKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="pk_live_moyasar_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Moyasar Secret Key</label>
+                        <input
+                          type="password"
+                          value={paymentSettings.moyasar.secretKey}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              moyasar: { ...paymentSettings.moyasar, secretKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="sk_live_moyasar_..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* FLUTTERWAVE */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-5 h-5 text-amber-600" />
+                          <h3 className="font-extrabold text-sm text-slate-900">Flutterwave (Africa & Global Cards)</h3>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={paymentSettings.flutterwave.enabled}
+                            onChange={(e) =>
+                              setPaymentSettings({
+                                ...paymentSettings,
+                                flutterwave: { ...paymentSettings.flutterwave, enabled: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Enabled</span>
+                        </label>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Public Key</label>
+                        <input
+                          type="text"
+                          value={paymentSettings.flutterwave.publicKey}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              flutterwave: { ...paymentSettings.flutterwave, publicKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-amber-600"
+                          placeholder="FLWPUBK_..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Secret Key</label>
+                        <input
+                          type="password"
+                          value={paymentSettings.flutterwave.secretKey}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              flutterwave: { ...paymentSettings.flutterwave, secretKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-amber-600"
+                          placeholder="FLWSECK_..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* PAYPAL */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="w-5 h-5 text-blue-600" />
+                          <h3 className="font-extrabold text-sm text-slate-900">PayPal REST API</h3>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={paymentSettings.paypal.enabled}
+                            onChange={(e) =>
+                              setPaymentSettings({
+                                ...paymentSettings,
+                                paypal: { ...paymentSettings.paypal, enabled: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Enabled</span>
+                        </label>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">PayPal Client ID</label>
+                        <input
+                          type="text"
+                          value={paymentSettings.paypal.clientId}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              paypal: { ...paymentSettings.paypal, clientId: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-600"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">PayPal Client Secret</label>
+                        <input
+                          type="password"
+                          value={paymentSettings.paypal.clientSecret}
+                          onChange={(e) =>
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              paypal: { ...paymentSettings.paypal, clientSecret: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* SUB-TAB 3: ANNOUNCEMENTS & MAINTENANCE */}
+              {settingsSubTab === 'announcements' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Global Broadcast Announcement */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2 text-emerald-700">
+                      <Zap className="w-5 h-5" />
+                      <h3 className="text-base font-extrabold text-slate-900">Global Platform Announcement Banner</h3>
+                    </div>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Broadcast an urgent alert, planned maintenance notice, or feature release banner across all tenant admin dashboards.
+                    </p>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Announcement Content</label>
+                      <textarea
+                        rows={3}
+                        value={globalAnnouncement}
+                        onChange={(e) => setGlobalAnnouncement(e.target.value)}
+                        placeholder="e.g. Scheduled database maintenance this Sunday at 02:00 AM UTC. Live classes will not be interrupted."
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setGlobalAnnouncement('')}
+                        className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                      >
+                        Clear
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => {
+                          setIsSavingAnnouncement(true);
+                          setTimeout(() => {
+                            setIsSavingAnnouncement(false);
+                            success('Broadcast Sent', 'Announcement published across all academy dashboards.');
+                          }, 500);
+                        }}
+                        isLoading={isSavingAnnouncement}
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                      >
+                        Publish Broadcast
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Platform Maintenance Mode */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2 text-rose-700">
+                      <Shield className="w-5 h-5" />
+                      <h3 className="text-base font-extrabold text-slate-900">Emergency Maintenance Mode</h3>
+                    </div>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      When enabled, access to student portals and tenant academies is paused with a friendly maintenance screen. SuperAdmins retain full console access.
+                    </p>
+
+                    <div className="pt-4 border-t border-slate-100">
+                      <label className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-xs font-bold text-slate-800">
+                        <input
+                          type="checkbox"
+                          checked={maintenanceMode}
+                          onChange={(e) => {
+                            setMaintenanceMode(e.target.checked);
+                            if (e.target.checked) {
+                              warning('Emergency Mode Enabled', 'Platform is currently restricted to SuperAdmins only.');
+                            } else {
+                              success('Platform Live', 'Maintenance mode has been disabled.');
+                            }
+                          }}
+                          className="w-4 h-4 text-emerald-600 rounded"
+                        />
+                        <div>
+                          <div>Lock Tenant Logins & Enable Maintenance Mode</div>
+                          <div className="text-[10px] text-slate-400 font-normal">Locks student and instructor sessions safely.</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </main>

@@ -142,3 +142,57 @@ export interface PlatformMetrics {
     storageUsedGb: number;
   };
 }
+
+export interface SuperAdminInfrastructureSettings {
+  database: {
+    provider: 'supabase' | 'custom_postgres';
+    supabaseUrl: string;
+    supabaseAnonKey: string;
+    supabaseServiceRoleKey: string;
+    connectionString: string;
+    ssl: boolean;
+    poolSize: number;
+  };
+  livekit: {
+    serverUrl: string;
+    apiKey: string;
+    apiSecret: string;
+    region: string;
+  };
+  storage: {
+    provider: 's3' | 'cloudflare_r2' | 'supabase_storage';
+    bucketName: string;
+    region: string;
+    accessKeyId: string;
+    secretAccessKey: string;
+    endpoint: string;
+    publicCdnUrl: string;
+  };
+}
+
+export interface SuperAdminPaymentSettings {
+  stripe: {
+    enabled: boolean;
+    publishableKey: string;
+    secretKey: string;
+    webhookSecret: string;
+  };
+  moyasar: {
+    enabled: boolean;
+    publishableKey: string;
+    secretKey: string;
+  };
+  flutterwave: {
+    enabled: boolean;
+    publicKey: string;
+    secretKey: string;
+    encryptionKey: string;
+  };
+  paypal: {
+    enabled: boolean;
+    clientId: string;
+    clientSecret: string;
+    mode: 'sandbox' | 'live';
+  };
+}
+
