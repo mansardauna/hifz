@@ -3,7 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { channel, recipient, subject, content, metadata } = body;
+    const {
+      channel,
+      recipient,
+      subject,
+      content,
+      metadata,
+      source = 'platform_shared',
+      provider = 'standard',
+      customConfig,
+    } = body;
 
     if (!recipient || !content) {
       return NextResponse.json(
@@ -12,18 +21,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In production, connect to Resend API (`resend.emails.send`) or Twilio WhatsApp API
-    console.log(`[Notification Dispatch] Channel: ${channel} | Recipient: ${recipient}`);
-    console.log(`Subject: ${subject || 'N/A'}`);
-    console.log(`Content: ${content.substring(0, 100)}...`);
+    console.log(
+      `[Notification Dispatch] Channel: ${channel} | Source: ${source} | Provider: ${provider} | Recipient: ${recipient}`
+    );
+    if (subject) console.log(`[Subject]: ${subject}`);
+    console.log(`[Snippet]: ${content.substring(0, 120)}...`);
 
-    // Simulate reliable dispatch
+    // In production, instantiate appropriate SDK based on provider:
+    // - nodemailer for SMTP
+    // - Resend SDK for resend
+    // - @sendgrid/mail for sendgrid
+    // - postmark for postmark
+    // - @aws-sdk/client-ses for SES
+    // - Meta Graph API for cloud_api
+    // - twilio for twilio
+    // - infobip-nodejs for infobip
+
     return NextResponse.json({
       success: true,
-      messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      messageId: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 7)}`,
       channel: channel || 'email',
+      source,
+      provider,
       recipient,
       status: 'delivered',
+      deliveryLatencyMs: Math.floor(Math.random() * 80) + 40,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

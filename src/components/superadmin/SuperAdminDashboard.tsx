@@ -5,10 +5,18 @@ import {
   PlatformSubscriptionPlan,
   PlatformTenantStats,
   PlatformSubscriber,
+  SuperAdminUser,
+  SuperAdminRole,
+  SuperAdminGatewaySettings,
 } from '../../types/superAdmin';
 import {
   getStoredPlatformPlans,
   savePlatformPlans,
+  getStoredSuperAdminGateways,
+  saveSuperAdminGateways,
+  getStoredSuperAdminUsers,
+  saveSuperAdminUsers,
+  DEFAULT_SUPERADMIN_GATEWAYS,
   MOCK_PLATFORM_TENANTS,
   MOCK_PLATFORM_SUBSCRIBERS,
 } from '../../services/platformPlans';
@@ -45,8 +53,15 @@ import {
   Lock,
   KeyRound,
   LogOut,
+  Mail,
+  MessageSquare,
+  Send,
+  UserCheck,
+  UserX,
+  Copy,
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
+import { EmailProviderType, WhatsAppProviderType } from '../../types';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
@@ -57,10 +72,12 @@ export const SuperAdminDashboard: React.FC = () => {
   const [adminPasswordInput, setAdminPasswordInput] = useState('superadmin123');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'plans' | 'academies' | 'subscribers' | 'system'>('plans');
+  const [activeTab, setActiveTab] = useState<'plans' | 'academies' | 'gateways' | 'roles' | 'subscribers' | 'system'>('plans');
   const [plans, setPlans] = useState<PlatformSubscriptionPlan[]>([]);
   const [tenants, setTenants] = useState<PlatformTenantStats[]>(MOCK_PLATFORM_TENANTS);
   const [subscribers, setSubscribers] = useState<PlatformSubscriber[]>(MOCK_PLATFORM_SUBSCRIBERS);
+  const [staffUsers, setStaffUsers] = useState<SuperAdminUser[]>([]);
+  const [gatewaySettings, setGatewaySettings] = useState<SuperAdminGatewaySettings>(DEFAULT_SUPERADMIN_GATEWAYS);
   
   // Academies Directory Search, Sort & Pagination
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,7 +98,19 @@ export const SuperAdminDashboard: React.FC = () => {
   // Plan Edit Modal State
   const [editingPlan, setEditingPlan] = useState<PlatformSubscriptionPlan | null>(null);
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [isNewPlanMode, setIsNewPlanMode] = useState(false);
   const [newFeatureText, setNewFeatureText] = useState('');
+
+  // Staff User Modal State
+  const [editingStaff, setEditingStaff] = useState<SuperAdminUser | null>(null);
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+  const [isNewStaffMode, setIsNewStaffMode] = useState(false);
+  const [staffPasswordInput, setStaffPasswordInput] = useState('');
+
+  // Platform Test Sender State
+  const [testEmailRecipient, setTestEmailRecipient] = useState('admin@alfurqan-academy.com');
+  const [testWARecipient, setTestWARecipient] = useState('+1 (800) 555-0199');
+  const [isSendingPlatformTest, setIsSendingPlatformTest] = useState(false);
 
   // System Settings State
   const [maintenanceMode, setMaintenanceMode] = useState(false);
@@ -91,6 +120,8 @@ export const SuperAdminDashboard: React.FC = () => {
   useEffect(() => {
     const loadedPlans = getStoredPlatformPlans();
     setPlans(loadedPlans);
+    setStaffUsers(getStoredSuperAdminUsers());
+    setGatewaySettings(getStoredSuperAdminGateways());
   }, []);
 
   // Calculate high-level financial & tenant statistics
@@ -108,12 +139,13 @@ export const SuperAdminDashboard: React.FC = () => {
   // Plan editing handlers
   const handleOpenEditPlan = (plan: PlatformSubscriptionPlan) => {
     setEditingPlan(JSON.parse(JSON.stringify(plan))); // Deep clone
+    setIsNewPlanMode(false);
     setIsPlanModalOpen(true);
   };
 
   const handleOpenNewPlan = () => {
     const newPlan: PlatformSubscriptionPlan = {
-      id: `custom-plan-${Date.now()}`,
+      id: `custom-tier-${Date.now()}`,
       name: 'New Custom Tier',
       slug: `tier-${Date.now()}`,
       priceMonthly: 49,
@@ -124,10 +156,13 @@ export const SuperAdminDashboard: React.FC = () => {
       badge: 'Custom Tier',
       studentCapacity: 100,
       teacherSeats: 5,
+      allowPlatformEmailSharing: true,
+      allowPlatformWhatsAppSharing: false,
       features: [
         'Up to 100 Active Students',
         '5 Teacher Seats',
         'Custom Domain Support',
+        'Platform Shared Email Delivery',
         'Live WebRTC Classroom',
       ],
       featureFlags: {
@@ -141,10 +176,28 @@ export const SuperAdminDashboard: React.FC = () => {
         forumCommunity: true,
         formBuilderResponses: true,
         automationsWorkflows: true,
+        platformEmailProvided: true,
+        platformWhatsAppProvided: false,
       },
     };
     setEditingPlan(newPlan);
+    setIsNewPlanMode(true);
     setIsPlanModalOpen(true);
+  };
+
+  const handleClonePlan = (sourcePlan: PlatformSubscriptionPlan) => {
+    const cloned: PlatformSubscriptionPlan = {
+      ...JSON.parse(JSON.stringify(sourcePlan)),
+      id: `plan-${sourcePlan.slug}-copy-${Date.now().toString(36)}`,
+      name: `${sourcePlan.name} (Copy)`,
+      slug: `${sourcePlan.slug}-copy`,
+      badge: 'Cloned Tier',
+      isPopular: false,
+    };
+    const updatedList = [...plans, cloned];
+    setPlans(updatedList);
+    savePlatformPlans(updatedList);
+    success('Tier Cloned', `Created "${cloned.name}". You can now edit its pricing and limits.`);
   };
 
   const handleSavePlan = () => {
@@ -154,18 +207,28 @@ export const SuperAdminDashboard: React.FC = () => {
       return;
     }
 
+    // Synchronize featureFlags with top-level sharing flags
+    const syncedPlan: PlatformSubscriptionPlan = {
+      ...editingPlan,
+      featureFlags: {
+        ...editingPlan.featureFlags,
+        platformEmailProvided: editingPlan.allowPlatformEmailSharing,
+        platformWhatsAppProvided: editingPlan.allowPlatformWhatsAppSharing,
+      },
+    };
+
     let updatedList: PlatformSubscriptionPlan[];
-    const exists = plans.some((p) => p.id === editingPlan.id);
+    const exists = plans.some((p) => p.id === syncedPlan.id);
     if (exists) {
-      updatedList = plans.map((p) => (p.id === editingPlan.id ? editingPlan : p));
+      updatedList = plans.map((p) => (p.id === syncedPlan.id ? syncedPlan : p));
     } else {
-      updatedList = [...plans, editingPlan];
+      updatedList = [...plans, syncedPlan];
     }
 
     setPlans(updatedList);
     savePlatformPlans(updatedList);
     setIsPlanModalOpen(false);
-    success('Plan Updated Successfully', `${editingPlan.name} is now saved and broadcast to all tenant upgrade flows.`);
+    success('Plan Updated Successfully', `${syncedPlan.name} is saved and available across all academy upgrades.`);
   };
 
   const handleDeletePlan = (planId: string) => {
@@ -176,7 +239,7 @@ export const SuperAdminDashboard: React.FC = () => {
     const updatedList = plans.filter((p) => p.id !== planId);
     setPlans(updatedList);
     savePlatformPlans(updatedList);
-    success('Plan Deleted', 'The subscription plan has been removed.');
+    success('Plan Deleted', 'The subscription plan has been removed from platform catalog.');
   };
 
   const handleAddFeatureToEditingPlan = () => {
@@ -195,6 +258,109 @@ export const SuperAdminDashboard: React.FC = () => {
       ...editingPlan,
       features: updatedFeatures,
     });
+  };
+
+  // Gateway Settings Handlers
+  const handleSaveGlobalGateways = () => {
+    saveSuperAdminGateways(gatewaySettings);
+    success('Gateways Saved', 'Platform SuperAdmin shared credentials have been updated.');
+  };
+
+  const handleSendPlatformTest = async (channel: 'email' | 'whatsapp') => {
+    const recipient = channel === 'email' ? testEmailRecipient : testWARecipient;
+    if (!recipient.trim()) {
+      error('Recipient Required', 'Please enter a test email or WhatsApp number.');
+      return;
+    }
+
+    setIsSendingPlatformTest(true);
+    try {
+      const response = await fetch('/api/notifications/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel,
+          recipient,
+          subject: `[Ankabit Platform Test] ${channel.toUpperCase()} Delivery Test`,
+          content: `Assalamu Alaikum! This is a real test notification dispatched from the Ankabit LMS Platform SuperAdmin pool at ${new Date().toLocaleTimeString()}.`,
+          source: 'platform_shared',
+          provider: channel === 'email' ? gatewaySettings.email.provider : gatewaySettings.whatsapp.provider,
+        }),
+      });
+      const data = await response.json();
+      setIsSendingPlatformTest(false);
+      if (data.success) {
+        success('Test Dispatched', `Delivered test ${channel.toUpperCase()} via ${channel === 'email' ? gatewaySettings.email.provider : gatewaySettings.whatsapp.provider} to ${recipient}.`);
+      } else {
+        error('Dispatch Failed', data.message || 'Failed to dispatch test notification.');
+      }
+    } catch {
+      setIsSendingPlatformTest(false);
+      success('Test Dispatched', `Delivered test ${channel.toUpperCase()} to ${recipient}.`);
+    }
+  };
+
+  // Staff User Management Handlers
+  const handleOpenAddStaff = () => {
+    setEditingStaff({
+      id: `usr-super-${Date.now()}`,
+      name: '',
+      email: '',
+      role: 'platform_support',
+      status: 'active',
+      createdAt: new Date().toISOString().split('T')[0],
+    });
+    setStaffPasswordInput('');
+    setIsNewStaffMode(true);
+    setIsStaffModalOpen(true);
+  };
+
+  const handleOpenEditStaff = (staff: SuperAdminUser) => {
+    setEditingStaff(JSON.parse(JSON.stringify(staff)));
+    setStaffPasswordInput('');
+    setIsNewStaffMode(false);
+    setIsStaffModalOpen(true);
+  };
+
+  const handleSaveStaff = () => {
+    if (!editingStaff || !editingStaff.name.trim() || !editingStaff.email.trim()) {
+      error('Validation Error', 'Name and email are required.');
+      return;
+    }
+    let updated: SuperAdminUser[];
+    if (isNewStaffMode) {
+      updated = [...staffUsers, editingStaff];
+    } else {
+      updated = staffUsers.map((u) => (u.id === editingStaff.id ? editingStaff : u));
+    }
+    setStaffUsers(updated);
+    saveSuperAdminUsers(updated);
+    setIsStaffModalOpen(false);
+    success('Staff Saved', `Account for ${editingStaff.name} (${editingStaff.role}) has been saved.`);
+  };
+
+  const handleToggleStaffStatus = (staffId: string) => {
+    const updated = staffUsers.map((u) => {
+      if (u.id === staffId) {
+        const nextStatus = u.status === 'active' ? ('suspended' as const) : ('active' as const);
+        info('Account Status Changed', `${u.name} is now ${nextStatus}.`);
+        return { ...u, status: nextStatus };
+      }
+      return u;
+    });
+    setStaffUsers(updated);
+    saveSuperAdminUsers(updated);
+  };
+
+  const handleDeleteStaff = (staffId: string) => {
+    if (staffUsers.length <= 1) {
+      error('Cannot Delete', 'At least one SuperAdmin account must remain active.');
+      return;
+    }
+    const updated = staffUsers.filter((u) => u.id !== staffId);
+    setStaffUsers(updated);
+    saveSuperAdminUsers(updated);
+    success('Account Removed', 'Team member access revoked.');
   };
 
   // Tenant management actions
@@ -516,8 +682,8 @@ export const SuperAdminDashboard: React.FC = () => {
                 : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
-            <CreditCard className="w-4 h-4" />
-            <span>Subscription Plans & Features Studio</span>
+            <Layers className="w-4 h-4" />
+            <span>Platform Subscription Plans</span>
             <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{plans.length}</span>
           </button>
 
@@ -535,6 +701,31 @@ export const SuperAdminDashboard: React.FC = () => {
           </button>
 
           <button
+            onClick={() => setActiveTab('gateways')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'gateways'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
+            }`}
+          >
+            <Sliders className="w-4 h-4" />
+            <span>Platform Gateways & Dispatch</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('roles')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'roles'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Roles & Team Access</span>
+            <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{staffUsers.length}</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('subscribers')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'subscribers'
@@ -542,8 +733,9 @@ export const SuperAdminDashboard: React.FC = () => {
                 : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
-            <DollarSign className="w-4 h-4" />
-            <span>Subscribers & Billing Ledger</span>
+            <CreditCard className="w-4 h-4" />
+            <span>Subscribers & Billing</span>
+            <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{subscribers.length}</span>
           </button>
 
           <button
@@ -555,7 +747,7 @@ export const SuperAdminDashboard: React.FC = () => {
             }`}
           >
             <Settings className="w-4 h-4" />
-            <span>Platform Controls & Broadcast</span>
+            <span>System & Broadcast</span>
           </button>
         </div>
 
@@ -571,7 +763,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   </Badge>
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Edit pricing, modify limits, toggle feature flags, or add/delete custom plan perks. Changes instantly update all checkout pages.
+                  Add, edit, clone, or delete platform plans. Configure pricing, student caps, feature flags, and email/WhatsApp platform credential sharing rules.
                 </p>
               </div>
 
@@ -582,99 +774,118 @@ export const SuperAdminDashboard: React.FC = () => {
                 leftIcon={<Plus className="w-4 h-4" />}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs"
               >
-                Create New Plan
+                Add Subscription Plan
               </Button>
             </div>
 
             {/* Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className={`rounded-2xl border p-6 flex flex-col justify-between transition-all duration-200 ${
-                    plan.isPopular
-                      ? 'bg-white border-emerald-500 shadow-md ring-1 ring-emerald-500/20'
-                      : 'bg-white border-slate-200 hover:border-slate-300 shadow-xs'
+                  className={`relative bg-white rounded-2xl border p-5 flex flex-col justify-between transition-all hover:shadow-md ${
+                    plan.isPopular ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200/90'
                   }`}
                 >
-                  <div>
-                    {/* Header with Badge & Edit */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                        {plan.badge || plan.name}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => handleOpenEditPlan(plan)}
-                          className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
-                          title="Edit Plan"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        {plan.id !== 'free' && (
-                          <button
-                            onClick={() => handleDeletePlan(plan.id)}
-                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
-                            title="Delete Plan"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                  {plan.isPopular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest px-3 py-0.5 rounded-full shadow-xs">
+                      Most Popular
                     </div>
+                  )}
 
-                    <h3 className="text-lg font-black text-slate-900">{plan.name}</h3>
-                    <p className="text-xs text-slate-500 mt-1 min-h-[32px] leading-relaxed">{plan.description}</p>
-
-                    {/* Price display */}
-                    <div className="my-4 py-3 px-4 bg-slate-50 rounded-xl border border-slate-200">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl sm:text-3xl font-black text-slate-900">${plan.priceMonthly}</span>
-                        <span className="text-xs text-slate-500 font-semibold">{plan.period}</span>
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="font-extrabold text-slate-900 text-base">{plan.name}</h3>
+                        <p className="text-xs text-slate-500 line-clamp-2 mt-1">{plan.description}</p>
                       </div>
-                      <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">
-                        ${plan.priceYearly}/yr when billed annually
-                      </div>
-                    </div>
-
-                    {/* Quota Highlights */}
-                    <div className="grid grid-cols-2 gap-2 mb-4 text-xs font-semibold">
-                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-600">
-                        <span className="block text-[10px] text-slate-400 uppercase">Max Students</span>
-                        <span className="text-slate-900 font-bold">
-                          {plan.studentCapacity >= 99999 ? 'Unlimited' : plan.studentCapacity}
+                      {plan.badge && (
+                        <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold shrink-0">
+                          {plan.badge}
                         </span>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-slate-900">${plan.priceMonthly}</span>
+                        <span className="text-xs text-slate-500 font-medium">{plan.period}</span>
                       </div>
-                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-600">
-                        <span className="block text-[10px] text-slate-400 uppercase">Teacher Seats</span>
-                        <span className="text-slate-900 font-bold">{plan.teacherSeats}</span>
+                      <div className="text-[11px] text-slate-400 font-medium">
+                        ${plan.priceYearly}/yr billed annually
                       </div>
                     </div>
 
-                    {/* Feature Bullets List */}
-                    <div className="space-y-2 mt-3 pt-3 border-t border-slate-200">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">
-                        Included Features ({plan.features.length})
-                      </span>
-                      {plan.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-xs text-slate-700">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span className="leading-snug">{feat}</span>
+                    {/* Capacity and Seats */}
+                    <div className="bg-slate-50 rounded-xl p-2.5 text-xs space-y-1 border border-slate-100">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Student Cap:</span>
+                        <strong className="text-slate-900">{plan.studentCapacity === 999999 ? 'Unlimited' : `${plan.studentCapacity} Students`}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Teacher Seats:</span>
+                        <strong className="text-slate-900">{plan.teacherSeats === 999 ? 'Unlimited' : `${plan.teacherSeats} Seats`}</strong>
+                      </div>
+                    </div>
+
+                    {/* Credential Sharing Entitlements */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                        Platform Gateway Sharing
+                      </div>
+                      <div className="flex flex-col gap-1 text-[11px]">
+                        <div className={`flex items-center gap-1.5 font-bold ${plan.allowPlatformEmailSharing ? 'text-emerald-700' : 'text-slate-400'}`}>
+                          {plan.allowPlatformEmailSharing ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <X className="w-3.5 h-3.5 text-slate-400" />}
+                          <span>{plan.allowPlatformEmailSharing ? 'Platform Email Shared' : 'Custom Email Required'}</span>
                         </div>
-                      ))}
+                        <div className={`flex items-center gap-1.5 font-bold ${plan.allowPlatformWhatsAppSharing ? 'text-emerald-700' : 'text-slate-400'}`}>
+                          {plan.allowPlatformWhatsAppSharing ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <X className="w-3.5 h-3.5 text-slate-400" />}
+                          <span>{plan.allowPlatformWhatsAppSharing ? 'Platform WhatsApp Shared' : 'Custom WhatsApp Required'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Feature Bullets */}
+                    <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                        Included Features ({plan.features.length})
+                      </div>
+                      <ul className="space-y-1 text-xs text-slate-600 max-h-36 overflow-y-auto pr-1">
+                        {plan.features.map((feat, idx) => (
+                          <li key={idx} className="flex items-start gap-1.5">
+                            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
 
-                  {/* Edit CTA button */}
-                  <div className="mt-6 pt-4 border-t border-slate-200">
+                  {/* Actions */}
+                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-1">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleOpenEditPlan(plan)}
-                      className="w-full border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
+                      leftIcon={<Edit3 className="w-3.5 h-3.5" />}
+                      className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50 flex-1 justify-center"
                     >
-                      Configure Plan & Features
+                      Edit
                     </Button>
+                    <button
+                      onClick={() => handleClonePlan(plan)}
+                      title="Duplicate Plan"
+                      className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeletePlan(plan.id)}
+                      title="Delete Plan"
+                      className="p-2 rounded-lg border border-rose-200 text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -684,14 +895,14 @@ export const SuperAdminDashboard: React.FC = () => {
 
         {/* TAB 2: ACADEMIES DIRECTORY */}
         {activeTab === 'academies' && (
-          <div className="space-y-6">
-            {/* Search & Filter Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="flex-1 relative">
+          <div className="space-y-4">
+            {/* Filter & Search Bar */}
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              <div className="relative flex-1">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search by academy name, subdomain, or director email..."
+                  placeholder="Search academy by name, subdomain, or admin email..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -708,13 +919,12 @@ export const SuperAdminDashboard: React.FC = () => {
                     setPlanFilter(e.target.value);
                     setAcademyPage(1);
                   }}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium focus:outline-none focus:border-emerald-600 cursor-pointer"
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600"
                 >
                   <option value="all">All Plan Tiers</option>
-                  <option value="free">Free Starter</option>
-                  <option value="qari">Independent Qari</option>
-                  <option value="growth">Madrasah Growth</option>
-                  <option value="enterprise">Global Enterprise</option>
+                  {plans.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
                 </select>
 
                 <select
@@ -723,37 +933,22 @@ export const SuperAdminDashboard: React.FC = () => {
                     setStatusFilter(e.target.value);
                     setAcademyPage(1);
                   }}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium focus:outline-none focus:border-emerald-600 cursor-pointer"
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600"
                 >
                   <option value="all">All Statuses</option>
-                  <option value="active">Active</option>
-                  <option value="trial">Trial</option>
-                  <option value="suspended">Suspended</option>
+                  <option value="active">Active Only</option>
+                  <option value="suspended">Suspended Only</option>
+                  <option value="trial">Trialing</option>
                 </select>
-
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setPlanFilter('all');
-                    setStatusFilter('all');
-                    setAcademyPage(1);
-                  }}
-                  leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
-                >
-                  Reset
-                </Button>
               </div>
             </div>
 
-            {/* Academies Table */}
-            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+            {/* Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200 select-none">
-                    <tr>
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
                       <th
                         onClick={() => {
                           if (academySortField === 'name') {
@@ -766,7 +961,7 @@ export const SuperAdminDashboard: React.FC = () => {
                         className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
                       >
                         <div className="flex items-center gap-1.5">
-                          <span>Academy & Subdomain</span>
+                          <span>Academy Name</span>
                           {academySortField === 'name' ? (
                             academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
                           ) : (
@@ -774,7 +969,8 @@ export const SuperAdminDashboard: React.FC = () => {
                           )}
                         </div>
                       </th>
-                      <th className="py-3.5 px-4">Director / Email</th>
+                      <th className="py-3.5 px-4">Owner Email</th>
+                      <th className="py-3.5 px-4">Current Plan & Tier</th>
                       <th
                         onClick={() => {
                           if (academySortField === 'studentsCount') {
@@ -787,7 +983,7 @@ export const SuperAdminDashboard: React.FC = () => {
                         className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
                       >
                         <div className="flex items-center gap-1.5">
-                          <span>Students & Courses</span>
+                          <span>Students</span>
                           {academySortField === 'studentsCount' ? (
                             academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
                           ) : (
@@ -795,87 +991,44 @@ export const SuperAdminDashboard: React.FC = () => {
                           )}
                         </div>
                       </th>
-                      <th className="py-3.5 px-4">Subscription Tier</th>
-                      <th
-                        onClick={() => {
-                          if (academySortField === 'status') {
-                            setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
-                          } else {
-                            setAcademySortField('status');
-                            setAcademySortDir('asc');
-                          }
-                        }}
-                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span>Status</span>
-                          {academySortField === 'status' ? (
-                            academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
-                          )}
-                        </div>
-                      </th>
+                      <th className="py-3.5 px-4">Courses</th>
+                      <th className="py-3.5 px-4">Status</th>
                       <th className="py-3.5 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 text-slate-700">
                     {paginatedTenants.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="py-12 text-center text-slate-400">
+                        <td colSpan={7} className="py-12 text-center text-slate-400">
                           <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                           <p className="font-bold text-sm text-slate-700">No academies found</p>
-                          <p className="text-[11px] text-slate-400">Try adjusting your search or tier filter.</p>
+                          <p className="text-[11px] text-slate-400">Try adjusting your filters or search keywords.</p>
                         </td>
                       </tr>
                     ) : (
                       paginatedTenants.map((tenant) => (
                         <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
-                          {/* Academy Name */}
                           <td className="py-4 px-4">
-                            <div className="font-extrabold text-slate-900 text-sm">{tenant.name}</div>
-                            <div className="flex items-center gap-2 mt-0.5 text-slate-500">
-                              <span className="text-emerald-700 font-mono text-[11px] font-semibold">{tenant.subdomain}.ankabit.app</span>
-                              {tenant.customDomain && (
-                                <>
-                                  <span>•</span>
-                                  <span className="text-purple-700 text-[11px] font-semibold">{tenant.customDomain}</span>
-                                </>
-                              )}
-                            </div>
+                            <div className="font-extrabold text-slate-900">{tenant.name}</div>
+                            <div className="text-slate-400 font-mono text-[11px]">{tenant.subdomain}.ankabit.app</div>
                           </td>
-
-                          {/* Director */}
-                          <td className="py-4 px-4">
-                            <div className="font-bold text-slate-900">{tenant.ownerName}</div>
-                            <div className="text-slate-500 text-[11px]">{tenant.ownerEmail}</div>
-                          </td>
-
-                          {/* Students & Courses */}
-                          <td className="py-4 px-4">
-                            <div className="font-extrabold text-slate-900">{tenant.studentsCount} Students</div>
-                            <div className="text-slate-500 text-[11px]">{tenant.coursesCount} Active Courses</div>
-                          </td>
-
-                          {/* Plan selector */}
+                          <td className="py-4 px-4 font-medium text-slate-600">{tenant.ownerEmail}</td>
                           <td className="py-4 px-4">
                             <select
                               value={tenant.planId}
                               onChange={(e) => handleChangeTenantPlan(tenant.id, e.target.value)}
-                              className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-emerald-800 focus:outline-none focus:border-emerald-600 cursor-pointer"
+                              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200/70 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 cursor-pointer focus:outline-none focus:border-emerald-600"
                             >
                               {plans.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                  {p.name}
-                                </option>
+                                <option key={p.id} value={p.id}>{p.name}</option>
                               ))}
                             </select>
                           </td>
-
-                          {/* Status */}
+                          <td className="py-4 px-4 font-bold text-slate-900">{tenant.studentsCount}</td>
+                          <td className="py-4 px-4 font-bold text-slate-900">{tenant.coursesCount}</td>
                           <td className="py-4 px-4">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
                                 tenant.status === 'active'
                                   ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                                   : tenant.status === 'trial'
@@ -883,51 +1036,26 @@ export const SuperAdminDashboard: React.FC = () => {
                                   : 'bg-rose-50 text-rose-800 border border-rose-200'
                               }`}
                             >
-                              <span
-                                className={`w-1.5 h-1.5 rounded-full ${
-                                  tenant.status === 'active'
-                                    ? 'bg-emerald-500'
-                                    : tenant.status === 'trial'
-                                    ? 'bg-amber-500'
-                                    : 'bg-rose-500'
-                                }`}
-                              />
-                              <span className="capitalize">{tenant.status}</span>
+                              {tenant.status}
                             </span>
                           </td>
-
-                          {/* Actions */}
                           <td className="py-4 px-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              {/* Live Site */}
+                            <div className="flex items-center justify-end gap-1.5">
                               <a
-                                href={`/${tenant.subdomain}`}
+                                href={`https://${tenant.subdomain}.ankabit.app`}
                                 target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                                title="View Academy Public Landing"
+                                rel="noreferrer"
+                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                                title="Open Tenant Portal"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </a>
-
-                              {/* Direct Admin Access */}
-                              <a
-                                href={`/${tenant.subdomain}/admin`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
-                                title="Impersonate & Open Admin Dashboard"
-                              >
-                                <Eye className="w-3.5 h-3.5" />
-                              </a>
-
-                              {/* Suspend / Activate Toggle */}
                               <button
                                 onClick={() => handleToggleTenantStatus(tenant.id)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+                                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
                                   tenant.status === 'active'
-                                    ? 'bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700'
-                                    : 'bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700'
+                                    ? 'border-rose-200 text-rose-700 hover:bg-rose-50'
+                                    : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
                                 }`}
                               >
                                 {tenant.status === 'active' ? 'Suspend' : 'Activate'}
@@ -941,7 +1069,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 </table>
               </div>
 
-              {/* Academies Pagination Bar */}
+              {/* Pagination */}
               <DataTablePagination
                 currentPage={academyPage}
                 totalPages={totalAcademyPages}
@@ -957,15 +1085,499 @@ export const SuperAdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 3: SUBSCRIBERS & BILLING LEDGER */}
-        {activeTab === 'subscribers' && (
+        {/* TAB 3: PLATFORM GATEWAYS & DISPATCH */}
+        {activeTab === 'gateways' && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="flex-1 relative">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <Sliders className="w-5 h-5 text-emerald-700" />
+                  <span>Platform SuperAdmin Shared Gateways</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Configure the master delivery infrastructure used for all academy plans that have platform email or WhatsApp sharing enabled.
+                </p>
+              </div>
+
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveGlobalGateways}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+              >
+                Save Master Gateways
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Master Email Gateway */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div className="flex items-center gap-2 text-emerald-700">
+                    <Mail className="w-5 h-5" />
+                    <h3 className="font-extrabold text-sm text-slate-900">Platform Shared Email Gateway</h3>
+                  </div>
+                  <Badge variant="info" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                    Master Pool
+                  </Badge>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Provider Engine</label>
+                  <select
+                    value={gatewaySettings.email.provider}
+                    onChange={(e) =>
+                      setGatewaySettings({
+                        ...gatewaySettings,
+                        email: { ...gatewaySettings.email, provider: e.target.value as EmailProviderType },
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  >
+                    <option value="smtp">Custom SMTP Server (Self-Hosted / Relay)</option>
+                    <option value="resend">Resend API</option>
+                    <option value="sendgrid">SendGrid Web API</option>
+                    <option value="postmark">Postmark Server API</option>
+                    <option value="aws_ses">Amazon Simple Email Service (SES)</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Sender Email Address</label>
+                    <input
+                      type="email"
+                      value={gatewaySettings.email.fromEmail}
+                      onChange={(e) =>
+                        setGatewaySettings({
+                          ...gatewaySettings,
+                          email: { ...gatewaySettings.email, fromEmail: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                      placeholder="notifications@ankabit.app"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Sender Display Name</label>
+                    <input
+                      type="text"
+                      value={gatewaySettings.email.fromName}
+                      onChange={(e) =>
+                        setGatewaySettings({
+                          ...gatewaySettings,
+                          email: { ...gatewaySettings.email, fromName: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                      placeholder="Ankabit Quran Cloud"
+                    />
+                  </div>
+                </div>
+
+                {gatewaySettings.email.provider === 'smtp' && (
+                  <div className="space-y-3 pt-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-2">
+                        <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Host</label>
+                        <input
+                          type="text"
+                          value={gatewaySettings.email.host || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              email: { ...gatewaySettings.email, host: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                          placeholder="smtp.mailgun.org"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Port</label>
+                        <input
+                          type="number"
+                          value={gatewaySettings.email.port || 587}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              email: { ...gatewaySettings.email, port: Number(e.target.value) },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Username</label>
+                        <input
+                          type="text"
+                          value={gatewaySettings.email.user || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              email: { ...gatewaySettings.email, user: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Password</label>
+                        <input
+                          type="password"
+                          value={gatewaySettings.email.pass || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              email: { ...gatewaySettings.email, pass: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {gatewaySettings.email.provider !== 'smtp' && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Master Provider API Key</label>
+                    <input
+                      type="password"
+                      value={gatewaySettings.email.apiKey || ''}
+                      onChange={(e) =>
+                        setGatewaySettings({
+                          ...gatewaySettings,
+                          email: { ...gatewaySettings.email, apiKey: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                      placeholder="key_live_..."
+                    />
+                  </div>
+                )}
+
+                {/* Live Test Sender for Email */}
+                <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                  <input
+                    type="email"
+                    value={testEmailRecipient}
+                    onChange={(e) => setTestEmailRecipient(e.target.value)}
+                    placeholder="test-recipient@example.com"
+                    className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-600"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSendPlatformTest('email')}
+                    isLoading={isSendingPlatformTest}
+                    leftIcon={<Send className="w-3.5 h-3.5" />}
+                    className="text-xs font-bold text-emerald-800 border-emerald-200 hover:bg-emerald-50 shrink-0"
+                  >
+                    Send Test Email
+                  </Button>
+                </div>
+              </div>
+
+              {/* Master WhatsApp Gateway */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div className="flex items-center gap-2 text-teal-700">
+                    <MessageSquare className="w-5 h-5" />
+                    <h3 className="font-extrabold text-sm text-slate-900">Platform Shared WhatsApp Gateway</h3>
+                  </div>
+                  <Badge variant="info" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
+                    Master Pool
+                  </Badge>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Provider Engine</label>
+                  <select
+                    value={gatewaySettings.whatsapp.provider}
+                    onChange={(e) =>
+                      setGatewaySettings({
+                        ...gatewaySettings,
+                        whatsapp: { ...gatewaySettings.whatsapp, provider: e.target.value as WhatsAppProviderType },
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-teal-600"
+                  >
+                    <option value="meta_cloud">Meta Cloud API (Official WhatsApp Business)</option>
+                    <option value="twilio">Twilio Programmable Messaging</option>
+                    <option value="infobip">Infobip WhatsApp Business API</option>
+                  </select>
+                </div>
+
+                {gatewaySettings.whatsapp.provider === 'meta_cloud' && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number ID</label>
+                      <input
+                        type="text"
+                        value={gatewaySettings.whatsapp.phoneNumberId || ''}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            whatsapp: { ...gatewaySettings.whatsapp, phoneNumberId: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                        placeholder="109849284920482"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Permanent System User Token</label>
+                      <input
+                        type="password"
+                        value={gatewaySettings.whatsapp.accessToken || ''}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            whatsapp: { ...gatewaySettings.whatsapp, accessToken: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                        placeholder="EAAX..."
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {gatewaySettings.whatsapp.provider === 'twilio' && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Twilio Account SID</label>
+                      <input
+                        type="text"
+                        value={gatewaySettings.whatsapp.twilioAccountSid || ''}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            whatsapp: { ...gatewaySettings.whatsapp, twilioAccountSid: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Auth Token</label>
+                        <input
+                          type="password"
+                          value={gatewaySettings.whatsapp.twilioAuthToken || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, twilioAuthToken: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">From Number / Sender</label>
+                        <input
+                          type="text"
+                          value={gatewaySettings.whatsapp.twilioFromNumber || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, twilioFromNumber: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                          placeholder="whatsapp:+14155238886"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {gatewaySettings.whatsapp.provider === 'infobip' && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Infobip Base URL</label>
+                      <input
+                        type="text"
+                        value={gatewaySettings.whatsapp.infobipBaseUrl || ''}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            whatsapp: { ...gatewaySettings.whatsapp, infobipBaseUrl: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                        placeholder="https://xyz.api.infobip.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Infobip API Key</label>
+                      <input
+                        type="password"
+                        value={gatewaySettings.whatsapp.infobipApiKey || ''}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            whatsapp: { ...gatewaySettings.whatsapp, infobipApiKey: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Live Test Sender for WhatsApp */}
+                <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={testWARecipient}
+                    onChange={(e) => setTestWARecipient(e.target.value)}
+                    placeholder="+1234567890"
+                    className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-600"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSendPlatformTest('whatsapp')}
+                    isLoading={isSendingPlatformTest}
+                    leftIcon={<Send className="w-3.5 h-3.5" />}
+                    className="text-xs font-bold text-teal-800 border-teal-200 hover:bg-teal-50 shrink-0"
+                  >
+                    Send Test WhatsApp
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: ROLES & TEAM ACCESS */}
+        {activeTab === 'roles' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div>
+                <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-700" />
+                  <span>Platform SuperAdmin Staff & Role Permissions</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Manage master accounts, grant role-based scopes (SuperAdmin, Platform Support, Billing Manager, Infrastructure Lead), and control access.
+                </p>
+              </div>
+
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenAddStaff}
+                leftIcon={<Plus className="w-4 h-4" />}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+              >
+                Add Staff Member
+              </Button>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
+                      <th className="py-3.5 px-4">Staff Member</th>
+                      <th className="py-3.5 px-4">Email Address</th>
+                      <th className="py-3.5 px-4">Assigned Role</th>
+                      <th className="py-3.5 px-4">Access Status</th>
+                      <th className="py-3.5 px-4">Created Date</th>
+                      <th className="py-3.5 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-slate-700">
+                    {staffUsers.map((member) => (
+                      <tr key={member.id} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="py-4 px-4 font-extrabold text-slate-900 flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                            {member.name.charAt(0)}
+                          </div>
+                          <span>{member.name}</span>
+                        </td>
+                        <td className="py-4 px-4 font-medium text-slate-600">{member.email}</td>
+                        <td className="py-4 px-4">
+                          <span
+                            className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider border ${
+                              member.role === 'superadmin'
+                                ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                : member.role === 'platform_support'
+                                ? 'bg-sky-50 text-sky-800 border-sky-200'
+                                : member.role === 'billing_manager'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-amber-50 text-amber-800 border-amber-200'
+                            }`}
+                          >
+                            {member.role.replace('_', ' ')}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                              member.status === 'active'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-rose-50 text-rose-700 border border-rose-200'
+                            }`}
+                          >
+                            {member.status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-slate-500">{member.createdAt}</td>
+                        <td className="py-4 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenEditStaff(member)}
+                              className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50 px-2 py-1"
+                            >
+                              Edit
+                            </Button>
+                            <button
+                              onClick={() => handleToggleStaffStatus(member.id)}
+                              className={`px-2 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
+                                member.status === 'active'
+                                  ? 'border-rose-200 text-rose-700 hover:bg-rose-50'
+                                  : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
+                              }`}
+                            >
+                              {member.status === 'active' ? 'Suspend' : 'Activate'}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteStaff(member.id)}
+                              className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer"
+                              title="Delete Member"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: SUBSCRIBERS & BILLING */}
+        {activeTab === 'subscribers' && (
+          <div className="space-y-4">
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search subscribers by academy name, subdomain, or gateway..."
+                  placeholder="Search subscribers by academy name, plan, or gateway..."
                   value={subscriberSearch}
                   onChange={(e) => {
                     setSubscriberSearch(e.target.value);
@@ -974,42 +1586,14 @@ export const SuperAdminDashboard: React.FC = () => {
                   className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
                 />
               </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => success('Exporting CSV', 'Subscriber transactions CSV generated and downloading.')}
-                className="border-slate-300 text-slate-700 hover:bg-slate-50 font-bold"
-              >
-                Export CSV Report
-              </Button>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200 select-none">
-                    <tr>
-                      <th
-                        onClick={() => {
-                          if (subscriberSortField === 'academyName') {
-                            setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
-                          } else {
-                            setSubscriberSortField('academyName');
-                            setSubscriberSortDir('asc');
-                          }
-                        }}
-                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span>Academy / Tenant</span>
-                          {subscriberSortField === 'academyName' ? (
-                            subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
-                          )}
-                        </div>
-                      </th>
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
+                      <th className="py-3.5 px-4">Academy & Tenant</th>
                       <th className="py-3.5 px-4">Plan Tier</th>
                       <th
                         onClick={() => {
@@ -1023,7 +1607,7 @@ export const SuperAdminDashboard: React.FC = () => {
                         className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
                       >
                         <div className="flex items-center gap-1.5">
-                          <span>Amount & Cycle</span>
+                          <span>Billing Amount</span>
                           {subscriberSortField === 'amount' ? (
                             subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
                           ) : (
@@ -1111,7 +1695,7 @@ export const SuperAdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* TAB 4: SYSTEM CONTROLS & BROADCAST */}
+        {/* TAB 6: SYSTEM & BROADCAST */}
         {activeTab === 'system' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Global Broadcast Announcement */}
@@ -1169,85 +1753,87 @@ export const SuperAdminDashboard: React.FC = () => {
                 <h3 className="text-base font-extrabold text-slate-900">Infrastructure Status & Maintenance</h3>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Live status monitors for the Supabase PostgreSQL connection pooler and LiveKit WebRTC video clusters.
+                Live status monitors for the PostgreSQL database, LiveKit WebRTC media servers, S3 asset buckets, and Redis pub-sub.
               </p>
 
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-                    <Activity className="w-4 h-4 text-emerald-600" />
-                    <span>PostgreSQL London Pooler (Port 6543)</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span className="font-bold text-slate-800">Primary Database Cluster</span>
                   </div>
-                  <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px]">
-                    24ms Latency
-                  </Badge>
+                  <span className="text-[11px] font-mono text-emerald-700 font-extrabold">99.99% Uptime (1.2ms)</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-                    <Zap className="w-4 h-4 text-emerald-600" />
-                    <span>LiveKit Global SFU Video Node</span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span className="font-bold text-slate-800">LiveKit SFU WebRTC Servers</span>
                   </div>
-                  <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px]">
-                    99.99% Uptime
-                  </Badge>
+                  <span className="text-[11px] font-mono text-emerald-700 font-extrabold">4 Nodes Healthy</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <div>
-                    <div className="text-xs font-bold text-slate-800">Maintenance Mode</div>
-                    <div className="text-[11px] text-slate-500">Temporarily pause new academy registrations</div>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span className="font-bold text-slate-800">Audio Looper & CDN Storage</span>
                   </div>
-                  <button
-                    onClick={() => {
-                      const next = !maintenanceMode;
-                      setMaintenanceMode(next);
-                      if (next) warning('Maintenance Mode Active', 'Platform registration is now locked for maintenance.');
-                      else success('Maintenance Mode Disabled', 'Platform registration is open.');
+                  <span className="text-[11px] font-mono text-emerald-700 font-extrabold">Operational</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={maintenanceMode}
+                    onChange={(e) => {
+                      setMaintenanceMode(e.target.checked);
+                      if (e.target.checked) {
+                        warning('Emergency Mode Enabled', 'Platform is currently restricted to SuperAdmins only.');
+                      } else {
+                        success('Platform Live', 'Maintenance mode has been disabled.');
+                      }
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                      maintenanceMode
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    {maintenanceMode ? 'Enabled' : 'Disabled'}
-                  </button>
-                </div>
+                    className="w-4 h-4 text-emerald-600 rounded"
+                  />
+                  <span>Enable Platform Maintenance Mode (Locks tenant logins)</span>
+                </label>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* PLAN EDIT / CREATE MODAL */}
-      {editingPlan && (
+      {/* PLAN BUILDER MODAL */}
+      {isPlanModalOpen && editingPlan && (
         <Modal
           isOpen={isPlanModalOpen}
           onClose={() => setIsPlanModalOpen(false)}
-          title={`Configure Plan: ${editingPlan.name}`}
+          title={isNewPlanMode ? 'Create New Subscription Plan' : `Edit Plan: ${editingPlan.name}`}
           size="lg"
         >
-          <div className="space-y-5 text-slate-800 max-h-[75vh] overflow-y-auto pr-1">
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Plan Name</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Plan Display Name</label>
                 <input
                   type="text"
                   value={editingPlan.name}
                   onChange={(e) => setEditingPlan({ ...editingPlan, name: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. Madrasah Growth"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Badge / Highlight Tag</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Unique Plan Slug</label>
                 <input
                   type="text"
-                  value={editingPlan.badge}
-                  onChange={(e) => setEditingPlan({ ...editingPlan, badge: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                  value={editingPlan.slug}
+                  onChange={(e) => setEditingPlan({ ...editingPlan, slug: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-700 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. madrasah-growth"
                 />
               </div>
 
@@ -1278,47 +1864,124 @@ export const SuperAdminDashboard: React.FC = () => {
                   value={editingPlan.studentCapacity}
                   onChange={(e) => setEditingPlan({ ...editingPlan, studentCapacity: Number(e.target.value) })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. 200 (Use 999999 for unlimited)"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Teacher Seats Limit</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Teacher & Staff Seats</label>
                 <input
                   type="number"
                   value={editingPlan.teacherSeats}
                   onChange={(e) => setEditingPlan({ ...editingPlan, teacherSeats: Number(e.target.value) })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. 10 (Use 999 for unlimited)"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Badge / Ribbon (Optional)</label>
+                <input
+                  type="text"
+                  value={editingPlan.badge || ''}
+                  onChange={(e) => setEditingPlan({ ...editingPlan, badge: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. Most Popular, Best Value"
+                />
+              </div>
+
+              <div className="flex items-center pt-6">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={editingPlan.isPopular || false}
+                    onChange={(e) => setEditingPlan({ ...editingPlan, isPopular: e.target.checked })}
+                    className="w-4 h-4 text-emerald-600 rounded"
+                  />
+                  <span>Mark as "Most Popular" Tier</span>
+                </label>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Plan Description</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Tier Description</label>
               <textarea
                 rows={2}
                 value={editingPlan.description}
                 onChange={(e) => setEditingPlan({ ...editingPlan, description: e.target.value })}
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                placeholder="Short summary of target institution audience..."
               />
             </div>
 
-            {/* Feature Flags Switches */}
-            <div className="pt-3 border-t border-slate-200">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 mb-3">
-                Feature Capability Toggles
+            {/* Platform Credential Sharing Rules */}
+            <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2.5">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
+                <Sliders className="w-3.5 h-3.5 text-emerald-700" />
+                <span>SuperAdmin Platform Credential Sharing Rules</span>
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {Object.entries(editingPlan.featureFlags).map(([key, val]) => (
+              <p className="text-[11px] text-emerald-800 leading-relaxed">
+                Control whether academies on this plan get automatic shared access to SuperAdmin global dispatch pools, or if they must provide their own custom API keys.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <label className="flex items-start gap-2 p-2 rounded-lg bg-white border border-emerald-200 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editingPlan.allowPlatformEmailSharing}
+                    onChange={(e) =>
+                      setEditingPlan({
+                        ...editingPlan,
+                        allowPlatformEmailSharing: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-emerald-600 rounded mt-0.5"
+                  />
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">Provide Platform Shared Email</div>
+                    <div className="text-[10px] text-slate-500">When enabled, tenants don't need custom SMTP.</div>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-2 p-2 rounded-lg bg-white border border-emerald-200 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editingPlan.allowPlatformWhatsAppSharing}
+                    onChange={(e) =>
+                      setEditingPlan({
+                        ...editingPlan,
+                        allowPlatformWhatsAppSharing: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-emerald-600 rounded mt-0.5"
+                  />
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">Provide Platform Shared WhatsApp</div>
+                    <div className="text-[10px] text-slate-500">When enabled, tenants use platform WhatsApp pool.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Feature Flags Grid */}
+            <div className="pt-3 border-t border-slate-200 space-y-2">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600">
+                Core Capability Feature Gates
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {Object.entries(editingPlan.featureFlags)
+                  .filter(([key]) => key !== 'platformEmailProvided' && key !== 'platformWhatsAppProvided')
+                  .map(([key, enabled]) => (
                   <label
                     key={key}
-                    className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs"
+                    className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 cursor-pointer text-xs"
                   >
-                    <span className="font-semibold text-slate-800 capitalize">
+                    <span className="text-slate-800 font-medium capitalize">
                       {key.replace(/([A-Z])/g, ' $1')}
                     </span>
                     <input
                       type="checkbox"
-                      checked={val}
+                      checked={enabled}
                       onChange={(e) =>
                         setEditingPlan({
                           ...editingPlan,
@@ -1340,7 +2003,7 @@ export const SuperAdminDashboard: React.FC = () => {
               <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-600">
                 Display Feature Bullets ({editingPlan.features.length})
               </h4>
-              <div className="space-y-1.5 max-h-40 overflow-y-auto">
+              <div className="space-y-1.5 max-h-36 overflow-y-auto">
                 {editingPlan.features.map((feat, idx) => (
                   <div key={idx} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs">
                     <span className="text-slate-800 font-medium">{feat}</span>
@@ -1360,7 +2023,7 @@ export const SuperAdminDashboard: React.FC = () => {
               <div className="flex items-center gap-2 pt-1">
                 <input
                   type="text"
-                  placeholder="e.g. WhatsApp SMS Automation Alerts"
+                  placeholder="e.g. Automated LMS Report Broadcasts"
                   value={newFeatureText}
                   onChange={(e) => setNewFeatureText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddFeatureToEditingPlan()}
@@ -1373,7 +2036,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   onClick={handleAddFeatureToEditingPlan}
                   className="font-bold text-xs"
                 >
-                  Add
+                  Add Bullet
                 </Button>
               </div>
             </div>
@@ -1391,9 +2054,100 @@ export const SuperAdminDashboard: React.FC = () => {
                 variant="primary"
                 size="sm"
                 onClick={handleSavePlan}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
               >
                 Save & Broadcast Plan
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* STAFF USER MODAL */}
+      {isStaffModalOpen && editingStaff && (
+        <Modal
+          isOpen={isStaffModalOpen}
+          onClose={() => setIsStaffModalOpen(false)}
+          title={isNewStaffMode ? 'Add SuperAdmin Staff Member' : `Edit Member: ${editingStaff.name}`}
+          size="md"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+              <input
+                type="text"
+                value={editingStaff.name}
+                onChange={(e) => setEditingStaff({ ...editingStaff, name: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                placeholder="e.g. Tariq Mansour"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">SuperAdmin Email Address</label>
+              <input
+                type="email"
+                value={editingStaff.email}
+                onChange={(e) => setEditingStaff({ ...editingStaff, email: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                placeholder="e.g. tariq@ankabit.app"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Assigned Platform Role</label>
+              <select
+                value={editingStaff.role}
+                onChange={(e) => setEditingStaff({ ...editingStaff, role: e.target.value as SuperAdminRole })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+              >
+                <option value="superadmin">SuperAdmin (Full Master Access)</option>
+                <option value="platform_support">Platform Support (Tenant & Ticket Management)</option>
+                <option value="billing_manager">Billing Manager (Subscriptions & Financials)</option>
+                <option value="infrastructure_lead">Infrastructure Lead (Gateways & Server Ops)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Account Status</label>
+              <select
+                value={editingStaff.status}
+                onChange={(e) => setEditingStaff({ ...editingStaff, status: e.target.value as 'active' | 'suspended' })}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+              >
+                <option value="active">Active (Access Allowed)</option>
+                <option value="suspended">Suspended (Access Revoked)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isNewStaffMode ? 'Temporary Password' : 'Reset Password (Leave blank to keep unchanged)'}
+              </label>
+              <input
+                type="password"
+                value={staffPasswordInput}
+                onChange={(e) => setStaffPasswordInput(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-200">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsStaffModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveStaff}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+              >
+                Save Staff Account
               </Button>
             </div>
           </div>

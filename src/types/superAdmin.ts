@@ -1,3 +1,5 @@
+import { EmailProviderType, WhatsAppProviderType } from './index';
+
 export interface PlatformPlanFeature {
   id: string;
   name: string;
@@ -18,6 +20,8 @@ export interface PlatformSubscriptionPlan {
   isPopular?: boolean;
   studentCapacity: number;
   teacherSeats: number;
+  allowPlatformEmailSharing: boolean;
+  allowPlatformWhatsAppSharing: boolean;
   features: string[];
   featureFlags: {
     customDomain: boolean;
@@ -30,6 +34,60 @@ export interface PlatformSubscriptionPlan {
     forumCommunity: boolean;
     formBuilderResponses: boolean;
     automationsWorkflows: boolean;
+    platformEmailProvided: boolean;
+    platformWhatsAppProvided: boolean;
+  };
+}
+
+export type SuperAdminRole = 'superadmin' | 'platform_support' | 'billing_manager' | 'infrastructure_lead';
+
+export interface SuperAdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: SuperAdminRole;
+  status: 'active' | 'suspended';
+  lastActiveAt?: string;
+  createdAt: string;
+  avatarUrl?: string;
+}
+
+export interface SuperAdminGatewaySettings {
+  email: {
+    enabled: boolean;
+    provider: EmailProviderType;
+    fromEmail: string;
+    fromName: string;
+    smtpHost?: string;
+    smtpPort?: number;
+    smtpUser?: string;
+    smtpPass?: string;
+    smtpSecure?: boolean;
+    host?: string;
+    port?: number;
+    user?: string;
+    pass?: string;
+    apiKey?: string;
+    awsRegion?: string;
+    awsAccessKey?: string;
+    awsSecretKey?: string;
+  };
+  whatsapp: {
+    enabled: boolean;
+    provider: WhatsAppProviderType;
+    fromNumber?: string;
+    phoneNumberId?: string;
+    accessToken?: string;
+    wabaId?: string;
+    accountSid?: string;
+    authToken?: string;
+    twilioAccountSid?: string;
+    twilioAuthToken?: string;
+    twilioFromNumber?: string;
+    baseUrl?: string;
+    infobipBaseUrl?: string;
+    infobipApiKey?: string;
+    apiKey?: string;
   };
 }
 

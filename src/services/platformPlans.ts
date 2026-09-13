@@ -1,4 +1,11 @@
-import { PlatformSubscriptionPlan, PlatformMetrics, PlatformTenantStats, PlatformSubscriber } from '../types/superAdmin';
+import {
+  PlatformSubscriptionPlan,
+  PlatformMetrics,
+  PlatformTenantStats,
+  PlatformSubscriber,
+  SuperAdminGatewaySettings,
+  SuperAdminUser,
+} from '../types/superAdmin';
 
 export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
   {
@@ -13,11 +20,14 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
     badge: 'Free Tier',
     studentCapacity: 15,
     teacherSeats: 1,
+    allowPlatformEmailSharing: false,
+    allowPlatformWhatsAppSharing: false,
     features: [
       'Up to 15 Active Students',
       '1 Teacher Seat',
       'Subdomain (*.ankabit.app)',
       'Basic Page & Form Builder',
+      'Custom Email/WhatsApp Gateway (Dedicated)',
       'Basic Overview KPI Numbers',
     ],
     featureFlags: {
@@ -31,6 +41,8 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
       forumCommunity: false,
       formBuilderResponses: true,
       automationsWorkflows: false,
+      platformEmailProvided: false,
+      platformWhatsAppProvided: false,
     },
   },
   {
@@ -45,12 +57,15 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
     badge: 'Qari Solo',
     studentCapacity: 50,
     teacherSeats: 2,
+    allowPlatformEmailSharing: false,
+    allowPlatformWhatsAppSharing: false,
     features: [
       'Up to 50 Active Students',
       '2 Teacher Seats',
       'Subdomain (*.ankabit.app)',
       'Audio Homework Looper & Recorder',
       'Custom Merchant Gateways (Stripe / Moyasar)',
+      'Dedicated Email/WhatsApp Credentials',
       'Standard Admissions CRM',
       'Community & LMS Forum',
     ],
@@ -65,6 +80,8 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
       forumCommunity: true,
       formBuilderResponses: true,
       automationsWorkflows: false,
+      platformEmailProvided: false,
+      platformWhatsAppProvided: false,
     },
   },
   {
@@ -80,10 +97,13 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
     isPopular: true,
     studentCapacity: 350,
     teacherSeats: 10,
+    allowPlatformEmailSharing: true,
+    allowPlatformWhatsAppSharing: false,
     features: [
       'Up to 350 Active Students',
       '10 Teacher Seats',
       'Custom Domain (e.g. academy.com)',
+      'Platform Shared Email Delivery (Included)',
       'Full Interactive Analytics & Growth Charts',
       'Live WebRTC Classroom & Whiteboard',
       'Multiple Merchant Gateways (Stripe, Moyasar, Flutterwave)',
@@ -101,6 +121,8 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
       forumCommunity: true,
       formBuilderResponses: true,
       automationsWorkflows: true,
+      platformEmailProvided: true,
+      platformWhatsAppProvided: false,
     },
   },
   {
@@ -115,14 +137,17 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
     badge: 'Enterprise VIP',
     studentCapacity: 99999,
     teacherSeats: 999,
+    allowPlatformEmailSharing: true,
+    allowPlatformWhatsAppSharing: true,
     features: [
       'Unlimited Active Students',
       'Unlimited Teacher & Staff Seats',
+      'Platform Shared Email & WhatsApp Included',
+      'Option to Use Dedicated Custom Gateways',
       'Multi-Branch Campuses & Sub-Accounts',
       'Custom Sanad Ijazah Certificate Builder',
       'Dedicated SFU Live Video Bandwidth',
       'Priority 24/7 SLA Support',
-      'Custom CSS / JS & White-label App',
       'Full API Access & Webhooks',
     ],
     featureFlags: {
@@ -136,6 +161,8 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
       forumCommunity: true,
       formBuilderResponses: true,
       automationsWorkflows: true,
+      platformEmailProvided: true,
+      platformWhatsAppProvided: true,
     },
   },
 ];
@@ -317,3 +344,116 @@ export const MOCK_PLATFORM_SUBSCRIBERS: PlatformSubscriber[] = [
     createdAt: '2026-02-10',
   },
 ];
+
+export const DEFAULT_SUPERADMIN_GATEWAYS: SuperAdminGatewaySettings = {
+  email: {
+    enabled: true,
+    provider: 'smtp',
+    fromEmail: 'noreply@ankabit.app',
+    fromName: 'Ankabit Platform & Academy OS',
+    smtpHost: 'smtp.sendgrid.net',
+    smtpPort: 587,
+    smtpUser: 'apikey',
+    smtpPass: 'SG.demo_platform_key',
+    smtpSecure: true,
+    apiKey: '',
+  },
+  whatsapp: {
+    enabled: true,
+    provider: 'cloud_api',
+    fromNumber: '+1 (800) 555-0199',
+    phoneNumberId: '109283746592019',
+    accessToken: 'EAAQ...demo_meta_token',
+    wabaId: 'waba_9918273645',
+  },
+};
+
+const STORAGE_KEY_GATEWAYS = 'ankabit_superadmin_gateways';
+
+export const getStoredSuperAdminGateways = (): SuperAdminGatewaySettings => {
+  if (typeof window === 'undefined') return DEFAULT_SUPERADMIN_GATEWAYS;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_GATEWAYS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.email && parsed.whatsapp) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error reading superadmin gateways:', e);
+  }
+  return DEFAULT_SUPERADMIN_GATEWAYS;
+};
+
+export const saveSuperAdminGateways = (gateways: SuperAdminGatewaySettings) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY_GATEWAYS, JSON.stringify(gateways));
+  } catch (e) {
+    console.warn('Error saving superadmin gateways:', e);
+  }
+};
+
+export const DEFAULT_SUPERADMIN_USERS: SuperAdminUser[] = [
+  {
+    id: 'usr-super-1',
+    name: 'Master Platform Admin',
+    email: 'superadmin@ankabit.app',
+    role: 'superadmin' as const,
+    status: 'active' as const,
+    lastActiveAt: 'Active Now',
+    createdAt: '2025-10-01',
+  },
+  {
+    id: 'usr-super-2',
+    name: 'Sarah Jennings',
+    email: 'sarah.support@ankabit.app',
+    role: 'platform_support' as const,
+    status: 'active' as const,
+    lastActiveAt: '15 mins ago',
+    createdAt: '2026-01-10',
+  },
+  {
+    id: 'usr-super-3',
+    name: 'Karim Mansour',
+    email: 'karim.finance@ankabit.app',
+    role: 'billing_manager' as const,
+    status: 'active' as const,
+    lastActiveAt: '2 hours ago',
+    createdAt: '2026-02-18',
+  },
+  {
+    id: 'usr-super-4',
+    name: 'DevOps Lead Engineer',
+    email: 'infra@ankabit.app',
+    role: 'infrastructure_lead' as const,
+    status: 'active' as const,
+    lastActiveAt: '1 day ago',
+    createdAt: '2025-11-05',
+  },
+];
+
+const STORAGE_KEY_SUPER_USERS = 'ankabit_superadmin_users';
+
+export const getStoredSuperAdminUsers = () => {
+  if (typeof window === 'undefined') return DEFAULT_SUPERADMIN_USERS;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SUPER_USERS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error reading superadmin users:', e);
+  }
+  return DEFAULT_SUPERADMIN_USERS;
+};
+
+export const saveSuperAdminUsers = (users: typeof DEFAULT_SUPERADMIN_USERS) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY_SUPER_USERS, JSON.stringify(users));
+  } catch (e) {
+    console.warn('Error saving superadmin users:', e);
+  }
+};
+

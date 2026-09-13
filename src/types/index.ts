@@ -118,6 +118,44 @@ export interface PreloaderCustomization {
   animationStyle?: 'pulse' | 'orbit' | 'bar' | 'minimal';
 }
 
+export type EmailProviderType = 'smtp' | 'resend' | 'sendgrid' | 'postmark' | 'ses' | 'aws_ses';
+export type WhatsAppProviderType = 'cloud_api' | 'meta_cloud' | 'twilio' | 'infobip';
+
+export interface TenantEmailGatewayConfig {
+  enabled: boolean;
+  provider: EmailProviderType;
+  fromEmail?: string;
+  fromName?: string;
+  // SMTP Configuration
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpSecure?: boolean;
+  // API Key Providers (Resend, SendGrid, Postmark)
+  apiKey?: string;
+  // AWS SES Configuration
+  awsRegion?: string;
+  awsAccessKey?: string;
+  awsSecretKey?: string;
+}
+
+export interface TenantWhatsAppGatewayConfig {
+  enabled: boolean;
+  provider: WhatsAppProviderType;
+  fromNumber?: string;
+  // Meta WhatsApp Cloud API
+  phoneNumberId?: string;
+  accessToken?: string;
+  wabaId?: string;
+  // Twilio WhatsApp
+  accountSid?: string;
+  authToken?: string;
+  // Infobip
+  baseUrl?: string;
+  apiKey?: string;
+}
+
 export interface TenantConfig {
   id: string;
   name: string;
@@ -145,6 +183,8 @@ export interface TenantConfig {
   forms?: FormConfig[];
   pricingPlans: PricingPlan[];
   paymentGateways: PaymentGatewayConfig[];
+  emailGatewayConfig?: TenantEmailGatewayConfig;
+  whatsappGatewayConfig?: TenantWhatsAppGatewayConfig;
   customHtml?: string;
   customCss?: string;
   landingPageSchema?: any;
