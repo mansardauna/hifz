@@ -44,8 +44,9 @@ import {
   Sparkles,
   Zap,
   ArrowUpRight,
-  RefreshCw,
-  Eye,
+  ArrowDownRight,
+  BarChart3,
+  PieChart,
   Sliders,
   ArrowUpDown,
   ArrowUp,
@@ -59,6 +60,13 @@ import {
   UserCheck,
   UserX,
   Copy,
+  Menu,
+  ChevronRight,
+  Globe,
+  Bell,
+  Cpu,
+  Database,
+  Radio,
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
@@ -67,12 +75,17 @@ export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
   const { user, login, logout } = useAuth();
 
-  // Login Gate State (for users navigating directly to /super-admin)
+  // Mobile sidebar toggle
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Login Gate State (for direct navigators)
   const [adminEmailInput, setAdminEmailInput] = useState('superadmin@ankabit.app');
   const [adminPasswordInput, setAdminPasswordInput] = useState('superadmin123');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'plans' | 'academies' | 'gateways' | 'roles' | 'subscribers' | 'system'>('plans');
+  // Active View Navigation
+  const [activeTab, setActiveTab] = useState<'overview' | 'plans' | 'academies' | 'gateways' | 'roles' | 'subscribers' | 'settings'>('overview');
+  
   const [plans, setPlans] = useState<PlatformSubscriptionPlan[]>([]);
   const [tenants, setTenants] = useState<PlatformTenantStats[]>(MOCK_PLATFORM_TENANTS);
   const [subscribers, setSubscribers] = useState<PlatformSubscriber[]>(MOCK_PLATFORM_SUBSCRIBERS);
@@ -136,9 +149,28 @@ export const SuperAdminDashboard: React.FC = () => {
     }, 0);
   const arr = mrr * 12;
 
+  // Chart Data calculations
+  const monthlyRevenueData = [
+    { month: 'Apr', mrr: 1850, students: 420 },
+    { month: 'May', mrr: 2340, students: 580 },
+    { month: 'Jun', mrr: 3100, students: 760 },
+    { month: 'Jul', mrr: 3950, students: 950 },
+    { month: 'Aug', mrr: 4800, students: 1180 },
+    { month: 'Sep', mrr: Math.round(mrr) || 5640, students: totalStudents || 1420 },
+  ];
+  const maxMonthlyMRR = Math.max(...monthlyRevenueData.map((d) => d.mrr), 6000);
+
+  const planDistribution = useMemo(() => {
+    const counts: Record<string, number> = {};
+    tenants.forEach((t) => {
+      counts[t.planName] = (counts[t.planName] || 0) + 1;
+    });
+    return counts;
+  }, [tenants]);
+
   // Plan editing handlers
   const handleOpenEditPlan = (plan: PlatformSubscriptionPlan) => {
-    setEditingPlan(JSON.parse(JSON.stringify(plan))); // Deep clone
+    setEditingPlan(JSON.parse(JSON.stringify(plan)));
     setIsNewPlanMode(false);
     setIsPlanModalOpen(true);
   };
@@ -207,7 +239,6 @@ export const SuperAdminDashboard: React.FC = () => {
       return;
     }
 
-    // Synchronize featureFlags with top-level sharing flags
     const syncedPlan: PlatformSubscriptionPlan = {
       ...editingPlan,
       featureFlags: {
@@ -543,1266 +574,1585 @@ export const SuperAdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
-      {/* Super Admin Top Header */}
-      <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-700/20 text-white">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900">
-                Ankabit LMS <span className="text-emerald-700 font-extrabold text-xs uppercase tracking-widest ml-1">SuperAdmin</span>
-              </h1>
-              <Badge variant="success" className="bg-emerald-50 border-emerald-200 text-emerald-800 text-[10px]">
-                Platform Control
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-500 hidden sm:block">Global Multi-Tenant LMS & Subscription Infrastructure</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col md:flex-row selection:bg-emerald-100 selection:text-emerald-900">
+      {/* MOBILE BACKDROP */}
+      {isMobileSidebarOpen && (
+        <div
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="fixed inset-0 bg-slate-950/60 z-40 md:hidden backdrop-blur-xs transition-opacity"
+        />
+      )}
 
-        {/* Status Indicators & Navigation */}
-        <div className="flex items-center gap-3">
-          <div className="hidden md:flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>PostgreSQL: <strong className="text-emerald-700">Connected</strong></span>
-            <span className="text-slate-300">|</span>
-            <span>LiveKit SFU: <strong className="text-emerald-700">Online</strong></span>
-          </div>
-
-          <button
-            onClick={() => {
-              logout();
-              info('Logged Out', 'SuperAdmin session ended.');
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg transition-colors border border-rose-200 shadow-xs cursor-pointer"
-            title="End SuperAdmin Session"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Lock Console</span>
-          </button>
-
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg transition-colors border border-slate-200 shadow-xs"
-          >
-            <span>Public Home</span>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-          </a>
-        </div>
-      </header>
-
-      {/* Hero Financial & Platform Metrics Bar */}
-      <section className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-6">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 max-w-7xl mx-auto">
-          {/* MRR */}
-          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider">Monthly MRR</span>
-              <div className="p-2 rounded-lg bg-emerald-100 text-emerald-700">
-                <DollarSign className="w-4 h-4" />
+      {/* ========================================================= */}
+      {/* SUPERADMIN LEFT SIDEBAR */}
+      {/* ========================================================= */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex flex-col flex-1 overflow-y-auto">
+          {/* Sidebar Header / Branding */}
+          <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-black text-lg">
+                <ShieldCheck className="w-6 h-6" />
               </div>
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              ${mrr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-            </div>
-            <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold mt-1">
-              <TrendingUp className="w-3 h-3" />
-              <span>+24.5% MoM Growth</span>
-            </div>
-          </div>
-
-          {/* ARR */}
-          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider">Projected ARR</span>
-              <div className="p-2 rounded-lg bg-teal-100 text-teal-700">
-                <Sparkles className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              ${arr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-            </div>
-            <div className="text-[11px] text-slate-500 mt-1 font-medium">Annual Run Rate</div>
-          </div>
-
-          {/* Total Academies */}
-          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider">Total Academies</span>
-              <div className="p-2 rounded-lg bg-sky-100 text-sky-700">
-                <Building2 className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{totalAcademies}</div>
-            <div className="text-[11px] text-emerald-700 font-medium mt-1">4 Active, 1 Trial</div>
-          </div>
-
-          {/* Paying Subscribers */}
-          <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider">Subscribers</span>
-              <div className="p-2 rounded-lg bg-purple-100 text-purple-700">
-                <CreditCard className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{activeSubsCount}</div>
-            <div className="text-[11px] text-purple-700 font-medium mt-1">80% Paid Conversion</div>
-          </div>
-
-          {/* Total Students */}
-          <div className="col-span-2 lg:col-span-1 bg-slate-50/80 border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider">Total Students</span>
-              <div className="p-2 rounded-lg bg-amber-100 text-amber-700">
-                <Users className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              {totalStudents.toLocaleString()}
-            </div>
-            <div className="text-[11px] text-slate-500 mt-1 font-medium">Enrolled Globally</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Workspace Navigation */}
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 flex-1 flex flex-col">
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200 pb-4 mb-6 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('plans')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'plans'
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span>Platform Subscription Plans</span>
-            <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{plans.length}</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('academies')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'academies'
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
-            }`}
-          >
-            <Building2 className="w-4 h-4" />
-            <span>Academies & Tenants Directory</span>
-            <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{tenants.length}</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('gateways')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'gateways'
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
-            }`}
-          >
-            <Sliders className="w-4 h-4" />
-            <span>Platform Gateways & Dispatch</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('roles')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'roles'
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>Roles & Team Access</span>
-            <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{staffUsers.length}</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('subscribers')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'subscribers'
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
-            }`}
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>Subscribers & Billing</span>
-            <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-black">{subscribers.length}</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('system')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === 'system'
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>System & Broadcast</span>
-          </button>
-        </div>
-
-        {/* TAB 1: SUBSCRIPTION PLANS STUDIO */}
-        {activeTab === 'plans' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
               <div>
-                <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                  <span>Subscription Plans & Feature Gate Matrix</span>
-                  <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
-                    Live Broadcast Active
-                  </Badge>
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Add, edit, clone, or delete platform plans. Configure pricing, student caps, feature flags, and email/WhatsApp platform credential sharing rules.
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-white text-base tracking-tight">Ankabit</span>
+                  <span className="text-[10px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    SuperAdmin
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium">Platform Management OS</p>
               </div>
-
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleOpenNewPlan}
-                leftIcon={<Plus className="w-4 h-4" />}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs"
-              >
-                Add Subscription Plan
-              </Button>
             </div>
 
-            {/* Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`relative bg-white rounded-2xl border p-5 flex flex-col justify-between transition-all hover:shadow-md ${
-                    plan.isPopular ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200/90'
-                  }`}
+            <button
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 md:hidden"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="p-3 space-y-1">
+            <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Platform Controls
+            </div>
+
+            {/* Overview */}
+            <button
+              onClick={() => {
+                setActiveTab('overview');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'overview'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <BarChart3 className="w-4 h-4 text-emerald-400" />
+                <span>Overview & Analytics</span>
+              </div>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'overview' ? 'text-white' : 'text-slate-500'}`} />
+            </button>
+
+            {/* Plans */}
+            <button
+              onClick={() => {
+                setActiveTab('plans');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'plans'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Layers className="w-4 h-4 text-emerald-400" />
+                <span>Subscription Plans</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-emerald-400 border border-slate-700">
+                {plans.length}
+              </span>
+            </button>
+
+            {/* Academies */}
+            <button
+              onClick={() => {
+                setActiveTab('academies');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'academies'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Building2 className="w-4 h-4 text-emerald-400" />
+                <span>Academies Directory</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-700">
+                {tenants.length}
+              </span>
+            </button>
+
+            {/* Gateways */}
+            <button
+              onClick={() => {
+                setActiveTab('gateways');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'gateways'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Sliders className="w-4 h-4 text-emerald-400" />
+                <span>Platform Gateways</span>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </button>
+
+            {/* Roles & Team */}
+            <button
+              onClick={() => {
+                setActiveTab('roles');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'roles'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Users className="w-4 h-4 text-emerald-400" />
+                <span>Roles & Staff</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-700">
+                {staffUsers.length}
+              </span>
+            </button>
+
+            {/* Subscribers */}
+            <button
+              onClick={() => {
+                setActiveTab('subscribers');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'subscribers'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-4 h-4 text-emerald-400" />
+                <span>Billing & Subscribers</span>
+              </div>
+              <span className="px-1.5 py-0.5 rounded-md bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-700">
+                {subscribers.length}
+              </span>
+            </button>
+
+            <div className="pt-4 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              System & Maintenance
+            </div>
+
+            {/* Settings & Infrastructure */}
+            <button
+              onClick={() => {
+                setActiveTab('settings');
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                activeTab === 'settings'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Settings className="w-4 h-4 text-emerald-400" />
+                <span>Settings & Status</span>
+              </div>
+              <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'settings' ? 'text-white' : 'text-slate-500'}`} />
+            </button>
+          </nav>
+        </div>
+
+        {/* Sidebar Footer / User Profile */}
+        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+                SA
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-white truncate">SuperAdmin</div>
+                <div className="text-[10px] text-slate-400 truncate">superadmin@ankabit.app</div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                logout();
+                info('Logged Out', 'SuperAdmin session locked.');
+              }}
+              title="Lock & Log Out"
+              className="p-2 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* ========================================================= */}
+      {/* MAIN CONTENT AREA */}
+      {/* ========================================================= */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        {/* Top Navbar */}
+        <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 md:hidden cursor-pointer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500 font-bold hidden sm:inline">Platform</span>
+                <span className="text-xs text-slate-400 hidden sm:inline">/</span>
+                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 capitalize">
+                  {activeTab === 'overview'
+                    ? 'Overview & Performance Analytics'
+                    : activeTab === 'plans'
+                    ? 'Subscription Plans Matrix'
+                    : activeTab === 'academies'
+                    ? 'Tenants & Academies Directory'
+                    : activeTab === 'gateways'
+                    ? 'Platform Shared Gateways'
+                    : activeTab === 'roles'
+                    ? 'SuperAdmin Staff & Access'
+                    : activeTab === 'subscribers'
+                    ? 'Subscribers & Revenue Ledger'
+                    : 'Platform Settings & Server Status'}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          {/* Clean Top Nav Actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition-colors border border-slate-200"
+            >
+              <Globe className="w-3.5 h-3.5 text-slate-400" />
+              <span>Public Site</span>
+              <ExternalLink className="w-3 h-3 text-slate-400 ml-0.5" />
+            </a>
+
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200 cursor-pointer"
+              title="System Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                logout();
+                info('Session Locked', 'Logged out from SuperAdmin console.');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition-colors border border-rose-200 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Lock Console</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Content Container */}
+        <main className="p-4 sm:p-8 space-y-6 flex-1 max-w-7xl mx-auto w-full">
+
+          {/* ========================================================= */}
+          {/* TAB: OVERVIEW & ANALYTICS WITH CLEAN CHARTS */}
+          {/* ========================================================= */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Metric Cards Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {/* Monthly MRR */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider">Monthly MRR</span>
+                    <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
+                      <DollarSign className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-black text-slate-900 tracking-tight">
+                    ${mrr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </div>
+                  <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold mt-1">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>+24.5% MoM Growth</span>
+                  </div>
+                </div>
+
+                {/* Projected ARR */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider">Projected ARR</span>
+                    <div className="p-2 rounded-xl bg-teal-50 text-teal-700 border border-teal-100">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-black text-slate-900 tracking-tight">
+                    ${arr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-1 font-medium">Annual Run Rate</div>
+                </div>
+
+                {/* Total Academies */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider">Total Academies</span>
+                    <div className="p-2 rounded-xl bg-sky-50 text-sky-700 border border-sky-100">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-black text-slate-900 tracking-tight">{totalAcademies}</div>
+                  <div className="text-[11px] text-emerald-700 font-medium mt-1">{activeSubsCount} Active Subscriptions</div>
+                </div>
+
+                {/* Total Students */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider">Global Students</span>
+                    <div className="p-2 rounded-xl bg-amber-50 text-amber-700 border border-amber-100">
+                      <Users className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-black text-slate-900 tracking-tight">
+                    {totalStudents.toLocaleString()}
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-1 font-medium">Active Reciters & Scholars</div>
+                </div>
+              </div>
+
+              {/* Charts Row */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Visual Chart 1: MRR Revenue Growth Trend */}
+                <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-emerald-600" />
+                        <span>Platform MRR Growth & Revenue Velocity</span>
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Historical recurring revenue progression across all paying academies
+                      </p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-extrabold">
+                      6-Month Trend
+                    </span>
+                  </div>
+
+                  {/* Clean SVG Bar / Area Chart */}
+                  <div className="h-48 pt-4 flex items-end justify-between gap-3 sm:gap-6 border-b border-slate-100 pb-2">
+                    {monthlyRevenueData.map((point, idx) => {
+                      const heightPercent = Math.max(15, Math.round((point.mrr / maxMonthlyMRR) * 100));
+                      return (
+                        <div key={idx} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer h-full justify-end">
+                          {/* Tooltip on hover */}
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black bg-slate-900 text-white px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
+                            ${point.mrr.toLocaleString()}
+                          </div>
+                          {/* Bar */}
+                          <div
+                            style={{ height: `${heightPercent}%` }}
+                            className="w-full max-w-[42px] bg-gradient-to-t from-emerald-600 to-teal-400 rounded-t-lg transition-all group-hover:from-emerald-700 group-hover:to-teal-500 shadow-xs"
+                          />
+                          {/* Label */}
+                          <span className="text-[11px] font-bold text-slate-500 group-hover:text-slate-900">
+                            {point.month}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                      <span>Verified Monthly Subscription Billings</span>
+                    </span>
+                    <span className="font-bold text-slate-700">Average Growth: +22% / month</span>
+                  </div>
+                </div>
+
+                {/* Visual Chart 2: Plan Breakdown Donut / Capacity */}
+                <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                      <PieChart className="w-4 h-4 text-teal-600" />
+                      <span>Academy Plan Distribution</span>
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Distribution of active tenants across tiers
+                    </p>
+                  </div>
+
+                  {/* Progress bars representation */}
+                  <div className="space-y-3 py-2">
+                    {plans.map((p) => {
+                      const count = planDistribution[p.name] || 0;
+                      const percentage = totalAcademies > 0 ? Math.round((count / totalAcademies) * 100) : 0;
+                      return (
+                        <div key={p.id} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-slate-700">{p.name}</span>
+                            <span className="text-slate-500 font-mono text-[11px]">
+                              {count} {count === 1 ? 'academy' : 'academies'} ({percentage}%)
+                            </span>
+                          </div>
+                          <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div
+                              style={{ width: `${Math.max(percentage, 5)}%` }}
+                              className={`h-full rounded-full ${
+                                p.isPopular ? 'bg-emerald-600' : 'bg-teal-500'
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
+                    <span className="font-medium">Total Paying Conversion</span>
+                    <strong className="text-emerald-700 font-extrabold">80% Paid Tier</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Jump Directory Preview */}
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-extrabold text-slate-900">Recent Academy Activity</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Institutions operating on the platform</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setActiveTab('academies')}
+                    className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50"
+                  >
+                    View All Academies ({tenants.length})
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {tenants.slice(0, 3).map((t) => (
+                    <div key={t.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="font-extrabold text-slate-900 text-xs">{t.name}</div>
+                          <div className="text-[11px] font-mono text-slate-500">{t.subdomain}.ankabit.app</div>
+                        </div>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          {t.planName}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-slate-600 pt-1 border-t border-slate-200/60">
+                        <span>{t.studentsCount} Students</span>
+                        <span>{t.coursesCount} Courses</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TAB: PLANS STUDIO */}
+          {/* ========================================================= */}
+          {activeTab === 'plans' && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+                <div>
+                  <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <span>Subscription Plans & Feature Gate Matrix</span>
+                    <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                      Live Broadcast
+                    </Badge>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Configure pricing, quotas, feature gates, and email/WhatsApp platform sharing rules.
+                  </p>
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleOpenNewPlan}
+                  leftIcon={<Plus className="w-4 h-4" />}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs"
                 >
-                  {plan.isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest px-3 py-0.5 rounded-full shadow-xs">
-                      Most Popular
+                  Add Plan
+                </Button>
+              </div>
+
+              {/* Plans Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {plans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`relative bg-white rounded-2xl border p-5 flex flex-col justify-between transition-all hover:shadow-md ${
+                      plan.isPopular ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200/90'
+                    }`}
+                  >
+                    {plan.isPopular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest px-3 py-0.5 rounded-full shadow-xs">
+                        Most Popular
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h3 className="font-extrabold text-slate-900 text-base">{plan.name}</h3>
+                          <p className="text-xs text-slate-500 line-clamp-2 mt-1">{plan.description}</p>
+                        </div>
+                        {plan.badge && (
+                          <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold shrink-0">
+                            {plan.badge}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl font-black text-slate-900">${plan.priceMonthly}</span>
+                          <span className="text-xs text-slate-500 font-medium">{plan.period}</span>
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-medium">
+                          ${plan.priceYearly}/yr billed annually
+                        </div>
+                      </div>
+
+                      {/* Capacity and Seats */}
+                      <div className="bg-slate-50 rounded-xl p-2.5 text-xs space-y-1 border border-slate-100">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Student Cap:</span>
+                          <strong className="text-slate-900">{plan.studentCapacity === 999999 ? 'Unlimited' : `${plan.studentCapacity} Students`}</strong>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Teacher Seats:</span>
+                          <strong className="text-slate-900">{plan.teacherSeats === 999 ? 'Unlimited' : `${plan.teacherSeats} Seats`}</strong>
+                        </div>
+                      </div>
+
+                      {/* Credential Sharing Entitlements */}
+                      <div className="space-y-1.5 pt-1">
+                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                          Platform Gateway Sharing
+                        </div>
+                        <div className="flex flex-col gap-1 text-[11px]">
+                          <div className={`flex items-center gap-1.5 font-bold ${plan.allowPlatformEmailSharing ? 'text-emerald-700' : 'text-slate-400'}`}>
+                            {plan.allowPlatformEmailSharing ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <X className="w-3.5 h-3.5 text-slate-400" />}
+                            <span>{plan.allowPlatformEmailSharing ? 'Platform Email Shared' : 'Custom Email Required'}</span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 font-bold ${plan.allowPlatformWhatsAppSharing ? 'text-emerald-700' : 'text-slate-400'}`}>
+                            {plan.allowPlatformWhatsAppSharing ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <X className="w-3.5 h-3.5 text-slate-400" />}
+                            <span>{plan.allowPlatformWhatsAppSharing ? 'Platform WhatsApp Shared' : 'Custom WhatsApp Required'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Feature Bullets */}
+                      <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                          Included Features ({plan.features.length})
+                        </div>
+                        <ul className="space-y-1 text-xs text-slate-600 max-h-32 overflow-y-auto pr-1">
+                          {plan.features.map((feat, idx) => (
+                            <li key={idx} className="flex items-start gap-1.5">
+                              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenEditPlan(plan)}
+                        leftIcon={<Edit3 className="w-3.5 h-3.5" />}
+                        className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50 flex-1 justify-center"
+                      >
+                        Edit
+                      </Button>
+                      <button
+                        onClick={() => handleClonePlan(plan)}
+                        title="Duplicate Plan"
+                        className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 cursor-pointer"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePlan(plan.id)}
+                        title="Delete Plan"
+                        className="p-2 rounded-lg border border-rose-200 text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TAB: ACADEMIES DIRECTORY */}
+          {/* ========================================================= */}
+          {activeTab === 'academies' && (
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search academy by name, subdomain, or admin email..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setAcademyPage(1);
+                    }}
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <select
+                    value={planFilter}
+                    onChange={(e) => {
+                      setPlanFilter(e.target.value);
+                      setAcademyPage(1);
+                    }}
+                    className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600"
+                  >
+                    <option value="all">All Plan Tiers</option>
+                    {plans.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setStatusFilter(e.target.value);
+                      setAcademyPage(1);
+                    }}
+                    className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active Only</option>
+                    <option value="suspended">Suspended Only</option>
+                    <option value="trial">Trialing</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
+                        <th
+                          onClick={() => {
+                            if (academySortField === 'name') {
+                              setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setAcademySortField('name');
+                              setAcademySortDir('asc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Academy Name</span>
+                            {academySortField === 'name' ? (
+                              academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
+                        <th className="py-3.5 px-4">Owner Email</th>
+                        <th className="py-3.5 px-4">Current Plan & Tier</th>
+                        <th
+                          onClick={() => {
+                            if (academySortField === 'studentsCount') {
+                              setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setAcademySortField('studentsCount');
+                              setAcademySortDir('desc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Students</span>
+                            {academySortField === 'studentsCount' ? (
+                              academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
+                        <th className="py-3.5 px-4">Courses</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 text-slate-700">
+                      {paginatedTenants.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="py-12 text-center text-slate-400">
+                            <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                            <p className="font-bold text-sm text-slate-700">No academies found</p>
+                            <p className="text-[11px] text-slate-400">Try adjusting your filters or search keywords.</p>
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedTenants.map((tenant) => (
+                          <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-extrabold text-slate-900">{tenant.name}</div>
+                              <div className="text-slate-400 font-mono text-[11px]">{tenant.subdomain}.ankabit.app</div>
+                            </td>
+                            <td className="py-4 px-4 font-medium text-slate-600">{tenant.ownerEmail}</td>
+                            <td className="py-4 px-4">
+                              <select
+                                value={tenant.planId}
+                                onChange={(e) => handleChangeTenantPlan(tenant.id, e.target.value)}
+                                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200/70 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 cursor-pointer focus:outline-none focus:border-emerald-600"
+                              >
+                                {plans.map((p) => (
+                                  <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="py-4 px-4 font-bold text-slate-900">{tenant.studentsCount}</td>
+                            <td className="py-4 px-4 font-bold text-slate-900">{tenant.coursesCount}</td>
+                            <td className="py-4 px-4">
+                              <span
+                                className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                                  tenant.status === 'active'
+                                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                    : tenant.status === 'trial'
+                                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                                    : 'bg-rose-50 text-rose-800 border border-rose-200'
+                                }`}
+                              >
+                                {tenant.status}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <a
+                                  href={`https://${tenant.subdomain}.ankabit.app`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                                  title="Open Tenant Portal"
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                                <button
+                                  onClick={() => handleToggleTenantStatus(tenant.id)}
+                                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
+                                    tenant.status === 'active'
+                                      ? 'border-rose-200 text-rose-700 hover:bg-rose-50'
+                                      : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
+                                  }`}
+                                >
+                                  {tenant.status === 'active' ? 'Suspend' : 'Activate'}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <DataTablePagination
+                  currentPage={academyPage}
+                  totalPages={totalAcademyPages}
+                  pageSize={academyPageSize}
+                  totalItems={filteredAndSortedTenants.length}
+                  onPageChange={setAcademyPage}
+                  onPageSizeChange={(sz) => {
+                    setAcademyPageSize(sz);
+                    setAcademyPage(1);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TAB: PLATFORM GATEWAYS */}
+          {/* ========================================================= */}
+          {activeTab === 'gateways' && (
+            <div className="space-y-6">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <Sliders className="w-5 h-5 text-emerald-700" />
+                    <span>Platform SuperAdmin Shared Gateways</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Configure the master delivery infrastructure used for all academy plans that have platform email or WhatsApp sharing enabled.
+                  </p>
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSaveGlobalGateways}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                >
+                  Save Master Gateways
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Master Email Gateway */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2 text-emerald-700">
+                      <Mail className="w-5 h-5" />
+                      <h3 className="font-extrabold text-sm text-slate-900">Platform Shared Email Gateway</h3>
+                    </div>
+                    <Badge variant="info" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                      Master Pool
+                    </Badge>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Provider Engine</label>
+                    <select
+                      value={gatewaySettings.email.provider}
+                      onChange={(e) =>
+                        setGatewaySettings({
+                          ...gatewaySettings,
+                          email: { ...gatewaySettings.email, provider: e.target.value as EmailProviderType },
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                    >
+                      <option value="smtp">Custom SMTP Server (Self-Hosted / Relay)</option>
+                      <option value="resend">Resend API</option>
+                      <option value="sendgrid">SendGrid Web API</option>
+                      <option value="postmark">Postmark Server API</option>
+                      <option value="aws_ses">Amazon Simple Email Service (SES)</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Sender Email Address</label>
+                      <input
+                        type="email"
+                        value={gatewaySettings.email.fromEmail}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            email: { ...gatewaySettings.email, fromEmail: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        placeholder="notifications@ankabit.app"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Sender Display Name</label>
+                      <input
+                        type="text"
+                        value={gatewaySettings.email.fromName}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            email: { ...gatewaySettings.email, fromName: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        placeholder="Ankabit Quran Cloud"
+                      />
+                    </div>
+                  </div>
+
+                  {gatewaySettings.email.provider === 'smtp' && (
+                    <div className="space-y-3 pt-2">
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Host</label>
+                          <input
+                            type="text"
+                            value={gatewaySettings.email.smtpHost || gatewaySettings.email.host || ''}
+                            onChange={(e) =>
+                              setGatewaySettings({
+                                ...gatewaySettings,
+                                email: { ...gatewaySettings.email, smtpHost: e.target.value, host: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                            placeholder="smtp.mailgun.org"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Port</label>
+                          <input
+                            type="number"
+                            value={gatewaySettings.email.smtpPort || gatewaySettings.email.port || 587}
+                            onChange={(e) =>
+                              setGatewaySettings({
+                                ...gatewaySettings,
+                                email: { ...gatewaySettings.email, smtpPort: Number(e.target.value), port: Number(e.target.value) },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Username</label>
+                          <input
+                            type="text"
+                            value={gatewaySettings.email.smtpUser || gatewaySettings.email.user || ''}
+                            onChange={(e) =>
+                              setGatewaySettings({
+                                ...gatewaySettings,
+                                email: { ...gatewaySettings.email, smtpUser: e.target.value, user: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Password</label>
+                          <input
+                            type="password"
+                            value={gatewaySettings.email.smtpPass || gatewaySettings.email.pass || ''}
+                            onChange={(e) =>
+                              setGatewaySettings({
+                                ...gatewaySettings,
+                                email: { ...gatewaySettings.email, smtpPass: e.target.value, pass: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                          />
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="font-extrabold text-slate-900 text-base">{plan.name}</h3>
-                        <p className="text-xs text-slate-500 line-clamp-2 mt-1">{plan.description}</p>
-                      </div>
-                      {plan.badge && (
-                        <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold shrink-0">
-                          {plan.badge}
-                        </span>
-                      )}
+                  {gatewaySettings.email.provider !== 'smtp' && (
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Master Provider API Key</label>
+                      <input
+                        type="password"
+                        value={gatewaySettings.email.apiKey || ''}
+                        onChange={(e) =>
+                          setGatewaySettings({
+                            ...gatewaySettings,
+                            email: { ...gatewaySettings.email, apiKey: e.target.value },
+                          })
+                        }
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        placeholder="key_live_..."
+                      />
                     </div>
+                  )}
 
-                    <div className="pt-2 border-t border-slate-100">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-black text-slate-900">${plan.priceMonthly}</span>
-                        <span className="text-xs text-slate-500 font-medium">{plan.period}</span>
-                      </div>
-                      <div className="text-[11px] text-slate-400 font-medium">
-                        ${plan.priceYearly}/yr billed annually
-                      </div>
-                    </div>
-
-                    {/* Capacity and Seats */}
-                    <div className="bg-slate-50 rounded-xl p-2.5 text-xs space-y-1 border border-slate-100">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Student Cap:</span>
-                        <strong className="text-slate-900">{plan.studentCapacity === 999999 ? 'Unlimited' : `${plan.studentCapacity} Students`}</strong>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Teacher Seats:</span>
-                        <strong className="text-slate-900">{plan.teacherSeats === 999 ? 'Unlimited' : `${plan.teacherSeats} Seats`}</strong>
-                      </div>
-                    </div>
-
-                    {/* Credential Sharing Entitlements */}
-                    <div className="space-y-1.5 pt-1">
-                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                        Platform Gateway Sharing
-                      </div>
-                      <div className="flex flex-col gap-1 text-[11px]">
-                        <div className={`flex items-center gap-1.5 font-bold ${plan.allowPlatformEmailSharing ? 'text-emerald-700' : 'text-slate-400'}`}>
-                          {plan.allowPlatformEmailSharing ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <X className="w-3.5 h-3.5 text-slate-400" />}
-                          <span>{plan.allowPlatformEmailSharing ? 'Platform Email Shared' : 'Custom Email Required'}</span>
-                        </div>
-                        <div className={`flex items-center gap-1.5 font-bold ${plan.allowPlatformWhatsAppSharing ? 'text-emerald-700' : 'text-slate-400'}`}>
-                          {plan.allowPlatformWhatsAppSharing ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <X className="w-3.5 h-3.5 text-slate-400" />}
-                          <span>{plan.allowPlatformWhatsAppSharing ? 'Platform WhatsApp Shared' : 'Custom WhatsApp Required'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Feature Bullets */}
-                    <div className="pt-2 border-t border-slate-100 space-y-1.5">
-                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                        Included Features ({plan.features.length})
-                      </div>
-                      <ul className="space-y-1 text-xs text-slate-600 max-h-36 overflow-y-auto pr-1">
-                        {plan.features.map((feat, idx) => (
-                          <li key={idx} className="flex items-start gap-1.5">
-                            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                            <span>{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-1">
+                  {/* Live Test Sender for Email */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={testEmailRecipient}
+                      onChange={(e) => setTestEmailRecipient(e.target.value)}
+                      placeholder="test-recipient@example.com"
+                      className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-600"
+                    />
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleOpenEditPlan(plan)}
-                      leftIcon={<Edit3 className="w-3.5 h-3.5" />}
-                      className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50 flex-1 justify-center"
+                      onClick={() => handleSendPlatformTest('email')}
+                      isLoading={isSendingPlatformTest}
+                      leftIcon={<Send className="w-3.5 h-3.5" />}
+                      className="text-xs font-bold text-emerald-800 border-emerald-200 hover:bg-emerald-50 shrink-0"
                     >
-                      Edit
+                      Send Test Email
                     </Button>
-                    <button
-                      onClick={() => handleClonePlan(plan)}
-                      title="Duplicate Plan"
-                      className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 cursor-pointer"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeletePlan(plan.id)}
-                      title="Delete Plan"
-                      className="p-2 rounded-lg border border-rose-200 text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* TAB 2: ACADEMIES DIRECTORY */}
-        {activeTab === 'academies' && (
-          <div className="space-y-4">
-            {/* Filter & Search Bar */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search academy by name, subdomain, or admin email..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setAcademyPage(1);
-                  }}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
-                />
+                {/* Master WhatsApp Gateway */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2 text-teal-700">
+                      <MessageSquare className="w-5 h-5" />
+                      <h3 className="font-extrabold text-sm text-slate-900">Platform Shared WhatsApp Gateway</h3>
+                    </div>
+                    <Badge variant="info" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
+                      Master Pool
+                    </Badge>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Provider Engine</label>
+                    <select
+                      value={gatewaySettings.whatsapp.provider}
+                      onChange={(e) =>
+                        setGatewaySettings({
+                          ...gatewaySettings,
+                          whatsapp: { ...gatewaySettings.whatsapp, provider: e.target.value as WhatsAppProviderType },
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-teal-600"
+                    >
+                      <option value="cloud_api">Meta Cloud API (Official WhatsApp Business)</option>
+                      <option value="twilio">Twilio Programmable Messaging</option>
+                      <option value="infobip">Infobip WhatsApp Business API</option>
+                    </select>
+                  </div>
+
+                  {(gatewaySettings.whatsapp.provider === 'cloud_api' || gatewaySettings.whatsapp.provider === 'meta_cloud') && (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number ID</label>
+                        <input
+                          type="text"
+                          value={gatewaySettings.whatsapp.phoneNumberId || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, phoneNumberId: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                          placeholder="109849284920482"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Permanent System User Token</label>
+                        <input
+                          type="password"
+                          value={gatewaySettings.whatsapp.accessToken || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, accessToken: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                          placeholder="EAAX..."
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {gatewaySettings.whatsapp.provider === 'twilio' && (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Twilio Account SID</label>
+                        <input
+                          type="text"
+                          value={gatewaySettings.whatsapp.twilioAccountSid || gatewaySettings.whatsapp.accountSid || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, twilioAccountSid: e.target.value, accountSid: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Auth Token</label>
+                          <input
+                            type="password"
+                            value={gatewaySettings.whatsapp.twilioAuthToken || gatewaySettings.whatsapp.authToken || ''}
+                            onChange={(e) =>
+                              setGatewaySettings({
+                                ...gatewaySettings,
+                                whatsapp: { ...gatewaySettings.whatsapp, twilioAuthToken: e.target.value, authToken: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">From Number / Sender</label>
+                          <input
+                            type="text"
+                            value={gatewaySettings.whatsapp.twilioFromNumber || gatewaySettings.whatsapp.fromNumber || ''}
+                            onChange={(e) =>
+                              setGatewaySettings({
+                                ...gatewaySettings,
+                                whatsapp: { ...gatewaySettings.whatsapp, twilioFromNumber: e.target.value, fromNumber: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                            placeholder="whatsapp:+14155238886"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {gatewaySettings.whatsapp.provider === 'infobip' && (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Infobip Base URL</label>
+                        <input
+                          type="text"
+                          value={gatewaySettings.whatsapp.infobipBaseUrl || gatewaySettings.whatsapp.baseUrl || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, infobipBaseUrl: e.target.value, baseUrl: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                          placeholder="https://xyz.api.infobip.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Infobip API Key</label>
+                        <input
+                          type="password"
+                          value={gatewaySettings.whatsapp.infobipApiKey || gatewaySettings.whatsapp.apiKey || ''}
+                          onChange={(e) =>
+                            setGatewaySettings({
+                              ...gatewaySettings,
+                              whatsapp: { ...gatewaySettings.whatsapp, infobipApiKey: e.target.value, apiKey: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Live Test Sender for WhatsApp */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={testWARecipient}
+                      onChange={(e) => setTestWARecipient(e.target.value)}
+                      placeholder="+1234567890"
+                      className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-600"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSendPlatformTest('whatsapp')}
+                      isLoading={isSendingPlatformTest}
+                      leftIcon={<Send className="w-3.5 h-3.5" />}
+                      className="text-xs font-bold text-teal-800 border-teal-200 hover:bg-teal-50 shrink-0"
+                    >
+                      Send Test WhatsApp
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TAB: ROLES & TEAM ACCESS */}
+          {/* ========================================================= */}
+          {activeTab === 'roles' && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+                <div>
+                  <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-emerald-700" />
+                    <span>Platform SuperAdmin Staff & Role Permissions</span>
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Manage master accounts, grant role-based scopes (SuperAdmin, Platform Support, Billing Manager, Infrastructure Lead), and control access.
+                  </p>
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleOpenAddStaff}
+                  leftIcon={<Plus className="w-4 h-4" />}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                >
+                  Add Staff Member
+                </Button>
               </div>
 
-              <div className="flex items-center gap-2">
-                <select
-                  value={planFilter}
-                  onChange={(e) => {
-                    setPlanFilter(e.target.value);
-                    setAcademyPage(1);
-                  }}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600"
-                >
-                  <option value="all">All Plan Tiers</option>
-                  {plans.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-
-                <select
-                  value={statusFilter}
-                  onChange={(e) => {
-                    setStatusFilter(e.target.value);
-                    setAcademyPage(1);
-                  }}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600"
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="active">Active Only</option>
-                  <option value="suspended">Suspended Only</option>
-                  <option value="trial">Trialing</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Table */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
-                      <th
-                        onClick={() => {
-                          if (academySortField === 'name') {
-                            setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
-                          } else {
-                            setAcademySortField('name');
-                            setAcademySortDir('asc');
-                          }
-                        }}
-                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span>Academy Name</span>
-                          {academySortField === 'name' ? (
-                            academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
-                          )}
-                        </div>
-                      </th>
-                      <th className="py-3.5 px-4">Owner Email</th>
-                      <th className="py-3.5 px-4">Current Plan & Tier</th>
-                      <th
-                        onClick={() => {
-                          if (academySortField === 'studentsCount') {
-                            setAcademySortDir(academySortDir === 'asc' ? 'desc' : 'asc');
-                          } else {
-                            setAcademySortField('studentsCount');
-                            setAcademySortDir('desc');
-                          }
-                        }}
-                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span>Students</span>
-                          {academySortField === 'studentsCount' ? (
-                            academySortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
-                          )}
-                        </div>
-                      </th>
-                      <th className="py-3.5 px-4">Courses</th>
-                      <th className="py-3.5 px-4">Status</th>
-                      <th className="py-3.5 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 text-slate-700">
-                    {paginatedTenants.length === 0 ? (
-                      <tr>
-                        <td colSpan={7} className="py-12 text-center text-slate-400">
-                          <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                          <p className="font-bold text-sm text-slate-700">No academies found</p>
-                          <p className="text-[11px] text-slate-400">Try adjusting your filters or search keywords.</p>
-                        </td>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
+                        <th className="py-3.5 px-4">Staff Member</th>
+                        <th className="py-3.5 px-4">Email Address</th>
+                        <th className="py-3.5 px-4">Assigned Role</th>
+                        <th className="py-3.5 px-4">Access Status</th>
+                        <th className="py-3.5 px-4">Created Date</th>
+                        <th className="py-3.5 px-4 text-right">Actions</th>
                       </tr>
-                    ) : (
-                      paginatedTenants.map((tenant) => (
-                        <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
-                          <td className="py-4 px-4">
-                            <div className="font-extrabold text-slate-900">{tenant.name}</div>
-                            <div className="text-slate-400 font-mono text-[11px]">{tenant.subdomain}.ankabit.app</div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 text-slate-700">
+                      {staffUsers.map((member) => (
+                        <tr key={member.id} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="py-4 px-4 font-extrabold text-slate-900 flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                              {member.name.charAt(0)}
+                            </div>
+                            <span>{member.name}</span>
                           </td>
-                          <td className="py-4 px-4 font-medium text-slate-600">{tenant.ownerEmail}</td>
-                          <td className="py-4 px-4">
-                            <select
-                              value={tenant.planId}
-                              onChange={(e) => handleChangeTenantPlan(tenant.id, e.target.value)}
-                              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200/70 border border-slate-200 rounded-lg text-xs font-bold text-slate-800 cursor-pointer focus:outline-none focus:border-emerald-600"
-                            >
-                              {plans.map((p) => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                              ))}
-                            </select>
-                          </td>
-                          <td className="py-4 px-4 font-bold text-slate-900">{tenant.studentsCount}</td>
-                          <td className="py-4 px-4 font-bold text-slate-900">{tenant.coursesCount}</td>
+                          <td className="py-4 px-4 font-medium text-slate-600">{member.email}</td>
                           <td className="py-4 px-4">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
-                                tenant.status === 'active'
-                                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                                  : tenant.status === 'trial'
-                                  ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                                  : 'bg-rose-50 text-rose-800 border border-rose-200'
+                              className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider border ${
+                                member.role === 'superadmin'
+                                  ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                  : member.role === 'platform_support'
+                                  ? 'bg-sky-50 text-sky-800 border-sky-200'
+                                  : member.role === 'billing_manager'
+                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                  : 'bg-amber-50 text-amber-800 border-amber-200'
                               }`}
                             >
-                              {tenant.status}
+                              {member.role.replace('_', ' ')}
                             </span>
                           </td>
+                          <td className="py-4 px-4">
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                member.status === 'active'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  : 'bg-rose-50 text-rose-700 border border-rose-200'
+                              }`}
+                            >
+                              {member.status}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-slate-500">{member.createdAt}</td>
                           <td className="py-4 px-4 text-right">
                             <div className="flex items-center justify-end gap-1.5">
-                              <a
-                                href={`https://${tenant.subdomain}.ankabit.app`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                                title="Open Tenant Portal"
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenEditStaff(member)}
+                                className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50 px-2 py-1"
                               >
-                                <ExternalLink className="w-3.5 h-3.5" />
-                              </a>
+                                Edit
+                              </Button>
                               <button
-                                onClick={() => handleToggleTenantStatus(tenant.id)}
-                                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
-                                  tenant.status === 'active'
+                                onClick={() => handleToggleStaffStatus(member.id)}
+                                className={`px-2 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
+                                  member.status === 'active'
                                     ? 'border-rose-200 text-rose-700 hover:bg-rose-50'
                                     : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
                                 }`}
                               >
-                                {tenant.status === 'active' ? 'Suspend' : 'Activate'}
+                                {member.status === 'active' ? 'Suspend' : 'Activate'}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteStaff(member.id)}
+                                className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer"
+                                title="Delete Member"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-
-              {/* Pagination */}
-              <DataTablePagination
-                currentPage={academyPage}
-                totalPages={totalAcademyPages}
-                pageSize={academyPageSize}
-                totalItems={filteredAndSortedTenants.length}
-                onPageChange={setAcademyPage}
-                onPageSizeChange={(sz) => {
-                  setAcademyPageSize(sz);
-                  setAcademyPage(1);
-                }}
-              />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* TAB 3: PLATFORM GATEWAYS & DISPATCH */}
-        {activeTab === 'gateways' && (
-          <div className="space-y-6">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                  <Sliders className="w-5 h-5 text-emerald-700" />
-                  <span>Platform SuperAdmin Shared Gateways</span>
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Configure the master delivery infrastructure used for all academy plans that have platform email or WhatsApp sharing enabled.
-                </p>
-              </div>
-
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleSaveGlobalGateways}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
-              >
-                Save Master Gateways
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Master Email Gateway */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2 text-emerald-700">
-                    <Mail className="w-5 h-5" />
-                    <h3 className="font-extrabold text-sm text-slate-900">Platform Shared Email Gateway</h3>
-                  </div>
-                  <Badge variant="info" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
-                    Master Pool
-                  </Badge>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Provider Engine</label>
-                  <select
-                    value={gatewaySettings.email.provider}
-                    onChange={(e) =>
-                      setGatewaySettings({
-                        ...gatewaySettings,
-                        email: { ...gatewaySettings.email, provider: e.target.value as EmailProviderType },
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
-                  >
-                    <option value="smtp">Custom SMTP Server (Self-Hosted / Relay)</option>
-                    <option value="resend">Resend API</option>
-                    <option value="sendgrid">SendGrid Web API</option>
-                    <option value="postmark">Postmark Server API</option>
-                    <option value="aws_ses">Amazon Simple Email Service (SES)</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Sender Email Address</label>
-                    <input
-                      type="email"
-                      value={gatewaySettings.email.fromEmail}
-                      onChange={(e) =>
-                        setGatewaySettings({
-                          ...gatewaySettings,
-                          email: { ...gatewaySettings.email, fromEmail: e.target.value },
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                      placeholder="notifications@ankabit.app"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Sender Display Name</label>
-                    <input
-                      type="text"
-                      value={gatewaySettings.email.fromName}
-                      onChange={(e) =>
-                        setGatewaySettings({
-                          ...gatewaySettings,
-                          email: { ...gatewaySettings.email, fromName: e.target.value },
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                      placeholder="Ankabit Quran Cloud"
-                    />
-                  </div>
-                </div>
-
-                {gatewaySettings.email.provider === 'smtp' && (
-                  <div className="space-y-3 pt-2">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="col-span-2">
-                        <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Host</label>
-                        <input
-                          type="text"
-                          value={gatewaySettings.email.host || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              email: { ...gatewaySettings.email, host: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                          placeholder="smtp.mailgun.org"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Port</label>
-                        <input
-                          type="number"
-                          value={gatewaySettings.email.port || 587}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              email: { ...gatewaySettings.email, port: Number(e.target.value) },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Username</label>
-                        <input
-                          type="text"
-                          value={gatewaySettings.email.user || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              email: { ...gatewaySettings.email, user: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">SMTP Password</label>
-                        <input
-                          type="password"
-                          value={gatewaySettings.email.pass || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              email: { ...gatewaySettings.email, pass: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {gatewaySettings.email.provider !== 'smtp' && (
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Master Provider API Key</label>
-                    <input
-                      type="password"
-                      value={gatewaySettings.email.apiKey || ''}
-                      onChange={(e) =>
-                        setGatewaySettings({
-                          ...gatewaySettings,
-                          email: { ...gatewaySettings.email, apiKey: e.target.value },
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                      placeholder="key_live_..."
-                    />
-                  </div>
-                )}
-
-                {/* Live Test Sender for Email */}
-                <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
-                  <input
-                    type="email"
-                    value={testEmailRecipient}
-                    onChange={(e) => setTestEmailRecipient(e.target.value)}
-                    placeholder="test-recipient@example.com"
-                    className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-600"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSendPlatformTest('email')}
-                    isLoading={isSendingPlatformTest}
-                    leftIcon={<Send className="w-3.5 h-3.5" />}
-                    className="text-xs font-bold text-emerald-800 border-emerald-200 hover:bg-emerald-50 shrink-0"
-                  >
-                    Send Test Email
-                  </Button>
-                </div>
-              </div>
-
-              {/* Master WhatsApp Gateway */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2 text-teal-700">
-                    <MessageSquare className="w-5 h-5" />
-                    <h3 className="font-extrabold text-sm text-slate-900">Platform Shared WhatsApp Gateway</h3>
-                  </div>
-                  <Badge variant="info" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
-                    Master Pool
-                  </Badge>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Provider Engine</label>
-                  <select
-                    value={gatewaySettings.whatsapp.provider}
-                    onChange={(e) =>
-                      setGatewaySettings({
-                        ...gatewaySettings,
-                        whatsapp: { ...gatewaySettings.whatsapp, provider: e.target.value as WhatsAppProviderType },
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-teal-600"
-                  >
-                    <option value="meta_cloud">Meta Cloud API (Official WhatsApp Business)</option>
-                    <option value="twilio">Twilio Programmable Messaging</option>
-                    <option value="infobip">Infobip WhatsApp Business API</option>
-                  </select>
-                </div>
-
-                {gatewaySettings.whatsapp.provider === 'meta_cloud' && (
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number ID</label>
-                      <input
-                        type="text"
-                        value={gatewaySettings.whatsapp.phoneNumberId || ''}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            whatsapp: { ...gatewaySettings.whatsapp, phoneNumberId: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                        placeholder="109849284920482"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Permanent System User Token</label>
-                      <input
-                        type="password"
-                        value={gatewaySettings.whatsapp.accessToken || ''}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            whatsapp: { ...gatewaySettings.whatsapp, accessToken: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                        placeholder="EAAX..."
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {gatewaySettings.whatsapp.provider === 'twilio' && (
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Twilio Account SID</label>
-                      <input
-                        type="text"
-                        value={gatewaySettings.whatsapp.twilioAccountSid || ''}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            whatsapp: { ...gatewaySettings.whatsapp, twilioAccountSid: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Auth Token</label>
-                        <input
-                          type="password"
-                          value={gatewaySettings.whatsapp.twilioAuthToken || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, twilioAuthToken: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">From Number / Sender</label>
-                        <input
-                          type="text"
-                          value={gatewaySettings.whatsapp.twilioFromNumber || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, twilioFromNumber: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                          placeholder="whatsapp:+14155238886"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {gatewaySettings.whatsapp.provider === 'infobip' && (
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Infobip Base URL</label>
-                      <input
-                        type="text"
-                        value={gatewaySettings.whatsapp.infobipBaseUrl || ''}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            whatsapp: { ...gatewaySettings.whatsapp, infobipBaseUrl: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                        placeholder="https://xyz.api.infobip.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Infobip API Key</label>
-                      <input
-                        type="password"
-                        value={gatewaySettings.whatsapp.infobipApiKey || ''}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            whatsapp: { ...gatewaySettings.whatsapp, infobipApiKey: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Live Test Sender for WhatsApp */}
-                <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+          {/* ========================================================= */}
+          {/* TAB: SUBSCRIBERS & BILLING */}
+          {/* ========================================================= */}
+          {activeTab === 'subscribers' && (
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
-                    value={testWARecipient}
-                    onChange={(e) => setTestWARecipient(e.target.value)}
-                    placeholder="+1234567890"
-                    className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-600"
+                    placeholder="Search subscribers by academy name, plan, or gateway..."
+                    value={subscriberSearch}
+                    onChange={(e) => {
+                      setSubscriberSearch(e.target.value);
+                      setSubscriberPage(1);
+                    }}
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
                   />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
+                        <th className="py-3.5 px-4">Academy & Tenant</th>
+                        <th className="py-3.5 px-4">Plan Tier</th>
+                        <th
+                          onClick={() => {
+                            if (subscriberSortField === 'amount') {
+                              setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setSubscriberSortField('amount');
+                              setSubscriberSortDir('desc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Billing Amount</span>
+                            {subscriberSortField === 'amount' ? (
+                              subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
+                        <th className="py-3.5 px-4">Payment Gateway</th>
+                        <th
+                          onClick={() => {
+                            if (subscriberSortField === 'currentPeriodEnd') {
+                              setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setSubscriberSortField('currentPeriodEnd');
+                              setSubscriberSortDir('asc');
+                            }
+                          }}
+                          className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span>Next Renewal</span>
+                            {subscriberSortField === 'currentPeriodEnd' ? (
+                              subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-slate-300" />
+                            )}
+                          </div>
+                        </th>
+                        <th className="py-3.5 px-4">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 text-slate-700">
+                      {paginatedSubscribers.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-12 text-center text-slate-400">
+                            <CreditCard className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                            <p className="font-bold text-sm text-slate-700">No subscribers found</p>
+                            <p className="text-[11px] text-slate-400">No records match your search criteria.</p>
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedSubscribers.map((sub) => (
+                          <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="py-4 px-4">
+                              <div className="font-extrabold text-slate-900">{sub.academyName}</div>
+                              <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.ankabit.app</div>
+                            </td>
+                            <td className="py-4 px-4 font-bold text-slate-900">{sub.planName}</td>
+                            <td className="py-4 px-4">
+                              <div className="font-black text-emerald-700 text-sm">
+                                ${sub.amount} <span className="text-xs text-slate-500 font-normal">/ {sub.billingCycle}</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] uppercase font-bold text-slate-700">
+                                {sub.paymentGateway}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4 text-slate-600">{sub.currentPeriodEnd}</td>
+                            <td className="py-4 px-4">
+                              <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-bold">
+                                {sub.status}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <DataTablePagination
+                  currentPage={subscriberPage}
+                  totalPages={totalSubscriberPages}
+                  pageSize={subscriberPageSize}
+                  totalItems={filteredAndSortedSubscribers.length}
+                  onPageChange={setSubscriberPage}
+                  onPageSizeChange={(sz) => {
+                    setSubscriberPageSize(sz);
+                    setSubscriberPage(1);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* TAB: SETTINGS & INFRASTRUCTURE STATUS */}
+          {/* ========================================================= */}
+          {activeTab === 'settings' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Global Broadcast Announcement */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex items-center gap-2 text-emerald-700">
+                  <Zap className="w-5 h-5" />
+                  <h3 className="text-base font-extrabold text-slate-900">Global Platform Announcement Banner</h3>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Broadcast an urgent alert, planned maintenance notice, or feature release banner across all tenant admin dashboards.
+                </p>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Announcement Content</label>
+                  <textarea
+                    rows={3}
+                    value={globalAnnouncement}
+                    onChange={(e) => setGlobalAnnouncement(e.target.value)}
+                    placeholder="e.g. Scheduled database maintenance this Sunday at 02:00 AM UTC. Live classes will not be interrupted."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSendPlatformTest('whatsapp')}
-                    isLoading={isSendingPlatformTest}
-                    leftIcon={<Send className="w-3.5 h-3.5" />}
-                    className="text-xs font-bold text-teal-800 border-teal-200 hover:bg-teal-50 shrink-0"
+                    onClick={() => setGlobalAnnouncement('')}
+                    className="border-slate-300 text-slate-700 hover:bg-slate-50"
                   >
-                    Send Test WhatsApp
+                    Clear
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      setIsSavingAnnouncement(true);
+                      setTimeout(() => {
+                        setIsSavingAnnouncement(false);
+                        success('Broadcast Sent', 'Announcement published across all academy dashboards.');
+                      }, 500);
+                    }}
+                    isLoading={isSavingAnnouncement}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                  >
+                    Publish Broadcast
                   </Button>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
 
-        {/* TAB 4: ROLES & TEAM ACCESS */}
-        {activeTab === 'roles' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div>
-                <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-700" />
-                  <span>Platform SuperAdmin Staff & Role Permissions</span>
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Manage master accounts, grant role-based scopes (SuperAdmin, Platform Support, Billing Manager, Infrastructure Lead), and control access.
+              {/* Platform Health & Infrastructure Monitors (Moved from top nav) */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex items-center gap-2 text-sky-700">
+                  <Server className="w-5 h-5" />
+                  <h3 className="text-base font-extrabold text-slate-900">Infrastructure Health & Clusters</h3>
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Live status monitors for backend microservices, real-time media clusters, database nodes, and caches.
                 </p>
-              </div>
 
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleOpenAddStaff}
-                leftIcon={<Plus className="w-4 h-4" />}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
-              >
-                Add Staff Member
-              </Button>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
-                      <th className="py-3.5 px-4">Staff Member</th>
-                      <th className="py-3.5 px-4">Email Address</th>
-                      <th className="py-3.5 px-4">Assigned Role</th>
-                      <th className="py-3.5 px-4">Access Status</th>
-                      <th className="py-3.5 px-4">Created Date</th>
-                      <th className="py-3.5 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 text-slate-700">
-                    {staffUsers.map((member) => (
-                      <tr key={member.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-4 px-4 font-extrabold text-slate-900 flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
-                            {member.name.charAt(0)}
-                          </div>
-                          <span>{member.name}</span>
-                        </td>
-                        <td className="py-4 px-4 font-medium text-slate-600">{member.email}</td>
-                        <td className="py-4 px-4">
-                          <span
-                            className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider border ${
-                              member.role === 'superadmin'
-                                ? 'bg-purple-50 text-purple-800 border-purple-200'
-                                : member.role === 'platform_support'
-                                ? 'bg-sky-50 text-sky-800 border-sky-200'
-                                : member.role === 'billing_manager'
-                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                                : 'bg-amber-50 text-amber-800 border-amber-200'
-                            }`}
-                          >
-                            {member.role.replace('_', ' ')}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                              member.status === 'active'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : 'bg-rose-50 text-rose-700 border border-rose-200'
-                            }`}
-                          >
-                            {member.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 text-slate-500">{member.createdAt}</td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenEditStaff(member)}
-                              className="text-xs font-bold text-slate-700 border-slate-200 hover:bg-slate-50 px-2 py-1"
-                            >
-                              Edit
-                            </Button>
-                            <button
-                              onClick={() => handleToggleStaffStatus(member.id)}
-                              className={`px-2 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
-                                member.status === 'active'
-                                  ? 'border-rose-200 text-rose-700 hover:bg-rose-50'
-                                  : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
-                              }`}
-                            >
-                              {member.status === 'active' ? 'Suspend' : 'Activate'}
-                            </button>
-                            <button
-                              onClick={() => handleDeleteStaff(member.id)}
-                              className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer"
-                              title="Delete Member"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 5: SUBSCRIBERS & BILLING */}
-        {activeTab === 'subscribers' && (
-          <div className="space-y-4">
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search subscribers by academy name, plan, or gateway..."
-                  value={subscriberSearch}
-                  onChange={(e) => {
-                    setSubscriberSearch(e.target.value);
-                    setSubscriberPage(1);
-                  }}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
-                />
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-200 font-extrabold text-slate-600 uppercase tracking-wider text-[11px]">
-                      <th className="py-3.5 px-4">Academy & Tenant</th>
-                      <th className="py-3.5 px-4">Plan Tier</th>
-                      <th
-                        onClick={() => {
-                          if (subscriberSortField === 'amount') {
-                            setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
-                          } else {
-                            setSubscriberSortField('amount');
-                            setSubscriberSortDir('desc');
-                          }
-                        }}
-                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span>Billing Amount</span>
-                          {subscriberSortField === 'amount' ? (
-                            subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
-                          )}
-                        </div>
-                      </th>
-                      <th className="py-3.5 px-4">Payment Gateway</th>
-                      <th
-                        onClick={() => {
-                          if (subscriberSortField === 'currentPeriodEnd') {
-                            setSubscriberSortDir(subscriberSortDir === 'asc' ? 'desc' : 'asc');
-                          } else {
-                            setSubscriberSortField('currentPeriodEnd');
-                            setSubscriberSortDir('asc');
-                          }
-                        }}
-                        className="py-3.5 px-4 cursor-pointer hover:text-slate-900 transition-colors"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span>Next Renewal</span>
-                          {subscriberSortField === 'currentPeriodEnd' ? (
-                            subscriberSortDir === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <ArrowUpDown className="w-3 h-3 text-slate-300" />
-                          )}
-                        </div>
-                      </th>
-                      <th className="py-3.5 px-4">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200 text-slate-700">
-                    {paginatedSubscribers.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="py-12 text-center text-slate-400">
-                          <CreditCard className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                          <p className="font-bold text-sm text-slate-700">No subscribers found</p>
-                          <p className="text-[11px] text-slate-400">No records match your search criteria.</p>
-                        </td>
-                      </tr>
-                    ) : (
-                      paginatedSubscribers.map((sub) => (
-                        <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
-                          <td className="py-4 px-4">
-                            <div className="font-extrabold text-slate-900">{sub.academyName}</div>
-                            <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.ankabit.app</div>
-                          </td>
-                          <td className="py-4 px-4 font-bold text-slate-900">{sub.planName}</td>
-                          <td className="py-4 px-4">
-                            <div className="font-black text-emerald-700 text-sm">
-                              ${sub.amount} <span className="text-xs text-slate-500 font-normal">/ {sub.billingCycle}</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <span className="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] uppercase font-bold text-slate-700">
-                              {sub.paymentGateway}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4 text-slate-600">{sub.currentPeriodEnd}</td>
-                          <td className="py-4 px-4">
-                            <Badge variant="success" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-bold">
-                              {sub.status}
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Subscribers Pagination Bar */}
-              <DataTablePagination
-                currentPage={subscriberPage}
-                totalPages={totalSubscriberPages}
-                pageSize={subscriberPageSize}
-                totalItems={filteredAndSortedSubscribers.length}
-                onPageChange={setSubscriberPage}
-                onPageSizeChange={(sz) => {
-                  setSubscriberPageSize(sz);
-                  setSubscriberPage(1);
-                }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* TAB 6: SYSTEM & BROADCAST */}
-        {activeTab === 'system' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Global Broadcast Announcement */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 text-emerald-700">
-                <Zap className="w-5 h-5" />
-                <h3 className="text-base font-extrabold text-slate-900">Global Platform Announcement Banner</h3>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Broadcast an urgent alert, planned maintenance notice, or feature release banner across all tenant admin dashboards.
-              </p>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Announcement Content</label>
-                <textarea
-                  rows={3}
-                  value={globalAnnouncement}
-                  onChange={(e) => setGlobalAnnouncement(e.target.value)}
-                  placeholder="e.g. Scheduled database maintenance this Sunday at 02:00 AM UTC. Live classes will not be interrupted."
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setGlobalAnnouncement('')}
-                  className="border-slate-300 text-slate-700 hover:bg-slate-50"
-                >
-                  Clear
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => {
-                    setIsSavingAnnouncement(true);
-                    setTimeout(() => {
-                      setIsSavingAnnouncement(false);
-                      success('Broadcast Sent', 'Announcement published across all academy dashboards.');
-                    }, 500);
-                  }}
-                  isLoading={isSavingAnnouncement}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
-                >
-                  Publish Broadcast
-                </Button>
-              </div>
-            </div>
-
-            {/* Platform Health & Maintenance */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 text-sky-700">
-                <Server className="w-5 h-5" />
-                <h3 className="text-base font-extrabold text-slate-900">Infrastructure Status & Maintenance</h3>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Live status monitors for the PostgreSQL database, LiveKit WebRTC media servers, S3 asset buckets, and Redis pub-sub.
-              </p>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span className="font-bold text-slate-800">Primary Database Cluster</span>
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <Database className="w-4 h-4 text-emerald-600" />
+                      <div>
+                        <div className="font-bold text-slate-800">PostgreSQL Primary Cluster</div>
+                        <div className="text-[10px] text-slate-400">Supabase High-Availability Pool</div>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-700 font-extrabold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Connected (1.1ms)
+                    </span>
                   </div>
-                  <span className="text-[11px] font-mono text-emerald-700 font-extrabold">99.99% Uptime (1.2ms)</span>
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <Radio className="w-4 h-4 text-emerald-600" />
+                      <div>
+                        <div className="font-bold text-slate-800">LiveKit SFU Media Edge</div>
+                        <div className="text-[10px] text-slate-400">WebRTC Video & Voice Rooms</div>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-700 font-extrabold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Online (4 Nodes)
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <Cpu className="w-4 h-4 text-emerald-600" />
+                      <div>
+                        <div className="font-bold text-slate-800">Audio Looper & CDN Storage</div>
+                        <div className="text-[10px] text-slate-400">S3 / Cloudflare Edge Cache</div>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-700 font-extrabold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      Operational
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span className="font-bold text-slate-800">LiveKit SFU WebRTC Servers</span>
-                  </div>
-                  <span className="text-[11px] font-mono text-emerald-700 font-extrabold">4 Nodes Healthy</span>
+                <div className="pt-2 border-t border-slate-100">
+                  <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-slate-800">
+                    <input
+                      type="checkbox"
+                      checked={maintenanceMode}
+                      onChange={(e) => {
+                        setMaintenanceMode(e.target.checked);
+                        if (e.target.checked) {
+                          warning('Emergency Mode Enabled', 'Platform is currently restricted to SuperAdmins only.');
+                        } else {
+                          success('Platform Live', 'Maintenance mode has been disabled.');
+                        }
+                      }}
+                      className="w-4 h-4 text-emerald-600 rounded"
+                    />
+                    <span>Enable Platform Maintenance Mode (Locks tenant logins)</span>
+                  </label>
                 </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span className="font-bold text-slate-800">Audio Looper & CDN Storage</span>
-                  </div>
-                  <span className="text-[11px] font-mono text-emerald-700 font-extrabold">Operational</span>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-slate-800">
-                  <input
-                    type="checkbox"
-                    checked={maintenanceMode}
-                    onChange={(e) => {
-                      setMaintenanceMode(e.target.checked);
-                      if (e.target.checked) {
-                        warning('Emergency Mode Enabled', 'Platform is currently restricted to SuperAdmins only.');
-                      } else {
-                        success('Platform Live', 'Maintenance mode has been disabled.');
-                      }
-                    }}
-                    className="w-4 h-4 text-emerald-600 rounded"
-                  />
-                  <span>Enable Platform Maintenance Mode (Locks tenant logins)</span>
-                </label>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </main>
       </div>
 
       {/* PLAN BUILDER MODAL */}
