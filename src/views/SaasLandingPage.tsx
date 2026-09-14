@@ -170,7 +170,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
           </div>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1 rounded-full border border-slate-200/60 text-xs font-semibold text-slate-600">
+          <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1 rounded-full border border-slate-200/60 text-sm font-medium text-slate-600">
             <a href="#demos" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Live Academies</a>
             <a href="#specialties" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Specialties</a>
             <a href="#architecture" className="px-3.5 py-1.5 rounded-full hover:text-slate-900 hover:bg-white transition-all">Platform Engine</a>
@@ -206,7 +206,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
         {/* Mobile Dropdown Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-lg border-b border-slate-200 px-5 py-5 space-y-4 text-xs font-semibold shadow-lg animate-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden bg-white/95 backdrop-blur-lg border-b border-slate-200 px-5 py-5 space-y-4 text-sm font-medium shadow-lg animate-in slide-in-from-top-2 duration-200">
             <div className="grid grid-cols-2 gap-2">
               <a
                 href="#demos"
@@ -914,7 +914,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                 <form onSubmit={handleContactSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      <label className="block text-sm text-slate-700 mb-1.5">
                         Your Full Name <span className="text-red-500">*</span>
                       </label>
                       <Input
@@ -925,7 +925,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      <label className="block text-sm text-slate-700 mb-1.5">
                         Work / Academy Email <span className="text-red-500">*</span>
                       </label>
                       <Input
@@ -940,7 +940,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      <label className="block text-sm text-slate-700 mb-1.5">
                         Academy / Institution Name
                       </label>
                       <Input
@@ -950,11 +950,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      <label className="block text-sm text-slate-700 mb-1.5">
                         Primary Specialty
                       </label>
                       <select
-                        className="w-full h-10 px-3 text-xs bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-slate-400 transition-colors"
+                        className="w-full h-10 px-3 text-sm bg-white border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-slate-400 transition-colors"
                         value={contactForm.specialty}
                         onChange={(e) => setContactForm({ ...contactForm, specialty: e.target.value })}
                       >
@@ -966,7 +966,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    <label className="block text-sm text-slate-700 mb-1.5">
                       How can we help your institution? <span className="text-red-500">*</span>
                     </label>
                     <textarea

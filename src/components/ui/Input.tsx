@@ -15,7 +15,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-2 font-sans">
         {label && (
-          <label htmlFor={inputId} className="block text-xs sm:text-sm font-semibold text-slate-700">
+          <label htmlFor={inputId} className="block text-sm text-slate-700">
             {label}
           </label>
         )}
@@ -66,7 +66,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full space-y-1.5 font-sans">
         {label && (
-          <label htmlFor={selectId} className="block text-xs sm:text-sm font-semibold text-slate-700">
+          <label htmlFor={selectId} className="block text-sm text-slate-700">
             {label}
           </label>
         )}

@@ -152,7 +152,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
       register(name, email, 'student', activeSubdomain);
       onAddToast({
         type: 'success',
-        title: 'Account Created 🎉',
+        title: 'Account Created',
         message: `Welcome, ${name}! Your student registration is complete.`,
       });
       setIsSubmitting(false);
@@ -189,7 +189,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
         <button
           onClick={() => router.push(isPlatformSignup ? '/' : `/${tenant?.subdomain}`)}
-          className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs cursor-pointer transition-all hover:border-slate-300"
+          className="text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs cursor-pointer transition-all hover:border-slate-300"
         >
           <Globe className="w-3.5 h-3.5 text-slate-400" />
           <span>{isPlatformSignup ? 'Platform Home' : 'Academy Home'}</span>

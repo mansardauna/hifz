@@ -82,6 +82,7 @@ import {
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
+import { AnkabitLogo } from '../brand/AnkabitLogo';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
@@ -623,9 +624,7 @@ export const SuperAdminDashboard: React.FC = () => {
           {/* Sidebar Header / Branding */}
           <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-black text-lg">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
+              <AnkabitLogo size="md" />
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-white text-base tracking-tight">Ankabit</span>

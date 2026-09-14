@@ -45,7 +45,7 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Desktop Center Navigation */}
-        <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600">
+        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
           <button onClick={() => router.push(`/${tenant.subdomain}`)} className="hover:text-slate-900 transition-colors cursor-pointer">
             {isAr ? 'الرئيسية' : 'Home'}
           </button>
@@ -65,7 +65,7 @@ export const Header: React.FC = () => {
           {/* Language Toggle */}
           <button
             onClick={toggleLanguage}
-            className="px-2.5 py-1.5 rounded-md border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1 cursor-pointer"
+            className="px-2.5 py-1.5 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1 cursor-pointer"
             title="Toggle Language"
           >
             <Globe className="w-3.5 h-3.5 text-slate-500" />
@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
                   if (user.role === 'admin') router.push(`/${tenant.subdomain}/admin`);
                   else router.push(`/${tenant.subdomain}/lms`);
                 }}
-                className="px-3 py-1.5 rounded-md bg-emerald-800 text-white text-xs font-bold shadow-sm hover:bg-emerald-900 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-1.5 rounded-md bg-emerald-800 text-white text-sm font-medium shadow-sm hover:bg-emerald-900 transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <LayoutDashboard className="w-3.5 h-3.5 text-amber-300" />
                 <span>{user.role === 'admin' ? 'Admin Portal' : 'Student LMS'}</span>
@@ -98,14 +98,14 @@ export const Header: React.FC = () => {
             <div className="hidden sm:flex items-center gap-2">
               <button
                 onClick={() => router.push(`/${tenant.subdomain}/login`)}
-                className="px-3 py-1.5 rounded-md text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-700 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 {isAr ? 'بوابة الطلاب' : 'Student Portal'}
               </button>
 
               <a
                 href="#admissions"
-                className="px-3.5 py-1.5 rounded-md text-xs font-bold text-white shadow-sm transition-all bg-emerald-700 hover:bg-emerald-800 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-md text-sm font-medium text-white shadow-sm transition-all bg-emerald-700 hover:bg-emerald-800 cursor-pointer"
               >
                 {isAr ? 'قدم الان' : 'Apply Now'}
               </a>
@@ -126,7 +126,7 @@ export const Header: React.FC = () => {
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-3 shadow-md">
-          <nav className="flex flex-col space-y-2 text-xs font-bold font-display text-slate-700">
+          <nav className="flex flex-col space-y-2 text-sm font-medium font-display text-slate-700">
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -168,7 +168,7 @@ export const Header: React.FC = () => {
                     if (user.role === 'admin') router.push(`/${tenant.subdomain}/admin`);
                     else router.push(`/${tenant.subdomain}/lms`);
                   }}
-                  className="w-full py-2 px-3 rounded-md bg-emerald-800 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-2"
+                  className="w-full py-2 px-3 rounded-md bg-emerald-800 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-2"
                 >
                   <LayoutDashboard className="w-4 h-4 text-amber-300" />
                   <span>{user.role === 'admin' ? 'Open Admin CRM' : 'Open Student LMS'}</span>
@@ -178,7 +178,7 @@ export const Header: React.FC = () => {
                     setIsMobileMenuOpen(false);
                     logout();
                   }}
-                  className="w-full py-2 text-center text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-md"
+                  className="w-full py-2 text-center text-sm font-medium text-rose-600 hover:bg-rose-50 rounded-md"
                 >
                   Sign Out
                 </button>
@@ -190,7 +190,7 @@ export const Header: React.FC = () => {
                     setIsMobileMenuOpen(false);
                     router.push(`/${tenant.subdomain}/login`);
                   }}
-                  className="w-full py-2 px-3 rounded-md border border-slate-300 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 rounded-md border border-slate-300 text-slate-800 text-sm font-medium flex items-center justify-center gap-1.5"
                 >
                   <GraduationCap className="w-4 h-4 text-emerald-700" />
                   <span>{isAr ? 'تسجيل دخول الطلاب' : 'Student Portal Login'}</span>
@@ -198,7 +198,7 @@ export const Header: React.FC = () => {
                 <a
                   href="#admissions"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full py-2 px-3 rounded-md bg-emerald-700 text-white text-xs font-bold text-center shadow-sm"
+                  className="w-full py-2 px-3 rounded-md bg-emerald-700 text-white text-sm font-medium text-center shadow-sm"
                 >
                   {isAr ? 'تقديم طلب القبول' : 'Apply for Admission'}
                 </a>
