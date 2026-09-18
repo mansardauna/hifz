@@ -2109,84 +2109,124 @@ export const SuperAdminDashboard: React.FC = () => {
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* PANEL 1: POSTGRESQL & SUPABASE CLUSTER */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* PANEL 1: ENTERPRISE POSTGRESQL CLUSTER */}
                     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div className="flex items-center gap-2 text-emerald-700">
                           <Database className="w-5 h-5" />
-                          <h3 className="font-extrabold text-sm text-slate-900">PostgreSQL Primary Database</h3>
+                          <h3 className="font-extrabold text-sm text-slate-900">PostgreSQL Primary Cluster & Pooler</h3>
                         </div>
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="Connected"></span>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span className="text-[11px] text-emerald-700 font-bold font-mono">1.1ms Latency</span>
+                        </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Database Engine Provider</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Database Cluster Engine</label>
                         <select
                           value={infraSettings.database.provider}
                           onChange={(e) =>
                             setInfraSettings({
                               ...infraSettings,
-                              database: { ...infraSettings.database, provider: e.target.value as 'supabase' | 'custom_postgres' },
+                              database: { ...infraSettings.database, provider: e.target.value as any },
                             })
                           }
                           className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
                         >
-                          <option value="supabase">Supabase High-Availability Postgres</option>
-                          <option value="custom_postgres">Self-Hosted PostgreSQL / AWS RDS / Neon</option>
+                          <option value="postgres_cluster">Dedicated PostgreSQL Enterprise Cluster (PgBouncer)</option>
+                          <option value="aws_rds">Amazon RDS / Aurora PostgreSQL</option>
+                          <option value="digitalocean">DigitalOcean Managed Database Pool</option>
+                          <option value="neon">Neon Serverless Postgres Pooler</option>
+                          <option value="custom_pg">Self-Hosted PostgreSQL / Docker Stack</option>
                         </select>
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Supabase Project API URL</label>
-                        <input
-                          type="text"
-                          value={infraSettings.database.supabaseUrl}
-                          onChange={(e) =>
-                            setInfraSettings({
-                              ...infraSettings,
-                              database: { ...infraSettings.database, supabaseUrl: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                          placeholder="https://xyzdb.supabase.co"
-                        />
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Host Endpoint</label>
+                          <input
+                            type="text"
+                            value={infraSettings.database.host || ''}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, host: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                            placeholder="db-cluster.internal.ankabit.app"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Port</label>
+                          <input
+                            type="number"
+                            value={infraSettings.database.port || 5432}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, port: Number(e.target.value) },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                            placeholder="5432"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Database Name</label>
+                          <input
+                            type="text"
+                            value={infraSettings.database.databaseName || ''}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, databaseName: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                            placeholder="ankabit_lms_production"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Username</label>
+                          <input
+                            type="text"
+                            value={infraSettings.database.username || ''}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, username: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                            placeholder="ankabit_admin"
+                          />
+                        </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Public API Key</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Master Password</label>
                         <input
                           type="password"
-                          value={infraSettings.database.supabaseAnonKey}
+                          value={infraSettings.database.password || ''}
                           onChange={(e) =>
                             setInfraSettings({
                               ...infraSettings,
-                              database: { ...infraSettings.database, supabaseAnonKey: e.target.value },
+                              database: { ...infraSettings.database, password: e.target.value },
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                          placeholder="eyJhbGciOiJIUzI1Ni..."
+                          placeholder="••••••••••••••••"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Supabase Service Role Secret Key</label>
-                        <input
-                          type="password"
-                          value={infraSettings.database.supabaseServiceRoleKey}
-                          onChange={(e) =>
-                            setInfraSettings({
-                              ...infraSettings,
-                              database: { ...infraSettings.database, supabaseServiceRoleKey: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                          placeholder="eyJhbGciOiJIUzI1Ni...service_role"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Direct Pooler Connection String (DATABASE_URL)</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Primary Connection String (DATABASE_URL)</label>
                         <textarea
                           rows={2}
                           value={infraSettings.database.connectionString}
@@ -2197,8 +2237,69 @@ export const SuperAdminDashboard: React.FC = () => {
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                          placeholder="postgresql://postgres:[PASSWORD]@aws-0.pooler.supabase.com:6543/postgres"
+                          placeholder="postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production?sslmode=require&connection_limit=25"
                         />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Direct Unpooled URL (DIRECT_URL for Migrations)</label>
+                        <input
+                          type="text"
+                          value={infraSettings.database.directUrl || ''}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              database: { ...infraSettings.database, directUrl: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
+                          placeholder="postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100">
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Pool Size</label>
+                          <input
+                            type="number"
+                            value={infraSettings.database.poolSize || 25}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, poolSize: Number(e.target.value) },
+                              })
+                            }
+                            className="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Max Overflow</label>
+                          <input
+                            type="number"
+                            value={infraSettings.database.maxOverflow || 10}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, maxOverflow: Number(e.target.value) },
+                              })
+                            }
+                            className="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Timeout (sec)</label>
+                          <input
+                            type="number"
+                            value={infraSettings.database.poolTimeoutSeconds || 30}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                database: { ...infraSettings.database, poolTimeoutSeconds: Number(e.target.value) },
+                              })
+                            }
+                            className="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs font-mono"
+                          />
+                        </div>
                       </div>
 
                       <div className="flex items-center justify-between pt-1">
@@ -2214,13 +2315,143 @@ export const SuperAdminDashboard: React.FC = () => {
                             }
                             className="w-4 h-4 text-emerald-600 rounded"
                           />
-                          <span>Require SSL / TLS Encrypted Pool</span>
+                          <span>Require SSL / TLS Encrypted Pooler</span>
                         </label>
-                        <span className="text-[11px] text-emerald-700 font-bold font-mono">1.1ms Latency</span>
                       </div>
                     </div>
 
-                    {/* PANEL 2: LIVEKIT SFU MEDIA EDGE */}
+                    {/* PANEL 2: REDIS CACHE & SESSION BROKER */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div className="flex items-center gap-2 text-rose-600">
+                          <Cpu className="w-5 h-5" />
+                          <h3 className="font-extrabold text-sm text-slate-900">Redis Cache & Distributed Session Store</h3>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={infraSettings.redis?.enabled ?? true}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                redis: { ...infraSettings.redis, enabled: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Enabled</span>
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="col-span-2">
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Redis Host Endpoint</label>
+                          <input
+                            type="text"
+                            value={infraSettings.redis?.host || ''}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                redis: { ...infraSettings.redis, host: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-rose-600"
+                            placeholder="redis-cache.internal.ankabit.app"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Port</label>
+                          <input
+                            type="number"
+                            value={infraSettings.redis?.port || 6379}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                redis: { ...infraSettings.redis, port: Number(e.target.value) },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-rose-600"
+                            placeholder="6379"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Redis Auth Password</label>
+                        <input
+                          type="password"
+                          value={infraSettings.redis?.password || ''}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              redis: { ...infraSettings.redis, password: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-rose-600"
+                          placeholder="••••••••••••••••"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Redis Connection String (REDIS_URL)</label>
+                        <input
+                          type="text"
+                          value={infraSettings.redis?.connectionString || ''}
+                          onChange={(e) =>
+                            setInfraSettings({
+                              ...infraSettings,
+                              redis: { ...infraSettings.redis, connectionString: e.target.value },
+                            })
+                          }
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-rose-600"
+                          placeholder="rediss://:[PASSWORD]@redis-cache.internal.ankabit.app:6379"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={infraSettings.redis?.tls ?? true}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                redis: { ...infraSettings.redis, tls: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>TLS Encryption (rediss://)</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={infraSettings.redis?.clusterMode ?? false}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                redis: { ...infraSettings.redis, clusterMode: e.target.checked },
+                              })
+                            }
+                            className="w-4 h-4 text-emerald-600 rounded"
+                          />
+                          <span>Cluster Sharding Mode</span>
+                        </label>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 space-y-1">
+                        <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                          <Activity className="w-3.5 h-3.5 text-rose-600" />
+                          <span>Session Caching & Rate Limiter Active</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500">
+                          Accelerates tenant queries, real-time classroom tokens, and DDoS rate-limiting to sub-millisecond speeds.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* PANEL 3: LIVEKIT SFU MEDIA EDGE */}
                     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div className="flex items-center gap-2 text-teal-700">
@@ -2307,12 +2538,12 @@ export const SuperAdminDashboard: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* PANEL 3: AUDIO RECORDER, HOMEWORK & CDN STORAGE */}
+                    {/* PANEL 4: AUDIO RECORDER, HOMEWORK & CDN STORAGE */}
                     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div className="flex items-center gap-2 text-sky-700">
                           <HardDrive className="w-5 h-5" />
-                          <h3 className="font-extrabold text-sm text-slate-900">Audio Looper & Asset CDN</h3>
+                          <h3 className="font-extrabold text-sm text-slate-900">Media Storage & Asset CDN (S3 API)</h3>
                         </div>
                         <Badge variant="info" className="bg-sky-50 text-sky-700 border-sky-200 text-[10px]">
                           Edge Cache Active
@@ -2326,14 +2557,15 @@ export const SuperAdminDashboard: React.FC = () => {
                           onChange={(e) =>
                             setInfraSettings({
                               ...infraSettings,
-                              storage: { ...infraSettings.storage, provider: e.target.value as 's3' | 'cloudflare_r2' | 'supabase_storage' },
+                              storage: { ...infraSettings.storage, provider: e.target.value as any },
                             })
                           }
                           className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-sky-600"
                         >
                           <option value="cloudflare_r2">Cloudflare R2 Object Storage (Zero Egress Fee)</option>
-                          <option value="s3">Amazon S3 Standard Bucket</option>
-                          <option value="supabase_storage">Supabase Built-in S3 Storage</option>
+                          <option value="aws_s3">Amazon AWS S3 Standard / Infrequent Access</option>
+                          <option value="minio">MinIO Self-Hosted S3 Storage</option>
+                          <option value="gcs">Google Cloud Storage (S3 Interoperability)</option>
                         </select>
                       </div>
 
@@ -2350,7 +2582,7 @@ export const SuperAdminDashboard: React.FC = () => {
                               })
                             }
                             className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
-                            placeholder="ankabit-assets"
+                            placeholder="ankabit-quran-assets"
                           />
                         </div>
                         <div>
@@ -2371,35 +2603,52 @@ export const SuperAdminDashboard: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">S3 / R2 Access Key ID</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">S3 Endpoint URL</label>
                         <input
                           type="text"
-                          value={infraSettings.storage.accessKeyId}
+                          value={infraSettings.storage.endpoint}
                           onChange={(e) =>
                             setInfraSettings({
                               ...infraSettings,
-                              storage: { ...infraSettings.storage, accessKeyId: e.target.value },
+                              storage: { ...infraSettings.storage, endpoint: e.target.value },
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
-                          placeholder="r2_access_..."
+                          placeholder="https://<account-id>.r2.cloudflarestorage.com"
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">S3 / R2 Secret Access Key</label>
-                        <input
-                          type="password"
-                          value={infraSettings.storage.secretAccessKey}
-                          onChange={(e) =>
-                            setInfraSettings({
-                              ...infraSettings,
-                              storage: { ...infraSettings.storage, secretAccessKey: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
-                          placeholder="secret_..."
-                        />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">S3 Access Key ID</label>
+                          <input
+                            type="text"
+                            value={infraSettings.storage.accessKeyId}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                storage: { ...infraSettings.storage, accessKeyId: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
+                            placeholder="r2_access_..."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">S3 Secret Key</label>
+                          <input
+                            type="password"
+                            value={infraSettings.storage.secretAccessKey}
+                            onChange={(e) =>
+                              setInfraSettings({
+                                ...infraSettings,
+                                storage: { ...infraSettings.storage, secretAccessKey: e.target.value },
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
+                            placeholder="secret_..."
+                          />
+                        </div>
                       </div>
 
                       <div>

@@ -145,13 +145,27 @@ export interface PlatformMetrics {
 
 export interface SuperAdminInfrastructureSettings {
   database: {
-    provider: 'supabase' | 'custom_postgres';
-    supabaseUrl: string;
-    supabaseAnonKey: string;
-    supabaseServiceRoleKey: string;
+    provider: 'postgres_cluster' | 'aws_rds' | 'digitalocean' | 'neon' | 'custom_pg';
+    host: string;
+    port: number;
+    databaseName: string;
+    username: string;
+    password?: string;
     connectionString: string;
+    directUrl?: string;
     ssl: boolean;
     poolSize: number;
+    maxOverflow: number;
+    poolTimeoutSeconds: number;
+  };
+  redis: {
+    enabled: boolean;
+    host: string;
+    port: number;
+    password?: string;
+    tls: boolean;
+    clusterMode: boolean;
+    connectionString: string;
   };
   livekit: {
     serverUrl: string;
@@ -160,13 +174,14 @@ export interface SuperAdminInfrastructureSettings {
     region: string;
   };
   storage: {
-    provider: 's3' | 'cloudflare_r2' | 'supabase_storage';
+    provider: 'cloudflare_r2' | 'aws_s3' | 'minio' | 'gcs';
     bucketName: string;
     region: string;
     accessKeyId: string;
     secretAccessKey: string;
     endpoint: string;
     publicCdnUrl: string;
+    forcePathStyle: boolean;
   };
 }
 

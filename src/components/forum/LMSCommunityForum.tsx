@@ -130,13 +130,13 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           title: 'PostgreSQL connection pooling strategy in Serverless Prisma edge workers',
           category: 'backend',
           categoryName: 'Cloud Architecture & DBs',
-          content: 'When deploying Prisma client on Vercel Edge Functions, what connection pool size should we configure for Supabase transaction pooler on port 6543?',
+          content: 'When deploying Prisma client on Vercel Edge Functions, what connection pool size should we configure for the PgBouncer transaction pooler on port 6543?',
           authorName: 'David Chen',
           authorRole: 'student',
           createdAt: '1 day ago',
           repliesCount: 2,
           upvotes: 7,
-          tags: ['prisma', 'postgresql', 'supabase'],
+          tags: ['prisma', 'postgresql', 'pgbouncer'],
           replies: [
             {
               id: 'rep-c3',

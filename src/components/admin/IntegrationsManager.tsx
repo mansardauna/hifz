@@ -37,7 +37,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
   const [moyasarSecretKey, setMoyasarSecretKey] = useState<string>('');
 
   // Database state
-  const [databaseUrl, setDatabaseUrl] = useState<string>('postgresql://postgres:password@db.supabase.co:5432/postgres');
+  const [databaseUrl, setDatabaseUrl] = useState<string>('postgresql://ankabit_admin:password@db-cluster.internal.ankabit.app:5432/ankabit_lms_production');
 
   // Resend / Email state
   const [resendApiKey, setResendApiKey] = useState<string>('');
@@ -270,17 +270,17 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
                 <Database className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">PostgreSQL (Supabase / Neon)</h3>
-                <p className="text-[11px] text-slate-500">Persistent multi-tenant SQL database</p>
+                <h3 className="text-sm font-bold text-slate-900">PostgreSQL Enterprise Cluster</h3>
+                <p className="text-[11px] text-slate-500">Persistent multi-tenant SQL database & PgBouncer pooler</p>
               </div>
             </div>
             <a
-              href="https://supabase.com"
+              href="https://www.postgresql.org/docs/"
               target="_blank"
               rel="noreferrer"
               className="text-xs font-semibold text-purple-600 hover:underline flex items-center gap-1"
             >
-              <span>Supabase</span>
+              <span>PostgreSQL Docs</span>
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>

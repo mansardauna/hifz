@@ -461,13 +461,27 @@ export const saveSuperAdminUsers = (users: SuperAdminUser[]) => {
 
 export const DEFAULT_SUPERADMIN_INFRASTRUCTURE: SuperAdminInfrastructureSettings = {
   database: {
-    provider: 'supabase',
-    supabaseUrl: 'https://demo-project.supabase.co',
-    supabaseAnonKey: '',
-    supabaseServiceRoleKey: '',
-    connectionString: 'postgresql://postgres:[PASSWORD]@db.pooler.supabase.com:6543/postgres',
+    provider: 'postgres_cluster',
+    host: 'db-cluster.internal.ankabit.app',
+    port: 5432,
+    databaseName: 'ankabit_lms_production',
+    username: 'ankabit_admin',
+    password: '',
+    connectionString: 'postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production?sslmode=require&connection_limit=25',
+    directUrl: 'postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production',
     ssl: true,
-    poolSize: 20,
+    poolSize: 25,
+    maxOverflow: 10,
+    poolTimeoutSeconds: 30,
+  },
+  redis: {
+    enabled: true,
+    host: 'redis-cache.internal.ankabit.app',
+    port: 6379,
+    password: '',
+    tls: true,
+    clusterMode: false,
+    connectionString: 'rediss://:[PASSWORD]@redis-cache.internal.ankabit.app:6379',
   },
   livekit: {
     serverUrl: 'wss://livekit.ankabit.app',
@@ -483,6 +497,7 @@ export const DEFAULT_SUPERADMIN_INFRASTRUCTURE: SuperAdminInfrastructureSettings
     secretAccessKey: '',
     endpoint: 'https://r2.cloudflarestorage.com',
     publicCdnUrl: 'https://cdn.ankabit.app',
+    forcePathStyle: false,
   },
 };
 

@@ -1,5 +1,5 @@
-// Prisma Multi-Tenant SaaS Schema for Hifz LMS & Educational Platform
-// Supports PostgreSQL (Supabase, Neon, AWS RDS) and SQLite for zero-config local dev
+// Prisma Multi-Tenant SaaS Schema for Ankabit LMS Platform
+// Native PostgreSQL Enterprise Cluster, AWS RDS, Neon, DigitalOcean, and Local DB Support
 
 generator client {
   provider = "prisma-client-js"
