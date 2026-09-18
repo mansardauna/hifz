@@ -603,7 +603,7 @@ export const SuperAdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col md:flex-row selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen md:h-screen md:overflow-hidden bg-slate-50 text-slate-900 font-sans flex flex-col md:flex-row selection:bg-emerald-100 selection:text-emerald-900">
       {/* MOBILE BACKDROP */}
       {isMobileSidebarOpen && (
         <div
@@ -613,16 +613,16 @@ export const SuperAdminDashboard: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* SUPERADMIN LEFT SIDEBAR (No Numbers / Ultra Clean) */}
+      {/* SUPERADMIN LEFT SIDEBAR (Fixed & Independent Scroll) */}
       {/* ========================================================= */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
-          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 w-72 h-[100dvh] md:h-screen bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col justify-between transition-transform duration-300 ease-in-out shrink-0 md:translate-x-0 md:static ${
+          isMobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
       >
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {/* Sidebar Header / Branding */}
-          <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
+          <div className="p-5 border-b border-slate-800/80 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <AnkabitLogo size="md" />
               <div>
@@ -644,8 +644,8 @@ export const SuperAdminDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Navigation Links (Clean - No counter badges) */}
-          <nav className="p-3 space-y-1">
+          {/* Navigation Links (Clean - Independent Scroll) */}
+          <nav className="p-3 space-y-1 overflow-y-auto flex-1 overscroll-contain">
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Platform Controls
             </div>
@@ -790,7 +790,7 @@ export const SuperAdminDashboard: React.FC = () => {
         </div>
 
         {/* Sidebar Footer / User Profile */}
-        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
+        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40 shrink-0">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">
@@ -817,11 +817,11 @@ export const SuperAdminDashboard: React.FC = () => {
       </aside>
 
       {/* ========================================================= */}
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT AREA (Scrolls independently) */}
       {/* ========================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-y-auto overflow-x-hidden">
         {/* Top Navbar */}
-        <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between shadow-xs">
+        <header className="bg-white border-b border-slate-200/90 px-4 sm:px-8 py-3.5 sticky top-0 z-30 flex items-center justify-between shadow-xs shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
