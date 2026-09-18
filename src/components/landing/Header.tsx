@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
-import { Globe, LogOut, LayoutDashboard, Menu, X, GraduationCap, ShieldCheck } from 'lucide-react';
+import { useTranslation } from '../../modules/i18n';
+import { Globe, LogOut, LayoutDashboard, Menu, X, GraduationCap, ChevronDown, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const Header: React.FC = () => {
   const router = useRouter();
-  const { tenant, language, toggleLanguage } = useTenant();
+  const { tenant } = useTenant();
   const { user, isAuthenticated, logout } = useAuth();
+  const { language, setLanguage, supportedLanguages, currentLanguageOption, isRtl, t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState<boolean>(false);
 
-  const isAr = language === 'ar';
+  const isAr = language === 'ar' || isRtl;
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs font-sans">
@@ -37,7 +40,7 @@ export const Header: React.FC = () => {
             )}
             <div>
               <h1 className={`font-bold text-slate-900 text-sm sm:text-base leading-tight font-display ${isAr ? 'font-arabic text-lg' : ''}`}>
-                {isAr ? tenant.nameAr : tenant.name}
+                {isAr ? (tenant.nameAr || tenant.name) : tenant.name}
               </h1>
               <p className="text-[11px] text-emerald-700 font-mono hidden sm:block">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
             </div>
@@ -47,30 +50,56 @@ export const Header: React.FC = () => {
         {/* Desktop Center Navigation */}
         <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
           <button onClick={() => router.push(`/${tenant.subdomain}`)} className="hover:text-slate-900 transition-colors cursor-pointer">
-            {isAr ? 'الرئيسية' : 'Home'}
+            {t('nav.overview')}
           </button>
           <a href="#courses" className="hover:text-slate-900 transition-colors">
-            {isAr ? 'المناهج والدورات' : 'Programs'}
+            {t('nav.curriculum')}
           </a>
           <a href="#pricing" className="hover:text-slate-900 transition-colors">
-            {isAr ? 'الرسوم والاشتراك' : 'Tuition Plans'}
+            {t('nav.pricing')}
           </a>
           <a href="#admissions" className="hover:text-slate-900 transition-colors">
-            {isAr ? 'القبول والتسجيل' : 'Admissions'}
+            {t('nav.crm')}
           </a>
         </nav>
 
-        {/* Right Actions: Language, Auth & Mobile Menu Button */}
+        {/* Right Actions: Multi-Language, Auth & Mobile Menu Button */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Language Toggle */}
-          <button
-            onClick={toggleLanguage}
-            className="px-2.5 py-1.5 rounded-md border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1 cursor-pointer"
-            title="Toggle Language"
-          >
-            <Globe className="w-3.5 h-3.5 text-slate-500" />
-            <span>{isAr ? 'EN' : 'العربية'}</span>
-          </button>
+          {/* Multi-Language Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+              className="px-2.5 py-1.5 rounded-md border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              title="Change Language"
+            >
+              <span>{currentLanguageOption.flag}</span>
+              <span className="font-semibold">{currentLanguageOption.nativeName}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+
+            {isLangMenuOpen && (
+              <div
+                className="absolute right-0 rtl:left-0 rtl:right-auto mt-1.5 w-40 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 animate-in fade-in slide-in-from-top-1"
+                onClick={() => setIsLangMenuOpen(false)}
+              >
+                {supportedLanguages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={`w-full px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition-colors ${
+                      language === lang.code ? 'font-bold text-emerald-700 bg-emerald-50/50' : 'text-slate-700'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{lang.flag}</span>
+                      <span>{lang.nativeName}</span>
+                    </span>
+                    {language === lang.code && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Desktop Auth Controls */}
           {isAuthenticated && user ? (

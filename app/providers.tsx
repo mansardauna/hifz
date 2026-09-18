@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { I18nProvider } from '../src/modules/i18n';
 import { AuthProvider } from '../src/context/AuthContext';
 import { TenantProvider } from '../src/context/TenantContext';
 import { ToastProvider } from '../src/context/ToastContext';
@@ -20,16 +21,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <TenantProvider>
-          <NotificationProvider>
-            <AppPreloader />
-            {children}
-            <PWAInstallToast />
-          </NotificationProvider>
-        </TenantProvider>
-      </AuthProvider>
-    </ToastProvider>
+    <I18nProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <TenantProvider>
+            <NotificationProvider>
+              <AppPreloader />
+              {children}
+              <PWAInstallToast />
+            </NotificationProvider>
+          </TenantProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </I18nProvider>
   );
 }

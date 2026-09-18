@@ -1,10 +1,12 @@
 import React from 'react';
 import { useTenant } from '../../context/TenantContext';
+import { useTranslation } from '../../modules/i18n';
 import { MOCK_TENANTS } from '../../services/mockData';
-import { Globe, Building2, LayoutDashboard, BookOpen, Sparkles, RefreshCw } from 'lucide-react';
+import { Globe, Building2, LayoutDashboard, BookOpen, Sparkles, RefreshCw, ChevronDown } from 'lucide-react';
 
 export const TenantToolbar: React.FC = () => {
-  const { tenant, setTenantBySubdomain, activeRole, setActiveRole, direction, setDirection, language, toggleLanguage } = useTenant();
+  const { tenant, setTenantBySubdomain, activeRole, setActiveRole } = useTenant();
+  const { language, setLanguage, supportedLanguages, currentLanguageOption, isRtl } = useTranslation();
 
   return (
     <header className="bg-slate-900 text-slate-100 border-b border-slate-800 text-xs py-2.5 px-4 sticky top-0 z-40 shadow-md">
@@ -13,7 +15,7 @@ export const TenantToolbar: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 font-bold tracking-tight text-emerald-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>HIFZ SaaS ARCHITECTURE</span>
+            <span>ANKABIT LMS ARCHITECTURE</span>
           </div>
 
           <div className="h-4 w-px bg-slate-800 hidden sm:block" />
@@ -28,7 +30,7 @@ export const TenantToolbar: React.FC = () => {
             >
               {Object.values(MOCK_TENANTS).map((t) => (
                 <option key={t.subdomain} value={t.subdomain}>
-                  {t.name} ({t.subdomain}.hifz.app)
+                  {t.name} ({t.subdomain}.ankabit.app)
                 </option>
               ))}
             </select>
@@ -55,13 +57,13 @@ export const TenantToolbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: View Mode & Direction Toggle */}
+        {/* Right: View Mode & Multi-Language Selector */}
         <div className="flex items-center gap-2">
           {/* Role Navigation */}
           <div className="bg-slate-800 p-0.5 rounded-lg flex items-center border border-slate-700">
             <button
               onClick={() => setActiveRole('landing')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
                 activeRole === 'landing'
                   ? 'bg-emerald-600 text-white shadow'
                   : 'text-slate-300 hover:text-white'
@@ -72,18 +74,18 @@ export const TenantToolbar: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveRole('admin')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
                 activeRole === 'admin'
                   ? 'bg-emerald-600 text-white shadow'
                   : 'text-slate-300 hover:text-white'
               }`}
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
-              <span>Admin CRM & Builder</span>
+              <span>Admin CRM</span>
             </button>
             <button
               onClick={() => setActiveRole('student')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
                 activeRole === 'student'
                   ? 'bg-emerald-600 text-white shadow'
                   : 'text-slate-300 hover:text-white'
@@ -96,15 +98,18 @@ export const TenantToolbar: React.FC = () => {
 
           <div className="h-4 w-px bg-slate-800" />
 
-          {/* LTR / RTL Toggle */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-md border border-slate-700 transition-colors font-medium"
-            title="Toggle Language & Text Direction (RTL / LTR)"
+          {/* Language Selector */}
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as any)}
+            className="bg-slate-800 text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
           >
-            <RefreshCw className="w-3 h-3 text-slate-400" />
-            <span>{language === 'ar' ? 'العربية (RTL)' : 'English (LTR)'}</span>
-          </button>
+            {supportedLanguages.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.flag} {l.nativeName} ({l.direction.toUpperCase()})
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </header>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../modules/i18n';
 import {
   LayoutDashboard,
   Palette,
@@ -79,6 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { tenant } = useTenant();
   const { user, logout } = useAuth();
+  const { t, isRtl } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
   const plan: TenantSubscriptionPlan = tenant.subscriptionPlan || 'free';
@@ -98,36 +100,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Structured, non-redundant navigation sections
   const menuSections: MenuSection[] = [
     {
-      title: 'Academy Hubs',
+      title: isRtl ? 'الأقسام الأساسية' : 'Academy Hubs',
       items: [
-        { id: 'overview', label: 'Overview & Metrics', icon: LayoutDashboard },
-        { id: 'classroom', label: 'Live Virtual Classroom', icon: Video, requiredPlan: 'growth', planLabel: 'Growth' },
-        { id: 'curriculum', label: 'Curriculum & Tracks', icon: BookOpen },
-        { id: 'forum', label: 'Community & Forum', icon: MessageSquare, requiredPlan: 'qari', planLabel: 'Qari' },
+        { id: 'overview', label: t('nav.overview'), icon: LayoutDashboard },
+        { id: 'classroom', label: t('nav.classroom'), icon: Video, requiredPlan: 'growth', planLabel: 'Growth' },
+        { id: 'curriculum', label: t('nav.curriculum'), icon: BookOpen },
+        { id: 'forum', label: t('nav.forum'), icon: MessageSquare, requiredPlan: 'qari', planLabel: 'Qari' },
       ],
     },
     {
-      title: 'Certificates & Comms',
+      title: isRtl ? 'الأسانيد والرسائل' : 'Certificates & Comms',
       items: [
-        { id: 'certificate_studio', label: 'Sanad & Ijazah Studio', icon: Award, requiredPlan: 'enterprise', planLabel: 'Enterprise' },
-        { id: 'notifications_hub', label: 'Email & WhatsApp Alerts', icon: Mail, requiredPlan: 'growth', planLabel: 'Growth' },
+        { id: 'certificate_studio', label: t('nav.certificates'), icon: Award, requiredPlan: 'enterprise', planLabel: 'Enterprise' },
+        { id: 'notifications_hub', label: t('nav.notifications'), icon: Mail, requiredPlan: 'growth', planLabel: 'Growth' },
       ],
     },
     {
-      title: 'Admissions & Funnels',
+      title: isRtl ? 'القبول والتسجيل' : 'Admissions & Funnels',
       items: [
-        { id: 'page_builder', label: 'Visual Page Builder', icon: Layers },
-        { id: 'form_builder', label: 'Admissions Form Builder', icon: FileCheck },
-        { id: 'form_responses', label: 'Form Submissions', icon: FileText },
-        { id: 'crm', label: 'Student Leads CRM', icon: Users },
+        { id: 'page_builder', label: t('nav.pageBuilder'), icon: Layers },
+        { id: 'form_builder', label: t('nav.formBuilder'), icon: FileCheck },
+        { id: 'form_responses', label: t('nav.formResponses'), icon: FileText },
+        { id: 'crm', label: t('nav.crm'), icon: Users },
       ],
     },
     {
-      title: 'Finance & Settings',
+      title: isRtl ? 'المالية والإعدادات' : 'Finance & Settings',
       items: [
-        { id: 'pricing', label: 'Tuition Packages', icon: DollarSign },
-        { id: 'payment_gateways', label: 'Merchant Gateways', icon: CreditCard },
-        { id: 'settings', label: 'Academy Settings & Roles', icon: Settings },
+        { id: 'pricing', label: t('nav.pricing'), icon: DollarSign },
+        { id: 'payment_gateways', label: t('nav.gateways'), icon: CreditCard },
+        { id: 'settings', label: t('nav.settings'), icon: Settings },
       ],
     },
   ];
