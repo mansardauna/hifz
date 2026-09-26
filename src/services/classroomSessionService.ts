@@ -48,6 +48,12 @@ export const classroomSessionService = {
     }
   },
 
+  // Get single session by ID
+  getSessionById(subdomain: string, sessionId: string): LiveClassSession | null {
+    const sessions = this.getSessions(subdomain);
+    return sessions.find((s) => s.id === sessionId) || null;
+  },
+
   // Start or register a new live classroom session (Teacher / Admin Host)
   startSession(session: LiveClassSession): LiveClassSession {
     if (typeof window === 'undefined') return session;

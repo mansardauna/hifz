@@ -1,9 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Ayah } from '../../types';
-import { QuranViewer } from './QuranViewer';
-import { AudioRecitationPlayer } from './AudioRecitationPlayer';
-import { StudentProgress } from './StudentProgress';
-import { UserProfilePage } from '../profile/UserProfilePage';
+import React, { useState, useEffect } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
 import { ToastMessage } from '../ui/Toast';
@@ -12,8 +7,6 @@ import {
   BookOpen,
   Award,
   CreditCard,
-  Sliders,
-  ExternalLink,
   LogOut,
   Menu,
   X,
@@ -29,7 +22,6 @@ import {
   Sparkles,
   Volume2,
   Clock,
-  CheckCircle2,
   Play,
   Copy,
   Check,
@@ -37,35 +29,37 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LiveClassroomHub, StudentLevelTier } from '../classroom/LiveClassroomHub';
-import { CodingSandboxWorkspace } from '../../plugins/coding/CodingSandboxWorkspace';
-import { SchoolCoursesView } from '../../plugins/school/SchoolCoursesView';
-import { SchoolAssignmentsPortal } from '../../plugins/school/SchoolAssignmentsPortal';
-import { SchoolReportCardView } from '../../plugins/school/SchoolReportCardView';
-import { SchoolTimetableView } from '../../plugins/school/SchoolTimetableView';
-import { SchoolLMSWorkspace } from '../../plugins/school/SchoolLMSWorkspace';
 import { NotificationCenter } from '../notifications/NotificationCenter';
 import { LMSCommunityForum } from '../forum/LMSCommunityForum';
 import { TeacherDashboard } from '../teacher/TeacherDashboard';
+import { UserProfilePage } from '../profile/UserProfilePage';
 import { classroomSessionService, LiveClassSession } from '../../services/classroomSessionService';
 
-export type StudentTab =
-  | 'courses'
-  | 'assignments'
-  | 'grades'
-  | 'schedule'
-  | 'quran'
-  | 'classroom'
-  | 'coding'
-  | 'audio'
-  | 'forum'
-  | 'progress'
-  | 'tuition'
-  | 'profile'
-  | 'settings';
+// Modular Imports
+import { detectLmsEngineType, LMS_MODULE_REGISTRY, LmsNavTabConfig } from '../../modules/registry';
+import { QuranLMSContainer } from '../../modules/lms-quran';
+import { SchoolLMSContainer } from '../../modules/lms-school';
+import { CodingLMSContainer } from '../../modules/lms-coding';
+import { StudentTuitionPortal } from '../../modules/common/billing';
 
 interface StudentLMSProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
 }
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  BookOpen: <BookOpen className="w-4 h-4" />,
+  Volume2: <Volume2 className="w-4 h-4" />,
+  Award: <Award className="w-4 h-4" />,
+  Radio: <Radio className="w-4 h-4" />,
+  GraduationCap: <GraduationCap className="w-4 h-4" />,
+  FileCheck2: <FileCheck2 className="w-4 h-4" />,
+  Calendar: <Calendar className="w-4 h-4" />,
+  Code2: <Code2 className="w-4 h-4" />,
+  MessageSquare: <MessageSquare className="w-4 h-4" />,
+  CreditCard: <CreditCard className="w-4 h-4" />,
+  User: <User className="w-4 h-4" />,
+  Settings: <Settings className="w-4 h-4" />
+};
 
 export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const router = useRouter();
@@ -73,443 +67,239 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const { tenant, direction, language, setLanguage } = useTenant();
   const { user, logout } = useAuth();
 
-  // If authenticated user is a Teacher, render dedicated Instructor Dashboard & Grading Studio
+  // If authenticated user is a Teacher, route to dedicated Instructor Studio
   if (user?.role === 'teacher') {
     return <TeacherDashboard onAddToast={onAddToast} />;
   }
 
-  const isCodingNiche = tenant.niche === 'coding' || tenant.niche === 'code_academy' || tenant.subdomain.includes('code');
-  const isSchoolNiche = tenant.niche === 'school' || tenant.subdomain.includes('school') || tenant.subdomain.includes('oxford') || tenant.subdomain.includes('horizon');
-  const isQuranNiche = (!isCodingNiche && !isSchoolNiche) && (!tenant.niche || tenant.niche === 'quran' || tenant.niche === 'madrasat' || tenant.subdomain.includes('furqan') || tenant.subdomain.includes('dar') || tenant.subdomain.includes('hifz'));
+  // Detect active LMS Engine Architecture (Quran, School, or Coding)
+  const engineType = detectLmsEngineType(tenant.niche, tenant.subdomain);
+  const descriptor = LMS_MODULE_REGISTRY[engineType];
 
-  const defaultTab: StudentTab = isCodingNiche ? 'coding' : isSchoolNiche ? 'courses' : 'quran';
-  const [activeTab, setActiveTab] = useState<StudentTab>(defaultTab);
-  const [selectedAyah, setSelectedAyah] = useState<Ayah | null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>(descriptor.defaultTab);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
-
-  // Active Live Classroom Session state
   const [activeLiveSession, setActiveLiveSession] = useState<LiveClassSession | null>(null);
   const [studentLevel, setStudentLevel] = useState<StudentLevelTier>('intermediate');
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   // Auto-detect URL query params (?tab=classroom&roomId=...) on mount
   useEffect(() => {
-    const tabParam = searchParams?.get('tab') as StudentTab | null;
+    const tabParam = searchParams?.get('tab');
     const roomIdParam = searchParams?.get('roomId');
     if (tabParam && tabParam === 'classroom') {
       setActiveTab('classroom');
-    }
-    if (roomIdParam) {
-      setActiveTab('classroom');
+      if (roomIdParam) {
+        const found = classroomSessionService.getSessionById(tenant.subdomain, roomIdParam);
+        if (found) setActiveLiveSession(found);
+      }
     }
   }, [searchParams]);
 
-  // Sync active sessions and listen for real-time teacher broadcasts
+  // Subscribe to Live Sessions broadcast by teachers
   useEffect(() => {
-    const checkActiveSession = () => {
-      const active = classroomSessionService.getActiveSessionForStudent(
-        tenant.subdomain,
-        user?.id,
-        user?.cohort,
-        studentLevel
-      );
-      setActiveLiveSession(active);
-    };
+    const active = classroomSessionService.getActiveSessionForStudent(
+      tenant.subdomain,
+      user?.id,
+      user?.cohort,
+      studentLevel
+    );
+    if (active) setActiveLiveSession(active);
 
-    checkActiveSession();
-
-    // Subscribe to cross-tab BroadcastChannel events
     const unsubscribe = classroomSessionService.subscribe((event) => {
-      if (event.type === 'SESSION_STARTED') {
-        checkActiveSession();
-        onAddToast({
-          type: 'info',
-          title: 'Live Class Started!',
-          message: `${event.session?.teacherName || 'Instructor'} has opened the live virtual room.`
-        });
+      if (event.type === 'SESSION_STARTED' && event.session && event.session.subdomain === tenant.subdomain) {
+        setActiveLiveSession(event.session);
       } else if (event.type === 'SESSION_ENDED') {
-        checkActiveSession();
+        setActiveLiveSession((prev) => (prev && prev.id === event.sessionId ? null : prev));
       }
     });
-
     return () => unsubscribe();
   }, [tenant.subdomain, user?.id, user?.cohort, studentLevel]);
 
-  const toggleLanguage = () => {
-    const nextLang = language === 'ar' ? 'en' : 'ar';
-    setLanguage(nextLang);
+  const handleCopyClassroomInvite = () => {
+    const roomUrl = `${window.location.origin}/${tenant.subdomain}/lms?tab=classroom&roomId=${activeLiveSession?.id || 'live-room'}`;
+    navigator.clipboard.writeText(roomUrl);
+    setCopiedLink(true);
+    onAddToast({
+      type: 'success',
+      title: 'Invite Link Copied',
+      message: 'Classroom link copied to clipboard.'
+    });
+    setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  const handleSelectAyah = (ayah: Ayah) => {
-    setSelectedAyah(ayah);
-  };
-
-  const handleTogglePlay = () => {
-    setIsPlaying((prev) => !prev);
-  };
-
-  // Strictly filter navigation items by tenant niche
-  const studentNavItems = useMemo(() => {
-    const items: { id: StudentTab; label: string; icon: any }[] = [];
-
-    if (isSchoolNiche) {
-      items.push({ id: 'courses', label: 'Academic Courses & Syllabi', icon: BookOpen });
-      items.push({ id: 'assignments', label: 'Homework & Drop-box', icon: FileCheck2 });
-      items.push({ id: 'grades', label: 'Report Card & GPA (3.94)', icon: Award });
-      items.push({ id: 'schedule', label: 'Timetable & Attendance', icon: Calendar });
-      items.push({ id: 'classroom', label: 'Live Virtual Classroom', icon: Radio });
-      items.push({ id: 'forum', label: 'Student Study Hall Forum', icon: MessageSquare });
-      items.push({ id: 'tuition', label: 'Tuition & School Fees', icon: CreditCard });
-    } else if (isCodingNiche) {
-      items.push({ id: 'coding', label: 'Coding Sandbox Lab', icon: Code2 });
-      items.push({ id: 'classroom', label: 'Live Video Classroom', icon: Radio });
-      items.push({ id: 'forum', label: 'Developer Community', icon: MessageSquare });
-      items.push({ id: 'progress', label: 'Curriculum & Progress', icon: Award });
-      items.push({ id: 'tuition', label: 'Tuition & Invoices', icon: CreditCard });
-    } else {
-      // Madrasat / Quran Niche
-      items.push({ id: 'quran', label: 'Quran Reader & Tajweed', icon: BookOpen });
-      items.push({ id: 'audio', label: 'Audio Looper & Recorder', icon: Sliders });
-      items.push({ id: 'classroom', label: 'Live Virtual Classroom', icon: Radio });
-      items.push({ id: 'forum', label: 'Halaqah Community Forum', icon: MessageSquare });
-      items.push({ id: 'progress', label: 'Memorization Milestones', icon: Award });
-      items.push({ id: 'tuition', label: 'Tuition & Invoices', icon: CreditCard });
-    }
-
-    items.push({ id: 'profile', label: isSchoolNiche ? 'Student & Guardian Profile' : 'My Student Profile', icon: User });
-    items.push({ id: 'settings', label: 'Account & Security', icon: Settings });
-
-    return items;
-  }, [isCodingNiche, isSchoolNiche, isQuranNiche]);
-
-  const handleStudentNavClick = (id: StudentTab) => {
-    setActiveTab(id);
-    setIsMobileNavOpen(false);
-  };
+  const isRTL = direction === 'rtl' || language === 'ar';
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-slate-100 font-sans text-slate-900" dir={direction}>
-      {/* Mobile Drawer Backdrop */}
-      {isMobileNavOpen && (
-        <div
-          onClick={() => setIsMobileNavOpen(false)}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
-          aria-hidden="true"
-        />
-      )}
+    <div
+      className={`min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-white ${
+        isRTL ? 'rtl' : 'ltr'
+      }`}
+    >
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+            className="p-2 -ml-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 lg:hidden"
+            aria-label="Toggle Navigation"
+          >
+            {isMobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
 
-      {/* 1. Student Left Sidebar (Fixed & Non-Scrolling) */}
-      <aside
-        style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
-        className={`w-64 sm:w-72 max-w-[85vw] h-[100dvh] lg:h-full flex flex-col justify-between text-slate-200 border-r border-slate-800 shrink-0 select-none z-50 transition-transform duration-300 ${
-          isMobileNavOpen
-            ? 'fixed inset-y-0 left-0 shadow-2xl translate-x-0'
-            : 'hidden lg:flex'
-        }`}
-      >
-        <div className="flex flex-col h-full min-h-0">
-          {/* Academy Brand Header */}
-          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-black/20">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                {isSchoolNiche ? (
-                  <GraduationCap className="w-4.5 h-4.5 text-purple-400" />
-                ) : isCodingNiche ? (
-                  <Code2 className="w-4.5 h-4.5 text-blue-400" />
-                ) : (
-                  <BookOpen className="w-4.5 h-4.5 text-emerald-400" />
-                )}
+          <div className="flex items-center gap-3">
+            {tenant.logoUrl ? (
+              <img
+                src={tenant.logoUrl}
+                alt={tenant.name}
+                className="w-8 h-8 rounded-xl object-contain bg-slate-800 p-1"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center font-black text-white text-sm shadow-md">
+                {tenant.name.slice(0, 2).toUpperCase()}
               </div>
-              <div className="min-w-0">
-                <h2 className="font-bold text-xs sm:text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 font-mono truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
-              </div>
-            </div>
-
-            {isMobileNavOpen && (
-              <button
-                onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
-                aria-label="Close navigation"
-              >
-                <X className="w-5 h-5" />
-              </button>
             )}
-          </div>
-
-          {/* Student Profile Snapshot in Sidebar */}
-          <div className="p-3.5 mx-3.5 my-3.5 bg-slate-800/60 rounded-2xl border border-slate-700/60">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                {user?.name?.charAt(0).toUpperCase() || 'S'}
-              </div>
-              <div className="min-w-0">
-                <p className="font-bold text-xs sm:text-sm text-white truncate">{user?.name || user?.email || 'Enrolled Student'}</p>
-                <Badge variant="success">
-                  {isSchoolNiche ? 'Enrolled Student' : isCodingNiche ? 'Active Developer' : 'Active Learner'}
-                </Badge>
-              </div>
+            <div>
+              <h1 className="text-sm font-black tracking-tight text-white leading-tight">
+                {isRTL && tenant.nameAr ? tenant.nameAr : tenant.name}
+              </h1>
+              <p className="text-[11px] text-slate-400 font-medium">
+                {descriptor.displayName}
+              </p>
             </div>
           </div>
-
-          {/* Navigation Links with Generous Touch Targets */}
-          <nav className="flex-1 overflow-y-auto px-3.5 space-y-1.5 min-h-0 py-1">
-            {studentNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleStudentNavClick(item.id)}
-                  className={`w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none ${
-                    isActive
-                      ? 'bg-[var(--color-primary,#6b21a8)] text-white shadow-sm font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                  }`}
-                >
-                  <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                  <span className="truncate">{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
         </div>
 
-        {/* Bottom Sidebar Action Controls */}
-        <div className="p-3.5 border-t border-slate-800 space-y-2 shrink-0 bg-slate-950/40">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full text-slate-300 bg-slate-800/60 border-slate-700 hover:bg-slate-800 py-2.5 text-xs"
-            onClick={() => router.push(`/${tenant.subdomain}`)}
-            rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
+        {/* Global Action Bar */}
+        <div className="flex items-center gap-2.5">
+          {/* Notification Center */}
+          <NotificationCenter />
+
+          {/* Language Switcher */}
+          <button
+            type="button"
+            onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
           >
-            Live Academy Site
-          </Button>
+            <Globe className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{language === 'ar' ? 'English' : 'العربية'}</span>
+          </button>
+
+          {/* User Profile Capsule */}
+          <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-800">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-bold text-xs shadow-inner">
+              {user?.name ? user.name.slice(0, 2).toUpperCase() : 'ST'}
+            </div>
+            <div className="text-left hidden md:block">
+              <p className="text-xs font-bold text-slate-200 line-clamp-1">{user?.name || 'Student'}</p>
+              <p className="text-[10px] text-emerald-400 font-medium capitalize">{user?.role || 'Enrolled Student'}</p>
+            </div>
+          </div>
 
           <button
+            type="button"
             onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-red-400 hover:bg-red-950/40 rounded-xl transition-colors cursor-pointer"
+            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-xl transition-colors"
+            title="Sign Out"
           >
-            <LogOut className="w-4 h-4 shrink-0" />
-            <span>Sign Out</span>
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
-      </aside>
+      </header>
 
-      {/* 2. Main LMS Content Area (Scrolls Independently) */}
-      <div className="flex-1 h-full overflow-y-auto flex flex-col min-w-0 bg-slate-50">
-        {/* Top Header Bar */}
-        <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-30 shadow-xs">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <button
-              onClick={() => setIsMobileNavOpen(true)}
-              className="lg:hidden p-2 sm:p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer shrink-0"
-              aria-label="Open Student Sidebar"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-
-            {/* Desktop Breadcrumb */}
-            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span className="font-semibold text-slate-800">{tenant.name}</span>
-              <span className="text-slate-300">/</span>
-              <span className="text-slate-900 font-bold capitalize text-sm">
-                {activeTab === 'courses' && 'Academic Courses & Interactive Syllabi'}
-                {activeTab === 'assignments' && 'Homework Drop-box & Rubric Evaluations'}
-                {activeTab === 'grades' && 'Official Gradebook & Cumulative GPA (3.94)'}
-                {activeTab === 'schedule' && 'Weekly Class Timetable & Attendance'}
-                {activeTab === 'quran' && 'Medina Mushaf Reader & Tajweed'}
-                {activeTab === 'classroom' && 'Live Virtual Classroom'}
-                {activeTab === 'coding' && 'Coding Sandbox Lab & Challenges'}
-                {activeTab === 'audio' && 'Recitation Looper & Audio Homework'}
-                {activeTab === 'progress' && 'Milestones & Faculty Feedback'}
-                {activeTab === 'forum' && (isSchoolNiche ? 'Student Study Hall & Peer Discussions' : isCodingNiche ? 'Developer Community' : 'Halaqah Community')}
-                {activeTab === 'tuition' && (isSchoolNiche ? 'School Tuition & Fee Statements' : 'Student Tuition & Invoices')}
-                {activeTab === 'profile' && (isSchoolNiche ? 'Student & Guardian Profile' : 'Student Profile')}
-                {activeTab === 'settings' && 'Account & Security Settings'}
+      {/* Main App Layout */}
+      <div className="flex-1 flex">
+        {/* Navigation Sidebar */}
+        <aside
+          className={`fixed lg:sticky top-[57px] z-30 h-[calc(100vh-57px)] w-64 bg-slate-900/95 lg:bg-slate-900/50 border-r border-slate-800/80 p-4 flex flex-col justify-between transition-transform duration-200 ${
+            isMobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+        >
+          <div className="space-y-6">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 px-3">
+                Learning Modules
               </span>
-            </div>
+              <nav className="mt-2 space-y-1">
+                {descriptor.tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setIsMobileNavOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        isActive
+                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/40'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={isActive ? 'text-white' : 'text-slate-400'}>
+                          {ICON_MAP[tab.iconName] || <BookOpen className="w-4 h-4" />}
+                        </span>
+                        <span>{isRTL ? tab.labelAr : tab.label}</span>
+                      </div>
 
-            {/* Mobile Title */}
-            <div className="md:hidden flex items-center gap-1.5 min-w-0">
-              <span className="text-xs font-extrabold text-slate-900 truncate capitalize">
-                {activeTab === 'courses'
-                  ? 'Courses'
-                  : activeTab === 'assignments'
-                  ? 'Assignments'
-                  : activeTab === 'grades'
-                  ? 'Report Card'
-                  : activeTab === 'schedule'
-                  ? 'Timetable'
-                  : activeTab === 'quran'
-                  ? 'Mushaf Reader'
-                  : activeTab === 'classroom'
-                  ? 'Classroom'
-                  : activeTab === 'coding'
-                  ? 'Code Lab'
-                  : activeTab}
-              </span>
+                      {tab.isCommon && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                          Shared
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Language Switcher */}
-            <button
-              type="button"
-              onClick={toggleLanguage}
-              className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer text-slate-700 select-none min-h-[36px]"
-              title="Switch Language"
-            >
-              <Globe className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-              <span className="hidden sm:inline">{language === 'ar' ? 'English' : 'العربية'}</span>
-              <span className="sm:hidden">{language === 'ar' ? 'EN' : 'عر'}</span>
-            </button>
-
-            <NotificationCenter onNavigateTab={(tab) => setActiveTab(tab as StudentTab)} />
-
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setActiveTab('classroom')}
-              leftIcon={<Radio className="w-3.5 h-3.5" />}
-              className="px-2.5 sm:px-3.5"
-            >
-              <span className="hidden sm:inline">Join Live Class</span>
-              <span className="sm:hidden">Join</span>
-            </Button>
+          {/* Quick Support Badge */}
+          <div className="p-3 bg-slate-800/50 border border-slate-800 rounded-2xl text-[11px] text-slate-400 flex items-center justify-between">
+            <span className="font-medium">Version 2.4 Modular</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           </div>
-        </header>
+        </aside>
 
-        {/* Floating Active Live Class Alert Ribbon */}
-        {activeLiveSession && activeTab !== 'classroom' && (
-          <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white px-4 py-2.5 shadow-md flex items-center justify-between gap-3 text-xs shrink-0 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse shrink-0" />
-              <div className="min-w-0">
-                <span className="font-extrabold uppercase tracking-wider text-[10px] bg-white/20 px-1.5 py-0.5 rounded mr-2">
-                  Live Now
-                </span>
-                <span className="font-bold truncate">
-                  {activeLiveSession.teacherName} started <span className="underline">{activeLiveSession.title}</span>
-                </span>
-                {activeLiveSession.targetCohort && (
-                  <span className="opacity-80 ml-2 hidden sm:inline font-mono">
-                    ({activeLiveSession.targetCohort})
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <button
-              onClick={() => setActiveTab('classroom')}
-              className="px-3 py-1 bg-white text-emerald-950 hover:bg-emerald-50 rounded-xl font-extrabold text-xs transition-transform active:scale-95 shadow-sm cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5"
-            >
-              <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-              <span>Auto-Join Class &rarr;</span>
-            </button>
-          </div>
-        )}
-
-        {/* Tab Viewport Main Content */}
-        <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
-          {/* School Niche Specific Views */}
-          {activeTab === 'courses' && isSchoolNiche && (
-            <SchoolCoursesView
-              onNavigateToTab={(tab) => setActiveTab(tab as StudentTab)}
-            />
-          )}
-
-          {activeTab === 'assignments' && isSchoolNiche && (
-            <SchoolAssignmentsPortal onAddToast={onAddToast} />
-          )}
-
-          {activeTab === 'grades' && isSchoolNiche && (
-            <SchoolReportCardView />
-          )}
-
-          {activeTab === 'schedule' && isSchoolNiche && (
-            <SchoolTimetableView />
-          )}
-
-          {/* Live Virtual Classroom (Auto-Connects to Active Session or Renders Waiting Lobby) */}
+        {/* Dynamic Content Workspace */}
+        <main className="flex-1 p-4 lg:p-8 max-w-[1600px] mx-auto w-full overflow-y-auto">
+          {/* 1. Common Live Classroom Hub (WebRTC Video + Interactive Whiteboard + Chat + Live Dock) */}
           {activeTab === 'classroom' && (
-            <div className="h-[calc(100vh-140px)] min-h-[600px] rounded-2xl overflow-hidden border border-slate-200 shadow-md">
+            <div className="space-y-6">
               {activeLiveSession ? (
                 <LiveClassroomHub
                   roomTitle={activeLiveSession.title}
-                  courseTitle={activeLiveSession.courseTitle || `${tenant.name} Virtual Hall`}
+                  courseTitle={activeLiveSession.courseTitle}
                   userRole="student"
-                  currentUserName={user?.name || 'Enrolled Student'}
-                  niche={isCodingNiche ? 'coding' : isSchoolNiche ? 'school' : 'quran'}
-                  studentLevel={activeLiveSession.targetLevel !== 'all' ? activeLiveSession.targetLevel : studentLevel}
-                  onLeaveRoom={() => setActiveTab(isCodingNiche ? 'coding' : isSchoolNiche ? 'courses' : 'quran')}
-                  renderWorkspacePlugin={
-                    isSchoolNiche ? (
-                      <SchoolLMSWorkspace onAddToast={onAddToast} />
-                    ) : isCodingNiche ? (
-                      <CodingSandboxWorkspace />
-                    ) : (
-                      <QuranViewer
-                        activeAyahNumber={selectedAyah?.number || null}
-                        onSelectAyah={handleSelectAyah}
-                        isPlaying={isPlaying}
-                        onTogglePlay={handleTogglePlay}
-                      />
-                    )
-                  }
+                  currentUserName={user?.name || 'Student'}
+                  niche={tenant.niche}
+                  studentLevel={studentLevel}
+                  onLeaveRoom={() => setActiveLiveSession(null)}
                 />
               ) : (
-                /* Virtual Classroom Waiting Lobby */
-                <div className="h-full bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center space-y-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700 shadow-2xl">
-                      <Radio className="w-10 h-10 text-emerald-400 animate-pulse" />
-                    </div>
-                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-5 w-5 bg-emerald-500"></span>
-                    </span>
+                <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+                    <Radio className="w-8 h-8 animate-pulse" />
                   </div>
-
-                  <div className="space-y-2 max-w-md">
-                    <h3 className="text-xl font-black text-white tracking-tight">Virtual Classroom Waiting Lobby</h3>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                      Awaiting instructor (<strong className="text-slate-200">{isSchoolNiche ? 'Faculty Instructor' : isCodingNiche ? 'Lead Mentor' : 'Ustadh / Instructor'}</strong>) to start the live class session for your account.
+                  <div>
+                    <h3 className="text-lg font-bold text-white">Live Classroom Portal</h3>
+                    <p className="text-xs text-slate-400 mt-1">
+                      No active live halaqah or lecture broadcast detected. You can launch a standby session or wait for the teacher.
                     </p>
                   </div>
 
-                  {/* Student Account Binding Info */}
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700/80 max-w-md w-full text-left space-y-2.5">
-                    <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
-                      <span className="text-slate-400">Authenticated Student:</span>
-                      <span className="font-bold text-white font-mono">{user?.name || user?.email || 'Enrolled Student'}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
-                      <span className="text-slate-400">Class / Cohort:</span>
-                      <span className="font-bold text-emerald-400 font-mono">{user?.cohort || 'Assigned Cohort'}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400">Classroom Signal:</span>
-                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-400">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        Listening for Host...
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-2">
+                  <div className="flex items-center justify-center gap-3 pt-2">
                     <Button
                       variant="primary"
                       onClick={() => {
-                        // Enter standby room
                         const mockSession: LiveClassSession = {
                           id: `room-${tenant.subdomain}-${Date.now().toString().slice(-4)}`,
-                          title: isSchoolNiche ? 'Academic Virtual Lecture' : isCodingNiche ? 'Live Mentor Pairing' : 'Daily Live Halaqah',
+                          title: descriptor.displayName,
                           courseTitle: tenant.tagline || `${tenant.name} Class`,
                           teacherId: 'teacher-1',
-                          teacherName: isSchoolNiche ? 'Faculty Instructor' : isCodingNiche ? 'Lead Mentor' : 'Ustadh / Instructor',
+                          teacherName: 'Instructor',
                           targetLevel: 'intermediate',
                           targetCohort: user?.cohort || 'Assigned Cohort',
                           allowedStudentIds: [],
@@ -521,18 +311,9 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                         classroomSessionService.startSession(mockSession);
                         setActiveLiveSession(mockSession);
                       }}
-                      leftIcon={<Play className="w-4 h-4" />}
-                      className="font-bold text-xs"
+                      className="font-bold text-xs gap-2"
                     >
-                      Enter Standby Classroom
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      onClick={() => setActiveTab(defaultTab)}
-                      className="text-slate-300 border-slate-700 hover:bg-slate-800 text-xs font-bold"
-                    >
-                      Return to Dashboard
+                      <Play className="w-4 h-4" /> Enter Interactive Room
                     </Button>
                   </div>
                 </div>
@@ -540,105 +321,47 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
             </div>
           )}
 
-          {/* Coding Sandbox Workspace */}
-          {activeTab === 'coding' && isCodingNiche && (
-            <CodingSandboxWorkspace />
-          )}
-
-          {/* Madrasat Quran Reader */}
-          {activeTab === 'quran' && isQuranNiche && (
-            <div className="space-y-6 max-w-5xl mx-auto">
-              <QuranViewer
-                activeAyahNumber={selectedAyah?.number || null}
-                onSelectAyah={handleSelectAyah}
-                isPlaying={isPlaying}
-                onTogglePlay={handleTogglePlay}
-              />
-            </div>
-          )}
-
-          {/* Madrasat Audio Looper */}
-          {activeTab === 'audio' && isQuranNiche && (
-            <div className="space-y-6 max-w-5xl mx-auto">
-              <AudioRecitationPlayer
-                isPlaying={isPlaying}
-                onTogglePlay={handleTogglePlay}
-                currentAyah={selectedAyah}
-                onAddToast={onAddToast}
-              />
-            </div>
-          )}
-
-          {/* Forum / Study Hall */}
+          {/* 2. Common Community Forum */}
           {activeTab === 'forum' && (
             <div className="space-y-6 max-w-6xl mx-auto">
               <LMSCommunityForum onAddToast={onAddToast} />
             </div>
           )}
 
-          {/* Progress / Milestones */}
-          {activeTab === 'progress' && (
-            <div className="space-y-6 max-w-5xl mx-auto">
-              <StudentProgress onAddToast={onAddToast} />
-            </div>
-          )}
-
-          {/* Tuition & Invoices */}
+          {/* 3. Common Tuition & Invoicing Portal */}
           {activeTab === 'tuition' && (
-            <div className="space-y-6 max-w-4xl mx-auto">
-              <Card className="p-4 sm:p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      {isSchoolNiche ? 'School Tuition & Academic Fee Statement' : 'Enrolled Tuition Invoices'}
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      View and download official payment receipts issued by {tenant.name}.
-                    </p>
-                  </div>
-                  <Badge variant="success">Account Current - Paid in Full</Badge>
-                </div>
-
-                <div className="space-y-2.5">
-                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <span className="font-bold text-slate-800 block sm:inline">
-                        {isSchoolNiche ? 'Term 1 Comprehensive Academic Tuition & Lab Fees' : 'Spring Semester Term Tuition'}
-                      </span>
-                      <span className="text-slate-500 sm:ml-2 font-mono">#INV-2026-089</span>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-3">
-                      <span className="font-bold font-mono text-emerald-700">
-                        {isSchoolNiche ? '$1,450.00 Paid' : '$65.00 Paid'}
-                      </span>
-                      <Button size="sm" variant="outline">Download PDF Receipt</Button>
-                    </div>
-                  </div>
-
-                  {isSchoolNiche && (
-                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <span className="font-bold text-slate-800 block sm:inline">
-                          AP & Laboratory Science Materials Surcharge
-                        </span>
-                        <span className="text-slate-500 sm:ml-2 font-mono">#INV-2026-042</span>
-                      </div>
-                      <div className="flex items-center justify-between sm:justify-end gap-3">
-                        <span className="font-bold font-mono text-emerald-700">$180.00 Paid</span>
-                        <Button size="sm" variant="outline">Download PDF Receipt</Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </div>
+            <StudentTuitionPortal onAddToast={onAddToast} />
           )}
 
-          {/* Student Profile / Settings */}
+          {/* 4. Common Profile & Settings */}
           {(activeTab === 'profile' || activeTab === 'settings') && (
             <div className="max-w-4xl mx-auto">
               <UserProfilePage onAddToast={onAddToast} />
             </div>
+          )}
+
+          {/* 5. Domain-Peculiar Quran LMS */}
+          {engineType === 'quran' && (activeTab === 'quran' || activeTab === 'audio' || activeTab === 'progress') && (
+            <QuranLMSContainer
+              activeSubTab={activeTab as 'quran' | 'audio' | 'progress'}
+              onAddToast={onAddToast}
+            />
+          )}
+
+          {/* 6. Domain-Peculiar School LMS */}
+          {engineType === 'school' && (activeTab === 'courses' || activeTab === 'assignments' || activeTab === 'grades' || activeTab === 'schedule') && (
+            <SchoolLMSContainer
+              activeSubTab={activeTab as 'courses' | 'assignments' | 'grades' | 'schedule'}
+              onAddToast={onAddToast}
+            />
+          )}
+
+          {/* 7. Domain-Peculiar Coding LMS */}
+          {engineType === 'coding' && activeTab === 'coding' && (
+            <CodingLMSContainer
+              activeSubTab="coding"
+              onAddToast={onAddToast}
+            />
           )}
         </main>
       </div>
