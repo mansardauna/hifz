@@ -1,14 +1,13 @@
 // Prisma Multi-Tenant SaaS Schema for Ankabit LMS Platform
-// Native PostgreSQL Enterprise Cluster, AWS RDS, Neon, DigitalOcean, and Local DB Support
+// MySQL / MariaDB (XAMPP, AWS Aurora MySQL, Google Cloud SQL, PlanetScale)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Tenant {
@@ -17,10 +16,10 @@ model Tenant {
   subdomain       String         @unique
   customDomain    String?        @unique
   niche           String         @default("quran_tajweed")
-  logo            String?
+  logo            String?        @db.Text
   brandColor      String         @default("#0f766e")
-  tagline         String?
-  description     String?
+  tagline         String?        @db.Text
+  description     String?        @db.Text
   language        String         @default("en")
   currency        String         @default("USD")
   
@@ -47,10 +46,10 @@ model User {
   id           String    @id @default(cuid())
   email        String    @unique
   name         String
-  passwordHash String
+  passwordHash String    @db.Text
   role         String    @default("student") // "admin" | "teacher" | "student"
   phone        String?
-  avatar       String?
+  avatar       String?   @db.Text
   
   tenantId     String
   tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -76,7 +75,7 @@ model Lead {
   paymentStatus     String    @default("Pending") // "Paid" | "Pending" | "Past Due" | "Exempt"
   tuitionAmount     Float?
   planName          String?
-  notes             String?
+  notes             String?   @db.Text
   invoices          Json?
   
   tenantId          String
@@ -93,7 +92,7 @@ model Lead {
 model Course {
   id          String    @id @default(cuid())
   title       String
-  description String?
+  description String?   @db.Text
   instructor  String?
   level       String    @default("Beginner")
   category    String?
@@ -130,10 +129,10 @@ model RecitationSubmission {
   surahNumber Int
   startAyah   Int
   endAyah     Int
-  audioUrl    String
+  audioUrl    String   @db.Text
   status      String   @default("Pending Review") // "Pending Review" | "Mastered" | "Revision Needed"
   score       Int?
-  feedback    String?
+  feedback    String?  @db.Text
   
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
