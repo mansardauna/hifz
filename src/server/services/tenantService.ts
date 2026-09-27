@@ -1,9 +1,23 @@
-﻿import { prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
 import { MOCK_TENANTS } from '../../services/mockData';
+import { cacheService } from '../../services/cacheService';
 
 export class TenantService {
   static async getBySubdomainOrDomain(subdomain?: string, customDomain?: string) {
     const effectiveSubdomain = subdomain || 'al-furqan';
+    const cacheKey = customDomain ? `domain_${customDomain}` : effectiveSubdomain;
+
+    // 1. High-speed cache lookup (Redis / in-memory cache)
+    try {
+      const cached = await cacheService.getTenant(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    } catch (err) {
+      console.warn('Cache lookup non-blocking warning:', err);
+    }
+
+    let tenantResult: any = null;
 
     if (process.env.DATABASE_URL) {
       try {
@@ -12,7 +26,7 @@ export class TenantService {
         });
 
         if (tenant) {
-          return {
+          tenantResult = {
             ...tenant,
             pricingPlans: tenant.pricingPlans || [],
             paymentGateways: tenant.paymentGateways || [],
@@ -25,14 +39,26 @@ export class TenantService {
     }
 
     // Fallback to rich mock templates
-    let resolvedKey = effectiveSubdomain;
-    if (resolvedKey === 'hifz') resolvedKey = 'hifz-academy';
-    if (resolvedKey === 'code') resolvedKey = 'code-academy';
-    return (
-      MOCK_TENANTS[resolvedKey] ||
-      MOCK_TENANTS['hifz-academy'] ||
-      MOCK_TENANTS['al-furqan']
-    );
+    if (!tenantResult) {
+      let resolvedKey = effectiveSubdomain;
+      if (resolvedKey === 'hifz') resolvedKey = 'hifz-academy';
+      if (resolvedKey === 'code') resolvedKey = 'code-academy';
+      tenantResult =
+        MOCK_TENANTS[resolvedKey] ||
+        MOCK_TENANTS['hifz-academy'] ||
+        MOCK_TENANTS['al-furqan'];
+    }
+
+    // 2. Cache tenant profile for subsequent ultra-fast lookups
+    if (tenantResult) {
+      try {
+        await cacheService.setTenant(cacheKey, tenantResult);
+      } catch (err) {
+        console.warn('Cache write non-blocking warning:', err);
+      }
+    }
+
+    return tenantResult;
   }
 
   static async createTenant(data: {
@@ -82,6 +108,13 @@ export class TenantService {
   }
 
   static async updateTenant(idOrSubdomain: string, updates: Record<string, any>) {
+    // Invalidate cache immediately on change
+    try {
+      await cacheService.invalidateTenant(idOrSubdomain);
+    } catch (err) {
+      console.warn('Cache invalidation warning:', err);
+    }
+
     if (process.env.DATABASE_URL) {
       const isId = idOrSubdomain.startsWith('tenant-') || idOrSubdomain.length > 20;
       return await prisma.tenant.update({

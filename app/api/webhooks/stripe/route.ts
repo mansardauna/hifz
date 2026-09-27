@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '../../../../src/lib/prisma';
+import { webhookService } from '../../../../src/services/webhookService';
+import { queueService } from '../../../../src/services/queueService';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -31,6 +33,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Idempotency Guard: prevent duplicate webhook event execution
+    const isProcessed = await webhookService.isEventProcessed('stripe', event.id);
+    if (isProcessed) {
+      console.log(`[Stripe:Webhook] Event ${event.id} already processed. Skipping.`);
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
     // Process specific Stripe events
     switch (event.type) {
       case 'checkout.session.completed': {
@@ -43,6 +52,8 @@ export async function POST(request: NextRequest) {
         const tierId = metadata.tierId || 'growth';
         const amount = (session.amount_total || 0) / 100;
         const currency = session.currency || 'usd';
+        const customerEmail = session.customer_details?.email || metadata.email || '';
+        const customerName = session.customer_details?.name || metadata.name || 'Valued Student';
 
         if (process.env.DATABASE_URL) {
           // 1. Platform Tier Upgrade for Academy
@@ -87,6 +98,16 @@ export async function POST(request: NextRequest) {
                   status: 'Admitted',
                 },
               });
+
+              // Asynchronously dispatch welcome & enrollment notification
+              if (customerEmail) {
+                await queueService.dispatchEmail(
+                  customerEmail,
+                  'Welcome to Academy - Enrollment Confirmed',
+                  `Salam ${customerName}, your payment of ${amount} ${currency.toUpperCase()} has been confirmed. You are now officially admitted!`,
+                  tenantId
+                );
+              }
             }
           }
         }
@@ -102,6 +123,9 @@ export async function POST(request: NextRequest) {
       default:
         break;
     }
+
+    // Mark event processed with 30-day lease
+    await webhookService.markEventProcessed('stripe', event.id);
 
     return NextResponse.json({ received: true });
   } catch (error: any) {
