@@ -83,10 +83,12 @@ import {
 import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
 import { AnkabitLogo } from '../brand/AnkabitLogo';
+import { useTranslation } from '../../modules/i18n';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
   const { user, login, logout } = useAuth();
+  const { language, setLanguage, supportedLanguages, isRtl, t } = useTranslation();
 
   // Mobile sidebar toggle
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -644,8 +646,8 @@ export const SuperAdminDashboard: React.FC = () => {
             </button>
           </div>
 
-          {/* Navigation Links (Clean - Independent Scroll) */}
-          <nav className="p-3 space-y-1 overflow-y-auto flex-1 overscroll-contain">
+          {/* Navigation Links (Clean - Independent Smooth Scroll) */}
+          <nav className="p-3 space-y-1 overflow-y-auto flex-1 overscroll-contain scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Platform Controls
             </div>
@@ -793,7 +795,7 @@ export const SuperAdminDashboard: React.FC = () => {
         <div className="p-4 border-t border-slate-800/80 bg-slate-950/40 shrink-0">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-md shadow-emerald-600/30">
                 SA
               </div>
               <div className="min-w-0">
@@ -855,6 +857,30 @@ export const SuperAdminDashboard: React.FC = () => {
 
           {/* Clean Top Nav Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Live Infrastructure Status Indicator */}
+            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>1M Cluster Active</span>
+            </div>
+
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+              {supportedLanguages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code)}
+                  className={`px-2 py-1 rounded-lg transition-all text-[11px] ${
+                    language === lang.code
+                      ? 'bg-white text-emerald-700 shadow-xs font-black'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title={`${lang.name} (${lang.nativeName})`}
+                >
+                  {lang.flag} <span className="hidden md:inline ml-0.5">{lang.nativeName}</span>
+                </button>
+              ))}
+            </div>
+
             <a
               href="/"
               target="_blank"
