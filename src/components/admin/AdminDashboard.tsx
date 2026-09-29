@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, AdminTab } from '../layout/Sidebar';
-import { RealGrapesBuilder } from '../builder/RealGrapesBuilder';
+import { ModularSectionPageBuilder } from '../builder/ModularSectionPageBuilder';
 import { VisualFormBuilder } from '../builder/VisualFormBuilder';
 import { CourseBuilder } from './CourseBuilder';
 import { TenantPricingEditor } from './TenantPricingEditor';
@@ -26,7 +26,30 @@ import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
 import { ToastMessage } from '../ui/Toast';
 import { Button } from '../ui';
-import { ExternalLink, Menu, SlidersHorizontal, Globe, Compass } from 'lucide-react';
+import { Search, X, Command, Sparkles, BookOpen, Users, Video, Bell, CreditCard, Award, Settings, Layout, FileText, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, Menu, SlidersHorizontal, Globe } from 'lucide-react';
+
+interface SearchOption {
+  title: string;
+  category: string;
+  tab: AdminTab;
+  icon: React.ReactNode;
+}
+
+const SEARCH_SHORTCUTS: SearchOption[] = [
+  { title: 'Curriculum & Courses Syllabus', category: 'Academics', tab: 'curriculum', icon: <BookOpen className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Admissions CRM & Leads', category: 'Students', tab: 'crm', icon: <Users className="w-4 h-4 text-blue-600" /> },
+  { title: 'Admissions Form Responses', category: 'Students', tab: 'form_responses', icon: <FileText className="w-4 h-4 text-indigo-600" /> },
+  { title: 'Live WebRTC Video Classroom', category: 'Teaching', tab: 'classroom', icon: <Video className="w-4 h-4 text-purple-600" /> },
+  { title: 'WhatsApp & Email Notifications Hub', category: 'Communications', tab: 'notifications_hub', icon: <Bell className="w-4 h-4 text-amber-600" /> },
+  { title: 'Tuition Pricing & Subscription Plans', category: 'Finances', tab: 'pricing', icon: <CreditCard className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Payment Gateways (Stripe, Moyasar)', category: 'Finances', tab: 'payment_gateways', icon: <CreditCard className="w-4 h-4 text-teal-600" /> },
+  { title: 'Ijazah & Sanad Certificate Studio', category: 'Certificates', tab: 'certificate_studio', icon: <Award className="w-4 h-4 text-amber-600" /> },
+  { title: 'Visual Landing Page Builder', category: 'Branding', tab: 'page_builder', icon: <Layout className="w-4 h-4 text-pink-600" /> },
+  { title: 'Admissions Form Builder', category: 'Branding', tab: 'form_builder', icon: <FileText className="w-4 h-4 text-cyan-600" /> },
+  { title: 'Staff, Teachers & Academy Settings', category: 'Administration', tab: 'settings', icon: <Settings className="w-4 h-4 text-slate-600" /> },
+  { title: 'Campus & Student Forum', category: 'Community', tab: 'forum', icon: <Users className="w-4 h-4 text-blue-600" /> },
+];
 
 interface AdminDashboardProps {
   onAddToast?: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -44,6 +67,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
   const [isPlanUpgradeModalOpen, setIsPlanUpgradeModalOpen] = useState(false);
   const [isTourGuideOpen, setIsTourGuideOpen] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Global Keyboard Shortcut: Ctrl+K or / opens Universal Search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      } else if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      } else if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Filtered search results
+  const filteredShortcuts = SEARCH_SHORTCUTS.filter(
+    (item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSelectSearchResult = (tab: AdminTab) => {
+    setIsOnboardingWizardOpen(false);
+    setActiveTab(tab);
+    setIsSearchOpen(false);
+    setSearchQuery('');
+  };
 
   const plan = tenant.subscriptionPlan || 'free';
 
@@ -66,7 +123,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   // Setup Wizard & Tour Guide Lifecycle Orchestration
-  // Setup Wizard pops up by default first; Tour Guide waits until setup is complete
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const setupCompleted = localStorage.getItem(`setup_completed_${tenant.subdomain}`);
@@ -121,7 +177,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
         {/* Top Header */}
         <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-20 shadow-xs">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
               className="lg:hidden p-2 sm:p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 focus:outline-none cursor-pointer shrink-0"
@@ -130,28 +186,72 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Desktop Breadcrumb */}
-            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-500">
-              <span className="font-semibold text-slate-800">{tenant.name}</span>
-              <span className="text-slate-300">/</span>
-              <span className="text-slate-900 font-bold capitalize text-sm">
-                {isOnboardingWizardOpen
-                  ? 'Setup Wizard'
-                  : activeTab === 'overview'
-                  ? 'Academy Overview & Analytics'
-                  : activeTab === 'notifications_hub'
-                  ? 'Email & WhatsApp Notifications'
-                  : activeTab === 'certificate_studio'
-                  ? 'Sanad & Ijazah Studio'
-                  : activeTab.replace('_', ' ')}
-              </span>
-            </div>
+            {/* Universal Search Bar (Replaces static breadcrumb) */}
+            <div className="relative flex-1">
+              <div className="relative flex items-center">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setIsSearchOpen(true);
+                  }}
+                  onFocus={() => setIsSearchOpen(true)}
+                  placeholder="Search courses, students, leads, settings... (Ctrl+K)"
+                  className="w-full pl-9 pr-14 py-2 text-xs bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-900 placeholder:text-slate-400 font-medium"
+                />
+                <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-200/80 rounded absolute right-2.5 border border-slate-300">
+                  Ctrl K
+                </kbd>
+              </div>
 
-            {/* Mobile Title */}
-            <div className="md:hidden flex items-center gap-1.5 min-w-0">
-              <span className="text-xs font-extrabold text-slate-900 truncate">
-                {isOnboardingWizardOpen ? 'Setup' : activeTab === 'overview' ? 'Overview' : activeTab.replace('_', ' ')}
-              </span>
+              {/* Floating Search Results Palette */}
+              {isSearchOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsSearchOpen(false)}
+                  />
+                  <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 max-h-80 overflow-y-auto p-2 space-y-1 divide-y divide-slate-100 font-sans">
+                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                      <span>Quick Navigation Results</span>
+                      <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-slate-600">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="pt-1 space-y-0.5">
+                      {filteredShortcuts.length > 0 ? (
+                        filteredShortcuts.map((item, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleSelectSearchResult(item.tab)}
+                            className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-left cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-emerald-50 flex items-center justify-center shrink-0">
+                                {item.icon}
+                              </div>
+                              <div>
+                                <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">
+                                  {item.title}
+                                </div>
+                                <span className="text-[10px] text-slate-400 font-medium">Category: {item.category}</span>
+                              </div>
+                            </div>
+                            <span className="text-[10px] font-semibold text-slate-400 group-hover:text-emerald-600">Jump →</span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="p-4 text-center text-xs text-slate-400">
+                          No matching portal feature found. Try "courses", "leads", "settings" or "classroom".
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -166,18 +266,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <Globe className="w-3.5 h-3.5 text-slate-500 shrink-0" />
               <span className="hidden sm:inline">{language === 'ar' ? 'English' : 'العربية'}</span>
               <span className="sm:hidden">{language === 'ar' ? 'EN' : 'عر'}</span>
-            </button>
-
-            {/* Interactive Tour Guide Button */}
-            <button
-              type="button"
-              onClick={() => setIsTourGuideOpen(true)}
-              className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-bold rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors flex items-center gap-1.5 cursor-pointer select-none min-h-[36px]"
-              title="Launch Platform Tour Guide"
-            >
-              <Compass className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span className="hidden sm:inline">Tour Guide</span>
-              <span className="sm:hidden">Tour</span>
             </button>
 
             {/* Real-time Notification Center */}
@@ -195,17 +283,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </Button>
             )}
 
-            {/* Dynamic Setup Wizard Button showing percentage */}
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsOnboardingWizardOpen(!isOnboardingWizardOpen)}
-              leftIcon={<SlidersHorizontal className="w-3.5 h-3.5" />}
-              className="px-2.5 sm:px-3.5"
-            >
-              <span className="hidden sm:inline">{isOnboardingWizardOpen ? 'Exit' : `Setup (${setupProgress.percentage}%)`}</span>
-              <span className="sm:hidden">{setupProgress.percentage}%</span>
-            </Button>
+            {/* Dynamic Setup Wizard Button: only show if setup is NOT 100% */}
+            {setupProgress.percentage < 100 && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsOnboardingWizardOpen(!isOnboardingWizardOpen)}
+                leftIcon={<SlidersHorizontal className="w-3.5 h-3.5" />}
+                className="px-2.5 sm:px-3.5 bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100"
+              >
+                <span className="hidden sm:inline">{isOnboardingWizardOpen ? 'Exit' : `Setup (${setupProgress.percentage}%)`}</span>
+                <span className="sm:hidden">{setupProgress.percentage}%</span>
+              </Button>
+            )}
 
             {/* Live Site CTA */}
             <Button
@@ -266,7 +356,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 )
               )}
               {activeTab === 'page_builder' && (
-                <RealGrapesBuilder onAddToast={handleToast} />
+                <ModularSectionPageBuilder />
               )}
               {activeTab === 'form_builder' && (
                 <VisualFormBuilder onAddToast={handleToast} />

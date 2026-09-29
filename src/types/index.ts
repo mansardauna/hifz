@@ -192,6 +192,7 @@ export interface TenantConfig {
   studentCapacity?: number;
   authCustomization?: AuthPageCustomization;
   preloaderCustomization?: PreloaderCustomization;
+  builderLayout?: any;
 }
 
 export interface Lesson {
