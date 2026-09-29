@@ -1,14 +1,17 @@
 import React from 'react';
 
 export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | 'outline';
+export type BadgeSize = 'sm' | 'md' | 'lg';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
+  size?: BadgeSize;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
   children,
   variant = 'default',
+  size = 'sm',
   className = '',
   ...props
 }) => {
@@ -22,9 +25,15 @@ export const Badge: React.FC<BadgeProps> = ({
     outline: 'bg-white text-slate-600 border-slate-300',
   };
 
+  const sizeStyles = {
+    sm: 'px-2 py-0.5 text-[11px]',
+    md: 'px-2.5 py-1 text-xs',
+    lg: 'px-3 py-1.5 text-sm',
+  };
+
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border font-sans ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center rounded-md font-semibold border font-sans ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {children}

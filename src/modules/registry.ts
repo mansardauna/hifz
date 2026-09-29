@@ -57,34 +57,32 @@ export const LMS_MODULE_REGISTRY: Record<LmsEngineType, LmsModuleDescriptor> = {
   },
   school: {
     engineType: 'school',
-    displayName: 'School & Academic K-12/Higher Ed LMS',
-    displayNameAr: 'المنظومة الأكاديمية والمدرسية الشاملة',
-    tagline: 'Curriculum Syllabus, Homework, Timetable & Gradebook',
+    displayName: 'School & Vocational Training LMS',
+    displayNameAr: 'منظومة المدارس والمعاهد المهنية الشاملة',
+    tagline: 'Practical Syllabus, Workshop Guides, Quizzes & Vocational Assessments',
     defaultTab: 'courses',
     primaryNicheColor: '#2563eb', // Royal Blue
     tabs: [
       // Domain Peculiar
-      { id: 'courses', label: 'Courses & Syllabus', labelAr: 'المقررات الدراسية', iconName: 'GraduationCap', isCommon: false },
-      { id: 'assignments', label: 'Assignments & Tasks', labelAr: 'الواجبات والتكليفات', iconName: 'FileCheck2', isCommon: false },
-      { id: 'grades', label: 'Report Cards & GPA', labelAr: 'كشف الدرجات', iconName: 'Award', isCommon: false },
-      { id: 'schedule', label: 'Class Timetable', labelAr: 'الجدول الدراسي', iconName: 'Calendar', isCommon: false },
+      { id: 'courses', label: 'Syllabus & Workshop Guides', labelAr: 'المقررات والورش العملية', iconName: 'GraduationCap', isCommon: false },
+      { id: 'assessments', label: 'Exams & Practical Submissions', labelAr: 'الاختبارات والمشاريع التطبيقية', iconName: 'FileCheck2', isCommon: false },
       // Common Universal
-      { id: 'classroom', label: 'Live Virtual Lecture', labelAr: 'المحاضرة المباشرة', iconName: 'Radio', isCommon: true },
-      { id: 'forum', label: 'Campus Forum', labelAr: 'منتدى الطلاب', iconName: 'MessageSquare', isCommon: true },
-      { id: 'tuition', label: 'Tuition & Fees', labelAr: 'المصروفات المدرسية', iconName: 'CreditCard', isCommon: true },
+      { id: 'classroom', label: 'Live Virtual Workshop', labelAr: 'الورشة والصف المباشر', iconName: 'Radio', isCommon: true },
+      { id: 'forum', label: 'Student & Craft Forum', labelAr: 'منتدى الطلاب والمهن', iconName: 'MessageSquare', isCommon: true },
+      { id: 'tuition', label: 'Tuition & Fees', labelAr: 'المصروفات والرسوم', iconName: 'CreditCard', isCommon: true },
       { id: 'profile', label: 'Profile & Settings', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
     ]
   },
   coding: {
     engineType: 'coding',
     displayName: 'Coding & Tech Academy LMS',
-    displayNameAr: 'أكاديمية البرمجة والتقنيات السحابية',
-    tagline: 'Interactive Monaco Editor, Live Runner & Algorithmic Challenges',
+    displayNameAr: 'أكاديمية البرمجة والتقنيات التفاعلية',
+    tagline: 'FreeCodeCamp Style Challenges, Automated Test Suites & Live IDE',
     defaultTab: 'coding',
     primaryNicheColor: '#10b981', // Mint/Emerald
     tabs: [
       // Domain Peculiar
-      { id: 'coding', label: 'Cloud IDE Sandbox', labelAr: 'بيئة التطوير السحابية', iconName: 'Code2', isCommon: false },
+      { id: 'coding', label: 'Interactive Challenges (FCC Style)', labelAr: 'التحديات البرمجية والاختبارات', iconName: 'Code2', isCommon: false },
       // Common Universal
       { id: 'classroom', label: 'Live Pair Programming', labelAr: 'غرفة البرمجة المباشرة', iconName: 'Radio', isCommon: true },
       { id: 'forum', label: 'Developer Forum', labelAr: 'منتدى المطورين', iconName: 'MessageSquare', isCommon: true },

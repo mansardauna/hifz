@@ -348,18 +348,18 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
             />
           )}
 
-          {/* 6. Domain-Peculiar School LMS */}
-          {engineType === 'school' && (activeTab === 'courses' || activeTab === 'assignments' || activeTab === 'grades' || activeTab === 'schedule') && (
+          {/* 6. Domain-Peculiar School & Vocational LMS */}
+          {engineType === 'school' && (activeTab === 'courses' || activeTab === 'assessments' || activeTab === 'assignments' || activeTab === 'grades' || activeTab === 'schedule') && (
             <SchoolLMSContainer
-              activeSubTab={activeTab as 'courses' | 'assignments' | 'grades' | 'schedule'}
+              activeSubTab={activeTab as any}
               onAddToast={onAddToast}
             />
           )}
 
           {/* 7. Domain-Peculiar Coding LMS */}
-          {engineType === 'coding' && activeTab === 'coding' && (
+          {engineType === 'coding' && (activeTab === 'coding' || activeTab === 'challenges' || activeTab === 'syllabus') && (
             <CodingLMSContainer
-              activeSubTab="coding"
+              activeSubTab={activeTab as any}
               onAddToast={onAddToast}
             />
           )}
