@@ -357,7 +357,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 )
               )}
               {activeTab === 'page_builder' && (
-                <PuckPageBuilderStudio />
+                <ModularSectionPageBuilder />
               )}
               {activeTab === 'form_builder' && (
                 <VisualFormBuilder onAddToast={handleToast} />
