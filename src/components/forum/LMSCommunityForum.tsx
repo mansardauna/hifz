@@ -706,14 +706,23 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
             /* 4. POSTS FEED LIST VIEW */
             <div className="space-y-3">
               {filteredPosts.length === 0 ? (
-                <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto font-bold">
-                    <MessageSquare className="w-6 h-6" />
+                <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto font-bold shadow-xs">
+                    <MessageSquare className="w-7 h-7" />
                   </div>
-                  <h3 className="font-extrabold text-sm text-slate-900">No discussions found</h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Try searching with another keyword or start a new topic in this channel.
-                  </p>
+                  <div>
+                    <h3 className="font-black text-base text-slate-900">No discussions yet</h3>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                      Be the first to start a conversation, ask a question, or post an announcement in this academy channel.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsNewPostModalOpen(true)}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Start First Discussion</span>
+                  </button>
                 </div>
               ) : (
                 filteredPosts.map((post) => (

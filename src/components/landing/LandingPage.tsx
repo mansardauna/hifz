@@ -5,7 +5,7 @@ import { Header } from './Header';
 import { api } from '../../services/api';
 import { ToastMessage } from '../ui/Toast';
 import { StudentEnrollmentModal } from '../checkout/StudentEnrollmentModal';
-import { PricingPlan } from '../../types';
+import { PricingPlan, FormConfig } from '../../types';
 import {
   Clock,
   Users,
@@ -30,7 +30,10 @@ import {
   Wand2,
   FileText,
   Settings,
-  LayoutTemplate
+  LayoutTemplate,
+  CreditCard,
+  HelpCircle,
+  Hammer
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -45,6 +48,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState<boolean>(false);
   const [selectedPlanForEnroll, setSelectedPlanForEnroll] = useState<PricingPlan | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   // Live published HTML/CSS state synced with localStorage and tenant config
   const [liveHtml, setLiveHtml] = useState<string>(tenant.customHtml || '');
@@ -80,9 +84,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       const enrollBtn = target.closest('[data-hifz-enroll="true"]') || target.closest('a[href="#enroll"]') || target.closest('a[href="#pricing"]');
       if (enrollBtn && (target.tagName === 'BUTTON' || target.tagName === 'A')) {
         const planId = enrollBtn.getAttribute('data-plan-id');
-        const matchedPlan = tenant.pricingPlans.find((p) => p.id === planId) || tenant.pricingPlans[0];
-        setSelectedPlanForEnroll(matchedPlan);
-        setIsEnrollModalOpen(true);
+        const matchedPlan = tenant.pricingPlans?.find((p) => p.id === planId) || tenant.pricingPlans?.[0];
+        if (matchedPlan) {
+          setSelectedPlanForEnroll(matchedPlan);
+          setIsEnrollModalOpen(true);
+        }
       }
     };
 
@@ -181,7 +187,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.studentName?.trim()) {
+    if (!formData.studentName?.trim() && !formData.name?.trim()) {
       newErrors.studentName = isAr ? 'الرجاء إدخال اسم الطالب الكامل' : 'Student full name is required';
     }
     if (!formData.email?.trim()) {
@@ -197,26 +203,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmitAdmissions = async (e: React.FormEvent) => {
+  const handleSubmitAdmissions = async (e: React.FormEvent, customFormId?: string, customFormTitle?: string) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    const targetFormId = customFormId || 'form-admissions';
+    const targetFormTitle = customFormTitle || tenant.formTitle || 'Direct Admissions & Evaluation Inquiry';
+    const studentName = formData.studentName || formData.name || 'Prospective Student';
+
     try {
       // Persist to Form Responses Table Storage
       if (typeof window !== 'undefined') {
         try {
           const newResponse = {
             id: `resp-${Date.now()}`,
-            formId: 'form-admissions',
-            formTitle: tenant.formTitle || 'Direct Admissions & Evaluation Inquiry',
-            studentName: formData.studentName,
+            formId: targetFormId,
+            formTitle: targetFormTitle,
+            studentName: studentName,
             email: formData.email,
-            phone: formData.phone,
+            phone: formData.phone || '+1 (555) 000-0000',
             submittedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
             status: 'New' as const,
             data: formData,
-            notes: 'Submitted via main admissions inquiry form.'
+            notes: `Submitted via ${targetFormTitle}`
           };
           const existing = JSON.parse(localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`) || '[]');
           localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify([newResponse, ...existing]));
@@ -224,16 +234,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       }
 
       await api.createLead({
-        name: formData.studentName,
+        name: studentName,
         email: formData.email,
-        phone: formData.phone,
+        phone: formData.phone || '+1 (555) 000-0000',
         country: formData.country || 'Global Inquiry',
         courseInterest: formData.courseInterest || (isCodingNiche ? 'Full-Stack Software Engineering' : 'Quran Memorization Track'),
         preferredSchedule: formData.preferredSchedule || 'Evening',
         priorHifzLevel: isCodingNiche ? 'Beginner' : (formData.priorHifzLevel || '1 - 5 Juz'),
         status: 'New',
         paymentStatus: 'Pending',
-        notes: formData.notes || `Admissions inquiry submitted from main landing page.`,
+        notes: formData.notes || `Admissions inquiry submitted from ${targetFormTitle}.`,
       });
 
       onAddToast({
@@ -268,7 +278,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       '@type': 'PostalAddress',
       addressCountry: 'Global',
     },
-    offers: tenant.pricingPlans.map((plan) => ({
+    offers: (tenant.pricingPlans || []).map((plan) => ({
       '@type': 'Offer',
       name: plan.name,
       price: plan.priceMonthly || (plan as any).price || 65,
@@ -301,7 +311,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgJsonLd) }}
       />
 
-      {/* Semantic Accessible Header (Only when not already inside custom HTML) */}
+      {/* Semantic Accessible Header */}
       {(!liveHtml || !liveHtml.includes('<header')) && <Header />}
 
       {/* Main Landmark */}
@@ -311,6 +321,407 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
           <div>
             {liveCss && <style>{liveCss}</style>}
             <div dangerouslySetInnerHTML={{ __html: liveHtml }} />
+          </div>
+        ) : builderSections && builderSections.length > 0 ? (
+          /* Render Modular Builder Sections */
+          <div className="space-y-0">
+            {builderSections
+              .filter((sec) => sec.enabled)
+              .map((sec, index) => {
+                // 1. HERO SECTION
+                if (sec.type === 'hero') {
+                  return (
+                    <section
+                      key={sec.id || index}
+                      className={`relative py-24 sm:py-32 overflow-hidden text-white bg-gradient-to-b ${sec.props?.bgGradient || 'from-slate-950 via-slate-900 to-slate-950'}`}
+                    >
+                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="text-center max-w-4xl mx-auto space-y-6">
+                          {sec.props?.badgeText && (
+                            <span className="inline-block px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
+                              {sec.props.badgeText}
+                            </span>
+                          )}
+
+                          <h1 className={`text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight ${isAr ? 'font-arabic text-5xl sm:text-7xl' : ''}`}>
+                            {sec.title}
+                          </h1>
+
+                          {sec.subtitle && (
+                            <p className="text-base sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto font-normal">
+                              {sec.subtitle}
+                            </p>
+                          )}
+
+                          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+                            {sec.props?.ctaText && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (tenant.pricingPlans && tenant.pricingPlans.length > 0) {
+                                    setSelectedPlanForEnroll(tenant.pricingPlans[0]);
+                                    setIsEnrollModalOpen(true);
+                                  }
+                                }}
+                                className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95"
+                              >
+                                <Sparkles className="w-4 h-4" />
+                                <span>{sec.props.ctaText}</span>
+                              </button>
+                            )}
+
+                            {sec.props?.secondaryCtaText && (
+                              <a
+                                href={sec.props.secondaryCtaLink || '#form'}
+                                className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm rounded-xl backdrop-blur-sm transition-all shadow-sm"
+                              >
+                                {sec.props.secondaryCtaText}
+                              </a>
+                            )}
+                          </div>
+
+                          {sec.props?.imageUrl && (
+                            <div className="pt-8 max-w-3xl mx-auto">
+                              <img
+                                src={sec.props.imageUrl}
+                                alt="Hero preview"
+                                className="rounded-3xl shadow-2xl border border-white/10 w-full object-cover max-h-96"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+
+                // 2. FEATURES BENTO SECTION
+                if (sec.type === 'features') {
+                  const items = sec.props?.items || [
+                    { icon: 'Award', title: 'Authentic Methodology', desc: 'Direct verified instruction from accredited faculty.' },
+                    { icon: 'Radio', title: 'Live Interactive Audio/Video', desc: 'HD low-latency virtual classrooms with real-time participation.' },
+                    { icon: 'CheckCircle2', title: 'Flexible Global Scheduling', desc: 'Cohorts aligned to your local timezone with continuous feedback.' },
+                  ];
+
+                  return (
+                    <section key={sec.id || index} className="py-20 bg-white border-b border-slate-200">
+                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                          <h2 className={`text-3xl sm:text-4xl font-black text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
+                            {sec.title}
+                          </h2>
+                          {sec.subtitle && (
+                            <p className="text-slate-500 text-sm sm:text-base">{sec.subtitle}</p>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          {items.map((item: any, i: number) => (
+                            <div
+                              key={i}
+                              className="bg-slate-50 rounded-3xl p-8 border border-slate-200/80 shadow-xs hover:shadow-md transition-all space-y-4"
+                            >
+                              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                                <Sparkles className="w-6 h-6 text-emerald-600" />
+                              </div>
+                              <h3 className="font-extrabold text-lg text-slate-900">{item.title}</h3>
+                              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.desc}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+
+                // 3. CURRICULUM & COURSES SECTION
+                if (sec.type === 'curriculum') {
+                  return (
+                    <section id="curriculum" key={sec.id || index} className="py-20 bg-slate-50 border-b border-slate-200">
+                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                          <h2 className={`text-3xl sm:text-4xl font-black text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
+                            {sec.title}
+                          </h2>
+                          {sec.subtitle && (
+                            <p className="text-slate-500 text-sm sm:text-base">{sec.subtitle}</p>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          {courses.map((course) => (
+                            <article
+                              key={course.id}
+                              className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between"
+                            >
+                              <div className="relative h-48 bg-slate-900">
+                                <img
+                                  src={course.imageUrl || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800'}
+                                  alt={course.title}
+                                  className="w-full h-full object-cover opacity-85"
+                                />
+                                <span className="absolute top-3 right-3 bg-white text-slate-900 font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                                  {course.level}
+                                </span>
+                              </div>
+
+                              <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
+                                <div>
+                                  <h3 className={`text-xl font-black text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
+                                    {isAr ? course.titleAr || course.title : course.title}
+                                  </h3>
+                                  <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                                    {isAr ? course.descriptionAr || course.description : course.description}
+                                  </p>
+                                </div>
+
+                                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                                  <span className="font-black text-lg text-slate-900 font-mono">
+                                    ${course.price} <span className="text-xs font-normal text-slate-500">/ track</span>
+                                  </span>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (tenant.pricingPlans && tenant.pricingPlans.length > 0) {
+                                        setSelectedPlanForEnroll(tenant.pricingPlans[0]);
+                                        setIsEnrollModalOpen(true);
+                                      }
+                                    }}
+                                    className="px-5 py-2.5 rounded-xl text-white text-xs font-bold bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
+                                  >
+                                    Enroll in Track &rarr;
+                                  </button>
+                                </div>
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+
+                // 4. DYNAMIC PRICING SECTION
+                if (sec.type === 'pricing') {
+                  return (
+                    <section id="pricing" key={sec.id || index} className="py-20 bg-white border-b border-slate-200">
+                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                          <h2 className={`text-3xl sm:text-4xl font-black text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
+                            {sec.title}
+                          </h2>
+                          {sec.subtitle && (
+                            <p className="text-slate-500 text-sm sm:text-base">{sec.subtitle}</p>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          {tenant.pricingPlans.map((plan) => {
+                            const isPopular = plan.popular || (plan as any).isPopular;
+                            const price = plan.priceMonthly || (plan as any).price || 65;
+
+                            return (
+                              <div
+                                key={plan.id}
+                                className={`bg-white rounded-3xl p-8 border shadow-sm flex flex-col justify-between transition-all ${
+                                  isPopular ? 'border-2 border-emerald-600 shadow-xl relative' : 'border-slate-200'
+                                }`}
+                              >
+                                {isPopular && (
+                                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md tracking-wider">
+                                    Most Popular
+                                  </span>
+                                )}
+
+                                <div className="space-y-4">
+                                  <h3 className="font-extrabold text-xl text-slate-900">{isAr ? plan.nameAr || plan.name : plan.name}</h3>
+                                  <p className="text-xs text-slate-500 leading-relaxed">{isAr ? plan.descriptionAr || plan.description : plan.description}</p>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-4xl font-black text-slate-900 font-mono">${price}</span>
+                                    <span className="text-xs text-slate-500 font-bold">/mo</span>
+                                  </div>
+
+                                  <ul className="space-y-3 pt-6 border-t border-slate-100 text-xs text-slate-700">
+                                    {plan.features.map((feat, idx) => (
+                                      <li key={idx} className="flex items-center gap-2.5">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                        <span>{feat}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+
+                                <div className="pt-8 mt-6 border-t border-slate-100">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedPlanForEnroll(plan);
+                                      setIsEnrollModalOpen(true);
+                                    }}
+                                    className={`w-full py-3.5 rounded-xl font-bold text-xs transition-all cursor-pointer select-none active:scale-95 ${
+                                      isPopular
+                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
+                                        : 'bg-slate-900 hover:bg-slate-800 text-white'
+                                    }`}
+                                  >
+                                    Select {isAr ? plan.nameAr || plan.name : plan.name}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+
+                // 5. DYNAMIC CUSTOM FORM SECTION
+                if (sec.type === 'form') {
+                  const selectedForm: FormConfig | undefined = tenant.forms?.find(
+                    (f) => f.id === sec.props?.selectedFormId
+                  ) || tenant.forms?.[0];
+
+                  const formFields = selectedForm?.fields && selectedForm.fields.length > 0
+                    ? selectedForm.fields
+                    : tenant.customFormFields && tenant.customFormFields.length > 0
+                    ? tenant.customFormFields
+                    : [
+                        { id: 'studentName', label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text' as const, required: true, width: 'full' as const },
+                        { id: 'email', label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email' as const, required: true, width: 'half' as const },
+                        { id: 'phone', label: 'WhatsApp / Phone Number', labelAr: 'رقم الهاتف', type: 'phone' as const, required: true, width: 'half' as const },
+                      ];
+
+                  return (
+                    <section id="form" key={sec.id || index} className="py-20 bg-slate-50 border-b border-slate-200">
+                      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+                        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-md">
+                          <div className="text-center mb-8">
+                            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">
+                              {selectedForm?.title || sec.title}
+                            </span>
+                            <h2 className={`text-2xl sm:text-3xl font-black text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+                              {sec.title}
+                            </h2>
+                            <p className="text-xs sm:text-sm text-slate-500 mt-2">
+                              {sec.subtitle || selectedForm?.description}
+                            </p>
+                          </div>
+
+                          <form
+                            onSubmit={(e) => handleSubmitAdmissions(e, selectedForm?.id, selectedForm?.title || sec.title)}
+                            className="space-y-4"
+                            noValidate
+                          >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {formFields.map((field) => (
+                                <div
+                                  key={field.id}
+                                  className={field.width === 'full' ? 'sm:col-span-2' : 'sm:col-span-1'}
+                                >
+                                  <label htmlFor={field.id} className="block text-xs font-bold text-slate-700 mb-1">
+                                    {isAr ? field.labelAr || field.label : field.label}{' '}
+                                    {field.required && <span className="text-red-500">*</span>}
+                                  </label>
+
+                                  {field.type === 'select' ? (
+                                    <select
+                                      id={field.id}
+                                      value={formData[field.id] || ''}
+                                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
+                                    >
+                                      <option value="">Select option...</option>
+                                      {field.options?.map((opt, oi) => (
+                                        <option key={oi} value={opt}>{opt}</option>
+                                      ))}
+                                    </select>
+                                  ) : field.type === 'textarea' ? (
+                                    <textarea
+                                      id={field.id}
+                                      rows={3}
+                                      value={formData[field.id] || ''}
+                                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                                      placeholder={field.placeholder || ''}
+                                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
+                                    />
+                                  ) : (
+                                    <input
+                                      id={field.id}
+                                      type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : field.type === 'date' ? 'date' : 'text'}
+                                      value={formData[field.id] || ''}
+                                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                                      placeholder={field.placeholder || ''}
+                                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
+                                    />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="pt-4">
+                              <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95 flex items-center justify-center gap-2"
+                              >
+                                <Send className="w-4 h-4" />
+                                <span>{isSubmitting ? 'Submitting...' : 'Submit Application'}</span>
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+
+                // 6. FAQ ACCORDION SECTION
+                if (sec.type === 'faq') {
+                  const questions = sec.props?.questions || [
+                    { q: 'How do live sessions work?', a: 'Classes occur via our integrated WebRTC video and audio portal.' },
+                    { q: 'Can I change my schedule?', a: 'Yes, cohort transfers can be requested through the student portal.' },
+                    { q: 'How do I receive my certificate?', a: 'Upon completing all course modules, verified QR certificates are issued.' },
+                  ];
+
+                  return (
+                    <section key={sec.id || index} className="py-20 bg-white border-b border-slate-200">
+                      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                        <div className="text-center mb-12 space-y-3">
+                          <h2 className="text-3xl font-black text-slate-900">{sec.title}</h2>
+                          {sec.subtitle && <p className="text-slate-500 text-sm">{sec.subtitle}</p>}
+                        </div>
+
+                        <div className="space-y-4">
+                          {questions.map((faqItem: any, fi: number) => {
+                            const isOpen = openFaqIndex === fi;
+                            return (
+                              <div
+                                key={fi}
+                                className="border border-slate-200 rounded-2xl p-5 cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-colors"
+                                onClick={() => setOpenFaqIndex(isOpen ? null : fi)}
+                              >
+                                <div className="flex items-center justify-between font-bold text-sm text-slate-900">
+                                  <span>{faqItem.q}</span>
+                                  {isOpen ? <ChevronUp className="w-4 h-4 text-emerald-600" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                                </div>
+                                {isOpen && (
+                                  <p className="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-200/60 leading-relaxed">
+                                    {faqItem.a}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+
+                return null;
+              })}
           </div>
         ) : !isDemoTenant && !hasPublishedContent ? (
           /* Clean Unbuilt / Construction State for Real User Academies */
@@ -348,8 +759,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
             </div>
           </div>
         ) : (
+          /* Default Demo Landing Page */
           <>
-            {/* 1. Accessible Hero Section */}
+            {/* 1. Hero Section */}
             <section aria-labelledby="hero-heading" className="bg-white py-20 lg:py-28 border-b border-slate-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-4xl mx-auto space-y-6">
@@ -378,8 +790,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedPlanForEnroll(tenant.pricingPlans[0]);
-                        setIsEnrollModalOpen(true);
+                        if (tenant.pricingPlans && tenant.pricingPlans.length > 0) {
+                          setSelectedPlanForEnroll(tenant.pricingPlans[0]);
+                          setIsEnrollModalOpen(true);
+                        }
                       }}
                       className={`px-8 py-3.5 text-white font-bold text-sm rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95 ${
                         isCodingNiche
@@ -402,37 +816,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
               </div>
             </section>
 
-            {/* 2. Distinctive Niche Banner */}
-            {!isCodingNiche ? (
-              <section aria-label="Sacred Quranic Quote" className="py-14 bg-slate-950 text-white text-center border-b border-slate-800">
-                <div className="max-w-4xl mx-auto px-4">
-                  <p className="font-arabic text-4xl font-bold leading-relaxed mb-2 text-amber-400">
-                    إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ
-                  </p>
-                  <p className="text-xs sm:text-sm text-slate-400 font-sans tracking-wide">
-                    "Indeed, it is We who sent down the Quran and indeed, We will be its guardian." — Surah Al-Hijr [15:9]
-                  </p>
-                </div>
-              </section>
-            ) : (
-              <section aria-label="Software Engineering Highlight" className="py-12 bg-slate-950 text-white border-b border-slate-800">
-                <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-3">
-                    <Terminal className="w-8 h-8 text-blue-400 shrink-0" />
-                    <div>
-                      <h2 className="text-base font-extrabold text-white">Full-Stack Cloud & Software Apprenticeship</h2>
-                      <p className="text-xs text-slate-400">Pair programming, daily coding sandboxes, algorithmic audits & CI/CD deployment.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 font-mono text-xs text-emerald-400 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800 shrink-0">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Live SFU Terminal Cluster: 100% Online</span>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {/* 3. Featured Courses Grid */}
+            {/* 2. Featured Courses Grid */}
             <section id="courses" aria-labelledby="courses-heading" className="py-20 bg-white border-b border-slate-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-2xl mx-auto mb-12">
@@ -488,8 +872,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
                           <button
                             type="button"
                             onClick={() => {
-                              setSelectedPlanForEnroll(tenant.pricingPlans[0]);
-                              setIsEnrollModalOpen(true);
+                              if (tenant.pricingPlans && tenant.pricingPlans.length > 0) {
+                                setSelectedPlanForEnroll(tenant.pricingPlans[0]);
+                                setIsEnrollModalOpen(true);
+                              }
                             }}
                             className={`px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors cursor-pointer ${
                               isCodingNiche ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'
@@ -505,7 +891,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
               </div>
             </section>
 
-            {/* 4. Tuition & Pricing Packages */}
+            {/* 3. Tuition & Pricing Packages */}
             <section id="pricing" aria-labelledby="pricing-heading" className="py-20 bg-slate-50 border-b border-slate-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-2xl mx-auto mb-12">
@@ -578,129 +964,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
                 </div>
               </div>
             </section>
-
-            {/* 5. Accessible Admissions & Inquiry Form */}
-            <section id="admissions" aria-labelledby="admissions-heading" className="py-20 bg-white">
-              <div className="max-w-3xl mx-auto px-4 sm:px-6">
-                <div className="bg-slate-50 rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-md">
-                  <div className="text-center mb-8">
-                    <span className="text-xs font-bold uppercase tracking-wider text-blue-600 block mb-1">
-                      {isAr ? 'بوابة التسجيل والقبول' : 'Direct Admissions Portal'}
-                    </span>
-                    <h2
-                      id="admissions-heading"
-                      className={`text-2xl sm:text-3xl font-extrabold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}
-                    >
-                      {tenant.formTitle}
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-2">
-                      {tenant.formDescription}
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleSubmitAdmissions} className="space-y-4" noValidate>
-                    <div>
-                      <label htmlFor="studentName" className="block text-xs font-bold text-slate-700 mb-1">
-                        {isAr ? 'اسم الطالب الكامل' : 'Student Full Name'} <span className="text-red-500" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        id="studentName"
-                        type="text"
-                        required
-                        aria-required="true"
-                        aria-invalid={!!errors.studentName}
-                        value={formData.studentName || ''}
-                        onChange={(e) => handleInputChange('studentName', e.target.value)}
-                        placeholder={isAr ? 'مثال: محمد عبد الله' : 'e.g. Full Name'}
-                        className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
-                      />
-                      {errors.studentName && (
-                        <p className="text-xs text-red-600 mt-1 font-semibold" role="alert">{errors.studentName}</p>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="email" className="block text-xs font-bold text-slate-700 mb-1">
-                          {isAr ? 'البريد الإلكتروني' : 'Email Address'} <span className="text-red-500" aria-hidden="true">*</span>
-                        </label>
-                        <input
-                          id="email"
-                          type="email"
-                          required
-                          aria-required="true"
-                          aria-invalid={!!errors.email}
-                          value={formData.email || ''}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          placeholder="student@example.com"
-                          className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
-                        />
-                        {errors.email && (
-                          <p className="text-xs text-red-600 mt-1 font-semibold" role="alert">{errors.email}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label htmlFor="phone" className="block text-xs font-bold text-slate-700 mb-1">
-                          {isAr ? 'رقم الهاتف / واتساب' : 'WhatsApp / Phone'} <span className="text-red-500" aria-hidden="true">*</span>
-                        </label>
-                        <input
-                          id="phone"
-                          type="tel"
-                          required
-                          aria-required="true"
-                          aria-invalid={!!errors.phone}
-                          value={formData.phone || ''}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
-                          placeholder="+1 (555) 000-0000"
-                          className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
-                        />
-                        {errors.phone && (
-                          <p className="text-xs text-red-600 mt-1 font-semibold" role="alert">{errors.phone}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="courseInterest" className="block text-xs font-bold text-slate-700 mb-1">
-                        {isAr ? 'المسار الدراسي المطلوب' : 'Program of Interest'}
-                      </label>
-                      <select
-                        id="courseInterest"
-                        value={formData.courseInterest || ''}
-                        onChange={(e) => handleInputChange('courseInterest', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
-                      >
-                        {isCodingNiche ? (
-                          <>
-                            <option value="Full-Stack TypeScript & React 19 Mastery">Full-Stack TypeScript & React 19 Mastery</option>
-                            <option value="Python Algorithms & System Design">Python Algorithms & System Design</option>
-                            <option value="Cloud Architecture & Docker Containers">Cloud Architecture & Docker Containers</option>
-                          </>
-                        ) : (
-                          <>
-                            <option value="Foundations of Tajweed & Recitation">Foundations of Tajweed & Recitation</option>
-                            <option value="Intensive Hifz Memorization Track">Intensive Hifz Memorization Track</option>
-                            <option value="Qira'at & Ijazah Sanad Certification">Qira'at & Ijazah Sanad Certification</option>
-                          </>
-                        )}
-                      </select>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        <Send className="w-4 h-4" />
-                        <span>{isSubmitting ? (isAr ? 'جاري الإرسال...' : 'Submitting Application...') : (isAr ? 'إرسال طلب الالتحاق' : 'Submit Admissions Application')}</span>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </section>
           </>
         )}
       </main>
@@ -716,7 +979,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
           <div className="flex items-center gap-6 text-xs text-slate-400">
             <a href="#courses" className="hover:text-white transition-colors">Courses</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-            <a href="#admissions" className="hover:text-white transition-colors">Admissions</a>
+            <a href="#form" className="hover:text-white transition-colors">Admissions</a>
             <a href={`/${tenant.subdomain}/login`} className="text-blue-400 font-bold hover:underline">Student Portal</a>
           </div>
 
