@@ -9,6 +9,8 @@ import { NotificationProvider } from '../src/context/NotificationContext';
 import { PWAInstallToast } from '../src/components/ui/PWAInstallToast';
 import { AppPreloader } from '../src/components/ui/AppPreloader';
 
+import { ImpersonationBanner } from '../src/components/layout/ImpersonationBanner';
+
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Register PWA Service Worker
@@ -26,6 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <AuthProvider>
           <TenantProvider>
             <NotificationProvider>
+              <ImpersonationBanner />
               <AppPreloader />
               {children}
               <PWAInstallToast />

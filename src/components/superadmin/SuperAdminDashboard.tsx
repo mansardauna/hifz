@@ -454,6 +454,24 @@ export const SuperAdminDashboard: React.FC = () => {
     );
   };
 
+  // 1-Click Tenant Impersonation
+  const handleImpersonateTenant = (targetTenant: PlatformTenantStats) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'ankabit_impersonating',
+        JSON.stringify({
+          tenantId: targetTenant.id,
+          subdomain: targetTenant.subdomain,
+          name: targetTenant.name,
+          role: 'admin',
+          startedAt: new Date().toISOString(),
+        })
+      );
+    }
+    success('Impersonation Active 🕵️', `Switched into ${targetTenant.name} as Administrator.`);
+    window.location.href = `/${targetTenant.subdomain}/admin`;
+  };
+
   // Authentication Handler for SuperAdmin Gate
   const isSuperAdminAuthenticated = user?.role === 'superadmin';
 
@@ -1408,6 +1426,14 @@ export const SuperAdminDashboard: React.FC = () => {
                             </td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => handleImpersonateTenant(tenant)}
+                                  className="px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer border border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 flex items-center gap-1 shadow-2xs"
+                                  title="Impersonate Academy Administrator"
+                                >
+                                  <UserCheck className="w-3.5 h-3.5" />
+                                  <span>Impersonate</span>
+                                </button>
                                 <a
                                   href={`https://${tenant.subdomain}.ankabit.app`}
                                   target="_blank"

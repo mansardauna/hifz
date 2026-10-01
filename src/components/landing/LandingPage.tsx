@@ -286,7 +286,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
     tenant.subdomain.includes('demo')
   );
 
-  const hasPublishedContent = Boolean(liveHtml || (tenant.pageBlocks && tenant.pageBlocks.length > 0));
+  const builderSections = tenant.builderLayout?.sections as any[] | undefined;
+  const hasPublishedContent = Boolean(
+    liveHtml ||
+    (builderSections && builderSections.length > 0) ||
+    (tenant.pageBlocks && tenant.pageBlocks.length > 0)
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900" dir={direction}>
