@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, AdminTab } from '../layout/Sidebar';
+import { PuckPageBuilderStudio } from '../builder/PuckPageBuilderStudio';
 import { ModularSectionPageBuilder } from '../builder/ModularSectionPageBuilder';
 import { VisualFormBuilder } from '../builder/VisualFormBuilder';
 import { CourseBuilder } from './CourseBuilder';
@@ -356,7 +357,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 )
               )}
               {activeTab === 'page_builder' && (
-                <ModularSectionPageBuilder />
+                <PuckPageBuilderStudio />
               )}
               {activeTab === 'form_builder' && (
                 <VisualFormBuilder onAddToast={handleToast} />

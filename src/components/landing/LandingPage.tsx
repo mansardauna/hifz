@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Render } from '@measured/puck';
+import { createPuckConfig } from '../builder/puckConfig';
 import { useTenant } from '../../context/TenantContext';
 import { useAuth } from '../../context/AuthContext';
 import { Header } from './Header';
@@ -293,12 +295,37 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
     tenant.subdomain === 'madrasat-demo' ||
     tenant.subdomain === 'code-academy' ||
     tenant.subdomain === 'school-demo' ||
-    tenant.subdomain.includes('demo')
+    tenant.subdomain?.includes('demo')
+  );
+
+  const puckConfig = useMemo(
+    () =>
+      createPuckConfig({
+        tenant,
+        courses,
+        onEnroll: (plan) => {
+          setSelectedPlanForEnroll(plan);
+          setIsEnrollModalOpen(true);
+        },
+        onSubmitForm: async (fData, formId, formTitle) => {
+          setFormData(fData);
+          await handleSubmitAdmissions({ preventDefault: () => {} } as any, formId, formTitle);
+        },
+        isSubmittingForm: isSubmitting,
+      }),
+    [tenant, courses, isSubmitting]
+  );
+
+  const hasPuckLayout = Boolean(
+    tenant.builderLayout?.content &&
+    Array.isArray(tenant.builderLayout.content) &&
+    tenant.builderLayout.content.length > 0
   );
 
   const builderSections = tenant.builderLayout?.sections as any[] | undefined;
   const hasPublishedContent = Boolean(
     liveHtml ||
+    hasPuckLayout ||
     (builderSections && builderSections.length > 0) ||
     (tenant.pageBlocks && tenant.pageBlocks.length > 0)
   );
@@ -316,14 +343,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
 
       {/* Main Landmark */}
       <main id="main-content" role="main">
-        {/* If Tenant has customized and published via Page Builder / AI, render the live HTML */}
+        {/* 1. If Tenant has customized HTML, render liveHtml */}
         {liveHtml ? (
           <div>
             {liveCss && <style>{liveCss}</style>}
             <div dangerouslySetInnerHTML={{ __html: liveHtml }} />
           </div>
+        ) : hasPuckLayout ? (
+          /* 2. Visual Canvas Builder (Puck) Render */
+          <Render config={puckConfig} data={tenant.builderLayout} />
         ) : builderSections && builderSections.length > 0 ? (
-          /* Render Modular Builder Sections */
+          /* 3. Render Modular Builder Sections */
           <div className="space-y-0">
             {builderSections
               .filter((sec) => sec.enabled)
