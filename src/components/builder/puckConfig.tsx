@@ -21,6 +21,7 @@ import {
   Globe
 } from 'lucide-react';
 import { Course, PricingPlan, FormConfig } from '../../types';
+import { ThemedFormRenderer } from '../forms/ThemedFormRenderer';
 
 export interface PuckRootProps {
   title?: string;
@@ -479,92 +480,40 @@ export const createPuckConfig = (context: {
           buttonText: 'Submit Application',
         },
         render: ({ heading, subheading, formId, buttonText }) => {
-          const selectedForm: FormConfig | undefined = tenant.forms?.find((f: FormConfig) => f.id === formId) || tenant.forms?.[0];
-          const formFields = selectedForm?.fields && selectedForm.fields.length > 0
-            ? selectedForm.fields
-            : tenant.customFormFields && tenant.customFormFields.length > 0
-            ? tenant.customFormFields
-            : [
-                { id: 'studentName', label: 'Student Full Name', type: 'text' as const, required: true, width: 'full' as const },
-                { id: 'email', label: 'Email Address', type: 'email' as const, required: true, width: 'half' as const },
-                { id: 'phone', label: 'Phone Number', type: 'phone' as const, required: true, width: 'half' as const },
-              ];
+          const selectedForm: FormConfig = tenant.forms?.find((f: FormConfig) => f.id === formId) || tenant.forms?.[0] || {
+            id: formId || 'form-admissions',
+            title: heading || 'Direct Admissions & Placement Inquiry',
+            description: subheading || 'Submit your details for immediate review.',
+            fields: tenant.customFormFields && tenant.customFormFields.length > 0
+              ? tenant.customFormFields
+              : [
+                  { id: 'studentName', label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text' as const, required: true, width: 'full' as const },
+                  { id: 'email', label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email' as const, required: true, width: 'half' as const },
+                  { id: 'phone', label: 'Phone Number', labelAr: 'رقم الهاتف', type: 'phone' as const, required: true, width: 'half' as const },
+                ],
+            themeStyle: 'material',
+            accentColor: 'emerald',
+            acceptingResponses: true,
+            submitButtonText: buttonText || 'Submit Application',
+          };
 
-          const [localState, setLocalState] = useState<Record<string, any>>({});
+          const effectiveForm: FormConfig = {
+            ...selectedForm,
+            title: heading || selectedForm.title,
+            description: subheading || selectedForm.description,
+            submitButtonText: buttonText || selectedForm.submitButtonText || 'Submit Application',
+          };
 
           return (
             <section id="form" className="py-20 bg-slate-50 border-b border-slate-200">
               <div className="max-w-3xl mx-auto px-4 sm:px-6">
-                <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-md">
-                  <div className="text-center mb-8">
-                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">
-                      {selectedForm?.title || 'Admissions'}
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900">{heading}</h2>
-                    <p className="text-xs sm:text-sm text-slate-500 mt-2">{subheading || selectedForm?.description}</p>
-                  </div>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      onSubmitForm(localState, selectedForm?.id || formId, selectedForm?.title || heading);
-                    }}
-                    className="space-y-4"
-                  >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {formFields.map((field: any) => (
-                        <div key={field.id} className={field.width === 'full' ? 'sm:col-span-2' : 'sm:col-span-1'}>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">
-                            {field.label} {field.required && <span className="text-red-500">*</span>}
-                          </label>
-
-                          {field.type === 'select' ? (
-                            <select
-                              value={localState[field.id] || ''}
-                              onChange={(e) => setLocalState({ ...localState, [field.id]: e.target.value })}
-                              className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600"
-                              required={field.required}
-                            >
-                              <option value="">Select option...</option>
-                              {field.options?.map((opt: string, idx: number) => (
-                                <option key={idx} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          ) : field.type === 'textarea' ? (
-                            <textarea
-                              rows={3}
-                              value={localState[field.id] || ''}
-                              onChange={(e) => setLocalState({ ...localState, [field.id]: e.target.value })}
-                              placeholder={field.placeholder || ''}
-                              className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600"
-                              required={field.required}
-                            />
-                          ) : (
-                            <input
-                              type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
-                              value={localState[field.id] || ''}
-                              onChange={(e) => setLocalState({ ...localState, [field.id]: e.target.value })}
-                              placeholder={field.placeholder || ''}
-                              className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600"
-                              required={field.required}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="pt-4">
-                      <button
-                        type="submit"
-                        disabled={isSubmittingForm}
-                        className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        <Send className="w-4 h-4" />
-                        <span>{isSubmittingForm ? 'Submitting Application...' : (buttonText || 'Submit Application')}</span>
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                <ThemedFormRenderer
+                  form={effectiveForm}
+                  onSubmit={(data) => {
+                    onSubmitForm(data, effectiveForm.id, effectiveForm.title);
+                  }}
+                  isSubmitting={isSubmittingForm}
+                />
               </div>
             </section>
           );

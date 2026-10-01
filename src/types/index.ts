@@ -28,6 +28,8 @@ export interface FormFieldConfig {
   order?: number;
 }
 
+export type FormUiTheme = 'material' | 'glassmorphism' | 'minimalist' | 'islamic_heritage' | 'cyber_dark';
+
 export interface FormConfig {
   id: string;
   title: string;
@@ -39,6 +41,13 @@ export interface FormConfig {
   submissionsCount?: number;
   createdAt?: string;
   status?: 'active' | 'draft';
+  themeStyle?: FormUiTheme;
+  accentColor?: string;
+  headerBannerUrl?: string;
+  acceptingResponses?: boolean;
+  submitButtonText?: string;
+  submitButtonTextAr?: string;
+  customSuccessMessage?: string;
 }
 
 export interface PageBlock {

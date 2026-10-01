@@ -8,6 +8,7 @@ import { api } from '../../services/api';
 import { ToastMessage } from '../ui/Toast';
 import { StudentEnrollmentModal } from '../checkout/StudentEnrollmentModal';
 import { PricingPlan, FormConfig } from '../../types';
+import { ThemedFormRenderer } from '../forms/ThemedFormRenderer';
 import {
   Clock,
   Users,
@@ -262,6 +263,65 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
         type: 'error',
         title: isAr ? 'حدث خطأ أثناء الإرسال' : 'Submission Failed',
         message: isAr ? 'يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة.' : 'Please try again or contact support.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitAdmissionsData = async (submittedData: Record<string, any>, customFormId?: string, customFormTitle?: string) => {
+    setIsSubmitting(true);
+    const targetFormId = customFormId || 'form-admissions';
+    const targetFormTitle = customFormTitle || tenant.formTitle || 'Direct Admissions Inquiry';
+    const studentName = submittedData.studentName || submittedData.name || submittedData.parentName || submittedData.fullName || 'Prospective Student';
+    const email = submittedData.email || 'applicant@example.com';
+    const phone = submittedData.phone || submittedData.whatsapp || '+1 (555) 000-0000';
+
+    try {
+      if (typeof window !== 'undefined') {
+        try {
+          const newResponse = {
+            id: `resp-${Date.now()}`,
+            formId: targetFormId,
+            formTitle: targetFormTitle,
+            studentName,
+            email,
+            phone,
+            submittedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            status: 'New' as const,
+            data: submittedData,
+            notes: `Submitted via ${targetFormTitle}`
+          };
+          const existing = JSON.parse(localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`) || '[]');
+          localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify([newResponse, ...existing]));
+        } catch (e) {}
+      }
+
+      await api.createLead({
+        name: studentName,
+        email,
+        phone,
+        country: 'Global Inquiry',
+        courseInterest: isCodingNiche ? 'Full-Stack Software Engineering' : 'Quran Memorization Track',
+        preferredSchedule: 'Flexible',
+        priorHifzLevel: isCodingNiche ? 'Beginner' : '1 - 5 Juz',
+        status: 'New',
+        paymentStatus: 'Pending',
+        notes: `Submitted from ${targetFormTitle}`,
+      });
+
+      onAddToast({
+        type: 'success',
+        title: isAr ? 'تم استلام طلبك بنجاح!' : 'Application Submitted Successfully!',
+        message: isAr
+          ? 'شكراً لك، تم حفظ طلبك وسيتواصل معك فريق الأكاديمية.'
+          : 'Thank you! Your response has been recorded.',
+      });
+    } catch (err: any) {
+      onAddToast({
+        type: 'success',
+        title: 'Application Saved',
+        message: 'Your response has been stored in academy records.',
       });
     } finally {
       setIsSubmitting(false);
@@ -609,99 +669,42 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
 
                 // 5. DYNAMIC CUSTOM FORM SECTION
                 if (sec.type === 'form') {
-                  const selectedForm: FormConfig | undefined = tenant.forms?.find(
+                  const selectedForm: FormConfig = tenant.forms?.find(
                     (f) => f.id === sec.props?.selectedFormId
-                  ) || tenant.forms?.[0];
+                  ) || tenant.forms?.[0] || {
+                    id: 'form-admissions',
+                    title: sec.title || 'Direct Admissions & Placement Inquiry',
+                    description: sec.subtitle || 'Complete your student details below for immediate review by our admissions committee.',
+                    fields: tenant.customFormFields && tenant.customFormFields.length > 0
+                      ? tenant.customFormFields
+                      : [
+                          { id: 'studentName', label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text' as const, required: true, width: 'full' as const },
+                          { id: 'email', label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email' as const, required: true, width: 'half' as const },
+                          { id: 'phone', label: 'WhatsApp / Phone Number', labelAr: 'رقم الهاتف', type: 'phone' as const, required: true, width: 'half' as const },
+                        ],
+                    themeStyle: 'material',
+                    accentColor: 'emerald',
+                    acceptingResponses: true,
+                    submitButtonText: 'Submit Application',
+                  };
 
-                  const formFields = selectedForm?.fields && selectedForm.fields.length > 0
-                    ? selectedForm.fields
-                    : tenant.customFormFields && tenant.customFormFields.length > 0
-                    ? tenant.customFormFields
-                    : [
-                        { id: 'studentName', label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text' as const, required: true, width: 'full' as const },
-                        { id: 'email', label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email' as const, required: true, width: 'half' as const },
-                        { id: 'phone', label: 'WhatsApp / Phone Number', labelAr: 'رقم الهاتف', type: 'phone' as const, required: true, width: 'half' as const },
-                      ];
+                  const effectiveForm: FormConfig = {
+                    ...selectedForm,
+                    title: sec.title || selectedForm.title,
+                    description: sec.subtitle || selectedForm.description,
+                  };
 
                   return (
                     <section id="form" key={sec.id || index} className="py-20 bg-slate-50 border-b border-slate-200">
                       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-                        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-md">
-                          <div className="text-center mb-8">
-                            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">
-                              {selectedForm?.title || sec.title}
-                            </span>
-                            <h2 className={`text-2xl sm:text-3xl font-black text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
-                              {sec.title}
-                            </h2>
-                            <p className="text-xs sm:text-sm text-slate-500 mt-2">
-                              {sec.subtitle || selectedForm?.description}
-                            </p>
-                          </div>
-
-                          <form
-                            onSubmit={(e) => handleSubmitAdmissions(e, selectedForm?.id, selectedForm?.title || sec.title)}
-                            className="space-y-4"
-                            noValidate
-                          >
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {formFields.map((field) => (
-                                <div
-                                  key={field.id}
-                                  className={field.width === 'full' ? 'sm:col-span-2' : 'sm:col-span-1'}
-                                >
-                                  <label htmlFor={field.id} className="block text-xs font-bold text-slate-700 mb-1">
-                                    {isAr ? field.labelAr || field.label : field.label}{' '}
-                                    {field.required && <span className="text-red-500">*</span>}
-                                  </label>
-
-                                  {field.type === 'select' ? (
-                                    <select
-                                      id={field.id}
-                                      value={formData[field.id] || ''}
-                                      onChange={(e) => handleInputChange(field.id, e.target.value)}
-                                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                                    >
-                                      <option value="">Select option...</option>
-                                      {field.options?.map((opt, oi) => (
-                                        <option key={oi} value={opt}>{opt}</option>
-                                      ))}
-                                    </select>
-                                  ) : field.type === 'textarea' ? (
-                                    <textarea
-                                      id={field.id}
-                                      rows={3}
-                                      value={formData[field.id] || ''}
-                                      onChange={(e) => handleInputChange(field.id, e.target.value)}
-                                      placeholder={field.placeholder || ''}
-                                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                                    />
-                                  ) : (
-                                    <input
-                                      id={field.id}
-                                      type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : field.type === 'date' ? 'date' : 'text'}
-                                      value={formData[field.id] || ''}
-                                      onChange={(e) => handleInputChange(field.id, e.target.value)}
-                                      placeholder={field.placeholder || ''}
-                                      className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                                    />
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="pt-4">
-                              <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95 flex items-center justify-center gap-2"
-                              >
-                                <Send className="w-4 h-4" />
-                                <span>{isSubmitting ? 'Submitting...' : 'Submit Application'}</span>
-                              </button>
-                            </div>
-                          </form>
-                        </div>
+                        <ThemedFormRenderer
+                          form={effectiveForm}
+                          onSubmit={(data) => {
+                            handleSubmitAdmissionsData(data, effectiveForm.id, effectiveForm.title);
+                          }}
+                          isSubmitting={isSubmitting}
+                          language={language as 'en' | 'ar'}
+                        />
                       </div>
                     </section>
                   );

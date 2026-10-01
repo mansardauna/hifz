@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { FormFieldConfig, FormConfig, FieldType, FieldWidth } from '../../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { FormFieldConfig, FormConfig, FieldType, FieldWidth, FormUiTheme } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
+import { ThemedFormRenderer, THEME_COLOR_MAP } from '../forms/ThemedFormRenderer';
 import {
   Plus,
   Trash2,
@@ -33,93 +34,69 @@ import {
   Play,
   X,
   Send,
-  AlertCircle
+  AlertCircle,
+  Download,
+  Search,
+  Filter,
+  BarChart3,
+  Sliders,
+  ExternalLink,
+  Clock,
+  UserCheck,
+  XCircle,
+  MessageSquare
 } from 'lucide-react';
+import { Badge, DataTablePagination } from '../ui';
 
 interface VisualFormBuilderProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
 }
 
-export type FormTheme = 'emerald' | 'blue' | 'purple' | 'amber' | 'slate';
-
-interface FormThemeConfig {
-  name: string;
-  primaryColor: string;
-  accentBg: string;
-  badgeBg: string;
-  buttonClass: string;
-  ringClass: string;
+export interface FormResponseItem {
+  id: string;
+  formId: string;
+  formTitle: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  submittedAt: string;
+  status: 'New' | 'Under Review' | 'Interview Scheduled' | 'Admitted' | 'Rejected';
+  data: Record<string, any>;
+  notes?: string;
 }
 
-const THEMES: Record<FormTheme, FormThemeConfig> = {
-  emerald: {
-    name: 'Emerald Green',
-    primaryColor: '#059669',
-    accentBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    badgeBg: 'bg-emerald-500',
-    buttonClass: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-    ringClass: 'focus:ring-emerald-500 border-emerald-600 ring-2 ring-emerald-500/20',
-  },
-  blue: {
-    name: 'Royal Blue',
-    primaryColor: '#2563eb',
-    accentBg: 'bg-blue-50 text-blue-800 border-blue-200',
-    badgeBg: 'bg-blue-500',
-    buttonClass: 'bg-blue-600 hover:bg-blue-700 text-white',
-    ringClass: 'focus:ring-blue-500 border-blue-600 ring-2 ring-blue-500/20',
-  },
-  purple: {
-    name: 'Radiant Violet',
-    primaryColor: '#7c3aed',
-    accentBg: 'bg-purple-50 text-purple-800 border-purple-200',
-    badgeBg: 'bg-purple-500',
-    buttonClass: 'bg-purple-600 hover:bg-purple-700 text-white',
-    ringClass: 'focus:ring-purple-500 border-purple-600 ring-2 ring-purple-500/20',
-  },
-  amber: {
-    name: 'Amber Gold',
-    primaryColor: '#d97706',
-    accentBg: 'bg-amber-50 text-amber-800 border-amber-200',
-    badgeBg: 'bg-amber-500',
-    buttonClass: 'bg-amber-600 hover:bg-amber-700 text-white',
-    ringClass: 'focus:ring-amber-500 border-amber-600 ring-2 ring-amber-500/20',
-  },
-  slate: {
-    name: 'Modern Slate',
-    primaryColor: '#334155',
-    accentBg: 'bg-slate-100 text-slate-800 border-slate-300',
-    badgeBg: 'bg-slate-700',
-    buttonClass: 'bg-slate-800 hover:bg-slate-900 text-white',
-    ringClass: 'focus:ring-slate-500 border-slate-700 ring-2 ring-slate-700/20',
-  },
-};
+type FormStudioTab = 'questions' | 'responses' | 'themes' | 'preview_embed';
 
 export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast }) => {
   const { tenant, updateTenantConfig, language, direction } = useTenant();
+  const isAr = language === 'ar';
 
   const isDemoAcademy = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo'].includes(tenant.subdomain || '');
 
-  // Initialize forms list from tenant or defaults for demo tenants
+  // Initialize forms list from tenant
   const initialForms: FormConfig[] = tenant.forms && tenant.forms.length > 0
     ? tenant.forms
     : isDemoAcademy
     ? [
         {
           id: 'form-admissions',
-          title: tenant.formTitle || 'Direct Admissions & Evaluation Inquiry',
+          title: tenant.formTitle || 'Direct Admissions & Placement Inquiry',
           titleAr: 'نموذج القبول وتقييم المستوى',
-          description: tenant.formDescription || 'Fill out your prospective student details below for immediate review by our admissions committee.',
+          description: tenant.formDescription || 'Complete your student details below for immediate review by our admissions committee.',
           isDefault: true,
           status: 'active',
+          themeStyle: 'material',
+          accentColor: 'emerald',
+          acceptingResponses: true,
           submissionsCount: 48,
           createdAt: '2026-08-01',
-          fields: tenant.customFormFields && tenant.customFormFields.length > 0
-            ? tenant.customFormFields
-            : [
-                { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
-                { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 },
-                { id: 'preferredTime', label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 3 }
-              ]
+          submitButtonText: 'Submit Application',
+          submitButtonTextAr: 'إرسال طلب القبول',
+          fields: [
+            { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
+            { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 },
+            { id: 'preferredTime', label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 3 }
+          ]
         },
         {
           id: 'form-ijazah',
@@ -128,27 +105,35 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           description: 'Application for students seeking unbroken Sanad chains and complete oral recitation verification.',
           isDefault: false,
           status: 'active',
+          themeStyle: 'islamic_heritage',
+          accentColor: 'emerald',
+          acceptingResponses: true,
           submissionsCount: 14,
           createdAt: '2026-08-10',
+          submitButtonText: 'Submit Sanad Application',
           fields: [
             { id: 'priorCertification', label: 'Prior Tajweed Certifications (e.g. Tuhfat al-Atfal, Jazariyyah)', labelAr: 'المتون المحفوظة (تحفة الأطفال، الجزرية)', type: 'text', required: true, placeholder: 'List certified texts...', width: 'full', order: 1 },
-            { id: 'qiraahPreference', label: 'Target Qira\'ah Track', labelAr: 'الرواية المطلوبة', type: 'select', required: true, options: ['Hafs \'an \'Asim (حفص عن عاصم)', 'Warsh \'an Nafi\' (ورش عن نافع)', 'Qalun \'an Nafi\' (قالون عن نافع)', 'Shu\'bah \'an \'Asim (شعبة عن عاصم)'], width: 'half', order: 2 },
+            { id: 'qiraahPreference', label: 'Target Qira\'ah Track', labelAr: 'الرواية المطلوبة', type: 'select', required: true, options: ['Hafs \'an \'Asim (حفص عن عاصم)', 'Warsh \'an Nafi\' (ورش عن نافع)', 'Qalun \'an Nafi\' (قالون عن نافع)'], width: 'half', order: 2 },
             { id: 'weeklyAvailability', label: 'Hours Dedicated Weekly for Muraja\'ah', labelAr: 'ساعات المراجعة الأسبوعية', type: 'select', required: true, options: ['5 - 10 hours', '10 - 20 hours', '20+ hours (Intensive)'], width: 'half', order: 3 }
           ]
         },
         {
-          id: 'form-summer-camp',
-          title: 'Summer Intensive Hifz Camp Registration',
-          titleAr: 'التسجيل في المخيم الصيفي المكثف',
-          description: '6-week accelerated Quran memorization and Arabic immersion camp for youth and children.',
+          id: 'form-tech-assessment',
+          title: 'Coding Bootcamp Entrance Assessment',
+          titleAr: 'تقييم القبول لمعسكر البرمجة',
+          description: 'Application for aspiring software engineers and full-stack developers.',
           isDefault: false,
           status: 'active',
-          submissionsCount: 32,
+          themeStyle: 'cyber_dark',
+          accentColor: 'blue',
+          acceptingResponses: true,
+          submissionsCount: 22,
           createdAt: '2026-08-15',
+          submitButtonText: 'Submit Assessment',
           fields: [
-            { id: 'childAge', label: 'Student Age (6 - 17 years)', labelAr: 'عمر الطالب', type: 'select', required: true, options: ['6 - 9 Years', '10 - 13 Years', '14 - 17 Years'], width: 'half', order: 1 },
-            { id: 'targetJuzCount', label: 'Summer Memorization Goal', labelAr: 'الهدف الصيفي', type: 'select', required: true, options: ['1 New Juz + Revision', '2 New Juz', '3 New Juz (Accelerated Track)'], width: 'half', order: 2 },
-            { id: 'emergencyContact', label: 'Emergency Phone Number', labelAr: 'رقم هاتف الطوارئ', type: 'phone', required: true, placeholder: '+966 55 000 0000', width: 'full', order: 3 }
+            { id: 'githubUrl', label: 'GitHub / Portfolio URL', labelAr: 'رابط ملف جيت هاب', type: 'text', required: false, placeholder: 'https://github.com/username', width: 'half', order: 1 },
+            { id: 'experienceLevel', label: 'Prior Coding Background', labelAr: 'الخبرة السابقة', type: 'select', required: true, options: ['Absolute Beginner', 'HTML/CSS/JS Basics', 'Intermediate React/Node'], width: 'half', order: 2 },
+            { id: 'trackGoal', label: 'Target Track Goal', labelAr: 'الهدف من المعسكر', type: 'textarea', required: true, placeholder: 'Describe your transition goals...', width: 'full', order: 3 }
           ]
         }
       ]
@@ -156,31 +141,120 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
 
   const [formsList, setFormsList] = useState<FormConfig[]>(initialForms);
   const [editingFormId, setEditingFormId] = useState<string | null>(null);
-  const [activeTheme, setActiveTheme] = useState<FormTheme>('emerald');
-
-  // Interactive Live Preview Modal State
-  const [previewModalForm, setPreviewModalForm] = useState<FormConfig | null>(null);
-  const [previewFormData, setPreviewFormData] = useState<Record<string, any>>({});
-  const [previewErrors, setPreviewErrors] = useState<Record<string, string>>({});
-  const [previewSubmitted, setPreviewSubmitted] = useState<boolean>(false);
-
-  // Active form being edited
-  const activeEditingForm = formsList.find((f) => f.id === editingFormId) || null;
+  const [activeStudioTab, setActiveStudioTab] = useState<FormStudioTab>('questions');
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
-  const isAr = language === 'ar';
+  // Active form currently opened in the studio
+  const activeForm = useMemo(() => {
+    return formsList.find((f) => f.id === editingFormId) || null;
+  }, [formsList, editingFormId]);
 
-  const paletteComponents: { type: FieldType; label: string; icon: any }[] = [
-    { type: 'text', label: 'Text Input', icon: Type },
-    { type: 'email', label: 'Email Input', icon: Mail },
-    { type: 'phone', label: 'Phone / WhatsApp', icon: Phone },
-    { type: 'select', label: 'Dropdown Select', icon: List },
-    { type: 'date', label: 'Date Picker', icon: Calendar },
-    { type: 'file', label: 'File Attachment', icon: UploadCloud },
-    { type: 'textarea', label: 'Text Area', icon: FileText },
-  ];
+  // Load All Submissions from localStorage
+  const [allResponses, setAllResponses] = useState<FormResponseItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`);
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+    }
+    return isDemoAcademy ? [
+      {
+        id: 'resp-1',
+        formId: 'form-admissions',
+        formTitle: 'Direct Admissions & Placement Inquiry',
+        studentName: 'Zaid Al-Harithi',
+        email: 'zaid@example.com',
+        phone: '+966 50 123 4567',
+        submittedAt: '2026-09-02 14:30',
+        status: 'New',
+        data: {
+          'Parent / Guardian Name': 'Ibrahim Al-Harithi',
+          'Current Juz Memorized': '6 - 15 Juz',
+          'Preferred Class Timing': 'Evening (Isha-Night)',
+        }
+      },
+      {
+        id: 'resp-2',
+        formId: 'form-admissions',
+        formTitle: 'Direct Admissions & Placement Inquiry',
+        studentName: 'Amina Khatun',
+        email: 'amina@example.com',
+        phone: '+44 7700 900123',
+        submittedAt: '2026-09-01 09:15',
+        status: 'Under Review',
+        data: {
+          'Parent / Guardian Name': 'Farooq Khatun',
+          'Current Juz Memorized': '1 - 5 Juz',
+          'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
+        }
+      },
+      {
+        id: 'resp-3',
+        formId: 'form-ijazah',
+        formTitle: 'Sanad Ijazah & Khatmah Application',
+        studentName: 'Tariq Mansoor',
+        email: 'tariq.mansoor@example.com',
+        phone: '+1 (555) 234-8899',
+        submittedAt: '2026-08-30 18:45',
+        status: 'Admitted',
+        data: {
+          'Prior Tajweed Certifications': 'Tuhfat al-Atfal & Jazariyyah completed',
+          'Target Qira\'ah Track': 'Hafs \'an \'Asim',
+          'Weekly Availability': '10 - 20 hours',
+        }
+      },
+      {
+        id: 'resp-4',
+        formId: 'form-tech-assessment',
+        formTitle: 'Coding Bootcamp Entrance Assessment',
+        studentName: 'Karim Bennani',
+        email: 'karim@techdev.io',
+        phone: '+33 6 12 34 56 78',
+        submittedAt: '2026-09-10 11:20',
+        status: 'Interview Scheduled',
+        data: {
+          'GitHub / Portfolio URL': 'https://github.com/kbennani',
+          'Prior Coding Background': 'HTML/CSS/JS Basics',
+          'Target Track Goal': 'Full-Stack React & Next.js transition'
+        }
+      }
+    ] : [];
+  });
 
-  // Helper to persist forms
+  // Responses dedicated to the currently opened form
+  const currentFormResponses = useMemo(() => {
+    if (!activeForm) return [];
+    return allResponses.filter((r) => r.formId === activeForm.id);
+  }, [allResponses, activeForm]);
+
+  // Responses Tab State: Search, Filter, Pagination, Inspection Modal
+  const [responseSearchQuery, setResponseSearchQuery] = useState('');
+  const [responseStatusFilter, setResponseStatusFilter] = useState<string>('All');
+  const [selectedResponseForModal, setSelectedResponseForModal] = useState<FormResponseItem | null>(null);
+  const [responsePage, setResponsePage] = useState(1);
+  const responsesPerPage = 8;
+
+  const filteredResponses = useMemo(() => {
+    return currentFormResponses.filter((resp) => {
+      const matchSearch =
+        resp.studentName.toLowerCase().includes(responseSearchQuery.toLowerCase()) ||
+        resp.email.toLowerCase().includes(responseSearchQuery.toLowerCase()) ||
+        resp.phone.toLowerCase().includes(responseSearchQuery.toLowerCase()) ||
+        Object.values(resp.data || {}).some((v) =>
+          String(v).toLowerCase().includes(responseSearchQuery.toLowerCase())
+        );
+      const matchStatus = responseStatusFilter === 'All' || resp.status === responseStatusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [currentFormResponses, responseSearchQuery, responseStatusFilter]);
+
+  const totalResponsePages = Math.max(1, Math.ceil(filteredResponses.length / responsesPerPage));
+  const paginatedResponses = filteredResponses.slice(
+    (responsePage - 1) * responsesPerPage,
+    responsePage * responsesPerPage
+  );
+
+  // Save changes to tenant and local storage
   const persistForms = (newForms: FormConfig[]) => {
     setFormsList(newForms);
     const defaultForm = newForms.find((f) => f.isDefault) || newForms[0];
@@ -192,1119 +266,1186 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
     });
   };
 
-  // AI Form Generator State
-  const [isAiFormModalOpen, setIsAiFormModalOpen] = useState<boolean>(false);
-  const [aiFormGoal, setAiFormGoal] = useState<string>('');
-  const [isGeneratingFormWithAi, setIsGeneratingFormWithAi] = useState<boolean>(false);
-
-  const handleGenerateFormWithAi = (presetGoal?: string) => {
-    const goal = presetGoal || aiFormGoal;
-    setIsGeneratingFormWithAi(true);
-
-    setTimeout(() => {
-      const formId = `form-${Date.now()}`;
-      let title = 'AI Generated Admissions Application';
-      let titleAr = 'نموذج القبول الذكي';
-      let description = 'Please complete the questionnaire below for immediate academic evaluation.';
-      let fields: FormFieldConfig[] = [];
-
-      const lowerGoal = (goal || '').toLowerCase();
-
-      if (lowerGoal.includes('placement') || lowerGoal.includes('evaluat') || lowerGoal.includes('tajweed') || lowerGoal.includes('hifz') || lowerGoal.includes('quran')) {
-        title = 'Tajweed & Memorization Placement Evaluation';
-        titleAr = 'تقييم مستوى التجويد والحفظ';
-        description = 'Evaluate recitation proficiency, Makharij clarity, and prior memorized Juz.';
-        fields = [
-          { id: `fld_name_${Date.now()}`, label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text', required: true, placeholder: 'e.g. Bilal Ibrahim', width: 'half', order: 1 },
-          { id: `fld_email_${Date.now()}`, label: 'Guardian / Contact Email', labelAr: 'البريد الإلكتروني لولي الأمر', type: 'email', required: true, placeholder: 'parent@example.com', width: 'half', order: 2 },
-          { id: `fld_phone_${Date.now()}`, label: 'WhatsApp / Phone', labelAr: 'رقم الواتساب', type: 'phone', required: true, placeholder: '+966 50 000 0000', width: 'half', order: 3 },
-          { id: `fld_juz_${Date.now()}`, label: 'Current Juz Memorized', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 4 },
-          { id: `fld_rules_${Date.now()}`, label: 'Familiarity with Tajweed Rules (Noon Sakinah, Madd)', labelAr: 'المعرفة بأحكام التجويد', type: 'select', required: true, options: ['Beginner (No Prior Rules)', 'Intermediate (Know Basic Rules)', 'Advanced (Studied Tuhfah/Jazariyyah)'], width: 'half', order: 5 },
-          { id: `fld_audio_${Date.now()}`, label: 'Audio Recitation Sample (Surah Al-Fatihah or Any Surah)', labelAr: 'تسجيل صوتي للتلاوة (الفاتحة أو أي سورة)', type: 'file', required: false, width: 'half', order: 6 },
-          { id: `fld_schedule_${Date.now()}`, label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 7 },
-          { id: `fld_goals_${Date.now()}`, label: 'Personal Memorization Goal for Next 6 Months', labelAr: 'الهدف القرآني للأشهر الستة القادمة', type: 'textarea', required: false, placeholder: 'Describe your goals...', width: 'full', order: 8 },
-        ];
-      } else if (lowerGoal.includes('code') || lowerGoal.includes('bootcamp') || lowerGoal.includes('software')) {
-        title = 'Full-Stack Developer Bootcamp Application';
-        titleAr = 'طلب الالتحاق بمعسكر البرمجة';
-        description = 'Application for aspiring software engineers and cloud architects.';
-        fields = [
-          { id: `fld_name_${Date.now()}`, label: 'Applicant Name', labelAr: 'اسم المتقدم', type: 'text', required: true, placeholder: 'e.g. Alex Morgan', width: 'half', order: 1 },
-          { id: `fld_email_${Date.now()}`, label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'alex@example.com', width: 'half', order: 2 },
-          { id: `fld_github_${Date.now()}`, label: 'GitHub / Portfolio URL', labelAr: 'رابط ملف جيت هاب', type: 'text', required: false, placeholder: 'https://github.com/username', width: 'half', order: 3 },
-          { id: `fld_exp_${Date.now()}`, label: 'Prior Coding Experience', labelAr: 'الخبرة السابقة في البرمجة', type: 'select', required: true, options: ['Absolute Beginner', 'HTML/CSS/JS Basics', 'Built Simple Web Apps', 'Intermediate Programmer'], width: 'half', order: 4 },
-          { id: `fld_hours_${Date.now()}`, label: 'Weekly Hours Dedicated to Practice', labelAr: 'ساعات التفرغ الأسبوعية', type: 'select', required: true, options: ['10 - 15 Hours (Part-Time)', '20 - 30 Hours', '40+ Hours (Full Immersion)'], width: 'half', order: 5 },
-          { id: `fld_track_${Date.now()}`, label: 'Desired Career Track', labelAr: 'المسار المهني المطلوب', type: 'select', required: true, options: ['Full-Stack React & Next.js', 'AI Systems & Cloud Backend', 'Frontend Architecture'], width: 'half', order: 6 },
-          { id: `fld_motivation_${Date.now()}`, label: 'Why do you want to join this cohort?', labelAr: 'ما هو دافعك للانضمام؟', type: 'textarea', required: true, placeholder: 'Tell us about your career transition goals...', width: 'full', order: 7 },
-        ];
-      } else if (lowerGoal.includes('scholarship') || lowerGoal.includes('aid') || lowerGoal.includes('financial')) {
-        title = 'Tuition Assistance & Scholarship Request';
-        titleAr = 'طلب منحة دراسية ومساعدة مالية';
-        description = 'Application for need-based tuition subsidy and educational sponsorships.';
-        fields = [
-          { id: `fld_name_${Date.now()}`, label: 'Applicant / Guardian Name', labelAr: 'اسم المتقدم أو ولي الأمر', type: 'text', required: true, placeholder: 'Full Name...', width: 'half', order: 1 },
-          { id: `fld_email_${Date.now()}`, label: 'Contact Email', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'contact@example.com', width: 'half', order: 2 },
-          { id: `fld_phone_${Date.now()}`, label: 'Phone Number', labelAr: 'رقم الهاتف', type: 'phone', required: true, placeholder: '+1 (555) 000-0000', width: 'half', order: 3 },
-          { id: `fld_dependents_${Date.now()}`, label: 'Number of Students Enrolling', labelAr: 'عدد الطلاب المسجلين', type: 'select', required: true, options: ['1 Student', '2 Students', '3+ Students (Family Discount)'], width: 'half', order: 4 },
-          { id: `fld_subsidy_${Date.now()}`, label: 'Requested Assistance Level', labelAr: 'نسبة الدعم المطلوبة', type: 'select', required: true, options: ['Partial Scholarship (50% Off)', 'Significant Assistance (75% Off)', 'Full Tuition Sponsorship (100% Need-Based)'], width: 'half', order: 5 },
-          { id: `fld_circumstance_${Date.now()}`, label: 'Statement of Need & Dedication', labelAr: 'شرح الوضع المالي والالتزام', type: 'textarea', required: true, placeholder: 'Please share your family situation and commitment to completing the track...', width: 'full', order: 6 },
-        ];
-      } else {
-        title = goal || 'General Admissions & Course Inquiry';
-        fields = [
-          { id: `fld_name_${Date.now()}`, label: 'Student Full Name', labelAr: 'اسم الطالب الكامل', type: 'text', required: true, placeholder: 'Enter name...', width: 'half', order: 1 },
-          { id: `fld_email_${Date.now()}`, label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'email@example.com', width: 'half', order: 2 },
-          { id: `fld_phone_${Date.now()}`, label: 'Phone / WhatsApp', labelAr: 'رقم الهاتف', type: 'phone', required: true, placeholder: '+1 000 000 0000', width: 'half', order: 3 },
-          { id: `fld_level_${Date.now()}`, label: 'Current Proficiency Level', labelAr: 'المستوى الحالي', type: 'select', required: true, options: ['Beginner', 'Intermediate', 'Advanced'], width: 'half', order: 4 },
-          { id: `fld_notes_${Date.now()}`, label: 'Questions / Special Requests', labelAr: 'أي أسئلة أو طلبات خاصة', type: 'textarea', required: false, placeholder: 'How can our academy assist you?', width: 'full', order: 5 },
-        ];
-      }
-
-      const newForm: FormConfig = {
-        id: formId,
-        title,
-        titleAr,
-        description,
-        isDefault: formsList.length === 0,
-        status: 'active',
-        submissionsCount: 0,
-        createdAt: new Date().toISOString().split('T')[0],
-        fields,
-      };
-
-      const updated = [...formsList, newForm];
-      persistForms(updated);
-      setEditingFormId(formId);
-      setSelectedFieldId(newForm.fields[0]?.id || null);
-      setIsGeneratingFormWithAi(false);
-      setIsAiFormModalOpen(false);
-      setAiFormGoal('');
-
-      onAddToast({
-        type: 'success',
-        title: 'AI Form Generated Successfully!',
-        message: `Created "${newForm.title}" with ${newForm.fields.length} customized fields.`,
-      });
-    }, 600);
+  const persistResponses = (updated: FormResponseItem[]) => {
+    setAllResponses(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`tenant_form_responses_${tenant.subdomain}`, JSON.stringify(updated));
+    }
   };
 
-  // Create a new form
+  // Status changer for response
+  const handleUpdateResponseStatus = (respId: string, newStatus: FormResponseItem['status']) => {
+    const updated = allResponses.map((r) => (r.id === respId ? { ...r, status: newStatus } : r));
+    persistResponses(updated);
+    onAddToast({
+      type: 'success',
+      title: 'Status Updated',
+      message: `Response marked as "${newStatus}".`,
+    });
+  };
+
+  // Delete single response
+  const handleDeleteResponse = (respId: string) => {
+    const updated = allResponses.filter((r) => r.id !== respId);
+    persistResponses(updated);
+    if (activeForm) {
+      const count = updated.filter((r) => r.formId === activeForm.id).length;
+      const updatedForms = formsList.map((f) =>
+        f.id === activeForm.id ? { ...f, submissionsCount: count } : f
+      );
+      persistForms(updatedForms);
+    }
+    onAddToast({
+      type: 'info',
+      title: 'Response Deleted',
+      message: 'Submission removed from form records.',
+    });
+  };
+
+  // Export CSV for this form only
+  const handleExportFormCsv = () => {
+    if (!activeForm || currentFormResponses.length === 0) {
+      onAddToast({
+        type: 'info',
+        title: 'No Data',
+        message: 'No submissions available to export for this form.',
+      });
+      return;
+    }
+
+    const headers = ['Response ID', 'Student Name', 'Email', 'Phone', 'Status', 'Submitted At', ...activeForm.fields.map(f => f.label)];
+    const rows = currentFormResponses.map(r => [
+      r.id,
+      `"${r.studentName}"`,
+      `"${r.email}"`,
+      `"${r.phone}"`,
+      `"${r.status}"`,
+      `"${r.submittedAt}"`,
+      ...activeForm.fields.map(f => `"${r.data[f.label] || r.data[f.id] || ''}"`)
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${activeForm.title.toLowerCase().replace(/\s+/g, '_')}_responses.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    onAddToast({
+      type: 'success',
+      title: 'CSV Exported',
+      message: `Downloaded ${currentFormResponses.length} submissions.`,
+    });
+  };
+
+  // Create New Form
   const handleCreateNewForm = () => {
-    const newFormId = `form-${Date.now()}`;
+    const newId = `form-${Date.now()}`;
     const newForm: FormConfig = {
-      id: newFormId,
+      id: newId,
       title: 'New Student Intake Form',
-      description: 'Please complete the questionnaire below for academy registration.',
+      titleAr: 'نموذج تسجيل جديد',
+      description: 'Please complete the questionnaire below for admission.',
       isDefault: formsList.length === 0,
       status: 'active',
+      themeStyle: 'material',
+      accentColor: 'emerald',
+      acceptingResponses: true,
       submissionsCount: 0,
       createdAt: new Date().toISOString().split('T')[0],
+      submitButtonText: 'Submit Application',
       fields: [
-        { id: `fld_name_${Date.now()}`, label: 'Applicant Full Name', labelAr: 'الاسم الكامل', type: 'text', required: true, placeholder: 'Enter full name...', width: 'half', order: 1 },
-        { id: `fld_email_${Date.now()}`, label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email', required: true, placeholder: 'applicant@example.com', width: 'half', order: 2 },
-        { id: `fld_notes_${Date.now()}`, label: 'Prior Quran Background', labelAr: 'الخلفية القرآنية', type: 'textarea', required: false, placeholder: 'Describe your prior studies...', width: 'full', order: 3 },
-      ],
+        { id: `fld_${Date.now()}_1`, label: 'Student Full Name', labelAr: 'اسم الطالب', type: 'text', required: true, width: 'half', order: 1 },
+        { id: `fld_${Date.now()}_2`, label: 'Email Address', labelAr: 'البريد الإلكتروني', type: 'email', required: true, width: 'half', order: 2 },
+        { id: `fld_${Date.now()}_3`, label: 'Phone / WhatsApp', labelAr: 'رقم الهاتف', type: 'phone', required: true, width: 'half', order: 3 },
+        { id: `fld_${Date.now()}_4`, label: 'Current Proficiency Level', labelAr: 'المستوى الحالي', type: 'select', required: true, options: ['Beginner', 'Intermediate', 'Advanced'], width: 'half', order: 4 },
+      ]
     };
 
     const updated = [...formsList, newForm];
     persistForms(updated);
-    setEditingFormId(newFormId);
+    setEditingFormId(newId);
+    setActiveStudioTab('questions');
     setSelectedFieldId(newForm.fields[0].id);
-    onAddToast({ type: 'success', title: 'New Form Created', message: 'Form added. Customize its fields and preview.' });
+
+    onAddToast({
+      type: 'success',
+      title: 'Form Created',
+      message: 'Created new form with default starter fields.',
+    });
   };
 
-  // Duplicate an existing form
-  const handleDuplicateForm = (form: FormConfig) => {
-    const duplicated: FormConfig = {
-      ...form,
-      id: `form-${Date.now()}`,
-      title: `${form.title} (Copy)`,
-      isDefault: false,
-      submissionsCount: 0,
-      createdAt: new Date().toISOString().split('T')[0],
-      fields: form.fields.map((fld) => ({ ...fld, id: `fld_${Date.now()}_${Math.random().toString(36).substring(2, 6)}` })),
+  // Add Question to Active Form
+  const handleAddField = (type: FieldType = 'text') => {
+    if (!activeForm) return;
+    const newFieldId = `fld_${Date.now()}`;
+    const defaultLabels: Record<FieldType, { en: string; ar: string }> = {
+      text: { en: 'Full Name / Text Answer', ar: 'إجابة نصية' },
+      email: { en: 'Email Address', ar: 'البريد الإلكتروني' },
+      phone: { en: 'Phone / WhatsApp', ar: 'رقم الهاتف' },
+      select: { en: 'Dropdown Choice Question', ar: 'اختيار من قائمة' },
+      date: { en: 'Date of Birth / Preferred Date', ar: 'التاريخ' },
+      file: { en: 'Audio Sample or Document Upload', ar: 'رفع ملف أو تسجيل' },
+      textarea: { en: 'Detailed Statement / Questions', ar: 'تفاصيل إضافية' },
     };
 
-    const updated = [...formsList, duplicated];
-    persistForms(updated);
-    onAddToast({ type: 'success', title: 'Form Duplicated', message: `Created copy of "${form.title}".` });
-  };
-
-  // Delete a form
-  const handleDeleteForm = (formId: string) => {
-    const updated = formsList.filter((f) => f.id !== formId);
-    if (updated.length > 0 && !updated.some((f) => f.isDefault)) {
-      updated[0].isDefault = true;
-    }
-    persistForms(updated);
-    if (editingFormId === formId) {
-      setEditingFormId(null);
-    }
-    onAddToast({ type: 'info', title: 'Form Deleted', message: 'Form removed from your academy.' });
-  };
-
-  // Set default form for landing page
-  const handleSetDefault = (formId: string) => {
-    const updated = formsList.map((f) => ({
-      ...f,
-      isDefault: f.id === formId,
-    }));
-    persistForms(updated);
-    onAddToast({ type: 'success', title: 'Default Form Updated', message: 'This form will now appear on your academy landing page.' });
-  };
-
-  // Update active form fields
-  const handleUpdateActiveForm = (updates: Partial<FormConfig>) => {
-    if (!editingFormId) return;
-    const updated = formsList.map((f) => (f.id === editingFormId ? { ...f, ...updates } : f));
-    persistForms(updated);
-  };
-
-  // Add field to active form
-  const handleAddField = (type: FieldType) => {
-    if (!activeEditingForm) return;
     const newField: FormFieldConfig = {
-      id: `fld_${Date.now()}`,
+      id: newFieldId,
+      label: defaultLabels[type].en,
+      labelAr: defaultLabels[type].ar,
       type,
-      label: `New ${type.toUpperCase()} Field`,
-      labelAr: `حقل جديد (${type})`,
-      placeholder: `Enter ${type}...`,
       required: false,
-      width: type === 'textarea' ? 'full' : 'half',
+      width: 'full',
+      order: activeForm.fields.length + 1,
       options: type === 'select' ? ['Option 1', 'Option 2', 'Option 3'] : undefined,
-      order: activeEditingForm.fields.length + 1,
     };
 
-    const updatedFields = [...activeEditingForm.fields, newField];
-    handleUpdateActiveForm({ fields: updatedFields });
-    setSelectedFieldId(newField.id);
-    onAddToast({ type: 'success', title: 'Field Added', message: `Inserted ${type} field.` });
+    const updatedFields = [...activeForm.fields, newField];
+    const updatedForm = { ...activeForm, fields: updatedFields };
+    const updatedForms = formsList.map((f) => (f.id === activeForm.id ? updatedForm : f));
+    persistForms(updatedForms);
+    setSelectedFieldId(newFieldId);
+
+    onAddToast({
+      type: 'success',
+      title: 'Question Added',
+      message: `Added new ${type} question to form.`,
+    });
   };
 
-  // Move field up/down
-  const handleMoveField = (index: number, moveDirection: 'up' | 'down') => {
-    if (!activeEditingForm) return;
-    const targetIndex = moveDirection === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= activeEditingForm.fields.length) return;
-
-    const updated = [...activeEditingForm.fields];
-    const temp = updated[index];
-    updated[index] = updated[targetIndex];
-    updated[targetIndex] = temp;
-
-    handleUpdateActiveForm({ fields: updated });
+  // Update Field Configuration
+  const handleUpdateField = (fieldId: string, updates: Partial<FormFieldConfig>) => {
+    if (!activeForm) return;
+    const updatedFields = activeForm.fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f));
+    const updatedForm = { ...activeForm, fields: updatedFields };
+    const updatedForms = formsList.map((f) => (f.id === activeForm.id ? updatedForm : f));
+    persistForms(updatedForms);
   };
 
-  // Delete field
+  // Delete Field
   const handleDeleteField = (fieldId: string) => {
-    if (!activeEditingForm) return;
-    const updatedFields = activeEditingForm.fields.filter((f) => f.id !== fieldId);
-    handleUpdateActiveForm({ fields: updatedFields });
+    if (!activeForm) return;
+    const updatedFields = activeForm.fields.filter((f) => f.id !== fieldId);
+    const updatedForm = { ...activeForm, fields: updatedFields };
+    const updatedForms = formsList.map((f) => (f.id === activeForm.id ? updatedForm : f));
+    persistForms(updatedForms);
     if (selectedFieldId === fieldId) {
       setSelectedFieldId(updatedFields[0]?.id || null);
     }
   };
 
-  // Update specific field properties
-  const handleUpdateFieldProps = (fieldId: string, updates: Partial<FormFieldConfig>) => {
-    if (!activeEditingForm) return;
-    const updatedFields = activeEditingForm.fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f));
-    handleUpdateActiveForm({ fields: updatedFields });
+  // Move Field Up/Down
+  const handleMoveField = (index: number, dirMove: 'up' | 'down') => {
+    if (!activeForm) return;
+    const targetIdx = dirMove === 'up' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= activeForm.fields.length) return;
+
+    const fieldsCopy = [...activeForm.fields];
+    const temp = fieldsCopy[index];
+    fieldsCopy[index] = fieldsCopy[targetIdx];
+    fieldsCopy[targetIdx] = temp;
+
+    const updatedForm = { ...activeForm, fields: fieldsCopy };
+    const updatedForms = formsList.map((f) => (f.id === activeForm.id ? updatedForm : f));
+    persistForms(updatedForms);
   };
 
-  const selectedField = activeEditingForm?.fields.find((f) => f.id === selectedFieldId);
+  // Update Form Properties (Theme, Title, Acceptance, etc.)
+  const handleUpdateActiveForm = (updates: Partial<FormConfig>) => {
+    if (!activeForm) return;
+    const updatedForm = { ...activeForm, ...updates };
+    const updatedForms = formsList.map((f) => (f.id === activeForm.id ? updatedForm : f));
+    persistForms(updatedForms);
+  };
 
-  // Live Preview Form Submission Handler
-  const handlePreviewSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!previewModalForm) return;
+  // Perform Live Test Submission in Preview Tab
+  const handleLiveTestSubmit = (data: Record<string, any>) => {
+    if (!activeForm) return;
+    const newSubmission: FormResponseItem = {
+      id: `resp-test-${Date.now()}`,
+      formId: activeForm.id,
+      formTitle: activeForm.title,
+      studentName: data.studentName || data.parentName || data.fullName || 'Test Applicant',
+      email: data.email || 'applicant@test.com',
+      phone: data.phone || '+1 555-0199',
+      submittedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 'New',
+      data,
+      notes: 'Submitted via interactive studio preview'
+    };
 
-    const errors: Record<string, string> = {};
-    previewModalForm.fields.forEach((field) => {
-      if (field.required && !previewFormData[field.id]) {
-        errors[field.id] = `${field.label} is required`;
-      }
-    });
+    const updatedResponses = [newSubmission, ...allResponses];
+    persistResponses(updatedResponses);
 
-    if (Object.keys(errors).length > 0) {
-      setPreviewErrors(errors);
-      onAddToast({
-        type: 'error',
-        title: 'Validation Error',
-        message: 'Please complete all required fields.',
-      });
-      return;
-    }
+    const updatedCount = (activeForm.submissionsCount || 0) + 1;
+    handleUpdateActiveForm({ submissionsCount: updatedCount });
 
-    setPreviewErrors({});
-    setPreviewSubmitted(true);
     onAddToast({
       type: 'success',
-      title: 'Submission Received! 🎉',
-      message: 'Test entry validated. This response would appear in your Admissions Leads CRM.',
+      title: 'Submission Received!',
+      message: `Test response recorded. View it directly in the Responses tab.`,
     });
   };
 
+  // Palette Component Types
+  const paletteTypes: { type: FieldType; label: string; icon: any }[] = [
+    { type: 'text', label: 'Short Text', icon: Type },
+    { type: 'email', label: 'Email Address', icon: Mail },
+    { type: 'phone', label: 'Phone / WhatsApp', icon: Phone },
+    { type: 'select', label: 'Dropdown Select', icon: List },
+    { type: 'date', label: 'Date Picker', icon: Calendar },
+    { type: 'file', label: 'File Upload', icon: UploadCloud },
+    { type: 'textarea', label: 'Long Paragraph', icon: FileText },
+  ];
+
   // -------------------------------------------------------------
-  // VIEW 1: CARD LIST OF BUILT FORMS (OR EMPTY "BUILD FIRST FORM" STATE)
+  // VIEW 1: FORMS GRID (When no single form is opened)
   // -------------------------------------------------------------
-  if (!editingFormId || !activeEditingForm) {
+  if (!activeForm) {
     return (
-      <div className="space-y-6 font-sans" dir={direction}>
-        {/* Header Bar */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="space-y-8 font-sans" dir={direction}>
+        {/* Top Header Banner */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
           <div>
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center justify-center">
-                <FileCheck className="w-5 h-5" />
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shadow-sm">
+                <FileCheck className="w-6 h-6 text-emerald-600" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                Admissions Form Builder
-              </h2>
+              <div>
+                <h1 className={`text-2xl sm:text-3xl font-black text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+                  {isAr ? 'استوديو النماذج والاستبيانات الذكية' : 'Google Forms & Admissions Studio'}
+                </h1>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {isAr ? 'إنشاء نماذج مخصصة لكل تخصص، مع ثيمات متقدمة (Material UI) وردود معزولة لكل نموذج' : 'Create Google Forms-style multi-forms with Material UI themes, isolated response repositories, and landing page embeds.'}
+                </p>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Design customized student intake, placement, and inquiry forms for your academy with theme styling and instant preview.
-            </p>
           </div>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsAiFormModalOpen(true)}
-              className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer select-none active:scale-95"
-            >
-              <Wand2 className="w-4 h-4 text-amber-300 animate-pulse" />
-              <span>Build Form with AI</span>
-            </button>
-
-            <button
+              type="button"
               onClick={handleCreateNewForm}
-              className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+              className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Create New Form</span>
+              <span>{isAr ? 'إنشاء نموذج جديد' : 'Create New Form'}</span>
             </button>
           </div>
         </div>
 
-        {/* EMPTY STATE: BUILD FIRST FORM */}
-        {formsList.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-sm max-w-3xl mx-auto space-y-6">
-            <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto shadow-inner">
-              <FileCheck className="w-8 h-8" />
-            </div>
+        {/* Forms Grid Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {formsList.map((form) => {
+            const formRespCount = allResponses.filter((r) => r.formId === form.id).length;
+            const theme = form.themeStyle || 'material';
 
-            <div className="space-y-2">
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900">
-                No Intake Forms Created Yet
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
-                Build your first student registration or lead capture form to start accepting applicants directly into your academy CRM.
-              </p>
-            </div>
-
-            {/* Quick Template Starters */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-start">
+            return (
               <div
-                onClick={() => handleGenerateFormWithAi('Tajweed & Memorization Placement Test')}
-                className="p-4 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all cursor-pointer space-y-1.5 group bg-slate-50/50"
+                key={form.id}
+                className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-base">🎙️</span>
-                  <Sparkles className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">Placement Assessment</h4>
-                <p className="text-[11px] text-slate-500">Juz count, Makharij evaluation & audio voice sample.</p>
-              </div>
-
-              <div
-                onClick={() => handleGenerateFormWithAi('Tuition Assistance & Scholarship Request')}
-                className="p-4 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all cursor-pointer space-y-1.5 group bg-slate-50/50"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base">🤝</span>
-                  <Sparkles className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">Scholarship Application</h4>
-                <p className="text-[11px] text-slate-500">Need-based aid, family discount & statement of intent.</p>
-              </div>
-
-              <div
-                onClick={() => handleGenerateFormWithAi('Youth Summer Camp Registration')}
-                className="p-4 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all cursor-pointer space-y-1.5 group bg-slate-50/50"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base">⛺</span>
-                  <Sparkles className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">Course / Summer Intake</h4>
-                <p className="text-[11px] text-slate-500">Age groups, parent contacts & preferred class slots.</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-3 pt-4">
-              <button
-                onClick={handleCreateNewForm}
-                className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Build First Blank Form</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Form Cards Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {formsList.map((form) => {
-              return (
+                {/* Visual Mini Canva Preview */}
                 <div
-                  key={form.id}
-                  className={`bg-white rounded-2xl border shadow-sm p-6 flex flex-col justify-between transition-all hover:shadow-md ${
-                    form.isDefault
-                      ? 'border-emerald-600 ring-2 ring-emerald-500/20'
-                      : 'border-slate-200'
+                  onClick={() => {
+                    setEditingFormId(form.id);
+                    setActiveStudioTab('questions');
+                  }}
+                  className={`h-40 p-5 cursor-pointer relative overflow-hidden transition-all flex flex-col justify-between ${
+                    theme === 'cyber_dark' ? 'bg-slate-950 text-slate-100' :
+                    theme === 'glassmorphism' ? 'bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-100 text-slate-900' :
+                    theme === 'islamic_heritage' ? 'bg-amber-50/70 border-b-2 border-emerald-600/30' :
+                    theme === 'minimalist' ? 'bg-slate-50 border-b-2 border-black font-mono' :
+                    'bg-slate-50 border-b border-slate-200'
                   }`}
                 >
-                  <div>
-                    {/* Card Top Badges */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
-                        {form.status || 'Active'}
-                      </span>
+                  {/* Theme Accent Strip */}
+                  {theme === 'material' && (
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-600" />
+                  )}
 
-                      {form.isDefault ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                          Default Landing Form
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/90 text-slate-800 shadow-xs border border-slate-200">
+                      {theme.toUpperCase()}
+                    </span>
+
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                      form.acceptingResponses !== false ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                    }`}>
+                      {form.acceptingResponses !== false ? 'Accepting Responses' : 'Closed'}
+                    </span>
+                  </div>
+
+                  {/* Mock Mini Input fields representation */}
+                  <div className="space-y-1.5 opacity-70">
+                    <div className="h-4 w-3/4 bg-slate-300/60 rounded-md" />
+                    <div className="h-6 w-full bg-white/80 border border-slate-300/60 rounded-lg shadow-xs" />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] font-bold">
+                    <span className="truncate">{form.fields.length} Questionnaire Fields</span>
+                    <span className="text-emerald-700 font-mono font-black">{formRespCount} Responses</span>
+                  </div>
+                </div>
+
+                {/* Form Card Content */}
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-extrabold text-base text-slate-900 line-clamp-1 group-hover:text-emerald-700 transition-colors">
+                        {form.title}
+                      </h3>
+                      {form.isDefault && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-100 text-amber-800 shrink-0">
+                          Landing Page Default
                         </span>
-                      ) : (
-                        <button
-                          onClick={() => handleSetDefault(form.id)}
-                          className="text-[10px] text-slate-400 hover:text-emerald-700 font-semibold cursor-pointer"
-                        >
-                          Set as Default
-                        </button>
                       )}
                     </div>
-
-                    {/* Title & Description */}
-                    <h3 className="text-base font-bold font-display text-slate-900 mb-1.5">
-                      {form.title}
-                    </h3>
                     <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                       {form.description}
                     </p>
-
-                    {/* Form Metrics */}
-                    <div className="grid grid-cols-2 gap-2 my-5 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                      <div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase">Form Fields</p>
-                        <p className="font-bold text-slate-800 text-sm mt-0.5">
-                          {form.fields.length} Inputs
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase">Inquiries Received</p>
-                        <p className="font-bold text-emerald-700 text-sm mt-0.5">
-                          {form.submissionsCount || 0} Leads
-                        </p>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* Card Actions */}
+                  {/* Actions Footer */}
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                     <button
+                      type="button"
                       onClick={() => {
                         setEditingFormId(form.id);
-                        setSelectedFieldId(form.fields[0]?.id || null);
+                        setActiveStudioTab('questions');
                       }}
-                      className="flex-1 py-2 px-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>Edit Layout</span>
+                      <span>Edit</span>
                     </button>
 
-                    <button
-                      onClick={() => {
-                        setPreviewModalForm(form);
-                        setPreviewFormData({});
-                        setPreviewErrors({});
-                        setPreviewSubmitted(false);
-                      }}
-                      className="p-2 border border-slate-200 text-slate-600 hover:text-emerald-700 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer"
-                      title="Live Test & Preview"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      onClick={() => handleDuplicateForm(form)}
-                      className="p-2 border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer"
-                      title="Duplicate Form"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                    </button>
-
-                    <button
-                      onClick={() => handleDeleteForm(form.id)}
-                      className="p-2 border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
-                      title="Delete Form"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* INTERACTIVE LIVE PREVIEW MODAL */}
-        {previewModalForm && (
-          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-150">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
-                    <Eye className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-extrabold text-slate-900">
-                      Live Form Test Preview
-                    </h3>
-                    <p className="text-[11px] text-slate-500">
-                      Experience this form exactly as prospective students and guardians will see it.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setPreviewModalForm(null)}
-                  className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {previewSubmitted ? (
-                <div className="p-8 text-center space-y-3 bg-emerald-50 border border-emerald-200 rounded-2xl">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-lg font-bold text-slate-900">Thank You! Submission Recorded</h4>
-                  <p className="text-xs text-slate-600 max-w-md mx-auto">
-                    Your admissions inquiry has been sent to our academic committee. A counselor will reach out shortly.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setPreviewSubmitted(false);
-                      setPreviewFormData({});
-                    }}
-                    className="mt-3 px-4 py-2 bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer"
-                  >
-                    Submit Another Response
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handlePreviewSubmit} className="space-y-4">
-                  <div className="text-center pb-2">
-                    <h4 className="text-lg font-bold text-slate-900">{previewModalForm.title}</h4>
-                    <p className="text-xs text-slate-500 mt-1">{previewModalForm.description}</p>
-                  </div>
-
-                  <div className="flex flex-wrap -mx-2">
-                    {previewModalForm.fields.map((field) => {
-                      const widthClass =
-                        field.width === 'third'
-                          ? 'w-full sm:w-1/3'
-                          : field.width === 'half'
-                          ? 'w-full sm:w-1/2'
-                          : 'w-full';
-
-                      const hasError = !!previewErrors[field.id];
-
-                      return (
-                        <div key={field.id} className={`${widthClass} px-2 mb-3.5`}>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">
-                            {field.label} {field.required && <span className="text-rose-500">*</span>}
-                          </label>
-
-                          {field.type === 'select' ? (
-                            <select
-                              value={previewFormData[field.id] || ''}
-                              onChange={(e) => {
-                                setPreviewFormData({ ...previewFormData, [field.id]: e.target.value });
-                                if (previewErrors[field.id]) {
-                                  const errs = { ...previewErrors };
-                                  delete errs[field.id];
-                                  setPreviewErrors(errs);
-                                }
-                              }}
-                              className={`w-full p-2.5 border rounded-xl bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                                hasError ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200'
-                              }`}
-                            >
-                              <option value="">Select an option...</option>
-                              {(field.options || ['Option 1', 'Option 2']).map((opt, i) => (
-                                <option key={i} value={opt}>
-                                  {opt}
-                                </option>
-                              ))}
-                            </select>
-                          ) : field.type === 'textarea' ? (
-                            <textarea
-                              rows={3}
-                              placeholder={field.placeholder}
-                              value={previewFormData[field.id] || ''}
-                              onChange={(e) => {
-                                setPreviewFormData({ ...previewFormData, [field.id]: e.target.value });
-                                if (previewErrors[field.id]) {
-                                  const errs = { ...previewErrors };
-                                  delete errs[field.id];
-                                  setPreviewErrors(errs);
-                                }
-                              }}
-                              className={`w-full p-2.5 border rounded-xl bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                                hasError ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200'
-                              }`}
-                            />
-                          ) : (
-                            <input
-                              type={field.type}
-                              placeholder={field.placeholder}
-                              value={previewFormData[field.id] || ''}
-                              onChange={(e) => {
-                                setPreviewFormData({ ...previewFormData, [field.id]: e.target.value });
-                                if (previewErrors[field.id]) {
-                                  const errs = { ...previewErrors };
-                                  delete errs[field.id];
-                                  setPreviewErrors(errs);
-                                }
-                              }}
-                              className={`w-full p-2.5 border rounded-xl bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                                hasError ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200'
-                              }`}
-                            />
-                          )}
-
-                          {hasError && (
-                            <p className="text-[11px] text-rose-500 mt-1 font-medium flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              <span>{previewErrors[field.id]}</span>
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                     <button
                       type="button"
-                      onClick={() => setPreviewModalForm(null)}
-                      className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                      onClick={() => {
+                        setEditingFormId(form.id);
+                        setActiveStudioTab('responses');
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
-                      Close Preview
+                      <BarChart3 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Responses ({formRespCount})</span>
                     </button>
+
                     <button
-                      type="submit"
-                      className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+                      type="button"
+                      onClick={() => {
+                        setEditingFormId(form.id);
+                        setActiveStudioTab('themes');
+                      }}
+                      className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                      title="Theme & Style"
                     >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>Submit Test Application</span>
+                      <Palette className="w-4 h-4" />
                     </button>
                   </div>
-                </form>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* BUILD FORM WITH AI MODAL */}
-        {isAiFormModalOpen && (
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in duration-150 font-sans">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold">
-                    <Wand2 className="w-4 h-4 text-amber-300" />
-                  </div>
-                  <div>
-                    <h3 className="font-extrabold text-sm text-slate-900">Build Admissions Form with AI</h3>
-                    <p className="text-[11px] text-slate-500">Pick a preset or tell the AI what information you need to collect.</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsAiFormModalOpen(false)}
-                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs cursor-pointer"
-                >
-                  &times;
-                </button>
-              </div>
-
-              {/* Presets Grid */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Quick Presets:</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleGenerateFormWithAi('Tajweed & Memorization Placement Test')}
-                    className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-300 text-left transition-all text-xs cursor-pointer"
-                  >
-                    <div className="font-bold text-slate-900">🎙️ Tajweed Placement Test</div>
-                    <div className="text-[10px] text-slate-500">Juz count, Makharij & Audio clip</div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleGenerateFormWithAi('Full-Stack Developer Bootcamp Application')}
-                    className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all text-xs cursor-pointer"
-                  >
-                    <div className="font-bold text-slate-900">💻 Coding Bootcamp Application</div>
-                    <div className="text-[10px] text-slate-500">GitHub, hours & career goals</div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleGenerateFormWithAi('Tuition Assistance & Scholarship Request')}
-                    className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-left transition-all text-xs cursor-pointer"
-                  >
-                    <div className="font-bold text-slate-900">🤝 Scholarship Request</div>
-                    <div className="text-[10px] text-slate-500">Financial aid & family situation</div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleGenerateFormWithAi('Youth Summer Camp Registration')}
-                    className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 text-left transition-all text-xs cursor-pointer"
-                  >
-                    <div className="font-bold text-slate-900">⛺ Summer Camp Registration</div>
-                    <div className="text-[10px] text-slate-500">Emergency contacts & age group</div>
-                  </button>
                 </div>
               </div>
-
-              {/* Custom Input */}
-              <div className="space-y-1 text-xs">
-                <label className="font-bold text-slate-800">Or Describe Your Custom Form Requirements</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Teacher Recruitment Form with CV Upload and Qira'at Certification"
-                  value={aiFormGoal}
-                  onChange={(e) => setAiFormGoal(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                />
-              </div>
-
-              {/* Modal Actions */}
-              <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setIsAiFormModalOpen(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleGenerateFormWithAi()}
-                  disabled={isGeneratingFormWithAi || !aiFormGoal.trim()}
-                  className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 disabled:opacity-50 select-none active:scale-95"
-                >
-                  <Wand2 className="w-4 h-4 text-amber-300" />
-                  <span>{isGeneratingFormWithAi ? 'Generating Form Fields...' : 'Generate Form with AI'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
     );
   }
 
   // -------------------------------------------------------------
-  // VIEW 2: VISUAL DRAG-AND-DROP FORM EDITOR
+  // VIEW 2: DEDICATED FORM STUDIO (With Questions, Responses, Themes, Preview)
   // -------------------------------------------------------------
-  const themeConfig = THEMES[activeTheme];
+  const selectedField = activeForm.fields.find((f) => f.id === selectedFieldId) || activeForm.fields[0];
 
   return (
     <div className="space-y-6 font-sans" dir={direction}>
-      {/* Editor Top Navigation Bar */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      {/* Top Form Studio Header Bar */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setEditingFormId(null)}
+              className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+              title="Back to Forms List"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={activeForm.title}
+                  onChange={(e) => handleUpdateActiveForm({ title: e.target.value })}
+                  className="font-black text-xl sm:text-2xl text-slate-900 bg-transparent hover:bg-slate-50 focus:bg-white px-2 py-1 rounded-xl border border-transparent hover:border-slate-200 focus:border-emerald-500 focus:outline-none transition-all"
+                />
+              </div>
+              <input
+                type="text"
+                value={activeForm.description}
+                onChange={(e) => handleUpdateActiveForm({ description: e.target.value })}
+                placeholder="Form description or instructions..."
+                className="text-xs text-slate-500 bg-transparent hover:bg-slate-50 focus:bg-white px-2 py-0.5 rounded-lg border border-transparent hover:border-slate-200 focus:border-emerald-500 focus:outline-none transition-all w-full max-w-xl"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Acceptance Responses Switch (Google Forms style) */}
+            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-50 border border-slate-200">
+              <span className="text-xs font-bold text-slate-700">
+                {activeForm.acceptingResponses !== false ? 'Accepting Responses' : 'Not Accepting'}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleUpdateActiveForm({ acceptingResponses: activeForm.acceptingResponses === false ? true : false })}
+                className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                  activeForm.acceptingResponses !== false ? 'bg-emerald-600' : 'bg-slate-300'
+                }`}
+              >
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                    activeForm.acceptingResponses !== false ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                onAddToast({
+                  type: 'success',
+                  title: 'Changes Published',
+                  message: `"${activeForm.title}" is saved and live.`,
+                });
+              }}
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            >
+              <Save className="w-4 h-4" />
+              <span>Save & Publish</span>
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Google Forms Style Navigation Tabs */}
+        <div className="flex items-center gap-2 border-t border-slate-100 pt-3">
           <button
-            onClick={() => setEditingFormId(null)}
-            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center gap-1.5 text-xs font-bold transition-colors cursor-pointer"
+            type="button"
+            onClick={() => setActiveStudioTab('questions')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+              activeStudioTab === 'questions'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to All Forms</span>
+            <FileText className="w-4 h-4" />
+            <span>Questions ({activeForm.fields.length})</span>
           </button>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold font-display text-slate-900">
-                {activeEditingForm.title}
-              </h2>
-              {activeEditingForm.isDefault && (
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  Default Landing Form
-                </span>
+          <button
+            type="button"
+            onClick={() => setActiveStudioTab('responses')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+              activeStudioTab === 'responses'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Responses ({currentFormResponses.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveStudioTab('themes')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+              activeStudioTab === 'themes'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Palette className="w-4 h-4" />
+            <span>Design & Themes</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveStudioTab('preview_embed')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+              activeStudioTab === 'preview_embed'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Eye className="w-4 h-4" />
+            <span>Live Preview & Embed</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------- */}
+      {/* TAB 1: QUESTIONS & FIELDS EDITOR                              */}
+      {/* ------------------------------------------------------------- */}
+      {activeStudioTab === 'questions' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Palette: Add Field Types */}
+          <div className="lg:col-span-3 space-y-4">
+            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+              <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider">
+                Add Field Type
+              </h3>
+              <div className="space-y-2">
+                {paletteTypes.map((item) => (
+                  <button
+                    key={item.type}
+                    type="button"
+                    onClick={() => handleAddField(item.type)}
+                    className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 border border-slate-200/80 text-slate-700 hover:text-emerald-800 font-bold text-xs transition-all cursor-pointer group"
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-white group-hover:bg-emerald-100 text-slate-500 group-hover:text-emerald-700 flex items-center justify-center shadow-xs">
+                      <item.icon className="w-4 h-4" />
+                    </div>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Center: Questions List */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider">
+                  Form Questions ({activeForm.fields.length})
+                </h3>
+                <span className="text-[11px] text-slate-400">Click a question to configure</span>
+              </div>
+
+              {activeForm.fields.length === 0 ? (
+                <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
+                  <FileText className="w-8 h-8 text-slate-300 mx-auto" />
+                  <p className="text-xs text-slate-400 font-bold">No questions added yet.</p>
+                  <p className="text-[11px] text-slate-400">Click any field type on the left to start building.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {activeForm.fields.map((field, idx) => {
+                    const isSelected = selectedFieldId === field.id;
+                    return (
+                      <div
+                        key={field.id}
+                        onClick={() => setSelectedFieldId(field.id)}
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-emerald-50/70 border-emerald-500 shadow-md ring-2 ring-emerald-500/20'
+                            : 'bg-slate-50 hover:bg-slate-100/80 border-slate-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center justify-center shrink-0">
+                              {idx + 1}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="font-black text-xs text-slate-900 truncate">{field.label}</p>
+                              <span className="text-[10px] text-slate-400 uppercase font-mono">{field.type} • {field.width || 'full'}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveField(idx, 'up')}
+                              disabled={idx === 0}
+                              className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveField(idx, 'down')}
+                              disabled={idx === activeForm.fields.length - 1}
+                              className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteField(field.id)}
+                              className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
-            <p className="text-xs text-slate-500">
-              Drag-and-drop fields, choose flex layout widths, and select theme colors in real-time.
-            </p>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setPreviewModalForm(activeEditingForm);
-              setPreviewFormData({});
-              setPreviewErrors({});
-              setPreviewSubmitted(false);
-            }}
-            className="px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
-          >
-            <Eye className="w-3.5 h-3.5 text-slate-500" />
-            <span>Live Test</span>
-          </button>
+          {/* Right: Selected Field Property Inspector */}
+          <div className="lg:col-span-4 space-y-4">
+            {selectedField ? (
+              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <h3 className="font-extrabold text-sm text-slate-900">Question Settings</h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600">{selectedField.type}</span>
+                </div>
 
-          <button
-            onClick={() => {
-              onAddToast({ type: 'success', title: 'Form Saved', message: `Saved changes to "${activeEditingForm.title}".` });
-              setEditingFormId(null);
-            }}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save & Return</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Form Settings Header & Theme Selector */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold font-display uppercase tracking-wider text-slate-700">
-            Form Distribution & Theme Preset
-          </h3>
-
-          {/* Theme Color Picker */}
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-slate-500">Theme:</span>
-            <div className="flex items-center gap-1.5">
-              {(Object.keys(THEMES) as FormTheme[]).map((thm) => (
-                <button
-                  key={thm}
-                  onClick={() => setActiveTheme(thm)}
-                  className={`w-6 h-6 rounded-full transition-all flex items-center justify-center cursor-pointer ${
-                    activeTheme === thm ? 'ring-2 ring-offset-2 ring-slate-800 scale-110' : 'opacity-70 hover:opacity-100'
-                  }`}
-                  style={{ backgroundColor: THEMES[thm].primaryColor }}
-                  title={THEMES[thm].name}
-                >
-                  {activeTheme === thm && <Check className="w-3 h-3 text-white" />}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Form Heading Title</label>
-            <input
-              type="text"
-              value={activeEditingForm.title}
-              onChange={(e) => handleUpdateActiveForm({ title: e.target.value })}
-              placeholder="e.g. Direct Admissions & Evaluation Inquiry"
-              className="w-full p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-slate-50"
-            />
-          </div>
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Form Subtitle / Instructions</label>
-            <input
-              type="text"
-              value={activeEditingForm.description}
-              onChange={(e) => handleUpdateActiveForm({ description: e.target.value })}
-              placeholder="e.g. Fill out your details for immediate review..."
-              className="w-full p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-slate-50"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 3-Column Studio: Component Palette | Visual Canvas Preview | Field Inspector */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left: Component Palette */}
-        <div className="lg:col-span-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold font-display uppercase tracking-wider text-slate-700 mb-3">
-            Add Field Blocks
-          </h3>
-          <div className="space-y-1.5">
-            {paletteComponents.map((comp) => {
-              const Icon = comp.icon;
-              return (
-                <button
-                  key={comp.type}
-                  type="button"
-                  onClick={() => handleAddField(comp.type)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 text-start text-xs font-semibold text-slate-800 transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-slate-100 group-hover:bg-emerald-100 text-slate-700 group-hover:text-emerald-700">
-                      <Icon className="w-3.5 h-3.5" />
-                    </div>
-                    <span>{comp.label}</span>
+                <div className="space-y-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Question Label (English)</label>
+                    <input
+                      type="text"
+                      value={selectedField.label}
+                      onChange={(e) => handleUpdateField(selectedField.id, { label: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                    />
                   </div>
-                  <Plus className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600" />
-                </button>
-              );
-            })}
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Question Label (Arabic)</label>
+                    <input
+                      type="text"
+                      value={selectedField.labelAr || ''}
+                      onChange={(e) => handleUpdateField(selectedField.id, { labelAr: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Placeholder Text</label>
+                    <input
+                      type="text"
+                      value={selectedField.placeholder || ''}
+                      onChange={(e) => handleUpdateField(selectedField.id, { placeholder: e.target.value })}
+                      placeholder="e.g. Enter full name..."
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Field Width</label>
+                      <select
+                        value={selectedField.width || 'full'}
+                        onChange={(e) => handleUpdateField(selectedField.id, { width: e.target.value as FieldWidth })}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                      >
+                        <option value="full">Full Width (100%)</option>
+                        <option value="half">Half Width (50%)</option>
+                        <option value="third">One Third (33%)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Field Type</label>
+                      <select
+                        value={selectedField.type}
+                        onChange={(e) => handleUpdateField(selectedField.id, { type: e.target.value as FieldType })}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                      >
+                        <option value="text">Text Input</option>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone / WhatsApp</option>
+                        <option value="select">Dropdown Select</option>
+                        <option value="date">Date</option>
+                        <option value="file">File Upload</option>
+                        <option value="textarea">Paragraph Area</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Required Switch */}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
+                    <span className="font-bold text-slate-700">Required Response</span>
+                    <input
+                      type="checkbox"
+                      checked={selectedField.required}
+                      onChange={(e) => handleUpdateField(selectedField.id, { required: e.target.checked })}
+                      className="w-4 h-4 text-emerald-600 rounded"
+                    />
+                  </div>
+
+                  {/* Dropdown Options Editor */}
+                  {selectedField.type === 'select' && (
+                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <label className="block font-bold text-slate-700">Dropdown Options</label>
+                      {(selectedField.options || []).map((opt, oi) => (
+                        <div key={oi} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={opt}
+                            onChange={(e) => {
+                              const newOpts = [...(selectedField.options || [])];
+                              newOpts[oi] = e.target.value;
+                              handleUpdateField(selectedField.id, { options: newOpts });
+                            }}
+                            className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newOpts = (selectedField.options || []).filter((_, idx) => idx !== oi);
+                              handleUpdateField(selectedField.id, { options: newOpts });
+                            }}
+                            className="p-1 text-rose-500 hover:bg-rose-50 rounded"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newOpts = [...(selectedField.options || []), `Option ${(selectedField.options?.length || 0) + 1}`];
+                          handleUpdateField(selectedField.id, { options: newOpts });
+                        }}
+                        className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+                      >
+                        <Plus className="w-3 h-3" /> Add Option
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="p-8 text-center text-xs text-slate-400 bg-white rounded-3xl border border-slate-200">
+                Select a question on the left to edit its properties.
+              </div>
+            )}
           </div>
         </div>
+      )}
 
-        {/* Center: Live Drag-and-Drop Form Canvas Preview */}
-        <div className="lg:col-span-6 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4 text-emerald-700" />
-              <span className="text-xs font-bold font-display text-slate-900">
-                Visual Form Canvas
-              </span>
+      {/* ------------------------------------------------------------- */}
+      {/* TAB 2: ISOLATED RESPONSES REPOSITORY (FOR THIS SPECIFIC FORM)  */}
+      {/* ------------------------------------------------------------- */}
+      {activeStudioTab === 'responses' && (
+        <div className="space-y-6">
+          {/* Form Metrics Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+              <span className="text-[11px] font-bold text-slate-400 uppercase">Total Submissions</span>
+              <p className="text-2xl font-black text-slate-900 mt-1">{currentFormResponses.length}</p>
             </div>
-            <span className="text-[11px] text-slate-400 font-medium">
-              {activeEditingForm.fields.length} Custom Inputs
-            </span>
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+              <span className="text-[11px] font-bold text-emerald-600 uppercase">New / Unreviewed</span>
+              <p className="text-2xl font-black text-emerald-600 mt-1">
+                {currentFormResponses.filter((r) => r.status === 'New').length}
+              </p>
+            </div>
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+              <span className="text-[11px] font-bold text-blue-600 uppercase">Interview / Admitted</span>
+              <p className="text-2xl font-black text-blue-600 mt-1">
+                {currentFormResponses.filter((r) => ['Interview Scheduled', 'Admitted'].includes(r.status)).length}
+              </p>
+            </div>
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase">Export Data</span>
+                <p className="text-xs text-slate-500 mt-0.5">CSV spreadsheet</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleExportFormCsv}
+                className="p-3 rounded-2xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 transition-colors cursor-pointer"
+                title="Download CSV"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
-          {/* Form Card Preview */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-xs">
-            <div className="text-center mb-6">
-              <h4 className="text-base font-bold font-display text-slate-900">
-                {activeEditingForm.title}
-              </h4>
+          {/* Responses Table Container */}
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+            {/* Filter & Search Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={responseSearchQuery}
+                  onChange={(e) => setResponseSearchQuery(e.target.value)}
+                  placeholder="Search applicants, emails, questionnaire answers..."
+                  className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400">Filter:</span>
+                <select
+                  value={responseStatusFilter}
+                  onChange={(e) => setResponseStatusFilter(e.target.value)}
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"
+                >
+                  <option value="All">All Statuses</option>
+                  <option value="New">New</option>
+                  <option value="Under Review">Under Review</option>
+                  <option value="Interview Scheduled">Interview Scheduled</option>
+                  <option value="Admitted">Admitted</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Submissions List */}
+            {paginatedResponses.length === 0 ? (
+              <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
+                <BarChart3 className="w-10 h-10 text-slate-300 mx-auto" />
+                <p className="text-sm font-bold text-slate-600">No responses recorded yet for this form.</p>
+                <p className="text-xs text-slate-400">
+                  Submissions from your landing page or live test embeds will appear here in real time.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead className="bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-200">
+                    <tr>
+                      <th className="p-3">Applicant</th>
+                      <th className="p-3">Contact</th>
+                      <th className="p-3">Submitted At</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {paginatedResponses.map((resp) => (
+                      <tr key={resp.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="p-3 font-bold text-slate-900">
+                          <div>{resp.studentName}</div>
+                          <div className="text-[10px] text-slate-400 font-mono">{resp.id}</div>
+                        </td>
+                        <td className="p-3">
+                          <div>{resp.email}</div>
+                          <div className="text-[10px] text-slate-400">{resp.phone}</div>
+                        </td>
+                        <td className="p-3 text-slate-500 font-mono text-[11px]">
+                          {resp.submittedAt}
+                        </td>
+                        <td className="p-3">
+                          <select
+                            value={resp.status}
+                            onChange={(e) => handleUpdateResponseStatus(resp.id, e.target.value as any)}
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${
+                              resp.status === 'New' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                              resp.status === 'Admitted' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+                              resp.status === 'Rejected' ? 'bg-rose-50 text-rose-800 border-rose-200' :
+                              'bg-amber-50 text-amber-800 border-amber-200'
+                            }`}
+                          >
+                            <option value="New">New</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Interview Scheduled">Interview Scheduled</option>
+                            <option value="Admitted">Admitted</option>
+                            <option value="Rejected">Rejected</option>
+                          </select>
+                        </td>
+                        <td className="p-3 text-right space-x-1">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedResponseForModal(resp)}
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[11px] transition-colors"
+                          >
+                            Inspect
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteResponse(resp.id)}
+                            className="p-1 text-rose-500 hover:bg-rose-50 rounded"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 inline" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Pagination */}
+                <div className="pt-4 border-t border-slate-100">
+                  <DataTablePagination
+                    currentPage={responsePage}
+                    totalPages={totalResponsePages}
+                    pageSize={responsesPerPage}
+                    totalItems={filteredResponses.length}
+                    onPageChange={setResponsePage}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* TAB 3: DESIGN & UI THEMES (Material UI, Glassmorphism, etc.)   */}
+      {/* ------------------------------------------------------------- */}
+      {activeStudioTab === 'themes' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900">Form UI Theme & Visual Styling</h3>
               <p className="text-xs text-slate-500 mt-1">
-                {activeEditingForm.description}
+                Select a visual design language for this form. It renders across your landing page and embeds.
               </p>
             </div>
 
-            {/* Flexed Field Grid */}
-            <div className="flex flex-wrap -mx-2">
-              {activeEditingForm.fields.map((field, idx) => {
-                const isSelected = selectedFieldId === field.id;
-                const widthClass =
-                  field.width === 'third'
-                    ? 'w-full sm:w-1/3'
-                    : field.width === 'half'
-                    ? 'w-full sm:w-1/2'
-                    : 'w-full';
-
+            {/* Theme Preset Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[
+                {
+                  id: 'material' as FormUiTheme,
+                  title: 'Material UI Style',
+                  desc: 'Elevated top banner, outlined inputs, ripple button shadow',
+                  previewBg: 'bg-white border-slate-300',
+                  accent: 'bg-emerald-600',
+                },
+                {
+                  id: 'glassmorphism' as FormUiTheme,
+                  title: 'Neo-Glassmorphism',
+                  desc: 'Frosted glass blur, soft iridescent glow, translucent fields',
+                  previewBg: 'bg-gradient-to-br from-emerald-50 to-teal-100',
+                  accent: 'bg-teal-500',
+                },
+                {
+                  id: 'minimalist' as FormUiTheme,
+                  title: 'Clean Minimalist',
+                  desc: 'Notion-style crisp monochrome lines, high contrast',
+                  previewBg: 'bg-slate-50 border-2 border-black font-mono',
+                  accent: 'bg-black',
+                },
+                {
+                  id: 'islamic_heritage' as FormUiTheme,
+                  title: 'Islamic Arabesque',
+                  desc: 'Emerald & Gold frame, Bismillah emblem, warm parchment',
+                  previewBg: 'bg-amber-50/70 border-amber-300',
+                  accent: 'bg-emerald-800',
+                },
+                {
+                  id: 'cyber_dark' as FormUiTheme,
+                  title: 'Cyber Dark IDE',
+                  desc: 'Obsidian dark container, glowing neon cyan focus rings',
+                  previewBg: 'bg-slate-950 text-white border-slate-800',
+                  accent: 'bg-cyan-500',
+                },
+              ].map((themeOpt) => {
+                const isSelected = (activeForm.themeStyle || 'material') === themeOpt.id;
                 return (
-                  <div key={field.id} className={`${widthClass} px-2 mb-3.5`}>
-                    <div
-                      onClick={() => setSelectedFieldId(field.id)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer relative group bg-white ${
-                        isSelected
-                          ? themeConfig.ringClass
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      {/* Top Action Controls */}
-                      <div className="flex items-center justify-between mb-1.5 opacity-70 group-hover:opacity-100">
-                        <span className="text-[10px] font-mono font-bold text-slate-400">
-                          {field.width === 'full' ? '100% Full' : field.width === 'half' ? '50% Flex' : '33% Col'}
-                        </span>
-
-                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            type="button"
-                            onClick={() => handleMoveField(idx, 'up')}
-                            disabled={idx === 0}
-                            className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
-                            title="Move Up"
-                          >
-                            <ArrowUp className="w-3 h-3" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleMoveField(idx, 'down')}
-                            disabled={idx === activeEditingForm.fields.length - 1}
-                            className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 cursor-pointer"
-                            title="Move Down"
-                          >
-                            <ArrowDown className="w-3 h-3" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteField(field.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 cursor-pointer"
-                            title="Delete Field"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        </div>
+                  <div
+                    key={themeOpt.id}
+                    onClick={() => handleUpdateActiveForm({ themeStyle: themeOpt.id })}
+                    className={`p-5 rounded-3xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
+                      isSelected
+                        ? 'border-emerald-600 bg-emerald-50/40 shadow-lg ring-2 ring-emerald-500/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <div className={`h-16 rounded-2xl ${themeOpt.previewBg} p-2 flex flex-col justify-between`}>
+                        <div className={`h-2 w-1/3 rounded-full ${themeOpt.accent}`} />
+                        <div className="h-3 w-full bg-slate-200/60 rounded" />
                       </div>
+                      <h4 className="font-extrabold text-xs text-slate-900">{themeOpt.title}</h4>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">{themeOpt.desc}</p>
+                    </div>
 
-                      {/* Live Input Field */}
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        {field.label} {field.required && <span className="text-rose-500">*</span>}
-                      </label>
-
-                      {field.type === 'select' ? (
-                        <select
-                          disabled
-                          className="w-full p-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 text-xs"
-                        >
-                          {(field.options || ['Option 1', 'Option 2']).map((opt, i) => (
-                            <option key={i}>{opt}</option>
-                          ))}
-                        </select>
-                      ) : field.type === 'textarea' ? (
-                        <textarea
-                          disabled
-                          rows={2}
-                          placeholder={field.placeholder}
-                          className="w-full p-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 text-xs"
-                        />
-                      ) : (
-                        <input
-                          type={field.type}
-                          disabled
-                          placeholder={field.placeholder}
-                          className="w-full p-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 text-xs"
-                        />
-                      )}
+                    <div className="pt-2 flex items-center justify-between">
+                      <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-700' : 'text-slate-400'}`}>
+                        {isSelected ? '✓ Active Theme' : 'Select'}
+                      </span>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Form Submit Preview Button */}
-            <div className="mt-4 pt-3 border-t border-slate-200">
+            {/* Accent Color Palette & Banner Image */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100 text-xs">
+              <div className="space-y-3">
+                <label className="block font-bold text-slate-700">Primary Theme Accent Color</label>
+                <div className="flex items-center gap-3">
+                  {Object.keys(THEME_COLOR_MAP).map((cKey) => {
+                    const isPicked = (activeForm.accentColor || 'emerald') === cKey;
+                    return (
+                      <button
+                        key={cKey}
+                        type="button"
+                        onClick={() => handleUpdateActiveForm({ accentColor: cKey })}
+                        className={`w-8 h-8 rounded-full ${THEME_COLOR_MAP[cKey].primary} transition-transform cursor-pointer ${
+                          isPicked ? 'scale-125 ring-4 ring-slate-300 shadow-md' : 'hover:scale-110'
+                        }`}
+                        title={cKey}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block font-bold text-slate-700">Header Banner Image URL (Optional)</label>
+                <input
+                  type="text"
+                  value={activeForm.headerBannerUrl || ''}
+                  onChange={(e) => handleUpdateActiveForm({ headerBannerUrl: e.target.value })}
+                  placeholder="https://images.unsplash.com/... or leave blank"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="block font-bold text-slate-700">Submit Button Text</label>
+                <input
+                  type="text"
+                  value={activeForm.submitButtonText || ''}
+                  onChange={(e) => handleUpdateActiveForm({ submitButtonText: e.target.value })}
+                  placeholder="Submit Application"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="space-y-3">
+                <label className="block font-bold text-slate-700">Custom Success Message</label>
+                <input
+                  type="text"
+                  value={activeForm.customSuccessMessage || ''}
+                  onChange={(e) => handleUpdateActiveForm({ customSuccessMessage: e.target.value })}
+                  placeholder="Thank you! Our committee will review your application."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* TAB 4: LIVE PREVIEW & LANDING PAGE EMBED INTEGRATION          */}
+      {/* ------------------------------------------------------------- */}
+      {activeStudioTab === 'preview_embed' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left: Interactive Live Themed Form Preview */}
+          <div className="lg:col-span-8 space-y-4">
+            <div className="bg-slate-100 p-6 sm:p-8 rounded-3xl border border-slate-200">
+              <ThemedFormRenderer
+                form={activeForm}
+                onSubmit={handleLiveTestSubmit}
+                language={language}
+              />
+            </div>
+          </div>
+
+          {/* Right: Embed & Integration Assistant */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 text-xs">
+              <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-emerald-600" />
+                <span>Landing Page Embed</span>
+              </h3>
+
+              <p className="text-slate-500 leading-relaxed">
+                This form can be embedded in your subdomain landing page via the <strong>Puck Page Builder Studio</strong> or selected as the default admissions form.
+              </p>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <span className="font-bold text-slate-700 block">Form ID Identifier</span>
+                <div className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-slate-200 font-mono text-[11px] text-slate-800">
+                  <span>{activeForm.id}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(activeForm.id);
+                      onAddToast({ type: 'success', title: 'Copied', message: 'Form ID copied to clipboard.' });
+                    }}
+                    className="text-slate-400 hover:text-slate-700"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = formsList.map((f) => ({
+                      ...f,
+                      isDefault: f.id === activeForm.id,
+                    }));
+                    persistForms(updated);
+                    onAddToast({
+                      type: 'success',
+                      title: 'Set as Landing Page Default',
+                      message: `"${activeForm.title}" is now the active form on your landing page.`,
+                    });
+                  }}
+                  className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all text-xs cursor-pointer"
+                >
+                  Set as Landing Page Default Form
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inspection Modal for Single Response */}
+      {selectedResponseForModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-black text-base text-slate-900">{selectedResponseForModal.studentName}</h3>
+                <span className="text-xs text-slate-400">{selectedResponseForModal.email} • {selectedResponseForModal.phone}</span>
+              </div>
               <button
-                disabled
-                className={`w-full py-2.5 font-bold text-xs rounded-xl shadow-xs opacity-90 cursor-not-allowed ${themeConfig.buttonClass}`}
+                type="button"
+                onClick={() => setSelectedResponseForModal(null)}
+                className="text-slate-400 hover:text-slate-600 font-bold"
               >
-                Submit Admissions Application
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-1 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <span className="font-bold text-slate-600">Submission Timestamp:</span>
+                <span className="font-mono text-slate-800">{selectedResponseForModal.submittedAt}</span>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Questionnaire Answers:</h4>
+                {Object.entries(selectedResponseForModal.data || {}).map(([key, val], idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                    <span className="text-[11px] font-bold text-slate-500 block">{key}</span>
+                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">{String(val)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedResponseForModal(null)}
+                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs"
+              >
+                Close
               </button>
             </div>
           </div>
         </div>
-
-        {/* Right: Selected Field Property Inspector */}
-        <div className="lg:col-span-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="text-xs font-bold font-display uppercase tracking-wider text-slate-700">
-            Field Properties
-          </h3>
-
-          {selectedField ? (
-            <div className="space-y-3.5 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Field Label (English)</label>
-                <input
-                  type="text"
-                  value={selectedField.label}
-                  onChange={(e) => handleUpdateFieldProps(selectedField.id, { label: e.target.value })}
-                  className="w-full p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-slate-50"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Field Label (Arabic)</label>
-                <input
-                  type="text"
-                  value={selectedField.labelAr}
-                  onChange={(e) => handleUpdateFieldProps(selectedField.id, { labelAr: e.target.value })}
-                  className="w-full p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-slate-50 font-arabic text-end"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Placeholder Text</label>
-                <input
-                  type="text"
-                  value={selectedField.placeholder || ''}
-                  onChange={(e) => handleUpdateFieldProps(selectedField.id, { placeholder: e.target.value })}
-                  className="w-full p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-slate-50"
-                />
-              </div>
-
-              {/* Flex Grid Width Selector */}
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1.5">Layout Width on Page</label>
-                <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl">
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateFieldProps(selectedField.id, { width: 'third' })}
-                    className={`py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                      selectedField.width === 'third' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600'
-                    }`}
-                  >
-                    33% Col
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateFieldProps(selectedField.id, { width: 'half' })}
-                    className={`py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                      selectedField.width === 'half' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600'
-                    }`}
-                  >
-                    50% Flex
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateFieldProps(selectedField.id, { width: 'full' })}
-                    className={`py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                      selectedField.width === 'full' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600'
-                    }`}
-                  >
-                    100% Full
-                  </button>
-                </div>
-              </div>
-
-              {/* Required Switch */}
-              <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="font-semibold text-slate-700">Mandatory Field</span>
-                <input
-                  type="checkbox"
-                  checked={selectedField.required}
-                  onChange={(e) => handleUpdateFieldProps(selectedField.id, { required: e.target.checked })}
-                  className="w-4 h-4 text-emerald-600 rounded-sm focus:ring-emerald-500 cursor-pointer"
-                />
-              </div>
-
-              {/* Dropdown Options Editor */}
-              {selectedField.type === 'select' && (
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Dropdown Options (Comma separated)</label>
-                  <textarea
-                    rows={3}
-                    value={(selectedField.options || []).join(', ')}
-                    onChange={(e) =>
-                      handleUpdateFieldProps(selectedField.id, {
-                        options: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
-                      })
-                    }
-                    className="w-full p-2 border border-slate-300 rounded-xl text-xs bg-slate-50"
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 py-6 text-center">
-              Click any field on the canvas to configure its layout width and options.
-            </p>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
