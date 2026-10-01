@@ -1,4 +1,4 @@
-﻿import { prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
 import { MOCK_LEADS } from '../../services/mockData';
 
 export class LeadsService {
@@ -35,22 +35,26 @@ export class LeadsService {
     const leadName = data.studentName || data.name || 'Anonymous Student';
 
     if (process.env.DATABASE_URL && data.tenantId) {
-      return await prisma.lead.create({
-        data: {
-          tenantId: data.tenantId,
-          studentName: leadName,
-          email: data.email || '',
-          phone: data.phone || '',
-          country: data.country || 'Global',
-          courseInterest: data.courseInterest || 'General Study',
-          priorHifzLevel: data.priorHifzLevel || 'Beginner',
-          status: data.status || 'New',
-          paymentStatus: data.paymentStatus || 'Pending',
-          tuitionAmount: data.tuitionAmount ? Number(data.tuitionAmount) : null,
-          planName: data.planName || 'Standard Track',
-          notes: data.notes || 'Submitted via online form',
-        },
-      });
+      try {
+        return await prisma.lead.create({
+          data: {
+            tenantId: data.tenantId,
+            studentName: leadName,
+            email: data.email || '',
+            phone: data.phone || '',
+            country: data.country || 'Global',
+            courseInterest: data.courseInterest || 'General Study',
+            priorHifzLevel: data.priorHifzLevel || 'Beginner',
+            status: data.status || 'New',
+            paymentStatus: data.paymentStatus || 'Pending',
+            tuitionAmount: data.tuitionAmount ? Number(data.tuitionAmount) : null,
+            planName: data.planName || 'Standard Track',
+            notes: data.notes || 'Submitted via online form',
+          },
+        });
+      } catch (err) {
+        console.warn('Database lead create warning, using memory fallback:', err);
+      }
     }
 
     const mockLead = {
@@ -77,13 +81,17 @@ export class LeadsService {
 
   static async updateLead(id: string, updates: Record<string, any>) {
     if (process.env.DATABASE_URL && id) {
-      return await prisma.lead.update({
-        where: { id },
-        data: {
-          ...updates,
-          updatedAt: new Date(),
-        },
-      });
+      try {
+        return await prisma.lead.update({
+          where: { id },
+          data: {
+            ...updates,
+            updatedAt: new Date(),
+          },
+        });
+      } catch (err) {
+        console.warn('Database lead update warning:', err);
+      }
     }
 
     return { success: true, id, ...updates };
