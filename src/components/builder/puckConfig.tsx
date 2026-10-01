@@ -105,6 +105,58 @@ export type ComponentProps = {
   };
 };
 
+const FAQAccordionBlock: React.FC<{
+  heading: string;
+  subheading: string;
+  q1: string;
+  a1: string;
+  q2: string;
+  a2: string;
+  q3: string;
+  a3: string;
+}> = ({ heading, subheading, q1, a1, q2, a2, q3, a3 }) => {
+  const [openIdx, setOpenIdx] = useState<number | null>(0);
+  const items = [
+    { q: q1, a: a1 },
+    { q: q2, a: a2 },
+    { q: q3, a: a3 },
+  ];
+
+  return (
+    <section className="py-20 bg-white border-b border-slate-200">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-12 space-y-3">
+          <h2 className="text-3xl font-black text-slate-900">{heading}</h2>
+          {subheading && <p className="text-slate-500 text-sm">{subheading}</p>}
+        </div>
+
+        <div className="space-y-4">
+          {items.map((item, idx) => {
+            const isOpen = openIdx === idx;
+            return (
+              <div
+                key={idx}
+                className="border border-slate-200 rounded-2xl p-5 cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-colors"
+                onClick={() => setOpenIdx(isOpen ? null : idx)}
+              >
+                <div className="flex items-center justify-between font-bold text-sm text-slate-900">
+                  <span>{item.q}</span>
+                  {isOpen ? <ChevronUp className="w-4 h-4 text-emerald-600" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                </div>
+                {isOpen && (
+                  <p className="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-200/60 leading-relaxed">
+                    {item.a}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export const createPuckConfig = (context: {
   tenant: any;
   courses: Course[];
@@ -541,48 +593,7 @@ export const createPuckConfig = (context: {
           q3: 'How are graduation certificates verified?',
           a3: 'Graduation certificates feature tamper-proof public QR verification codes linked directly to our registry database.',
         },
-        render: ({ heading, subheading, q1, a1, q2, a2, q3, a3 }) => {
-          const [openIdx, setOpenIdx] = useState<number | null>(0);
-          const items = [
-            { q: q1, a: a1 },
-            { q: q2, a: a2 },
-            { q: q3, a: a3 },
-          ];
-
-          return (
-            <section className="py-20 bg-white border-b border-slate-200">
-              <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                <div className="text-center mb-12 space-y-3">
-                  <h2 className="text-3xl font-black text-slate-900">{heading}</h2>
-                  {subheading && <p className="text-slate-500 text-sm">{subheading}</p>}
-                </div>
-
-                <div className="space-y-4">
-                  {items.map((item, idx) => {
-                    const isOpen = openIdx === idx;
-                    return (
-                      <div
-                        key={idx}
-                        className="border border-slate-200 rounded-2xl p-5 cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-colors"
-                        onClick={() => setOpenIdx(isOpen ? null : idx)}
-                      >
-                        <div className="flex items-center justify-between font-bold text-sm text-slate-900">
-                          <span>{item.q}</span>
-                          {isOpen ? <ChevronUp className="w-4 h-4 text-emerald-600" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                        </div>
-                        {isOpen && (
-                          <p className="text-xs text-slate-600 mt-3 pt-3 border-t border-slate-200/60 leading-relaxed">
-                            {item.a}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          );
-        },
+        render: (props) => <FAQAccordionBlock {...props} />,
       },
 
       Testimonials: {

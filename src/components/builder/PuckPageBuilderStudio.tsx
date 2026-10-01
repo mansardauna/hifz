@@ -169,10 +169,10 @@ export const PuckPageBuilderStudio: React.FC = () => {
       {/* Puck Editor Container */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[750px] relative">
         <Puck
+          key={`${tenant.subdomain}-${activeTemplateKey}`}
           config={puckConfig}
           data={puckData}
           onPublish={handlePublish}
-          onChange={(newData) => setPuckData(newData)}
         />
       </div>
 

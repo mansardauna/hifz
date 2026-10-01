@@ -16,8 +16,20 @@ export const Header: React.FC = () => {
   const isAr = language === 'ar' || isRtl;
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+    <>
+      {/* Top Announcement Banner */}
+      {tenant.heroBadgeText && (
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white text-[11px] sm:text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 shadow-xs select-none border-b border-emerald-950/40">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <span>{isAr ? tenant.heroBadgeTextAr || tenant.heroBadgeText : tenant.heroBadgeText}</span>
+          <a href="#pricing" className="underline font-black text-amber-300 hover:text-amber-200 ml-2 shrink-0">
+            {isAr ? 'سجل الآن ←' : 'Enroll Now →'}
+          </a>
+        </div>
+      )}
+
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs font-sans">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
         {/* Left: Academy Branding */}
         <div className="flex items-center gap-3">
           <button
@@ -237,5 +249,6 @@ export const Header: React.FC = () => {
         </div>
       )}
     </header>
-  );
+  </>
+);
 };
