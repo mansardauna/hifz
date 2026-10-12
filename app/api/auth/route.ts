@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '../../../src/server/services/authService';
 import { apiSuccess, apiError, handleApiError } from '../../../src/server/lib/apiResponse';
 
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
         email,
         password,
         role,
+        subdomain,
       });
     }
 

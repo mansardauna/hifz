@@ -217,7 +217,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
               onClick={handleEnablePush}
               className="text-[11px] font-bold text-slate-900 hover:underline cursor-pointer"
             >
-              {pushEnabled ? 'Enabled ✓' : 'Enable Push Alerts'}
+              {pushEnabled ? 'Enabled (Active)' : 'Enable Push Alerts'}
             </button>
           </div>
         </div>

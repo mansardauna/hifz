@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Input, Button, Badge } from '../ui';
 import { ToastMessage } from '../ui/Toast';
+import { useTenant } from '../../context/TenantContext';
+import { PaymentGatewayConfig } from '../../types';
 import {
   Key,
   ShieldCheck,
@@ -22,28 +24,56 @@ interface IntegrationsManagerProps {
 }
 
 export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddToast }) => {
+  const { tenant, updateTenantConfig } = useTenant();
+
+  const savedIntegrations = tenant.settings?.integrations || {};
+  const stripeGateway = tenant.paymentGateways?.find((g) => g.provider === 'stripe');
+  const moyasarGateway = tenant.paymentGateways?.find((g) => g.provider === 'moyasar');
+
   // LiveKit WebRTC state
-  const [livekitUrl, setLivekitUrl] = useState<string>('wss://your-project.livekit.cloud');
-  const [livekitApiKey, setLivekitApiKey] = useState<string>('');
-  const [livekitApiSecret, setLivekitApiSecret] = useState<string>('');
+  const [livekitUrl, setLivekitUrl] = useState<string>(
+    savedIntegrations.livekit?.url || 'wss://cloud.livekit.io'
+  );
+  const [livekitApiKey, setLivekitApiKey] = useState<string>(
+    savedIntegrations.livekit?.apiKey || ''
+  );
+  const [livekitApiSecret, setLivekitApiSecret] = useState<string>(
+    savedIntegrations.livekit?.apiSecret || ''
+  );
 
   // Stripe state
-  const [stripePubKey, setStripePubKey] = useState<string>('');
-  const [stripeSecretKey, setStripeSecretKey] = useState<string>('');
-  const [stripeWebhookSecret, setStripeWebhookSecret] = useState<string>('');
+  const [stripePubKey, setStripePubKey] = useState<string>(
+    stripeGateway?.publishableKey || savedIntegrations.stripe?.publishableKey || ''
+  );
+  const [stripeSecretKey, setStripeSecretKey] = useState<string>(
+    stripeGateway?.secretKey || savedIntegrations.stripe?.secretKey || ''
+  );
+  const [stripeWebhookSecret, setStripeWebhookSecret] = useState<string>(
+    stripeGateway?.webhookSecret || savedIntegrations.stripe?.webhookSecret || ''
+  );
 
   // Moyasar state
-  const [moyasarPubKey, setMoyasarPubKey] = useState<string>('');
-  const [moyasarSecretKey, setMoyasarSecretKey] = useState<string>('');
+  const [moyasarPubKey, setMoyasarPubKey] = useState<string>(
+    moyasarGateway?.publishableKey || savedIntegrations.moyasar?.publishableKey || ''
+  );
+  const [moyasarSecretKey, setMoyasarSecretKey] = useState<string>(
+    moyasarGateway?.secretKey || savedIntegrations.moyasar?.secretKey || ''
+  );
 
   // Database state
-  const [databaseUrl, setDatabaseUrl] = useState<string>('postgresql://ankabit_admin:password@db-cluster.internal.ankabit.app:5432/ankabit_lms_production');
+  const [databaseUrl, setDatabaseUrl] = useState<string>(
+    savedIntegrations.database?.url || 'mysql://root:@localhost:3306/zealous_hopper'
+  );
 
   // Resend / Email state
-  const [resendApiKey, setResendApiKey] = useState<string>('');
+  const [resendApiKey, setResendApiKey] = useState<string>(
+    tenant.emailGatewayConfig?.apiKey || savedIntegrations.resend?.apiKey || ''
+  );
 
   // OpenAI Whisper state
-  const [openaiApiKey, setOpenaiApiKey] = useState<string>('');
+  const [openaiApiKey, setOpenaiApiKey] = useState<string>(
+    savedIntegrations.openai?.apiKey || ''
+  );
 
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
 
@@ -51,55 +81,149 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
     setShowSecrets((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSaveIntegration = (serviceName: string) => {
+  const handleSaveIntegration = (serviceKey: string, serviceName: string) => {
+    const updatedIntegrations = {
+      ...savedIntegrations,
+    };
+
+    let updatedGateways: PaymentGatewayConfig[] = [...(tenant.paymentGateways || [])];
+
+    if (serviceKey === 'livekit') {
+      updatedIntegrations.livekit = {
+        url: livekitUrl.trim(),
+        apiKey: livekitApiKey.trim(),
+        apiSecret: livekitApiSecret.trim(),
+      };
+    } else if (serviceKey === 'stripe') {
+      updatedIntegrations.stripe = {
+        publishableKey: stripePubKey.trim(),
+        secretKey: stripeSecretKey.trim(),
+        webhookSecret: stripeWebhookSecret.trim(),
+      };
+      // Synchronize with tenant.paymentGateways
+      const existingIdx = updatedGateways.findIndex((g) => g.provider === 'stripe');
+      const stripeConfig: PaymentGatewayConfig = {
+        provider: 'stripe',
+        enabled: Boolean(stripePubKey.trim() && stripeSecretKey.trim()),
+        publishableKey: stripePubKey.trim(),
+        secretKey: stripeSecretKey.trim(),
+        webhookSecret: stripeWebhookSecret.trim(),
+        liveMode: !stripePubKey.trim().startsWith('pk_test_'),
+      };
+      if (existingIdx >= 0) {
+        updatedGateways[existingIdx] = stripeConfig;
+      } else {
+        updatedGateways.push(stripeConfig);
+      }
+    } else if (serviceKey === 'moyasar') {
+      updatedIntegrations.moyasar = {
+        publishableKey: moyasarPubKey.trim(),
+        secretKey: moyasarSecretKey.trim(),
+      };
+      // Synchronize with tenant.paymentGateways
+      const existingIdx = updatedGateways.findIndex((g) => g.provider === 'moyasar');
+      const moyasarConfig: PaymentGatewayConfig = {
+        provider: 'moyasar',
+        enabled: Boolean(moyasarPubKey.trim() && moyasarSecretKey.trim()),
+        publishableKey: moyasarPubKey.trim(),
+        secretKey: moyasarSecretKey.trim(),
+        liveMode: !moyasarPubKey.trim().startsWith('pk_test_'),
+      };
+      if (existingIdx >= 0) {
+        updatedGateways[existingIdx] = moyasarConfig;
+      } else {
+        updatedGateways.push(moyasarConfig);
+      }
+    } else if (serviceKey === 'database') {
+      updatedIntegrations.database = {
+        url: databaseUrl.trim(),
+      };
+    } else if (serviceKey === 'resend') {
+      updatedIntegrations.resend = {
+        apiKey: resendApiKey.trim(),
+      };
+      // Also update email gateway config
+      updateTenantConfig({
+        emailGatewayConfig: {
+          enabled: Boolean(resendApiKey.trim()),
+          provider: 'resend',
+          apiKey: resendApiKey.trim(),
+          fromEmail: tenant.emailGatewayConfig?.fromEmail || tenant.contactEmail,
+          fromName: tenant.emailGatewayConfig?.fromName || tenant.name,
+        },
+      });
+    } else if (serviceKey === 'openai') {
+      updatedIntegrations.openai = {
+        apiKey: openaiApiKey.trim(),
+      };
+    }
+
+    updateTenantConfig({
+      paymentGateways: updatedGateways,
+      settings: {
+        ...(tenant.settings as any),
+        integrations: updatedIntegrations,
+      },
+    });
+
     onAddToast({
       type: 'success',
-      title: `${serviceName} Configured`,
-      message: `${serviceName} API credentials saved and ready for live production transactions.`,
+      title: `${serviceName} Saved`,
+      message: `${serviceName} API credentials saved and connected to academy configuration.`,
     });
   };
+
+  const isLivekitConnected = Boolean(livekitApiKey.trim() && livekitApiSecret.trim());
+  const isStripeConnected = Boolean(stripePubKey.trim() && stripeSecretKey.trim());
+  const isMoyasarConnected = Boolean(moyasarPubKey.trim() && moyasarSecretKey.trim());
+  const isDatabaseConnected = Boolean(databaseUrl.trim());
+  const isResendConnected = Boolean(resendApiKey.trim());
+  const isOpenaiConnected = Boolean(openaiApiKey.trim());
 
   return (
     <div className="space-y-6 font-sans">
       {/* Intro Header Card */}
       <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5" />
-            </span>
-            <h2 className="text-xl font-bold">Production Integrations & Live API Hub</h2>
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
+            <h2 className="text-xl font-bold">API Keys & Live Integrations</h2>
           </div>
           <p className="text-xs text-slate-300 mt-2 max-w-2xl leading-relaxed">
-            Connect authentic live infrastructure services. Enter your API credentials from each provider below to transition completely off simulations.
+            Connect live infrastructure services and payment processors. Enter your API credentials from each provider below to activate live processing.
           </p>
         </div>
 
-        <Badge variant="success">All Services Active</Badge>
+        <Badge variant={isLivekitConnected && isStripeConnected ? 'success' : 'default'}>
+          {isLivekitConnected && isStripeConnected ? 'Core Services Connected' : 'Credentials Hub'}
+        </Badge>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 1. LiveKit Video Classroom & Whiteboard */}
-        <Card className="space-y-4">
+        {/* 1. LiveKit Video Classroom & WebRTC */}
+        <Card className="p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Video className="w-5 h-5" />
-              </div>
+              <Video className="w-6 h-6 text-blue-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">LiveKit Cloud (WebRTC Video & Audio)</h3>
-                <p className="text-[11px] text-slate-500">Live 1-on-1 & Group HD classroom rooms</p>
+                <h3 className="text-sm font-bold text-slate-900">LiveKit Cloud (WebRTC SFU)</h3>
+                <p className="text-[11px] text-slate-500">Live 1-on-1 & Group HD video classroom rooms</p>
               </div>
             </div>
-            <a
-              href="https://cloud.livekit.io"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1"
-            >
-              <span>Get Keys</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2">
+              <Badge variant={isLivekitConnected ? 'success' : 'default'}>
+                {isLivekitConnected ? 'Connected' : 'Not Connected'}
+              </Badge>
+              <a
+                href="https://cloud.livekit.io"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1"
+              >
+                <span>Get Keys</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -127,7 +251,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
                 <button
                   type="button"
                   onClick={() => toggleShowSecret('livekit')}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showSecrets['livekit'] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -136,33 +260,36 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
           </div>
 
           <div className="pt-2 flex justify-end">
-            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('LiveKit Video')}>
-              Save LiveKit Keys
+            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('livekit', 'LiveKit Video')}>
+              Save
             </Button>
           </div>
         </Card>
 
         {/* 2. Stripe Global Payments */}
-        <Card className="space-y-4">
+        <Card className="p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <CreditCard className="w-5 h-5" />
-              </div>
+              <CreditCard className="w-6 h-6 text-indigo-600 shrink-0" />
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Stripe Payments & Subscriptions</h3>
                 <p className="text-[11px] text-slate-500">Credit cards, Apple Pay, and automated tuition</p>
               </div>
             </div>
-            <a
-              href="https://dashboard.stripe.com/apikeys"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1"
-            >
-              <span>Dashboard</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2">
+              <Badge variant={isStripeConnected ? 'success' : 'default'}>
+                {isStripeConnected ? 'Connected' : 'Not Connected'}
+              </Badge>
+              <a
+                href="https://dashboard.stripe.com/apikeys"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1"
+              >
+                <span>Dashboard</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -184,7 +311,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
                 <button
                   type="button"
                   onClick={() => toggleShowSecret('stripe')}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showSecrets['stripe'] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -199,33 +326,36 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
           </div>
 
           <div className="pt-2 flex justify-end">
-            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('Stripe')}>
-              Save Stripe Keys
+            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('stripe', 'Stripe')}>
+              Save
             </Button>
           </div>
         </Card>
 
         {/* 3. Moyasar Saudi Payments (Mada & Apple Pay) */}
-        <Card className="space-y-4">
+        <Card className="p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <CreditCard className="w-5 h-5" />
-              </div>
+              <CreditCard className="w-6 h-6 text-emerald-600 shrink-0" />
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Moyasar Gateway (Mada / GCC)</h3>
                 <p className="text-[11px] text-slate-500">Saudi local debit cards & Apple Pay</p>
               </div>
             </div>
-            <a
-              href="https://dashboard.moyasar.com"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-1"
-            >
-              <span>Portal</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2">
+              <Badge variant={isMoyasarConnected ? 'success' : 'default'}>
+                {isMoyasarConnected ? 'Connected' : 'Not Connected'}
+              </Badge>
+              <a
+                href="https://dashboard.moyasar.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-1"
+              >
+                <span>Portal</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -247,7 +377,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
                 <button
                   type="button"
                   onClick={() => toggleShowSecret('moyasar')}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showSecrets['moyasar'] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -256,33 +386,25 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
           </div>
 
           <div className="pt-2 flex justify-end">
-            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('Moyasar')}>
-              Save Moyasar Keys
+            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('moyasar', 'Moyasar')}>
+              Save
             </Button>
           </div>
         </Card>
 
         {/* 4. PostgreSQL Database Persistence */}
-        <Card className="space-y-4">
+        <Card className="p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                <Database className="w-5 h-5" />
-              </div>
+              <Database className="w-6 h-6 text-purple-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">PostgreSQL Enterprise Cluster</h3>
-                <p className="text-[11px] text-slate-500">Persistent multi-tenant SQL database & PgBouncer pooler</p>
+                <h3 className="text-sm font-bold text-slate-900">Database Connection</h3>
+                <p className="text-[11px] text-slate-500">Persistent database connection string</p>
               </div>
             </div>
-            <a
-              href="https://www.postgresql.org/docs/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-purple-600 hover:underline flex items-center gap-1"
-            >
-              <span>PostgreSQL Docs</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <Badge variant={isDatabaseConnected ? 'success' : 'default'}>
+              {isDatabaseConnected ? 'Configured' : 'Default'}
+            </Badge>
           </div>
 
           <div className="space-y-3">
@@ -298,7 +420,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
                 <button
                   type="button"
                   onClick={() => toggleShowSecret('database')}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showSecrets['database'] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -307,33 +429,36 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
           </div>
 
           <div className="pt-2 flex justify-end">
-            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('Database Connection')}>
-              Save Database URI
+            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('database', 'Database')}>
+              Save
             </Button>
           </div>
         </Card>
 
-        {/* 5. Resend / SMTP Email Delivery */}
-        <Card className="space-y-4">
+        {/* 5. Resend / Transactional Email */}
+        <Card className="p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
-                <Mail className="w-5 h-5" />
-              </div>
+              <Mail className="w-6 h-6 text-sky-600 shrink-0" />
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Resend (Transactional Emails)</h3>
                 <p className="text-[11px] text-slate-500">Student enrollment emails & receipts</p>
               </div>
             </div>
-            <a
-              href="https://resend.com"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-sky-600 hover:underline flex items-center gap-1"
-            >
-              <span>Resend.com</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2">
+              <Badge variant={isResendConnected ? 'success' : 'default'}>
+                {isResendConnected ? 'Connected' : 'Not Connected'}
+              </Badge>
+              <a
+                href="https://resend.com"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-semibold text-sky-600 hover:underline flex items-center gap-1"
+              >
+                <span>Resend.com</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -346,33 +471,36 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
           </div>
 
           <div className="pt-2 flex justify-end">
-            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('Resend Email')}>
-              Save Email Key
+            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('resend', 'Resend Email')}>
+              Save
             </Button>
           </div>
         </Card>
 
-        {/* 6. OpenAI Whisper AI Tajweed */}
-        <Card className="space-y-4">
+        {/* 6. OpenAI Whisper AI */}
+        <Card className="p-6 sm:p-7 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Cpu className="w-5 h-5" />
-              </div>
+              <Cpu className="w-6 h-6 text-amber-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">OpenAI Whisper AI (Speech Tajweed)</h3>
-                <p className="text-[11px] text-slate-500">Automatic recitation acoustic checking</p>
+                <h3 className="text-sm font-bold text-slate-900">OpenAI API (Speech & AI)</h3>
+                <p className="text-[11px] text-slate-500">Recitation audio analysis & AI assistance</p>
               </div>
             </div>
-            <a
-              href="https://platform.openai.com/api-keys"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-semibold text-amber-600 hover:underline flex items-center gap-1"
-            >
-              <span>OpenAI Portal</span>
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2">
+              <Badge variant={isOpenaiConnected ? 'success' : 'default'}>
+                {isOpenaiConnected ? 'Connected' : 'Not Connected'}
+              </Badge>
+              <a
+                href="https://platform.openai.com/api-keys"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-semibold text-amber-600 hover:underline flex items-center gap-1"
+              >
+                <span>OpenAI Portal</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -388,7 +516,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
                 <button
                   type="button"
                   onClick={() => toggleShowSecret('openai')}
-                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showSecrets['openai'] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -397,8 +525,8 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
           </div>
 
           <div className="pt-2 flex justify-end">
-            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('OpenAI Whisper')}>
-              Save OpenAI Key
+            <Button size="sm" variant="primary" onClick={() => handleSaveIntegration('openai', 'OpenAI')}>
+              Save
             </Button>
           </div>
         </Card>

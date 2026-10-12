@@ -13,9 +13,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full space-y-2 font-sans">
+      <div className="w-full space-y-1.5 font-sans">
         {label && (
-          <label htmlFor={inputId} className="block text-sm text-slate-700">
+          <label htmlFor={inputId} className="block text-sm font-semibold text-slate-800">
             {label}
           </label>
         )}
@@ -28,23 +28,23 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
-            className={`w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white text-slate-900 border rounded-xl transition-colors placeholder:text-slate-400 focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/15 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed ${
-              leftIcon ? 'pl-10' : ''
-            } ${rightIcon ? 'pr-10' : ''} ${
-              error ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/15' : 'border-slate-300 hover:border-slate-400'
+            className={`w-full h-11 px-4 py-2.5 text-sm font-medium bg-white text-slate-900 border rounded-xl transition-all placeholder:text-slate-400 focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/15 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed ${
+              leftIcon ? 'pl-11' : ''
+            } ${rightIcon ? 'pr-11' : ''} ${
+              error ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/15' : 'border-slate-200 hover:border-slate-300'
             } ${className}`}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
               {rightIcon}
             </div>
           )}
         </div>
         {error ? (
-          <p className="text-xs text-rose-600 font-medium">{error}</p>
+          <p className="text-xs sm:text-sm text-rose-600 font-semibold">{error}</p>
         ) : helperText ? (
-          <p className="text-xs text-slate-500">{helperText}</p>
+          <p className="text-xs sm:text-sm text-slate-500">{helperText}</p>
         ) : null}
       </div>
     );
@@ -66,15 +66,15 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full space-y-1.5 font-sans">
         {label && (
-          <label htmlFor={selectId} className="block text-sm text-slate-700">
+          <label htmlFor={selectId} className="block text-sm font-semibold text-slate-800">
             {label}
           </label>
         )}
         <select
           ref={ref}
           id={selectId}
-          className={`w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white text-slate-900 border rounded-xl transition-colors focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/15 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer ${
-            error ? 'border-rose-500 focus:border-rose-500' : 'border-slate-300 hover:border-slate-400'
+          className={`w-full h-11 px-4 py-2.5 text-sm font-medium bg-white text-slate-900 border rounded-xl transition-all focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/15 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer ${
+            error ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 hover:border-slate-300'
           } ${className}`}
           {...props}
         >
@@ -87,9 +87,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             : children}
         </select>
         {error ? (
-          <p className="text-xs text-red-600 font-medium">{error}</p>
+          <p className="text-xs sm:text-sm text-rose-600 font-semibold">{error}</p>
         ) : helperText ? (
-          <p className="text-xs text-slate-500">{helperText}</p>
+          <p className="text-xs sm:text-sm text-slate-500">{helperText}</p>
         ) : null}
       </div>
     );

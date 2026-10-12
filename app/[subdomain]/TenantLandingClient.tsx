@@ -7,9 +7,10 @@ import { ToastContainer, ToastMessage } from '../../src/components/ui/Toast';
 
 interface TenantLandingClientProps {
   subdomain: string;
+  initialServerTenant?: any;
 }
 
-export function TenantLandingClient({ subdomain }: TenantLandingClientProps) {
+export function TenantLandingClient({ subdomain, initialServerTenant }: TenantLandingClientProps) {
   const { setTenantBySubdomain } = useTenant();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -35,7 +36,7 @@ export function TenantLandingClient({ subdomain }: TenantLandingClientProps) {
 
   return (
     <>
-      <LandingPage onAddToast={handleAddToast} />
+      <LandingPage initialServerTenant={initialServerTenant} onAddToast={handleAddToast} />
       <ToastContainer toasts={toasts} onDismiss={handleDismissToast} />
     </>
   );

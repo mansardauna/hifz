@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { SanadCertificate, CertificateTheme } from '../../types/certificate';
 import {
   Award,
@@ -23,15 +24,17 @@ import { Button, Input, Card, Badge } from '../ui';
 export const SanadCertificateBuilder: React.FC = () => {
   const { tenant } = useTenant();
   const { success, error, info } = useToast();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
 
-  const [studentNameEn, setStudentNameEn] = useState('Zayd Ibn Harithah');
-  const [studentNameAr, setStudentNameAr] = useState('زيد بن حارثة');
-  const [riwayah, setRiwayah] = useState("Hafs 'an 'Asim via Shatibiyyah");
-  const [riwayahAr, setRiwayahAr] = useState('برواية حفص عن عاصم من طريق الشاطبية');
+  const [studentNameEn, setStudentNameEn] = useState(isQuran ? 'Zayd Ibn Harithah' : 'Alex Morgan');
+  const [studentNameAr, setStudentNameAr] = useState(isQuran ? 'زيد بن حارثة' : 'أليكس مورغان');
+  const [riwayah, setRiwayah] = useState(isQuran ? "Hafs 'an 'Asim via Shatibiyyah" : "Applied Systems & Software Track");
+  const [riwayahAr, setRiwayahAr] = useState(isQuran ? 'برواية حفص عن عاصم من طريق الشاطبية' : 'مسار النظم والبرمجيات التطبيقية');
   const [trackType, setTrackType] = useState<SanadCertificate['trackType']>('tajweed_ijazah');
   const [grade, setGrade] = useState<SanadCertificate['grade']>('Mumtaz (Distinction)');
-  const [sheikhName, setSheikhName] = useState('Sheikh Tariq Al-Mansoor');
-  const [sheikhTitle, setSheikhTitle] = useState('Senior Muqri & Ijazah Holder of the Ten Qira’at');
+  const [sheikhName, setSheikhName] = useState(isQuran ? 'Sheikh Tariq Al-Mansoor' : 'Dr. Sarah Jenkins');
+  const [sheikhTitle, setSheikhTitle] = useState(isQuran ? 'Senior Muqri & Ijazah Holder of the Ten Qira’at' : 'Department Dean & Academic Director');
   const [completionDate, setCompletionDate] = useState('September 4, 2026');
   const [hijriDate, setHijriDate] = useState('22 Safar 1448 AH');
   const [theme, setTheme] = useState<CertificateTheme>('royal_gold');
@@ -94,26 +97,28 @@ export const SanadCertificateBuilder: React.FC = () => {
   };
 
   const handleShareEmail = () => {
-    success('Certificate Dispatched! ✉️', `Authenticated Ijazah #${certificateId} sent to ${studentNameEn} & parent.`);
+    success('Certificate Dispatched!', `Authenticated Ijazah #${certificateId} sent to ${studentNameEn} & parent.`);
   };
 
   const handleShareWhatsApp = () => {
-    success('WhatsApp Notification Dispatched! 📲', `Verification link sent to student via WhatsApp.`);
+    success('WhatsApp Notification Dispatched!', `Verification link sent to student via WhatsApp.`);
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12 font-sans">
+    <div className="space-y-6 w-11/12 mx-auto pb-12 font-sans">
       {/* Header Banner */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <Badge variant="success" className="mb-2">
-            Sanad & Ijazah Certification Studio
+            {isQuran ? "Sanad & Ijazah Certification Studio" : "Institutional Certification Studio"}
           </Badge>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Visual Sanad & Ijazah Certificate Generator
+            {isQuran ? "Visual Sanad & Ijazah Certificate Generator" : "Visual Certificate Generator & Studio"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Design authenticated graduation certificates with authentic Khatam borders, Sheikh wax seals, and scannable QR verification.
+            {isQuran
+              ? "Design authenticated graduation certificates with authentic Khatam borders, Sheikh wax seals, and scannable QR verification."
+              : "Design authenticated graduation certificates with institutional borders, official seals, and scannable QR verification."}
           </p>
         </div>
 
@@ -126,7 +131,7 @@ export const SanadCertificateBuilder: React.FC = () => {
             leftIcon={<Send className="w-3.5 h-3.5" />}
             className="font-bold text-xs"
           >
-            Email to Student
+            Email Student
           </Button>
 
           <Button
@@ -158,7 +163,7 @@ export const SanadCertificateBuilder: React.FC = () => {
           <Card className="p-5 space-y-4">
             <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
               <Sliders className="w-4 h-4 text-emerald-600" />
-              <span>Student & Riwayah Details</span>
+              <span>{isQuran ? "Student & Riwayah Details" : "Student & Program Details"}</span>
             </h3>
 
             <div>
@@ -183,21 +188,36 @@ export const SanadCertificateBuilder: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Certification Track</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isQuran ? "Certification Track" : "Certification Program"}
+              </label>
               <select
                 value={trackType}
                 onChange={(e) => setTrackType(e.target.value as any)}
                 className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold"
               >
-                <option value="tajweed_ijazah">Ijazah in Recitation & Tajweed (Connected Sanad)</option>
-                <option value="hifz_full">Full Holy Quran Memorization (30 Juz)</option>
-                <option value="qirat_asharah">Ten Minor Qira'at (Al-Ashr As-Sughra)</option>
-                <option value="nazirah">Nazirah & Foundation Khatam</option>
+                {isQuran ? (
+                  <>
+                    <option value="tajweed_ijazah">Ijazah in Recitation & Tajweed (Connected Sanad)</option>
+                    <option value="hifz_full">Full Holy Quran Memorization (30 Juz)</option>
+                    <option value="qirat_asharah">Ten Minor Qira'at (Al-Ashr As-Sughra)</option>
+                    <option value="nazirah">Nazirah & Foundation Khatam</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="tajweed_ijazah">Executive Professional Diploma (Capstone Honors)</option>
+                    <option value="hifz_full">Comprehensive Program Completion (All Modules)</option>
+                    <option value="qirat_asharah">Advanced Specialization Certification</option>
+                    <option value="nazirah">Foundational Core Certificate</option>
+                  </>
+                )}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Riwayah / Transmission</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isQuran ? "Riwayah / Transmission" : "Academic Focus / Specialization"}
+              </label>
               <input
                 type="text"
                 value={riwayah}
@@ -220,7 +240,9 @@ export const SanadCertificateBuilder: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Supervising Sheikh / Muqri</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isQuran ? "Supervising Sheikh / Muqri" : "Certifying Dean / Instructor"}
+              </label>
               <input
                 type="text"
                 value={sheikhName}

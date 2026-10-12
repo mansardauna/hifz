@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -30,10 +30,37 @@ export function apiError(message: string, status: number = 400, errors?: Record<
   return NextResponse.json(payload, { status });
 }
 
+export class HttpError extends Error {
+  status: number;
+  constructor(message: string, status: number = 400) {
+    super(message);
+    this.status = status;
+    this.name = 'HttpError';
+  }
+}
+
 export function handleApiError(error: unknown) {
   console.error('[API Error Caught]:', error);
+  if (error instanceof HttpError) {
+    return apiError(error.message, error.status);
+  }
   if (error instanceof Error) {
-    return apiError(error.message, 500);
+    if (error.name === 'SyntaxError' && error.message.toLowerCase().includes('json')) {
+      return apiError('Invalid JSON payload in request body', 400);
+    }
+    if (error.message.toLowerCase().includes('authentication required') || error.message.toLowerCase().includes('invalid email or password')) {
+      return apiError(error.message, 401);
+    }
+    if (error.message.toLowerCase().includes('already exists') || error.message.toLowerCase().includes('taken')) {
+      return apiError(error.message, 409);
+    }
+    if (error.message.toLowerCase().includes('required') || error.message.toLowerCase().includes('must be at least')) {
+      return apiError(error.message, 400);
+    }
+    if (error.message.toLowerCase().includes('forbidden')) {
+      return apiError(error.message, 403);
+    }
+    return apiError(error.message, 400);
   }
   return apiError('An unexpected server error occurred', 500);
 }

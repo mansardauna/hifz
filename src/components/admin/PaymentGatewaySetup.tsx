@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PaymentGatewayConfig } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Button, Input, Card, Badge } from '../ui';
+import { Button, Input, Card, Badge, PageHeader } from '../ui';
 import { CreditCard, Building2, Save, Globe, Landmark, ShieldCheck } from 'lucide-react';
 
 interface PaymentGatewaySetupProps {
@@ -10,8 +10,9 @@ interface PaymentGatewaySetupProps {
 }
 
 export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddToast }) => {
-  const { tenant } = useTenant();
+  const { tenant, updateTenantConfig } = useTenant();
   const [gateways, setGateways] = useState<PaymentGatewayConfig[]>(tenant.paymentGateways || []);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleToggle = (provider: string) => {
     setGateways((prev) => {
@@ -33,13 +34,25 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
     });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddToast({
-      type: 'success',
-      title: 'Merchant Gateways Saved',
-      message: 'Tuition payment settings and API credentials updated for your academy.',
-    });
+    setIsSaving(true);
+    try {
+      updateTenantConfig({ paymentGateways: gateways });
+      onAddToast({
+        type: 'success',
+        title: 'Settings Saved',
+        message: 'Payment gateway configurations and API keys saved successfully.',
+      });
+    } catch (err: any) {
+      onAddToast({
+        type: 'error',
+        title: 'Save Failed',
+        message: err?.message || 'Could not save payment gateway settings.',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const stripe = gateways.find((g) => g.provider === 'stripe') || {
@@ -89,38 +102,33 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
 
   return (
     <form onSubmit={handleSave} className="space-y-6 font-sans">
-      {/* Header Card */}
-      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-slate-900">Academy Tuition Payment Gateways</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Connect your own merchant gateway accounts (Flutterwave, Paystack, Stripe, Moyasar) to collect student tuition directly into your academy's bank account.
-          </p>
-        </div>
-
-        <Button
-          type="submit"
-          variant="primary"
-          size="sm"
-          leftIcon={<Save className="w-4 h-4" />}
-        >
-          Save Merchant Credentials
-        </Button>
-      </Card>
+      {/* Page Header */}
+      <PageHeader
+        title="Payment Gateways"
+        subtitle="Connect your merchant accounts (Stripe, Moyasar, Paystack, Flutterwave) to process tuition directly into your academy's bank account."
+        actions={
+          <Button
+            type="submit"
+            variant="primary"
+            isLoading={isSaving}
+            leftIcon={<Save className="w-4 h-4" />}
+          >
+            Save
+          </Button>
+        }
+      />
 
       {/* Gateway Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Flutterwave */}
-        <Card className="space-y-4 flex flex-col justify-between">
+        <Card className="p-6 sm:p-7 space-y-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600">
-                  <Globe className="w-4 h-4" />
-                </div>
+              <div className="flex items-center gap-3">
+                <Globe className="w-5 h-5 text-amber-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs text-slate-900">Flutterwave</h3>
-                  <p className="text-[11px] text-slate-500">African & Global Multi-Currency</p>
+                  <h3 className="font-bold text-sm text-slate-900">Flutterwave</h3>
+                  <p className="text-xs text-slate-500">African & Global Multi-Currency</p>
                 </div>
               </div>
 
@@ -156,7 +164,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
                     className="rounded border-slate-300 text-slate-900 focus:ring-0 w-3.5 h-3.5 cursor-pointer"
                   />
                   <label htmlFor="flw-live" className="text-xs text-slate-700 font-medium cursor-pointer">
-                    Live Production Mode
+                    Live Mode
                   </label>
                 </div>
               </div>
@@ -165,25 +173,23 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
             )}
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Direct to your Bank</span>
-            <Badge variant={flutterwave.enabled ? 'success' : 'default'}>
-              {flutterwave.enabled ? 'Active' : 'Disabled'}
+            <Badge variant={flutterwave.enabled ? (flutterwave.publishableKey ? 'success' : 'warning') : 'default'}>
+              {flutterwave.enabled ? (flutterwave.publishableKey ? 'Connected' : 'Missing Keys') : 'Disabled'}
             </Badge>
           </div>
         </Card>
 
         {/* Paystack */}
-        <Card className="space-y-4 flex flex-col justify-between">
+        <Card className="p-6 sm:p-7 space-y-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-600">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="w-5 h-5 text-cyan-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs text-slate-900">Paystack</h3>
-                  <p className="text-[11px] text-slate-500">Cards, Apple Pay & Bank Transfers</p>
+                  <h3 className="font-bold text-sm text-slate-900">Paystack</h3>
+                  <p className="text-xs text-slate-500">Cards, Apple Pay & Bank Transfers</p>
                 </div>
               </div>
 
@@ -219,7 +225,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
                     className="rounded border-slate-300 text-slate-900 focus:ring-0 w-3.5 h-3.5 cursor-pointer"
                   />
                   <label htmlFor="paystack-live" className="text-xs text-slate-700 font-medium cursor-pointer">
-                    Live Production Mode
+                    Live Mode
                   </label>
                 </div>
               </div>
@@ -228,25 +234,23 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
             )}
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Direct to your Bank</span>
-            <Badge variant={paystack.enabled ? 'success' : 'default'}>
-              {paystack.enabled ? 'Active' : 'Disabled'}
+            <Badge variant={paystack.enabled ? (paystack.publishableKey ? 'success' : 'warning') : 'default'}>
+              {paystack.enabled ? (paystack.publishableKey ? 'Connected' : 'Missing Keys') : 'Disabled'}
             </Badge>
           </div>
         </Card>
 
         {/* Stripe Academy Account */}
-        <Card className="space-y-4 flex flex-col justify-between">
+        <Card className="p-6 sm:p-7 space-y-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-600">
-                  <CreditCard className="w-4 h-4" />
-                </div>
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-5 h-5 text-indigo-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs text-slate-900">Stripe (Academy Account)</h3>
-                  <p className="text-[11px] text-slate-500">Global Credit / Debit Cards</p>
+                  <h3 className="font-bold text-sm text-slate-900">Stripe</h3>
+                  <p className="text-xs text-slate-500">Global Credit / Debit Cards & Wallets</p>
                 </div>
               </div>
 
@@ -282,29 +286,27 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
                 />
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic py-6 text-center">Enable to accept payments into your academy's Stripe.</p>
+              <p className="text-xs text-slate-400 italic py-6 text-center">Enable to accept card payments into your academy's Stripe.</p>
             )}
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Direct to your Bank</span>
-            <Badge variant={stripe.enabled ? 'success' : 'default'}>
-              {stripe.enabled ? 'Active' : 'Disabled'}
+            <Badge variant={stripe.enabled ? (stripe.publishableKey ? 'success' : 'warning') : 'default'}>
+              {stripe.enabled ? (stripe.publishableKey ? 'Connected' : 'Missing Keys') : 'Disabled'}
             </Badge>
           </div>
         </Card>
 
         {/* Moyasar */}
-        <Card className="space-y-4 flex flex-col justify-between">
+        <Card className="p-6 sm:p-7 space-y-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                  <Building2 className="w-4 h-4" />
-                </div>
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-emerald-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs text-slate-900">Moyasar (GCC / Saudi)</h3>
-                  <p className="text-[11px] text-slate-500">Mada Cards & Apple Pay (SAR)</p>
+                  <h3 className="font-bold text-sm text-slate-900">Moyasar (GCC / Saudi)</h3>
+                  <p className="text-xs text-slate-500">Mada Cards & Apple Pay (SAR)</p>
                 </div>
               </div>
 
@@ -337,25 +339,23 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
             )}
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Direct to your Bank</span>
-            <Badge variant={moyasar.enabled ? 'success' : 'default'}>
-              {moyasar.enabled ? 'Active' : 'Disabled'}
+            <Badge variant={moyasar.enabled ? (moyasar.publishableKey ? 'success' : 'warning') : 'default'}>
+              {moyasar.enabled ? (moyasar.publishableKey ? 'Connected' : 'Missing Keys') : 'Disabled'}
             </Badge>
           </div>
         </Card>
 
         {/* Bank Wire / IBAN */}
-        <Card className="space-y-4 flex flex-col justify-between md:col-span-2">
+        <Card className="p-6 sm:p-7 space-y-5 flex flex-col justify-between md:col-span-2 shadow-xs hover:shadow-md transition-shadow">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
-                  <Landmark className="w-4 h-4" />
-                </div>
+              <div className="flex items-center gap-3">
+                <Landmark className="w-5 h-5 text-slate-700 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs text-slate-900">Direct Bank Wire / IBAN</h3>
-                  <p className="text-[11px] text-slate-500">Provide bank account details for manual tuition transfers</p>
+                  <h3 className="font-bold text-sm text-slate-900">Direct Bank Wire / IBAN</h3>
+                  <p className="text-xs text-slate-500">Provide bank account details for manual tuition transfers</p>
                 </div>
               </div>
 
@@ -415,10 +415,10 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
             )}
           </div>
 
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Offline Transfers</span>
-            <Badge variant={bank.enabled ? 'success' : 'default'}>
-              {bank.enabled ? 'Active' : 'Disabled'}
+            <Badge variant={bank.enabled ? (bank.bankDetails?.iban ? 'success' : 'warning') : 'default'}>
+              {bank.enabled ? (bank.bankDetails?.iban ? 'Configured' : 'Missing Details') : 'Disabled'}
             </Badge>
           </div>
         </Card>

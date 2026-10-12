@@ -3,18 +3,29 @@ import { MOCK_LEADS } from '../../services/mockData';
 
 export class LeadsService {
   static async getLeads(tenantId?: string) {
+    const cleanSubdomain = tenantId?.replace('tenant-', '');
+
     if (process.env.DATABASE_URL && tenantId) {
       try {
-        return await prisma.lead.findMany({
-          where: { tenantId },
+        const leads = await prisma.lead.findMany({
+          where: {
+            OR: [
+              { tenantId },
+              { tenant: { subdomain: cleanSubdomain } },
+              { tenant: { id: tenantId } },
+            ],
+          },
           orderBy: { createdAt: 'desc' },
         });
+
+        return leads || [];
       } catch (error) {
         console.warn('Leads DB lookup warning:', error);
+        return [];
       }
     }
 
-    return tenantId ? MOCK_LEADS.filter((l) => l.tenantId === tenantId) : MOCK_LEADS;
+    return [];
   }
 
   static async createLead(data: {

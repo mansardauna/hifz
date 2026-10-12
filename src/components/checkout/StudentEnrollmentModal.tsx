@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PricingPlan, Lead } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { useNotifications } from '../../context/NotificationContext';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { ToastMessage } from '../ui/Toast';
 import { api } from '../../services/api';
 import { Modal, Button, Input, Select, Card, Badge } from '../ui';
@@ -13,7 +14,8 @@ import {
   Phone,
   ArrowRight,
   CheckCircle2,
-  Lock
+  Lock,
+  AlertTriangle
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -32,6 +34,8 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
 }) => {
   const router = useRouter();
   const { tenant } = useTenant();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
   const { triggerEventNotification } = useNotifications();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [activePlan, setActivePlan] = useState<PricingPlan>(
@@ -63,8 +67,46 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
 
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Check connection status for each payment method
+  const stripeConfig = tenant.paymentGateways?.find((g) => g.provider === 'stripe');
+  const moyasarConfig = tenant.paymentGateways?.find((g) => g.provider === 'moyasar');
+  const bankConfig = tenant.paymentGateways?.find((g) => g.provider === 'bank_transfer');
+
+  const isStripeConnected = Boolean(
+    stripeConfig?.enabled && (stripeConfig?.publishableKey || tenant.settings?.integrations?.stripe?.publishableKey)
+  );
+  const isMoyasarConnected = Boolean(
+    moyasarConfig?.enabled && (moyasarConfig?.publishableKey || tenant.settings?.integrations?.moyasar?.publishableKey)
+  );
+  const isBankConnected = Boolean(
+    bankConfig?.enabled && (bankConfig?.bankDetails?.iban || bankConfig?.bankDetails?.accountName)
+  );
+
+  const isCurrentMethodConnected =
+    studentData.paymentMethod === 'stripe'
+      ? isStripeConnected
+      : studentData.paymentMethod === 'moyasar'
+      ? isMoyasarConnected
+      : isBankConnected;
+
   const handleSubmitEnrollment = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isCurrentMethodConnected) {
+      const methodName =
+        studentData.paymentMethod === 'stripe'
+          ? 'Stripe'
+          : studentData.paymentMethod === 'moyasar'
+          ? 'Moyasar'
+          : 'Bank Wire';
+      onAddToast({
+        type: 'error',
+        title: `${methodName} Not Connected`,
+        message: `API keys for ${methodName} are not configured for this academy. Please configure them in Settings > Payment Gateways or select another payment option.`,
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -138,11 +180,11 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
             required
             value={studentData.name}
             onChange={(e) => setStudentData({ ...studentData, name: e.target.value })}
-            placeholder="e.g. Mariam Mansoor"
+            placeholder="e.g. Tariq Mansour"
             leftIcon={<User className="w-4 h-4" />}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Email Address"
               type="email"
@@ -152,48 +194,64 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               placeholder="student@example.com"
               leftIcon={<Mail className="w-4 h-4" />}
             />
-
             <Input
-              label="Phone Number"
+              label="WhatsApp / Phone"
               type="tel"
               required
               value={studentData.phone}
               onChange={(e) => setStudentData({ ...studentData, phone: e.target.value })}
-              placeholder="+1 555 0199"
+              placeholder="+1 (555) 000-0000"
               leftIcon={<Phone className="w-4 h-4" />}
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Select
-              label="Experience Level"
-              value={studentData.priorLevel}
-              onChange={(e) => setStudentData({ ...studentData, priorLevel: e.target.value })}
+              label="Country"
+              value={studentData.country}
+              onChange={(e) => setStudentData({ ...studentData, country: e.target.value })}
               options={[
-                { value: 'Beginner', label: 'Beginner / Foundational' },
-                { value: 'Intermediate', label: 'Intermediate' },
-                { value: 'Advanced', label: 'Advanced' },
+                { value: 'United States', label: 'United States' },
+                { value: 'United Kingdom', label: 'United Kingdom' },
+                { value: 'Saudi Arabia', label: 'Saudi Arabia' },
+                { value: 'United Arab Emirates', label: 'United Arab Emirates' },
+                { value: 'Canada', label: 'Canada' },
+                { value: 'Qatar', label: 'Qatar' },
+                { value: 'Australia', label: 'Australia' },
               ]}
             />
-
-            <Input
-              label="Parent / Guardian Name (Optional)"
-              type="text"
-              value={studentData.parentName}
-              onChange={(e) => setStudentData({ ...studentData, parentName: e.target.value })}
-              placeholder="e.g. John Doe"
+            <Select
+              label={isQuran ? 'Prior Quran / Hifz Level' : 'Current Experience Level'}
+              value={studentData.priorLevel}
+              onChange={(e) => setStudentData({ ...studentData, priorLevel: e.target.value })}
+              options={
+                isQuran
+                  ? [
+                      { value: 'Beginner', label: 'Beginner (Noorani Qaidah / Reading)' },
+                      { value: 'Intermediate', label: 'Intermediate (1 to 5 Juz Memorized)' },
+                      { value: 'Advanced', label: 'Advanced (10+ Juz Memorized)' },
+                      { value: 'Ijazah Track', label: 'Ijazah Track (Complete Hafiz)' },
+                    ]
+                  : [
+                      { value: 'Beginner', label: 'Beginner' },
+                      { value: 'Intermediate', label: 'Intermediate' },
+                      { value: 'Advanced', label: 'Advanced' },
+                    ]
+              }
             />
           </div>
 
-          <Button
-            variant="primary"
-            className="w-full mt-4"
-            disabled={!studentData.name || !studentData.email || !studentData.phone}
-            onClick={() => setStep(2)}
-            rightIcon={<ArrowRight className="w-4 h-4" />}
-          >
-            Continue to Tuition Plans
-          </Button>
+          <div className="pt-2">
+            <Button
+              variant="primary"
+              className="w-full"
+              disabled={!studentData.name || !studentData.email || !studentData.phone}
+              onClick={() => setStep(2)}
+              rightIcon={<ArrowRight className="w-4 h-4" />}
+            >
+              Continue to Select Plan
+            </Button>
+          </div>
         </div>
       )}
 
@@ -207,8 +265,8 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               <Card
                 key={plan.id}
                 onClick={() => setActivePlan(plan)}
-                className={`cursor-pointer flex items-center justify-between p-4 ${
-                  activePlan.id === plan.id ? 'border-slate-900 ring-1 ring-slate-900 bg-slate-50/50' : ''
+                className={`cursor-pointer flex items-center justify-between p-5 transition-all ${
+                  activePlan.id === plan.id ? 'border-slate-900 ring-2 ring-slate-900 bg-slate-50/50' : 'hover:border-slate-300'
                 }`}
               >
                 <div>
@@ -246,7 +304,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
       {/* Step 3: Payment */}
       {step === 3 && (
         <form onSubmit={handleSubmitEnrollment} className="space-y-4">
-          <Card className="flex items-center justify-between p-3.5 bg-slate-50">
+          <Card className="flex items-center justify-between p-4 bg-slate-50">
             <div>
               <span className="text-[10px] uppercase font-bold text-slate-400">Selected Plan</span>
               <p className="font-bold text-xs text-slate-900">{activePlan.name}</p>
@@ -263,43 +321,72 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               <button
                 type="button"
                 onClick={() => setStudentData({ ...studentData, paymentMethod: 'stripe' })}
-                className={`p-3 rounded-lg border text-center text-xs font-semibold flex flex-col items-center gap-1 cursor-pointer transition-all ${
+                className={`p-3 rounded-xl border text-center text-xs font-semibold flex flex-col items-center gap-1.5 cursor-pointer transition-all ${
                   studentData.paymentMethod === 'stripe'
-                    ? 'border-slate-900 bg-slate-50 text-slate-900 ring-1 ring-slate-900'
+                    ? 'border-slate-900 bg-slate-50 text-slate-900 ring-2 ring-slate-900'
                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <CreditCard className="w-4 h-4" />
+                <CreditCard className="w-5 h-5 text-indigo-600 shrink-0" />
                 <span>Credit Card</span>
+                <span className={`text-[10px] font-normal ${isStripeConnected ? 'text-emerald-600 font-medium' : 'text-amber-600'}`}>
+                  {isStripeConnected ? 'Connected' : 'Not Connected'}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setStudentData({ ...studentData, paymentMethod: 'moyasar' })}
-                className={`p-3 rounded-lg border text-center text-xs font-semibold flex flex-col items-center gap-1 cursor-pointer transition-all ${
+                className={`p-3 rounded-xl border text-center text-xs font-semibold flex flex-col items-center gap-1.5 cursor-pointer transition-all ${
                   studentData.paymentMethod === 'moyasar'
-                    ? 'border-slate-900 bg-slate-50 text-slate-900 ring-1 ring-slate-900'
+                    ? 'border-slate-900 bg-slate-50 text-slate-900 ring-2 ring-slate-900'
                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <Building className="w-4 h-4" />
+                <Building className="w-5 h-5 text-emerald-600 shrink-0" />
                 <span>Mada / Apple Pay</span>
+                <span className={`text-[10px] font-normal ${isMoyasarConnected ? 'text-emerald-600 font-medium' : 'text-amber-600'}`}>
+                  {isMoyasarConnected ? 'Connected' : 'Not Connected'}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setStudentData({ ...studentData, paymentMethod: 'bank_transfer' })}
-                className={`p-3 rounded-lg border text-center text-xs font-semibold flex flex-col items-center gap-1 cursor-pointer transition-all ${
+                className={`p-3 rounded-xl border text-center text-xs font-semibold flex flex-col items-center gap-1.5 cursor-pointer transition-all ${
                   studentData.paymentMethod === 'bank_transfer'
-                    ? 'border-slate-900 bg-slate-50 text-slate-900 ring-1 ring-slate-900'
+                    ? 'border-slate-900 bg-slate-50 text-slate-900 ring-2 ring-slate-900'
                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <Building className="w-4 h-4" />
+                <Building className="w-5 h-5 text-slate-600 shrink-0" />
                 <span>Bank Wire</span>
+                <span className={`text-[10px] font-normal ${isBankConnected ? 'text-emerald-600 font-medium' : 'text-amber-600'}`}>
+                  {isBankConnected ? 'Connected' : 'Not Connected'}
+                </span>
               </button>
             </div>
           </div>
+
+          {/* Unconnected Gateway Alert Banner */}
+          {!isCurrentMethodConnected && (
+            <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 text-xs flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">Payment Gateway Not Connected</p>
+                <p className="text-amber-800 text-[11px] mt-0.5">
+                  {studentData.paymentMethod === 'stripe'
+                    ? 'Stripe API keys have not been configured for this academy yet. Live card payments cannot be processed through this gateway.'
+                    : studentData.paymentMethod === 'moyasar'
+                    ? 'Moyasar API keys have not been configured for this academy yet. Mada and Apple Pay transactions cannot be processed.'
+                    : 'Bank transfer details (IBAN / Account details) have not been provided for this academy yet.'}
+                </p>
+                <p className="text-amber-700 text-[10px] mt-1 font-medium">
+                  Please select an available connected payment option or contact the academy administration.
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-3 pt-3">
             <Button variant="outline" type="button" className="w-1/3" onClick={() => setStep(2)}>
@@ -310,9 +397,10 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               type="submit"
               className="w-2/3"
               isLoading={isProcessing}
+              disabled={!isCurrentMethodConnected}
               rightIcon={<Lock className="w-3.5 h-3.5" />}
             >
-              Pay ${activePlan.priceMonthly} & Enroll
+              {isCurrentMethodConnected ? `Pay $${activePlan.priceMonthly} & Enroll` : 'Gateway Not Connected'}
             </Button>
           </div>
         </form>
@@ -321,9 +409,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
       {/* Step 4: Success */}
       {step === 4 && (
         <div className="text-center py-6 space-y-4">
-          <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-6 h-6" />
-          </div>
+          <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
           <h3 className="text-base font-bold text-slate-900">Enrollment Successful!</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Your admission is confirmed. You can now access your student learning portal and join live sessions.

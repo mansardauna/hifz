@@ -30,10 +30,10 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Poppins', 'var(--font-poppins)', 'Inter', 'sans-serif'],
-        display: ['var(--font-dm-sans)', 'Poppins', 'sans-serif'],
+        sans: ['Inter', 'var(--font-inter)', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        heading: ['Inter', 'var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'var(--font-inter)', 'var(--font-dm-sans)', 'sans-serif'],
         dm: ['var(--font-dm-sans)', 'sans-serif'],
-        poppins: ['Poppins', 'var(--font-poppins)', 'sans-serif'],
         arabic: ['"Amiri"', '"Scheherazade New"', '"Noto Naskh Arabic"', 'serif'],
         uthmani: ['"KFGQPC Uthman Taha Naskh"', '"Amiri"', 'serif'],
       },

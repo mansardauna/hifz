@@ -2,8 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Course, Module, Lesson } from '../../types';
 import { MOCK_COURSES, MOCK_TENANTS } from '../../services/mockData';
 import { api } from '../../services/api';
+import { isDemoTenant } from '../../lib/tenants';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
+import { Button, PageHeader } from '../ui';
 import {
   Plus,
   GripVertical,
@@ -31,20 +33,16 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
   const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
   const isAr = language === 'ar';
 
-  const isDemoTenant = Boolean(
-    MOCK_TENANTS[tenant.subdomain] ||
-    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
-    tenant.subdomain.includes('demo')
-  );
+  const isDemo = isDemoTenant(tenant.subdomain);
 
   const initialCourses = useMemo(() => {
-    if (isDemoTenant) {
+    if (isDemo) {
       return MOCK_COURSES.filter((c) =>
         isCodingNiche ? c.tenantId === 'tenant-code' : c.tenantId !== 'tenant-code'
       );
     }
     return contextCourses.length > 0 ? contextCourses : [];
-  }, [isDemoTenant, isCodingNiche, contextCourses]);
+  }, [isDemo, isCodingNiche, contextCourses]);
 
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [activeCourseId, setActiveCourseId] = useState<string>(initialCourses[0]?.id || '');
@@ -149,32 +147,29 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
 
   return (
     <div className="space-y-6 font-sans" dir={direction}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-        <div>
-          <h2 className={`text-2xl font-bold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
-            {isCodingNiche
-              ? (isAr ? 'منشئ المناهج التقنية والمسارات البرمجية' : 'Software Curriculum & Track Builder')
-              : (isAr ? 'منشئ المناهج والدورات التدريبية' : 'Course & Curriculum Builder')}
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            {isCodingNiche
-              ? (isAr ? 'تنظيم الهيكل التدريبي للمسار البرمجي (مسار -> وحدات -> دروس ومشاريع برمجية)' : 'Manage curriculum hierarchy (Course -> Modules -> Lessons) with coding sandbox challenges and test specs.')
-              : (isAr ? 'تنظيم الهيكل الهرمي للدورة (دورة -> وحدات -> دروس) وإضافة قواعد التجويد والنصوص القرآنية' : 'Manage drag-and-drop hierarchy (Course -> Modules -> Lessons) with Arabic Tajweed markup and audio tools.')}
-          </p>
-        </div>
-
-        <button
-          onClick={handleSaveCourse}
-          disabled={isSaving}
-          className={`px-5 py-2.5 rounded-xl text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 ${
-            isCodingNiche ? 'bg-blue-600 hover:bg-blue-700' : 'bg-teal-600 hover:bg-teal-700'
-          }`}
-        >
-          <Save className="w-4 h-4" />
-          <span>{isSaving ? (isAr ? 'جاري الحفظ...' : 'Saving...') : (isAr ? 'حفظ التعديلات' : 'Save Hierarchy')}</span>
-        </button>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        title={
+          isCodingNiche
+            ? (isAr ? 'منشئ المناهج التقنية والمسارات البرمجية' : 'Software Curriculum & Track Builder')
+            : (isAr ? 'منشئ المناهج والدورات التدريبية' : 'Course & Curriculum Builder')
+        }
+        subtitle={
+          isCodingNiche
+            ? (isAr ? 'تنظيم الهيكل التدريبي للمسار البرمجي' : 'Manage curriculum hierarchy with coding sandbox challenges and test specs.')
+            : (isAr ? 'تنظيم الهيكل الهرمي للدورة' : 'Manage drag-and-drop hierarchy with Arabic Tajweed markup and audio tools.')
+        }
+        actions={
+          <Button
+            variant="primary"
+            onClick={handleSaveCourse}
+            disabled={isSaving}
+            leftIcon={<Save className="w-4 h-4" />}
+          >
+            {isSaving ? (isAr ? 'جاري الحفظ...' : 'Saving...') : (isAr ? 'حفظ التعديلات' : 'Save Hierarchy')}
+          </Button>
+        }
+      />
 
       {/* Empty State when no courses created */}
       {courses.length === 0 ? (
@@ -188,32 +183,31 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
               Start building your academy curriculum. You can add tracks, modules, lessons, audio recitation materials, or coding sandbox exercises.
             </p>
           </div>
-          <button
+          <Button
+            variant="primary"
             onClick={handleCreateCourse}
-            className={`px-6 py-3 rounded-xl text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer ${
-              isCodingNiche ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'
-            }`}
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
-            <span>Create First Course Track</span>
-          </button>
+            Create First Course Track
+          </Button>
         </div>
       ) : (
         <>
-          {/* Course Selection Tabs */}
+          {/* Course Selection Tabs with border-b-2 styling */}
           {courses.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar space-x-1">
               {courses.map((course) => (
                 <button
                   key={course.id}
                   onClick={() => setActiveCourseId(course.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`py-3 px-5 font-bold text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                     activeCourse?.id === course.id
-                      ? isCodingNiche ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-900 text-white shadow-xs'
-                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                      ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+                      : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  {isAr ? course.titleAr || course.title : course.title}
+                  <BookOpen className="w-4 h-4" />
+                  <span>{isAr ? course.titleAr || course.title : course.title}</span>
                 </button>
               ))}
             </div>

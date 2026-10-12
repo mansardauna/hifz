@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTenant } from '../../context/TenantContext';
+import { isDemoTenant } from '../../lib/tenants';
 import { useAuth } from '../../context/AuthContext';
 import { ToastMessage } from '../ui/Toast';
+import {
+  getClassroomConfig,
+  saveClassroomConfig,
+  detectTenantNicheType,
+  ForumChannelConfig
+} from '../../services/classroomCustomizationService';
 import {
   MessageSquare,
   Search,
@@ -22,10 +29,35 @@ import {
   FileText,
   ChevronRight,
   ArrowLeft,
-  Share2,
   Trash2,
-  Check
+  Check,
+  Globe,
+  Code2,
+  Server,
+  Laptop,
+  Rocket,
+  BookOpen,
+  Book,
+  Headphones
 } from 'lucide-react';
+
+const getCategoryIcon = (iconName: string, className = 'w-4 h-4') => {
+  switch (iconName) {
+    case 'Globe': return <Globe className={className} />;
+    case 'MessageSquare': return <MessageSquare className={className} />;
+    case 'Code2': return <Code2 className={className} />;
+    case 'Server': return <Server className={className} />;
+    case 'Laptop': return <Laptop className={className} />;
+    case 'Rocket': return <Rocket className={className} />;
+    case 'BookOpen': return <BookOpen className={className} />;
+    case 'Book': return <Book className={className} />;
+    case 'Mic': return <Mic className={className} />;
+    case 'Sparkles': return <Sparkles className={className} />;
+    case 'Headphones': return <Headphones className={className} />;
+    case 'Award': return <Award className={className} />;
+    default: return <MessageSquare className={className} />;
+  }
+};
 
 export interface ForumReply {
   id: string;
@@ -65,37 +97,36 @@ interface LMSCommunityForumProps {
 }
 
 export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast }) => {
-  const { tenant, language, direction } = useTenant();
+  const { tenant, updateTenantConfig, language, direction } = useTenant();
   const { user } = useAuth();
   const isAr = language === 'ar';
 
-  const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
+  const nicheType = detectTenantNicheType(tenant);
+  const isCodingNiche = nicheType === 'coding';
+  const isQuranNiche = nicheType === 'quran';
 
-  const CATEGORIES = isCodingNiche
-    ? [
-        { id: 'all', label: 'All Channels', labelAr: 'جميع القنوات', icon: '🌐' },
-        { id: 'general', label: 'General Discussion', labelAr: 'النقاش العام', icon: '💬' },
-        { id: 'frontend', label: 'React & Next.js Lab', labelAr: 'مختبر رياكت ونكست', icon: '⚛️' },
-        { id: 'backend', label: 'Cloud Architecture & DBs', labelAr: 'السحابة وقواعد البيانات', icon: '☁️' },
-        { id: 'homework', label: 'Code Review & Assignments', labelAr: 'مراجعة الأكواد والواجبات', icon: '💻' },
-        { id: 'career', label: 'Tech Career & Portfolio', labelAr: 'التوظيف والمشاريع', icon: '🚀' },
-      ]
-    : [
-        { id: 'all', label: 'All Halaqahs', labelAr: 'جميع الحلقات', icon: '🕌' },
-        { id: 'general', label: 'General Reflections & Halaqah', labelAr: 'تأملات ونقاش عام', icon: '📖' },
-        { id: 'tajweed', label: 'Tajweed Rules & Makharij', labelAr: 'أحكام التجويد والمخارج', icon: '🎙️' },
-        { id: 'hifz', label: 'Hifz & Muraja\'ah Techniques', labelAr: 'تقنيات الحفظ والمراجعة', icon: '🧠' },
-        { id: 'homework', label: 'Recitation Submissions & Feedback', labelAr: 'واجبات التلاوة وتصحيحها', icon: '🎧' },
-        { id: 'qiraat', label: 'Sanad & Ten Qira\'at Studies', labelAr: 'دراسات السند والقراءات', icon: '📜' },
-      ];
+  const classroomConfig = getClassroomConfig(tenant);
+  const [categories, setCategories] = useState<ForumChannelConfig[]>(() => classroomConfig.forumChannels);
 
-  const INITIAL_POSTS: ForumPost[] = isCodingNiche
-    ? [
+  useEffect(() => {
+    const cfg = getClassroomConfig(tenant);
+    setCategories(cfg.forumChannels);
+  }, [tenant]);
+
+  // Channel Creation Modal State
+  const [isAddChannelModalOpen, setIsAddChannelModalOpen] = useState(false);
+  const [newChannelLabel, setNewChannelLabel] = useState('');
+  const [newChannelDesc, setNewChannelDesc] = useState('');
+  const [newChannelIcon, setNewChannelIcon] = useState('MessageSquare');
+
+  const INITIAL_POSTS: ForumPost[] = useMemo(() => {
+    if (isCodingNiche) {
+      return [
         {
           id: 'post-c1',
           title: 'How to optimize Next.js 15 Server Actions with optimistic UI updates?',
           category: 'frontend',
-          categoryName: 'React & Next.js Lab',
+          categoryName: 'Frontend & UI Engineering',
           content: 'I am building a live submission table and trying to use `useOptimistic` hook with Server Actions for immediate latency-free updates. Has anyone implemented this with custom error rollback?',
           authorName: 'Alex Morgan',
           authorRole: 'student',
@@ -129,7 +160,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           id: 'post-c2',
           title: 'PostgreSQL connection pooling strategy in Serverless Prisma edge workers',
           category: 'backend',
-          categoryName: 'Cloud Architecture & DBs',
+          categoryName: 'Backend & Cloud DBs',
           content: 'When deploying Prisma client on Vercel Edge Functions, what connection pool size should we configure for the PgBouncer transaction pooler on port 6543?',
           authorName: 'David Chen',
           authorRole: 'student',
@@ -149,8 +180,66 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
             }
           ]
         }
-      ]
-    : [
+      ];
+    }
+
+    if (nicheType === 'school') {
+      return [
+        {
+          id: 'post-s1',
+          title: 'Derivation techniques for multivariable integration and vector fields',
+          category: 'stem',
+          categoryName: 'Mathematics & Science Hall',
+          content: 'In our advanced mathematics module, what is the most intuitive method for setting up triple integrals over spherical coordinate volumes?',
+          authorName: 'Liam Davis',
+          authorRole: 'student',
+          createdAt: '3 hours ago',
+          repliesCount: 3,
+          upvotes: 14,
+          isPinned: true,
+          isSolved: true,
+          tags: ['calculus', 'stem', 'mathematics'],
+          replies: [
+            {
+              id: 'rep-s1',
+              authorName: 'Dr. Evelyn Reed',
+              authorRole: 'instructor',
+              content: 'Always draw the cross-sectional projection onto the xy-plane first. Once theta and phi boundaries are established, integrate the radial distance rho from inner to outer boundary.',
+              createdAt: '2 hours ago',
+              upvotes: 11,
+              isAcceptedAnswer: true,
+            }
+          ]
+        },
+        {
+          id: 'post-s2',
+          title: 'Midterm Research Paper Outline & Primary Source Citations',
+          category: 'humanities',
+          categoryName: 'Humanities & Literature',
+          content: 'Are Chicago Manual of Style notes and bibliography preferred over APA formatting for our comparative history research submissions?',
+          authorName: 'Emily Watson',
+          authorRole: 'student',
+          createdAt: 'Yesterday',
+          repliesCount: 2,
+          upvotes: 6,
+          tags: ['history', 'citations', 'research'],
+          replies: [
+            {
+              id: 'rep-s2',
+              authorName: 'Prof. Julian Vance',
+              authorRole: 'instructor',
+              content: 'Yes, please adhere to Chicago 17th Edition Notes and Bibliography format for all primary source citations.',
+              createdAt: '18 hours ago',
+              upvotes: 7,
+              isAcceptedAnswer: true,
+            }
+          ]
+        }
+      ];
+    }
+
+    if (isQuranNiche) {
+      return [
         {
           id: 'post-q1',
           title: 'Practical techniques to eliminate hesitation in Mutashabihat (Similar Ayahs) in Surah Al-Baqarah & Al-Imran?',
@@ -234,8 +323,64 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           ]
         }
       ];
+    }
 
-  const isDemo = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo'].includes(tenant.subdomain) || tenant.subdomain.includes('demo');
+    // GENERAL ACADEMY POSTS
+    return [
+      {
+        id: 'post-g1',
+        title: 'Effective methodology for completing practical coursework assignments',
+        category: 'lessons',
+        categoryName: 'Lessons & Coursework Q&A',
+        content: 'When completing our weekly competency case study, what documentation structure provides the most thorough evidence of foundational understanding?',
+        authorName: 'Jordan Taylor',
+        authorRole: 'student',
+        createdAt: '3 hours ago',
+        repliesCount: 3,
+        upvotes: 10,
+        isPinned: true,
+        isSolved: true,
+        tags: ['coursework', 'methodology', 'assignments'],
+        replies: [
+          {
+            id: 'rep-g1',
+            authorName: 'Lead Instructor Davis',
+            authorRole: 'instructor',
+            content: 'Follow the 3-step synthesis framework: state the baseline parameters, outline your step-by-step methodology, and summarize findings with objective metrics.',
+            createdAt: '2 hours ago',
+            upvotes: 8,
+            isAcceptedAnswer: true,
+          }
+        ]
+      },
+      {
+        id: 'post-g2',
+        title: 'Study group coordination for upcoming module review and evaluation',
+        category: 'study_groups',
+        categoryName: 'Study Groups & Peer Support',
+        content: 'Would anyone like to schedule a peer study session this Thursday evening to prepare for the upcoming module evaluation?',
+        authorName: 'Samira Vance',
+        authorRole: 'student',
+        createdAt: 'Yesterday',
+        repliesCount: 2,
+        upvotes: 6,
+        tags: ['study-group', 'review', 'collaboration'],
+        replies: [
+          {
+            id: 'rep-g2',
+            authorName: 'Alex Morgan',
+            authorRole: 'student',
+            content: 'Count me in! Thursday at 6:00 PM works perfectly. Let us review the rubric criteria together.',
+            createdAt: '14 hours ago',
+            upvotes: 5,
+            isAcceptedAnswer: true,
+          }
+        ]
+      }
+    ];
+  }, [isCodingNiche, nicheType, isQuranNiche]);
+
+  const isDemo = isDemoTenant(tenant.subdomain);
 
   const [posts, setPosts] = useState<ForumPost[]>(() => {
     if (typeof window !== 'undefined') {
@@ -256,7 +401,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
   // New Post Modal State
   const [isNewPostModalOpen, setIsNewPostModalOpen] = useState<boolean>(false);
   const [newTitle, setNewTitle] = useState<string>('');
-  const [newCategory, setNewCategory] = useState<string>(CATEGORIES[1]?.id || 'general');
+  const [newCategory, setNewCategory] = useState<string>(categories[1]?.id || 'general');
   const [newContent, setNewContent] = useState<string>('');
   const [newTags, setNewTags] = useState<string>('');
 
@@ -355,7 +500,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
       return;
     }
 
-    const catObj = CATEGORIES.find((c) => c.id === newCategory) || CATEGORIES[1];
+    const catObj = categories.find((c) => c.id === newCategory) || categories[1] || { label: 'General' };
     const tagsArray = newTags
       .split(',')
       .map((t) => t.trim().toLowerCase().replace(/[^a-z0-9_-]/g, ''))
@@ -373,7 +518,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
       repliesCount: 0,
       upvotes: 1,
       isUpvoted: true,
-      tags: tagsArray.length > 0 ? tagsArray : ['halaqah', 'general'],
+      tags: tagsArray.length > 0 ? tagsArray : [isQuranNiche ? 'halaqah' : 'course', 'general'],
       replies: [],
     };
 
@@ -388,7 +533,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
     onAddToast({
       type: 'success',
       title: 'Discussion Published',
-      message: 'Your topic is now active in the community halaqah channel.',
+      message: `Your topic is now active in the "${catObj.label}" channel.`,
     });
   };
 
@@ -426,6 +571,37 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
     });
   };
 
+  const handleAddChannel = () => {
+    const trimmed = newChannelLabel.trim();
+    if (!trimmed) return;
+    const newId = trimmed.toLowerCase().replace(/[^a-z0-9_-]+/g, '_');
+    const newChan: ForumChannelConfig = {
+      id: newId,
+      label: trimmed,
+      description: newChannelDesc.trim() || undefined,
+      icon: newChannelIcon,
+    };
+    const updated = [...categories, newChan];
+    setCategories(updated);
+    saveClassroomConfig(tenant, { forumChannels: updated }, updateTenantConfig);
+    setIsAddChannelModalOpen(false);
+    setNewChannelLabel('');
+    setNewChannelDesc('');
+    onAddToast({ type: 'success', title: 'Channel Created', message: `Channel "${trimmed}" has been added.` });
+  };
+
+  const handleRemoveChannel = (chanId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (chanId === 'all') return;
+    const updated = categories.filter((c) => c.id !== chanId);
+    setCategories(updated);
+    saveClassroomConfig(tenant, { forumChannels: updated }, updateTenantConfig);
+    if (selectedCategory === chanId) {
+      setSelectedCategory('all');
+    }
+    onAddToast({ type: 'info', title: 'Channel Removed', message: 'Channel deleted successfully.' });
+  };
+
   return (
     <div className="space-y-6 font-sans text-slate-900 animate-in fade-in duration-200">
       {/* 1. Header Banner & Action Bar */}
@@ -437,12 +613,14 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                {isCodingNiche ? 'Community Developer Forum' : 'Halaqah Community & Q&A Forum'}
+                {isCodingNiche ? 'Community Developer Forum' : isQuranNiche ? 'Halaqah Community & Q&A Forum' : `${tenant.name || 'Academy'} Community Forum`}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500">
                 {isCodingNiche
                   ? 'Ask code questions, share architecture reviews, and collaborate with mentors.'
-                  : 'Discuss Tajweed rules, Muraja\'ah strategies, and receive verified answers from our Sanad scholars.'}
+                  : isQuranNiche
+                  ? 'Discuss Tajweed rules, Muraja\'ah strategies, and receive verified answers from our Sanad scholars.'
+                  : 'Engage with fellow students and instructors, ask questions, and share insights across course channels.'}
               </p>
             </div>
           </div>
@@ -479,12 +657,22 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           <div className="bg-white p-3 rounded-3xl border border-slate-200 shadow-xs space-y-1">
             <div className="px-3 py-2 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
               <span>Discussion Channels</span>
-              <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-bold text-slate-600">
-                {CATEGORIES.length - 1} Channels
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-bold text-slate-600">
+                  {categories.filter((c) => c.id !== 'all').length} Channels
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsAddChannelModalOpen(true)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                  title="Add Channel"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
-            {CATEGORIES.map((cat) => {
+            {categories.map((cat) => {
               const isSelected = selectedCategory === cat.id;
               const count =
                 cat.id === 'all'
@@ -492,28 +680,39 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                   : posts.filter((p) => p.category === cat.id).length;
 
               return (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    setActivePostId(null);
-                  }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-xs'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <span className="text-sm">{cat.icon}</span>
-                    <span className="truncate">{cat.label}</span>
-                  </div>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
-                    isSelected ? 'bg-blue-200/70 text-blue-900' : 'bg-slate-100 text-slate-500'
-                  }`}>
-                    {count}
-                  </span>
-                </button>
+                <div key={cat.id} className="group relative flex items-center">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory(cat.id);
+                      setActivePostId(null);
+                    }}
+                    className={`flex-1 px-3.5 py-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      {getCategoryIcon(cat.icon || 'MessageSquare', isSelected ? 'w-4 h-4 text-blue-600' : 'w-4 h-4 text-slate-400')}
+                      <span className="truncate">{cat.label}</span>
+                    </div>
+                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                      isSelected ? 'bg-blue-200/70 text-blue-900' : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                  {cat.id !== 'all' && (user?.role === 'admin' || !user) && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleRemoveChannel(cat.id, e)}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-300 hover:text-red-500 transition-opacity ml-1 cursor-pointer"
+                      title="Delete channel"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -525,7 +724,11 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               <h3 className="font-extrabold text-xs">Community Etiquette</h3>
             </div>
             <p className="text-[11px] text-slate-300 leading-relaxed">
-              Tag questions with specific Surahs, Tajweed terms, or code stacks so teachers and peers can assist rapidly.
+              {isQuranNiche
+                ? 'Tag questions with specific Surahs, Tajweed terms, or halaqah topics so teachers and peers can assist rapidly.'
+                : isCodingNiche
+                ? 'Tag questions with specific frameworks, error logs, or code stacks so mentors and peers can assist rapidly.'
+                : 'Tag questions with specific course modules, lesson topics, or concepts so instructors and peers can assist rapidly.'}
             </p>
           </div>
         </div>
@@ -834,9 +1037,9 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                   onChange={(e) => setNewCategory(e.target.value)}
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                 >
-                  {CATEGORIES.filter((c) => c.id !== 'all').map((c) => (
+                  {categories.filter((c) => c.id !== 'all').map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.icon} {c.label}
+                      {c.label}
                     </option>
                   ))}
                 </select>
@@ -846,7 +1049,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                 <label className="font-bold text-slate-800">Topic Title / Question</label>
                 <input
                   type="text"
-                  placeholder="e.g. Question on Madd Arid Li-Sukoon rules in Surah Al-Kahf"
+                  placeholder={isQuranNiche ? "e.g. Question on Madd Arid Li-Sukoon rules in Surah Al-Kahf" : isCodingNiche ? "e.g. Next.js 15 Server Actions error handling" : "e.g. Question on Module 2 practical exercises"}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
@@ -857,7 +1060,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                 <label className="font-bold text-slate-800">Description & Context</label>
                 <textarea
                   rows={4}
-                  placeholder="Explain your question with specific Ayahs, notes, or background..."
+                  placeholder={isQuranNiche ? "Explain your question with specific Ayahs, notes, or background..." : "Explain your question or discussion context..."}
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
@@ -868,7 +1071,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                 <label className="font-bold text-slate-800">Tags (Comma separated)</label>
                 <input
                   type="text"
-                  placeholder="e.g. tajweed, surah-kahf, recitation"
+                  placeholder={isQuranNiche ? "e.g. tajweed, surah-kahf, recitation" : isCodingNiche ? "e.g. react, nextjs, api" : "e.g. module1, coursework, practical"}
                   value={newTags}
                   onChange={(e) => setNewTags(e.target.value)}
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
@@ -891,6 +1094,86 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 6. ADD DISCUSSION CHANNEL MODAL */}
+      {isAddChannelModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <h3 className="font-extrabold text-sm text-slate-900">Create Discussion Channel</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddChannelModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-800">Channel Name / Label</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Study Groups & Peer Help"
+                  value={newChannelLabel}
+                  onChange={(e) => setNewChannelLabel(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-800">Channel Purpose / Description</label>
+                <textarea
+                  rows={2}
+                  placeholder="Brief description of discussions suited for this channel..."
+                  value={newChannelDesc}
+                  onChange={(e) => setNewChannelDesc(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-800">Channel Icon</label>
+                <select
+                  value={newChannelIcon}
+                  onChange={(e) => setNewChannelIcon(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                >
+                  <option value="MessageSquare">MessageSquare (Discussion)</option>
+                  <option value="BookOpen">BookOpen (Academics / Curriculum)</option>
+                  <option value="Laptop">Laptop (Homework / Assignments)</option>
+                  <option value="Rocket">Rocket (Projects / Career)</option>
+                  <option value="Sparkles">Sparkles (Techniques / Highlights)</option>
+                  <option value="Award">Award (Certificates / Office Hours)</option>
+                </select>
+              </div>
+
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setIsAddChannelModalOpen(false)}
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddChannel}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                >
+                  Create Channel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

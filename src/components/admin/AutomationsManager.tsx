@@ -26,6 +26,7 @@ import {
   Check
 } from 'lucide-react';
 import { useTenant } from '../../context/TenantContext';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { ToastMessage } from '../ui/Toast';
 import { Badge } from '../ui';
 
@@ -59,6 +60,8 @@ interface AutomationsManagerProps {
 
 export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToast }) => {
   const { tenant } = useTenant();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
 
   const [automations, setAutomations] = useState<AutomationRule[]>([
     {
@@ -67,7 +70,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
       description: 'When a prospective student submits any admissions form, send instant branded welcome email, create CRM lead record, and notify admissions committee.',
       trigger: 'On Form Submission (Any Form)',
       triggerCategory: 'forms',
-      actions: ['Send Welcome Email with Course Syllabus', 'Add Lead to CRM Pipeline', 'Send Slack/Email Alert to Ustadh'],
+      actions: ['Send Welcome Email with Course Syllabus', 'Add Lead to CRM Pipeline', isQuran ? 'Send Slack/Email Alert to Ustadh' : 'Send Slack/Email Alert to Faculty Mentor'],
       channels: ['email', 'crm', 'webhook'],
       enabled: true,
       executionCount: 142,
@@ -99,11 +102,15 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
     },
     {
       id: 'auto-4',
-      name: 'Tajweed Recitation Submission Review Queue',
-      description: 'When a student records & uploads recitation audio, run AI Tajweed pre-analysis and assign to the teacher\'s grading queue.',
-      trigger: 'On Recitation Audio Uploaded',
+      name: isQuran ? 'Tajweed Recitation Submission Review Queue' : 'Assignment & Project Submission Review Queue',
+      description: isQuran
+        ? 'When a student records & uploads recitation audio, run AI Tajweed pre-analysis and assign to the teacher\'s grading queue.'
+        : 'When a student uploads an assignment or project, run automated checks and assign to the instructor\'s grading queue.',
+      trigger: isQuran ? 'On Recitation Audio Uploaded' : 'On Project / Assignment Uploaded',
       triggerCategory: 'lms',
-      actions: ['Transcribe & Calculate Makharij Confidence', 'Assign Review Ticket to Sanad Ustadh', 'Send Student Confirmation'],
+      actions: isQuran
+        ? ['Transcribe & Calculate Makharij Confidence', 'Assign Review Ticket to Sanad Ustadh', 'Send Student Confirmation']
+        : ['Run Automated Rubric Pre-check', 'Assign Review Ticket to Course Instructor', 'Send Student Confirmation'],
       channels: ['crm', 'email'],
       enabled: true,
       executionCount: 267,
@@ -115,7 +122,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
       description: 'If an enrolled student does not log into the LMS for 7 consecutive days, send an encouraging reminder email and flag for mentor outreach.',
       trigger: 'Student Inactive for 7 Days',
       triggerCategory: 'leads',
-      actions: ['Send Motivational Tajweed Study Tip', 'Create High-Priority Retention Task for Mentor'],
+      actions: [isQuran ? 'Send Motivational Tajweed Study Tip' : 'Send Encouraging Course Study Tip', 'Create High-Priority Retention Task for Mentor'],
       channels: ['email', 'crm'],
       enabled: true,
       executionCount: 45,
@@ -127,18 +134,18 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
     {
       id: 'log-801',
       automationName: 'Admissions Inquiry & Instant Lead Follow-Up',
-      triggerEvent: 'Form submitted by Zaid Al-Harithi',
-      recipient: 'zaid.harithi@example.com',
+      triggerEvent: isQuran ? 'Form submitted by Zaid Al-Harithi' : 'Form submitted by Jordan Hayes',
+      recipient: isQuran ? 'zaid.harithi@example.com' : 'jordan.hayes@example.com',
       status: 'Success',
       executionTimeMs: 145,
       timestamp: '2026-09-03 10:35:12',
-      details: 'Sent Welcome Syllabus PDF + Created Lead #lead-101 + Notified Ustadh Tariq'
+      details: isQuran ? 'Sent Welcome Syllabus PDF + Created Lead #lead-101 + Notified Ustadh Tariq' : 'Sent Welcome Syllabus PDF + Created Lead #lead-101 + Notified Faculty Mentor'
     },
     {
       id: 'log-802',
       automationName: 'Tuition Payment & Instant LMS Account Provisioning',
       triggerEvent: 'Stripe $140.00 charge succeeded (ch_3M4k9)',
-      recipient: 'hamza.yusuf@example.com',
+      recipient: isQuran ? 'hamza.yusuf@example.com' : 'alex.morgan@example.com',
       status: 'Success',
       executionTimeMs: 230,
       timestamp: '2026-09-03 09:12:40',
@@ -146,18 +153,18 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
     },
     {
       id: 'log-803',
-      automationName: 'Tajweed Recitation Submission Review Queue',
-      triggerEvent: 'Audio recitation uploaded for Surah Al-Mulk',
-      recipient: 'ustadh.rahman@al-furqan.org',
+      automationName: isQuran ? 'Tajweed Recitation Submission Review Queue' : 'Assignment & Project Submission Review Queue',
+      triggerEvent: isQuran ? 'Audio recitation uploaded for Surah Al-Mulk' : 'Project submission uploaded for Module 4',
+      recipient: isQuran ? 'ustadh.rahman@al-furqan.org' : 'instructor.jenkins@academy.edu',
       status: 'Success',
       executionTimeMs: 310,
       timestamp: '2026-09-03 07:44:02',
-      details: 'AI Score: 94% Tajweed accuracy + Assigned ticket #REV-442'
+      details: isQuran ? 'AI Score: 94% Tajweed accuracy + Assigned ticket #REV-442' : 'Automated Rubric Score: 94% + Assigned review ticket #REV-442'
     },
     {
       id: 'log-804',
       automationName: 'Virtual Classroom 15-Minute Broadcast',
-      triggerEvent: 'Class "Evening Tajweed Halaqah" starting at 18:00',
+      triggerEvent: isQuran ? 'Class "Evening Tajweed Halaqah" starting at 18:00' : 'Class "Interactive Systems Lab" starting at 18:00',
       recipient: '24 Enrolled Students',
       status: 'Success',
       executionTimeMs: 412,

@@ -15,7 +15,7 @@ export const PUCK_TEMPLATES: Record<string, PuckTemplateMeta> = {
     id: 'quran_madrasah',
     name: 'Quran & Islamic Madrasah',
     niche: 'madrasat',
-    icon: '📖',
+    icon: 'BookOpen',
     description: 'Sacred recitation, verified Sanad chains, Tuhfat al-Atfal Tajweed theory, and live halaqat.',
     data: {
       root: { props: { title: 'Quran & Islamic Madrasah' } },
@@ -138,7 +138,7 @@ export const PUCK_TEMPLATES: Record<string, PuckTemplateMeta> = {
     id: 'coding_bootcamp',
     name: 'Coding & Tech Bootcamp',
     niche: 'coding',
-    icon: '💻',
+    icon: 'Code2',
     description: 'Full-stack software engineering with interactive browser IDE, automated test runners, and career mentorship.',
     data: {
       root: { props: { title: 'Software Engineering Bootcamp' } },
@@ -213,7 +213,7 @@ export const PUCK_TEMPLATES: Record<string, PuckTemplateMeta> = {
     id: 'vocational_trade',
     name: 'Vocational & Trade Academy',
     niche: 'school',
-    icon: '🛠️',
+    icon: 'Briefcase',
     description: 'Hands-on practical training with step-by-step workshop checklists, photo proof submissions, and trade rubrics.',
     data: {
       root: { props: { title: 'Vocational & Trade Academy' } },
@@ -278,7 +278,7 @@ export const PUCK_TEMPLATES: Record<string, PuckTemplateMeta> = {
     id: 'stem_school',
     name: 'K-12 STEM & Integrated Islamic School',
     niche: 'school',
-    icon: '🏫',
+    icon: 'GraduationCap',
     description: 'Holistic K-12 schooling fusing academic STEM excellence, robotics, and noble Islamic character.',
     data: {
       root: { props: { title: 'K-12 Integrated School' } },

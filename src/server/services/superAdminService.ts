@@ -1,4 +1,4 @@
-﻿import { prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
 import { DEFAULT_PLATFORM_PLANS } from '../../services/platformPlans';
 
 export class SuperAdminService {
@@ -44,17 +44,35 @@ export class SuperAdminService {
     };
   }
 
-  static async updateTenantStatus(tenantId: string, status: string, planId?: string) {
+  static async updateTenantStatus(tenantId: string, status?: string, planId?: string, planSlug?: string) {
     if (process.env.DATABASE_URL && tenantId) {
-      return await prisma.tenant.update({
-        where: { id: tenantId },
+      const isId = tenantId.startsWith('tenant-') || tenantId.length > 20;
+      const existing = await prisma.tenant.findUnique({
+        where: isId ? { id: tenantId } : { subdomain: tenantId },
+      });
+      const currentSettings = (existing?.settings as any) || {};
+      const resolvedSlug = planSlug || (planId?.replace('plan-', '') || 'growth');
+
+      const updated = await prisma.tenant.update({
+        where: isId ? { id: tenantId } : { subdomain: tenantId },
         data: {
           settings: {
-            status: status || 'active',
-            planId: planId || 'growth',
+            ...currentSettings,
+            status: status || currentSettings.status || 'active',
+            planId: planId || currentSettings.planId || 'growth',
+            subscriptionPlan: resolvedSlug,
+            updatedAt: new Date().toISOString(),
           },
         },
       });
+
+      // Clear tenant cache so changes reflect instantly
+      try {
+        const { cacheService } = await import('../../services/cacheService');
+        await cacheService.invalidateTenant(existing?.subdomain || tenantId);
+      } catch (e) {}
+
+      return updated;
     }
 
     return { id: tenantId, status, planId };

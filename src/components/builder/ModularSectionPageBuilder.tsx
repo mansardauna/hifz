@@ -30,9 +30,21 @@ import {
   Zap,
   Check,
   Globe,
-  GraduationCap
+  GraduationCap,
+  Briefcase
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal } from '../ui';
+
+const getPresetIcon = (iconName: string, className = 'w-5 h-5') => {
+  switch (iconName) {
+    case 'BookOpen': return <BookOpen className={className} />;
+    case 'Code2': return <Code2 className={className} />;
+    case 'Briefcase': return <Briefcase className={className} />;
+    case 'GraduationCap': return <GraduationCap className={className} />;
+    case 'Globe': return <Globe className={className} />;
+    default: return <Layout className={className} />;
+  }
+};
 
 export interface PageSectionBlock {
   id: string;
@@ -56,7 +68,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
   quran: {
     id: 'quran',
     name: 'Quran & Islamic Madrasah',
-    icon: '📖',
+    icon: 'BookOpen',
     description: 'Authentic Islamic Tajweed & Hifz with Sanad chain verification and sacred calligraphy motifs.',
     colorScheme: 'Emerald & Gold',
     sections: [
@@ -139,7 +151,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
   coding: {
     id: 'coding',
     name: 'Coding & Software Engineering',
-    icon: '💻',
+    icon: 'Code2',
     description: 'FreeCodeCamp-style browser IDE challenge runner, real-time assertions, and full-stack projects.',
     colorScheme: 'Indigo & Dark Cyber',
     sections: [
@@ -208,7 +220,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
   vocational: {
     id: 'vocational',
     name: 'Vocational Trades & Practical Academy',
-    icon: '🛠️',
+    icon: 'Briefcase',
     description: 'Hands-on practical training with step-by-step workshop checklists, photo proof submissions, and trade rubrics.',
     colorScheme: 'Slate & Amber',
     sections: [
@@ -277,7 +289,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
   stem_school: {
     id: 'stem_school',
     name: 'K-12 STEM & Islamic Integrated School',
-    icon: '🏫',
+    icon: 'GraduationCap',
     description: 'Comprehensive K-12 schooling fusing academic STEM excellence with noble Islamic values and character.',
     colorScheme: 'Navy & Sky Blue',
     sections: [
@@ -336,7 +348,7 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
   languages: {
     id: 'languages',
     name: 'Languages & Linguistics Institute',
-    icon: '🌐',
+    icon: 'Globe',
     description: 'Classical Arabic, English, and multi-language fluency with live conversation labs.',
     colorScheme: 'Teal & Coral',
     sections: [
@@ -474,7 +486,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
         lastUpdated: new Date().toISOString(),
       },
     });
-    success('Landing Page Published! 🚀', 'Your modular website layout is live on your subdomain.');
+    success('Landing Page Published!', 'Your modular website layout is live on your subdomain.');
   };
 
   return (
@@ -483,7 +495,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🎨</span>
+            <Palette className="w-6 h-6 text-emerald-600" />
             <h2 className="text-xl font-black text-slate-900">Modern Visual Section Builder</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
@@ -530,7 +542,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="text-lg">{tpl.icon}</span>
+                {getPresetIcon(tpl.icon, activeTemplateKey === key ? 'w-5 h-5 text-emerald-600' : 'w-5 h-5 text-slate-500')}
                 <span className="truncate font-extrabold">{tpl.name}</span>
               </div>
               <span className="text-[10px] text-slate-500 font-normal line-clamp-1">{tpl.colorScheme}</span>

@@ -99,7 +99,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
     setTrackList(updatedTracks);
     onSaveTracks(updatedTracks);
     setIsModalOpen(false);
-    success('Challenge Saved! 🚀', `Successfully updated "${editingChallenge.title}".`);
+    success('Challenge Saved!', `Successfully updated "${editingChallenge.title}".`);
   };
 
   const handleDeleteChallenge = (challengeId: string) => {
@@ -149,7 +149,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{activeTrack?.icon || '💻'}</span>
+            <Code2 className="w-7 h-7 text-indigo-600" />
             <h2 className="text-xl font-black text-slate-900">Coding Track & Syllabus Studio</h2>
           </div>
           <p className="text-xs text-slate-500">

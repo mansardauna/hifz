@@ -9,16 +9,19 @@ import {
   Input,
   Select,
   Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
   Badge,
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  DataTablePagination
+  PageHeader,
+  StatCard,
+  TableControls,
+  TableSortHeader,
+  TablePagination,
+  Avatar,
 } from '../ui';
-import { Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Users, Clock, UserCheck, CreditCard } from 'lucide-react';
 
 interface LeadsCRMProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -140,178 +143,235 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
   };
 
   return (
-    <div className="space-y-5 font-sans" dir={direction}>
-      {/* Header Card */}
-      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-slate-900">Student Admissions CRM</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Manage applications, review status, and track tuition payments.</p>
-        </div>
+    <div className="space-y-6 font-sans" dir={direction}>
+      {/* Page Header */}
+      <PageHeader
+        title="Student Admissions CRM"
+        subtitle="Manage student inquiries, review admission pipelines, and track tuition payment statuses."
+        badge={{ text: `${leads.length} Total Inquiries`, variant: "neutral" }}
+      />
 
-        <div className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg self-start sm:self-auto">
-          Total Inquiries: <span className="font-bold text-slate-900">{leads.length}</span>
-        </div>
-      </Card>
-
-      {/* Filter Toolbar Card */}
-      <Card className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        <div className="flex-1 min-w-[220px]">
-          <Input
-            placeholder="Search by name, email, or phone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            leftIcon={<Search className="w-4 h-4" />}
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Status Tabs */}
-          <div className="flex items-center border border-slate-200 rounded-lg p-0.5 bg-slate-50 text-xs">
-            {['ALL', 'New', 'Under Review', 'Interview', 'Admitted'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                  statusFilter === status ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                {status}
-              </button>
-            ))}
-          </div>
-
-          {/* Payment Filter */}
-          <Select
-            value={paymentFilter}
-            onChange={(e) => setPaymentFilter(e.target.value)}
-            options={[
-              { value: 'ALL', label: 'All Payment Statuses' },
-              { value: 'Paid', label: 'Tuition: Paid' },
-              { value: 'Pending', label: 'Tuition: Pending' },
-              { value: 'Past Due', label: 'Tuition: Past Due' },
-            ]}
-          />
-        </div>
-      </Card>
-
-      {/* Standardized Data Table */}
-      <div className="space-y-3">
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableHead onClick={() => handleSort('name')} className="cursor-pointer select-none hover:text-slate-900">
-                <div className="flex items-center gap-1.5">
-                  <span>Student Name</span>
-                  {sortField === 'name' ? (
-                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead onClick={() => handleSort('courseInterest')} className="cursor-pointer select-none hover:text-slate-900">
-                <div className="flex items-center gap-1.5">
-                  <span>Course Track</span>
-                  {sortField === 'courseInterest' ? (
-                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead onClick={() => handleSort('plan')} className="cursor-pointer select-none hover:text-slate-900">
-                <div className="flex items-center gap-1.5">
-                  <span>Tuition Plan</span>
-                  {sortField === 'plan' ? (
-                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead onClick={() => handleSort('paymentStatus')} className="cursor-pointer select-none hover:text-slate-900">
-                <div className="flex items-center gap-1.5">
-                  <span>Payment</span>
-                  {sortField === 'paymentStatus' ? (
-                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead onClick={() => handleSort('status')} className="cursor-pointer select-none hover:text-slate-900">
-                <div className="flex items-center gap-1.5">
-                  <span>Workflow</span>
-                  {sortField === 'status' ? (
-                    sortDirection === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-emerald-600" /> : <ArrowDown className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <ArrowUpDown className="w-3.5 h-3.5 text-slate-300" />
-                  )}
-                </div>
-              </TableHead>
-              <TableHead className="text-center">Action</TableHead>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {filteredAndSortedLeads.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="p-8 text-center text-slate-400">
-                  No student applications match the selected filter.
-                </TableCell>
-              </TableRow>
-            ) : (
-              paginatedLeads.map((lead) => (
-                <TableRow
-                  key={lead.id}
-                  onClick={() => setSelectedLead(lead)}
-                  className="cursor-pointer"
-                >
-                  <TableCell>
-                    <p className="font-bold text-slate-900 text-xs">{lead.studentName || lead.name}</p>
-                    <p className="text-slate-400 text-[11px] mt-0.5">{lead.email} • {lead.phone}</p>
-                  </TableCell>
-
-                  <TableCell className="font-semibold text-slate-800">
-                    {lead.courseInterest}
-                  </TableCell>
-
-                  <TableCell>
-                    <p className="font-bold text-slate-900 text-xs">{lead.planName || lead.selectedPlanName || 'Foundational'}</p>
-                    <p className="text-[11px] text-slate-500 font-mono">${lead.planPrice || lead.tuitionAmount || 65}/mo</p>
-                  </TableCell>
-
-                  <TableCell>{renderPaymentBadge(lead.paymentStatus)}</TableCell>
-
-                  <TableCell>{renderStatusBadge(lead.status)}</TableCell>
-
-                  <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedLead(lead)}
-                    >
-                      View Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-
-        {/* DataTablePagination */}
-        <DataTablePagination
-          currentPage={currentPage}
-          pageSize={pageSize}
-          totalItems={filteredAndSortedLeads.length}
-          onPageChange={setCurrentPage}
-          onPageSizeChange={(newSize) => {
-            setPageSize(newSize);
-            setCurrentPage(1);
-          }}
-          pageSizeOptions={[10, 25, 50, 100]}
+      {/* KPI Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Inquiries"
+          value={leads.length.toString()}
+          icon={Users}
+          trend="All registered inquiries"
+        />
+        <StatCard
+          title="Under Review"
+          value={leads.filter((l) => l.status === 'New' || l.status === 'Under Review').length.toString()}
+          icon={Clock}
+          trend="Awaiting admission review"
+        />
+        <StatCard
+          title="Admitted Students"
+          value={leads.filter((l) => l.status === 'Admitted').length.toString()}
+          icon={UserCheck}
+          trend="Successfully matriculated"
+        />
+        <StatCard
+          title="Tuition Collected"
+          value={leads.filter((l) => l.paymentStatus === 'Paid').length.toString()}
+          icon={CreditCard}
+          trend="Verified fee payments"
         />
       </div>
+
+      {/* Status Tab Navigation */}
+      <div className="border-b border-slate-200 flex items-center space-x-1 overflow-x-auto no-scrollbar">
+        {['ALL', 'New', 'Under Review', 'Interview', 'Admitted'].map((status) => {
+          const isActive = statusFilter === status;
+          const count =
+            status === 'ALL'
+              ? leads.length
+              : leads.filter((l) => l.status === status).length;
+          return (
+            <button
+              key={status}
+              onClick={() => {
+                setStatusFilter(status);
+                setCurrentPage(1);
+              }}
+              className={`py-3 px-5 font-bold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                isActive
+                  ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              }`}
+            >
+              <span>{status === 'ALL' ? 'All Applicants' : status}</span>
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+                  isActive
+                    ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold'
+                    : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Main Table Card */}
+      <Card>
+        <CardHeader className="px-6 py-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <CardTitle>Admissions Directory</CardTitle>
+            <CardDescription>
+              Filter applicant pipelines by admission stage or payment settlement
+            </CardDescription>
+          </div>
+          <TableControls
+            searchValue={searchTerm}
+            onSearchChange={(val) => {
+              setSearchTerm(val);
+              setCurrentPage(1);
+            }}
+            searchPlaceholder="Search by name, email, or phone..."
+            actions={
+              <select
+                value={paymentFilter}
+                onChange={(e) => {
+                  setPaymentFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="h-11 px-4 text-sm bg-white text-slate-800 border border-slate-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-[var(--color-primary)] shadow-xs font-semibold"
+              >
+                <option value="ALL">All Tuition Statuses</option>
+                <option value="Paid">Tuition: Paid</option>
+                <option value="Pending">Tuition: Pending</option>
+                <option value="Past Due">Tuition: Past Due</option>
+              </select>
+            }
+          />
+        </CardHeader>
+
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm font-sans">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-xs">
+                <tr>
+                  <TableSortHeader
+                    field="name"
+                    currentSortField={sortField}
+                    currentSortDir={sortDirection}
+                    onSort={(f) => handleSort(f as SortField)}
+                  >
+                    Student Name
+                  </TableSortHeader>
+                  <TableSortHeader
+                    field="courseInterest"
+                    currentSortField={sortField}
+                    currentSortDir={sortDirection}
+                    onSort={(f) => handleSort(f as SortField)}
+                  >
+                    Course Track
+                  </TableSortHeader>
+                  <TableSortHeader
+                    field="plan"
+                    currentSortField={sortField}
+                    currentSortDir={sortDirection}
+                    onSort={(f) => handleSort(f as SortField)}
+                  >
+                    Tuition Plan
+                  </TableSortHeader>
+                  <TableSortHeader
+                    field="paymentStatus"
+                    currentSortField={sortField}
+                    currentSortDir={sortDirection}
+                    onSort={(f) => handleSort(f as SortField)}
+                  >
+                    Payment
+                  </TableSortHeader>
+                  <TableSortHeader
+                    field="status"
+                    currentSortField={sortField}
+                    currentSortDir={sortDirection}
+                    onSort={(f) => handleSort(f as SortField)}
+                  >
+                    Workflow
+                  </TableSortHeader>
+                  <th className="py-3.5 px-5 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {filteredAndSortedLeads.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-14 text-center text-slate-400">
+                      <Avatar size="xl" className="mx-auto mb-3" />
+                      <p className="font-bold text-base text-slate-800">No applications match criteria</p>
+                      <p className="text-sm text-slate-500 mt-1">Adjust your search query or status filter.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedLeads.map((lead) => (
+                    <tr
+                      key={lead.id}
+                      onClick={() => setSelectedLead(lead)}
+                      className="hover:bg-slate-50/80 transition-colors cursor-pointer"
+                    >
+                      <td className="py-4 px-5 font-bold text-slate-900">
+                        <div className="flex items-center gap-3">
+                          <Avatar name={lead.studentName || lead.name} size="md" />
+                          <div>
+                            <span className="block font-bold text-slate-900">{lead.studentName || lead.name}</span>
+                            <span className="text-xs text-slate-500 font-normal block">
+                              {lead.email} {lead.phone ? `• ${lead.phone}` : ''}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-5 font-semibold text-slate-800">
+                        {lead.courseInterest}
+                      </td>
+
+                      <td className="py-4 px-5">
+                        <span className="font-bold text-slate-900 block">
+                          {lead.planName || lead.selectedPlanName || 'Foundational'}
+                        </span>
+                        <span className="text-xs text-slate-500 font-normal block">
+                          ${lead.planPrice || lead.tuitionAmount || 65}/mo
+                        </span>
+                      </td>
+
+                      <td className="py-4 px-5">{renderPaymentBadge(lead.paymentStatus)}</td>
+
+                      <td className="py-4 px-5">{renderStatusBadge(lead.status)}</td>
+
+                      <td className="py-4 px-5 text-center" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedLead(lead)}
+                          className="font-bold text-xs"
+                        >
+                          View Details
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <TablePagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalCount={filteredAndSortedLeads.length}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize);
+              setCurrentPage(1);
+            }}
+            pageSizeOptions={[10, 25, 50, 100]}
+          />
+        </CardContent>
+      </Card>
 
       {/* Detailed Lead Profile Modal */}
       {selectedLead && (

@@ -22,9 +22,7 @@ export const QuranLMSWorkspace: React.FC = () => {
       {/* Surah Switcher */}
       <div className="flex items-center justify-between bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold">
-            <BookOpen className="w-4 h-4" />
-          </div>
+          <BookOpen className="w-6 h-6 text-emerald-400 shrink-0" />
           <div>
             <h4 className="font-extrabold text-xs text-white">Active Recitation Surah</h4>
             <p className="text-[11px] text-slate-400">{selectedSurah.nameAr} • {selectedSurah.englishTranslation}</p>

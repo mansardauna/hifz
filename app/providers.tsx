@@ -6,6 +6,7 @@ import { AuthProvider } from '../src/context/AuthContext';
 import { TenantProvider } from '../src/context/TenantContext';
 import { ToastProvider } from '../src/context/ToastContext';
 import { NotificationProvider } from '../src/context/NotificationContext';
+import { ConfirmProvider } from '../src/context/ConfirmModalContext';
 import { PWAInstallToast } from '../src/components/ui/PWAInstallToast';
 import { AppPreloader } from '../src/components/ui/AppPreloader';
 
@@ -28,10 +29,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <AuthProvider>
           <TenantProvider>
             <NotificationProvider>
-              <ImpersonationBanner />
-              <AppPreloader />
-              {children}
-              <PWAInstallToast />
+              <ConfirmProvider>
+                <ImpersonationBanner />
+                <AppPreloader />
+                {children}
+                <PWAInstallToast />
+              </ConfirmProvider>
             </NotificationProvider>
           </TenantProvider>
         </AuthProvider>

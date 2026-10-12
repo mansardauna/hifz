@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Clock,
   Hammer,
+  FileText
 } from 'lucide-react';
 import { Button, Input, Modal, Badge } from '../../../components/ui';
 import { useToast } from '../../../context/ToastContext';
@@ -146,7 +147,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">📝</span>
+            <FileText className="w-7 h-7 text-indigo-600" />
             <h2 className="text-xl font-black text-slate-900">Assessment & Exam Studio</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">

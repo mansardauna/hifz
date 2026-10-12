@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { MOCK_TENANTS } from '../../src/services/mockData';
 import { TenantLandingClient } from './TenantLandingClient';
 
+import { TenantService } from '../../src/server/services/tenantService';
+
 interface Props {
   params: { subdomain: string };
 }
@@ -10,10 +12,15 @@ interface Props {
 // Server-Side Dynamic SEO & OpenGraph Generation per Subdomain
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const subdomain = params.subdomain;
-  const tenant = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
+  let tenant: any = null;
+  try {
+    tenant = await TenantService.getBySubdomainOrDomain(subdomain);
+  } catch (e) {
+    tenant = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
+  }
 
   return {
-    title: `${tenant.name} | ${tenant.nameAr}`,
+    title: `${tenant.name} | ${tenant.nameAr || ''}`,
     description: tenant.tagline,
     openGraph: {
       title: `${tenant.name} - Quranic & Arabic Education`,
@@ -21,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: tenant.name,
       images: [
         {
-          url: tenant.logoUrl,
+          url: tenant.logoUrl || tenant.logo,
           width: 800,
           height: 600,
           alt: tenant.name,
@@ -34,7 +41,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function TenantSubdomainPage({ params }: Props) {
+export default async function TenantSubdomainPage({ params }: Props) {
   const subdomain = params.subdomain;
-  return <TenantLandingClient subdomain={subdomain} />;
+  let tenant: any = null;
+  try {
+    tenant = await TenantService.getBySubdomainOrDomain(subdomain);
+  } catch (e) {
+    tenant = MOCK_TENANTS[subdomain] || MOCK_TENANTS['al-furqan'];
+  }
+
+  return <TenantLandingClient subdomain={subdomain} initialServerTenant={tenant} />;
 }

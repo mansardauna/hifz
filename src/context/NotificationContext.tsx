@@ -55,7 +55,7 @@ const DEFAULT_NOTIFICATIONS: AppNotificationItem[] = [
     category: 'leads',
     type: 'success',
     title: 'New Student Application',
-    message: 'Fatima Zahra submitted an admission application for the Summer Tajweed Track.',
+    message: 'Fatima Zahra submitted an admission application for the new academic cohort.',
     timestamp: '5 mins ago',
     read: false,
     linkTab: 'crm',
@@ -64,8 +64,8 @@ const DEFAULT_NOTIFICATIONS: AppNotificationItem[] = [
     id: 'notif-default-2',
     category: 'submissions',
     type: 'info',
-    title: 'Audio Recitation Awaiting Review',
-    message: 'Yusuf Mansoor uploaded Surah Al-Mulk (Ayahs 1-10) for audio grading.',
+    title: 'Coursework Awaiting Review',
+    message: 'Yusuf Mansoor submitted their module assignment for instructor evaluation.',
     timestamp: '25 mins ago',
     read: false,
     linkTab: 'curriculum',
@@ -75,7 +75,7 @@ const DEFAULT_NOTIFICATIONS: AppNotificationItem[] = [
     category: 'tuition',
     type: 'success',
     title: 'Tuition Payment Received',
-    message: '$65.00 payment received from Bilal Khan via Stripe for Tajweed Track.',
+    message: '$65.00 payment received from Bilal Khan via Stripe.',
     timestamp: '2 hours ago',
     read: false,
     linkTab: 'pricing',
@@ -170,7 +170,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const granted = await requestBrowserNotificationPermission();
     setPushEnabled(granted);
     if (granted) {
-      sendBrowserNotification('Notifications Active 🔔', 'You will receive real-time updates for submissions, admissions, and halaqahs.');
+      sendBrowserNotification('Notifications Active', 'You will receive real-time updates for submissions, admissions, and halaqahs.');
     }
     return granted;
   };
@@ -184,7 +184,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'leads',
           type: 'success',
-          title: 'New Student Admission Applied 🎉',
+          title: 'New Student Admission Applied',
           message: `${data?.name || 'A new student'} submitted an application for "${data?.courseTitle || 'Quran Studies'}".`,
           linkTab: 'crm',
           showToast: true,
@@ -196,7 +196,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'submissions',
           type: 'info',
-          title: 'New Audio Recitation Submitted 🎙️',
+          title: 'New Audio Recitation Submitted',
           message: `${data?.studentName || 'Student'} recorded a new recitation for Surah ${data?.surahName || 'Maryam'} (Ayahs ${data?.ayahStart || 1}-${data?.ayahEnd || 10}).`,
           linkTab: 'curriculum',
           showToast: true,
@@ -208,11 +208,11 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'submissions',
           type: 'success',
-          title: 'Recitation Reviewed & Graded ⭐',
-          message: `Ustadh ${data?.teacherName || 'Sheikh'} graded recitation with score ${data?.score || 95}/100: "${data?.comments || 'Excellent Tajweed and Makharij!'}".`,
+          title: 'Coursework Reviewed & Graded',
+          message: `${data?.teacherName || (tenant?.niche === 'madrasat' ? 'Ustadh' : 'Instructor')} graded submission with score ${data?.score || 95}/100: "${data?.comments || 'Great work and solid progress!'}".`,
           linkTab: 'curriculum',
           showToast: true,
-          action: data?.onViewFeedback ? { label: 'Listen to Ustadh Feedback', onClick: data.onViewFeedback } : undefined,
+          action: data?.onViewFeedback ? { label: 'View Feedback', onClick: data.onViewFeedback } : undefined,
         });
         break;
 
@@ -220,8 +220,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'tuition',
           type: 'success',
-          title: 'Tuition Payment Confirmed 💳',
-          message: `Received ${data?.amount || '$65.00'} tuition fee from ${data?.payerName || 'Parent'} via ${data?.gateway || 'Stripe'}.`,
+          title: 'Tuition Payment Confirmed',
+          message: `Received ${data?.amount || '$65.00'} tuition fee from ${data?.payerName || 'Student'} via ${data?.gateway || 'Stripe'}.`,
           linkTab: 'pricing',
           showToast: true,
           action: data?.onViewInvoice ? { label: 'View Receipt', onClick: data.onViewInvoice } : undefined,
@@ -232,8 +232,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'classroom',
           type: 'info',
-          title: 'Live Halaqah Session Starting 🔔',
-          message: `Your live class "${data?.courseTitle || 'Advanced Tajweed'}" is starting now with ${data?.teacherName || 'Ustadh'}.`,
+          title: 'Live Class Session Starting',
+          message: `Your live session "${data?.courseTitle || (tenant?.niche === 'madrasat' ? 'Halaqah Session' : 'Interactive Workshop')}" is starting now with ${data?.teacherName || (tenant?.niche === 'madrasat' ? 'Ustadh' : 'Instructor')}.`,
           linkTab: 'classroom',
           showToast: true,
           action: data?.onJoin ? { label: 'Join Classroom', onClick: data.onJoin } : undefined,
@@ -244,7 +244,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'system',
           type: 'success',
-          title: 'Academy Settings Saved ⚙️',
+          title: 'Academy Settings Saved',
           message: 'Your logo, branding colors, domain preferences, and preloader have been published.',
           linkTab: 'settings',
           showToast: true,
@@ -255,7 +255,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         addNotification({
           category: 'system',
           type: 'success',
-          title: 'Subscription Tier Upgraded 🚀',
+          title: 'Subscription Tier Upgraded',
           message: `Your academy has been upgraded to ${data?.planName || 'Growth'} plan with capacity for ${data?.capacity || '350'} active students.`,
           showToast: true,
         });

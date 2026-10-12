@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: false, // For GrapesJS canvas DOM compatibility
   images: {
     remotePatterns: [

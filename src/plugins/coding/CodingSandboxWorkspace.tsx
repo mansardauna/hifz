@@ -199,8 +199,8 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
   const [activeChallengeIndex, setActiveChallengeIndex] = useState<number>(0);
   const [code, setCode] = useState<string>(SAMPLE_CHALLENGES[0].initialCode);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    '⚡ Code Sandbox Engine v4.2.0 initialized.',
-    '✓ V8 JavaScript Compiler ready with ES2024 & React 19 support.',
+    '[Ready] Code Sandbox Engine v4.2.0 initialized.',
+    '[OK] V8 JavaScript Compiler ready with ES2024 & React 19 support.',
     'Click "Run Code" or press (Ctrl+Enter) to execute your solution in the isolated worker sandbox.'
   ]);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -231,10 +231,10 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
         logs.push(args.map((a) => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' '));
       },
       warn: (...args: any[]) => {
-        logs.push(`⚠️ WARN: ${args.join(' ')}`);
+        logs.push(`[WARN] ${args.join(' ')}`);
       },
       error: (...args: any[]) => {
-        logs.push(`❌ ERROR: ${args.join(' ')}`);
+        logs.push(`[ERROR] ${args.join(' ')}`);
       },
     };
 
@@ -243,10 +243,10 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
         const runFn = new Function('console', code);
         runFn(customConsole);
 
-        setTerminalLogs((prev) => [...prev, ...logs, '✓ Process exited with code 0.']);
+        setTerminalLogs((prev) => [...prev, ...logs, '[OK] Process exited with code 0.']);
         setTestPassed(true);
       } catch (err: any) {
-        setTerminalLogs((prev) => [...prev, ...logs, `❌ Runtime Exception: ${err.message}`]);
+        setTerminalLogs((prev) => [...prev, ...logs, `[ERROR] Runtime Exception: ${err.message}`]);
         setTestPassed(false);
       } finally {
         setIsRunning(false);
@@ -454,9 +454,9 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
               <div
                 key={idx}
                 className={`${
-                  log.includes('❌') ? 'text-red-400 font-bold' :
-                  log.includes('✓') ? 'text-emerald-400 font-bold' :
-                  log.includes('⚠️') ? 'text-amber-400' :
+                  log.includes('[ERROR]') ? 'text-red-400 font-bold' :
+                  log.includes('[OK]') ? 'text-emerald-400 font-bold' :
+                  log.includes('[WARN]') ? 'text-amber-400' :
                   log.includes('>') ? 'text-blue-400 font-semibold' : 'text-slate-400'
                 } leading-relaxed whitespace-pre-wrap`}
               >

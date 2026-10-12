@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -33,23 +33,20 @@ export const AppPreloader: React.FC<AppPreloaderProps> = ({ forceShow }) => {
     ? customConfig?.customTextAr || tenant?.nameAr || tenant?.name
     : customConfig?.customText || tenant?.name || 'Loading';
 
-  // Smooth route-change and initial mount transition
+  // Smooth initial mount transition without blocking route navigations
   useEffect(() => {
-    setIsVisible(true);
-    setIsFadingOut(false);
-
     const timer = setTimeout(() => {
       setIsFadingOut(true);
       const hideTimer = setTimeout(() => {
         setIsVisible(false);
-      }, 280);
+      }, 180);
       return () => clearTimeout(hideTimer);
-    }, 400);
+    }, 200);
 
     return () => clearTimeout(timer);
-  }, [pathname, tenant?.subdomain]);
+  }, []);
 
-  if (!isVisible && !forceShow && !tenantLoading) return null;
+  if (!isVisible && !forceShow) return null;
 
   return (
     <div

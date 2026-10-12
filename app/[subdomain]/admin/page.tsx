@@ -20,8 +20,8 @@ interface AdminPageProps {
 }
 
 export default function TenantAdminPage({ params }: AdminPageProps) {
-  const { setTenantBySubdomain } = useTenant();
-  const { user, isAuthenticated } = useAuth();
+  const { setTenantBySubdomain, tenant, isLoading: isTenantLoading } = useTenant();
+  const { user, isAuthenticated, isLoading: isAuthLoading, isUserValidForSubdomain } = useAuth();
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -32,14 +32,31 @@ export default function TenantAdminPage({ params }: AdminPageProps) {
   }, [params.subdomain, setTenantBySubdomain]);
 
   useEffect(() => {
-    // Check authentication and authorization
-    const isDemo = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo', 'demo'].includes(params.subdomain);
-    if (!isDemo && (!isAuthenticated || (user && user.role !== 'admin' && user.role !== 'superadmin'))) {
+    // Wait for auth context to finish hydrating from localStorage
+    if (isAuthLoading) return;
+
+    // Assert strict authentication and authorization
+    if (!isAuthenticated || !user) {
       router.push(`/${params.subdomain}/login?redirect=admin`);
       return;
     }
+
+    // Wait for tenant config to finish loading from database
+    if (isTenantLoading) return;
+
+    // Verify user belongs to this specific academy workspace
+    if (!isUserValidForSubdomain(params.subdomain, tenant?.id)) {
+      router.push(`/${params.subdomain}/login?redirect=admin&error=workspace_mismatch`);
+      return;
+    }
+
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      router.push(`/${params.subdomain}/lms`);
+      return;
+    }
+
     setIsCheckingAuth(false);
-  }, [isAuthenticated, user, params.subdomain, router]);
+  }, [isAuthenticated, user, isAuthLoading, isTenantLoading, params.subdomain, tenant?.id, router, isUserValidForSubdomain]);
 
   const handleAddToast = (toast: any) => {
     console.log('Admin Toast:', toast);

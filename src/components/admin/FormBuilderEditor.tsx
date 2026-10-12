@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FormFieldConfig } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Plus, Trash2, Edit3, FileText, CheckSquare, Save, GripVertical } from 'lucide-react';
+import { Plus, Trash2, Edit3, FileText, CheckSquare, Save, GripVertical, X } from 'lucide-react';
 
 interface FormBuilderEditorProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -144,7 +144,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
               <h3 className="font-bold text-base text-slate-900">
                 {isAr ? 'تخصيص الحقل' : 'Configure Form Field'}
               </h3>
-              <button onClick={() => setEditingField(null)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+              <button onClick={() => setEditingField(null)} className="text-slate-400 hover:text-slate-600 font-bold"><X className="w-4 h-4" /></button>
             </div>
 
             <form onSubmit={handleSaveField} className="py-4 space-y-4 text-xs">

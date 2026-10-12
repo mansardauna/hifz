@@ -33,6 +33,8 @@ import {
   Wand2
 } from 'lucide-react';
 
+import { compileFormToHtmlAndCss } from '../../utils/formHtmlCssCompiler';
+
 interface RealGrapesBuilderProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
 }
@@ -42,7 +44,11 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   const editorRef = useRef<Editor | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const blocksContainerRef = useRef<HTMLDivElement | null>(null);
+  const stylesContainerRef = useRef<HTMLDivElement | null>(null);
+  const layersContainerRef = useRef<HTMLDivElement | null>(null);
+  const traitsContainerRef = useRef<HTMLDivElement | null>(null);
 
+  const [activeSideTab, setActiveSideTab] = useState<'blocks' | 'styles' | 'layers'>('blocks');
   const [selectedDevice, setSelectedDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [isTemplateBankOpen, setIsTemplateBankOpen] = useState<boolean>(false);
@@ -89,7 +95,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <section class="py-20 lg:py-28 px-6 sm:px-12 bg-white font-sans text-center border-b border-slate-200">
           <div class="max-w-4xl mx-auto space-y-6">
             <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">
-              ✨ AI-Generated Architecture
+              AI-Generated Architecture
             </span>
             <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
               ${headline}
@@ -374,17 +380,17 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <section aria-label="Key Highlights" class="py-16 px-8 bg-white font-sans border-b border-slate-200">
           <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div class="text-3xl">📖</div>
+              <div class="text-emerald-600 font-bold text-base">Course Material</div>
               <h3 class="font-bold text-base text-slate-900">Medina Mushaf Reader</h3>
               <p class="text-xs text-slate-600 leading-relaxed">Interactive digital Mushaf with ayah audio looping and rule highlighting.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div class="text-3xl">🎙️</div>
+              <div class="text-emerald-600 font-bold text-base">Live Audio</div>
               <h3 class="font-bold text-base text-slate-900">Oral Homework Looper</h3>
               <p class="text-xs text-slate-600 leading-relaxed">Submit recorded recitations for personalized tajweed audio corrections from certified Qaris.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div class="text-3xl">📜</div>
+              <div class="text-emerald-600 font-bold text-base">Sanad Ijazah</div>
               <h3 class="font-bold text-base text-slate-900">Verified Sanad Ijazah</h3>
               <p class="text-xs text-slate-600 leading-relaxed">Continuous chains of transmission connecting students directly to scholarly lineage.</p>
             </div>
@@ -431,7 +437,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 <p><span class="text-blue-400">const</span> academy = <span class="text-amber-300">&quot;${tenant.name}&quot;</span>;</p>
                 <p><span class="text-blue-400">async function</span> launchCareer() {</p>
                 <p class="pl-4"><span class="text-purple-400">await</span> masterTypeScript();</p>
-                <p class="pl-4"><span class="text-purple-400">return</span> <span class="text-amber-300">&quot;Full-Stack Engineer 🚀&quot;</span>;</p>
+                <p class="pl-4"><span class="text-purple-400">return</span> <span class="text-amber-300">&quot;Full-Stack Engineer&quot;</span>;</p>
                 <p>}</p>
                 <p class="text-blue-400 pt-2">&gt; CI/CD Test Suite: 100% Passed</p>
               </div>
@@ -496,11 +502,11 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   // Helper for generating big, crisp SVG icons for GrapesJS block labels
   const makeBlockLabel = (title: string, svgPath: string) => {
     return `
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px 4px; text-align: center;">
-        <svg style="width: 26px; height: 26px; stroke: #2563eb; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;" viewBox="0 0 24 24">
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 6px 4px; text-align: center; color: #ffffff;">
+        <svg style="width: 24px; height: 24px; stroke: #ffffff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; color: #ffffff;" viewBox="0 0 24 24">
           ${svgPath}
         </svg>
-        <span style="font-size: 11px; font-weight: 700; color: #1e293b; line-height: 1.2;">${title}</span>
+        <span style="font-size: 11px; font-weight: 700; color: #ffffff; line-height: 1.25; display: block;">${title}</span>
       </div>
     `;
   };
@@ -513,22 +519,28 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     const defaultForm = tenantForms.find((f) => f.isDefault) || tenantForms[0];
     const isCoding = tenant.niche === 'coding' || tenant.subdomain.includes('code');
     const selectedTemplate = isCoding ? TEMPLATE_BANK[1] : TEMPLATE_BANK[0];
-    return `${selectedTemplate.html}\n${compileFormToHtml(defaultForm)}`;
+    const compiledForm = compileFormToHtmlAndCss(defaultForm);
+    return `${selectedTemplate.html}\n${compiledForm.combined}`;
   };
 
   useEffect(() => {
     if (!containerRef.current || !blocksContainerRef.current) return;
 
-    // Dynamically compile block definitions for all forms with sharp SVG icon
-    const formBlocks = tenantForms.map((form) => ({
-      id: `form-block-${form.id}`,
-      label: makeBlockLabel(
-        form.title,
-        `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>`
-      ),
-      category: 'Admissions & Forms',
-      content: compileFormToHtml(form),
-    }));
+    // Dynamically compile block definitions for all forms with sharp SVG icon and standalone pure CSS
+    const formBlocks = tenantForms.map((form) => {
+      const compiled = compileFormToHtmlAndCss(form);
+      return {
+        id: `form-block-${form.id}`,
+        label: makeBlockLabel(
+          form.title,
+          `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>`
+        ),
+        category: 'Admissions & Forms',
+        content: form.compiledHtml && form.compiledCss
+          ? `<style id="style-form-${form.id}">${form.compiledCss}</style>\n${form.compiledHtml}`
+          : compiled.combined,
+      };
+    });
 
     // Comprehensive Library of Accessible & SEO-Optimized Semantic Blocks with Real SVG Icons (Zero Emojis)
     const defaultBlocks = [
@@ -561,7 +573,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <header role="banner" class="bg-white border-b border-slate-200 sticky top-0 z-30 py-3 px-6 font-sans">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm">🎓</span>
+                <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs">LMS</span>
                 <span class="font-extrabold text-sm sm:text-base text-slate-900">${tenant.name}</span>
               </div>
               <nav aria-label="Primary" class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
@@ -728,9 +740,9 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   Engineered with crystal-clear audio codecs, interactive collaborative whiteboards, screen sharing, and automated session recordings.
                 </p>
                 <ul class="space-y-2 text-xs text-slate-700">
-                  <li class="flex items-center gap-2 font-medium">✓ HD Video & High-Fidelity Audio</li>
-                  <li class="flex items-center gap-2 font-medium">✓ Real-time Teacher Whiteboard Annotation</li>
-                  <li class="flex items-center gap-2 font-medium">✓ Dynamic Workspace & Sandbox Integration</li>
+                  <li class="flex items-center gap-2 font-medium">HD Video & High-Fidelity Audio</li>
+                  <li class="flex items-center gap-2 font-medium">Real-time Teacher Whiteboard Annotation</li>
+                  <li class="flex items-center gap-2 font-medium">Dynamic Workspace & Sandbox Integration</li>
                 </ul>
               </div>
               <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-xl">
@@ -757,7 +769,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             </div>
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                <div class="text-amber-400 font-bold text-sm">★★★★★</div>
+                <div class="text-amber-400 font-bold text-sm">5.0 Rating</div>
                 <p class="text-xs text-slate-600 leading-relaxed">"The live feedback and structured curriculum made memorization effortless. The teacher is exceptionally thorough."</p>
                 <div class="pt-2 border-t border-slate-100">
                   <p class="font-bold text-xs text-slate-900">Ibrahim K.</p>
@@ -765,7 +777,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 </div>
               </div>
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                <div class="text-amber-400 font-bold text-sm">★★★★★</div>
+                <div class="text-amber-400 font-bold text-sm">5.0 Rating</div>
                 <p class="text-xs text-slate-600 leading-relaxed">"The coding sandbox and 1-on-1 code reviews helped me land my first software engineering job in 4 months."</p>
                 <div class="pt-2 border-t border-slate-100">
                   <p class="font-bold text-xs text-slate-900">Rachel G.</p>
@@ -773,7 +785,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 </div>
               </div>
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                <div class="text-amber-400 font-bold text-sm">★★★★★</div>
+                <div class="text-amber-400 font-bold text-sm">5.0 Rating</div>
                 <p class="text-xs text-slate-600 leading-relaxed">"The best online academy I've attended. The audio looper and feedback system makes daily review seamless."</p>
                 <div class="pt-2 border-t border-slate-100">
                   <p class="font-bold text-xs text-slate-900">Tariq M.</p>
@@ -1082,19 +1094,19 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section class="py-10 px-6 sm:px-12 bg-white border-b border-slate-200 font-sans">
             <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center items-center">
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">🔒 100% Secure Checkout</div>
+                <div class="font-extrabold text-slate-900 text-sm">100% Secure Checkout</div>
                 <p class="text-[10px] text-slate-500">Stripe & 256-bit SSL Encrypted</p>
               </div>
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">📜 Verified Certifications</div>
+                <div class="font-extrabold text-slate-900 text-sm">Verified Certifications</div>
                 <p class="text-[10px] text-slate-500">Accredited Sanad Transmissions</p>
               </div>
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">⚡ Low-Latency WebRTC</div>
+                <div class="font-extrabold text-slate-900 text-sm">Low-Latency WebRTC</div>
                 <p class="text-[10px] text-slate-500">Real-Time SFU Video Halaqahs</p>
               </div>
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">✨ 14-Day Guarantee</div>
+                <div class="font-extrabold text-slate-900 text-sm">14-Day Guarantee</div>
                 <p class="text-[10px] text-slate-500">100% Tuition Satisfaction</p>
               </div>
             </div>
@@ -1103,31 +1115,6 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       }
     ];
 
-    // Initialize GrapesJS Editor
-    const editor = grapesjs.init({
-      container: containerRef.current,
-      fromElement: false,
-      height: '100%',
-      width: '100%',
-      storageManager: false,
-      canvas: {
-        styles: [
-          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Amiri:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap',
-        ],
-        scripts: [
-          'https://cdn.tailwindcss.com',
-        ],
-      },
-      panels: { defaults: [] },
-      blockManager: {
-        appendTo: blocksContainerRef.current,
-        blocks: [...formBlocks, ...defaultBlocks],
-      },
-    });
-
-    // Populate initial content
-    editor.setComponents(getInitialTenantHtml());
-    
     // Base Canvas CSS for high accessibility and solid black text on white canvas
     const defaultCanvasCss = `
       * { box-sizing: border-box; }
@@ -1135,8 +1122,9 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
         background-color: #ffffff !important;
         color: #0f172a !important;
-        margin: 0;
-        padding: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 100vh !important;
         -webkit-font-smoothing: antialiased;
       }
       h1, h2, h3, h4, h5, h6 {
@@ -1156,43 +1144,114 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         transition: all 0.2s ease-in-out;
       }
     `;
-    editor.setStyle(tenant.customCss ? `${defaultCanvasCss}\n${tenant.customCss}` : defaultCanvasCss);
 
-    // Direct injection into Canvas iframe document to ensure immediate Tailwind script and styling
-    editor.on('load', () => {
-      const doc = editor.Canvas.getDocument();
-      if (doc) {
-        // Ensure Tailwind CDN script is loaded
-        if (!doc.getElementById('tailwind-cdn')) {
-          const twScript = doc.createElement('script');
-          twScript.id = 'tailwind-cdn';
-          twScript.src = 'https://cdn.tailwindcss.com';
-          doc.head.appendChild(twScript);
-        }
-
-        const styleEl = doc.createElement('style');
-        styleEl.id = 'tm-canvas-core-contrast';
-        styleEl.innerHTML = `
-          * { box-sizing: border-box; }
-          html, body {
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-            font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
-            margin: 0;
-            padding: 0;
-          }
-          h1, h2, h3, h4, h5, h6 {
-            color: #0f172a !important;
-            font-family: 'DM Sans', sans-serif !important;
-            font-weight: 800 !important;
-          }
-          p, span, div, li, td, th, label, input, select, textarea {
-            color: #1e293b;
-          }
-        `;
-        doc.head.appendChild(styleEl);
-      }
+    // Initialize GrapesJS Editor
+    const editor = grapesjs.init({
+      container: containerRef.current,
+      fromElement: false,
+      height: '100%',
+      width: '100%',
+      storageManager: false,
+      components: getInitialTenantHtml(),
+      style: tenant.customCss ? `${defaultCanvasCss}\n${tenant.customCss}` : defaultCanvasCss,
+      canvas: {
+        styles: [
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Amiri:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap',
+        ],
+        scripts: [
+          'https://cdn.tailwindcss.com',
+        ],
+      },
+      panels: { defaults: [] },
+      blockManager: {
+        appendTo: blocksContainerRef.current || undefined,
+        blocks: [...formBlocks, ...defaultBlocks],
+      },
+      styleManager: {
+        appendTo: stylesContainerRef.current || undefined,
+        sectors: [
+          {
+            name: 'Typography & Text',
+            open: true,
+            buildProps: ['font-family', 'font-size', 'font-weight', 'color', 'text-align', 'line-height', 'letter-spacing'],
+          },
+          {
+            name: 'Dimensions & Spacing',
+            open: true,
+            buildProps: ['width', 'height', 'max-width', 'margin', 'padding'],
+          },
+          {
+            name: 'Backgrounds & Borders',
+            open: true,
+            buildProps: ['background-color', 'border', 'border-radius', 'box-shadow'],
+          },
+          {
+            name: 'Layout (Flexbox)',
+            open: false,
+            buildProps: ['display', 'flex-direction', 'justify-content', 'align-items'],
+          },
+        ],
+      },
+      layerManager: {
+        appendTo: layersContainerRef.current || undefined,
+      },
     });
+
+    // Populate components ensuring robust fallback
+    if (!editor.getHtml() || editor.getHtml().trim() === '<body></body>') {
+      editor.setComponents(getInitialTenantHtml());
+    }
+
+    // Direct injection into Canvas iframe document to ensure immediate Tailwind script and white styling
+    const applyCanvasDocStyles = () => {
+      try {
+        const doc = editor.Canvas?.getDocument();
+        if (doc) {
+          if (doc.body) {
+            doc.body.style.backgroundColor = '#ffffff';
+            doc.body.style.color = '#0f172a';
+            doc.body.style.minHeight = '100vh';
+          }
+          if (!doc.getElementById('tailwind-cdn')) {
+            const twScript = doc.createElement('script');
+            twScript.id = 'tailwind-cdn';
+            twScript.src = 'https://cdn.tailwindcss.com';
+            doc.head.appendChild(twScript);
+          }
+          if (!doc.getElementById('tm-canvas-core-contrast')) {
+            const styleEl = doc.createElement('style');
+            styleEl.id = 'tm-canvas-core-contrast';
+            styleEl.innerHTML = `
+              * { box-sizing: border-box; }
+              html, body {
+                background-color: #ffffff !important;
+                color: #0f172a !important;
+                font-family: 'DM Sans', system-ui, -apple-system, sans-serif !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: 100vh !important;
+              }
+              h1, h2, h3, h4, h5, h6 {
+                color: #0f172a !important;
+                font-family: 'DM Sans', sans-serif !important;
+                font-weight: 800 !important;
+              }
+              p, span, div, li, td, th, label, input, select, textarea {
+                color: #1e293b;
+              }
+            `;
+            doc.head.appendChild(styleEl);
+          }
+        }
+      } catch (err) {
+        console.warn('Canvas doc styling notice:', err);
+      }
+    };
+
+    editor.on('load', applyCanvasDocStyles);
+    editor.on('canvas:frame:load', applyCanvasDocStyles);
+    setTimeout(applyCanvasDocStyles, 50);
+    setTimeout(applyCanvasDocStyles, 300);
 
     editor.on('update', () => {
       setHasUnsavedChanges(true);
@@ -1234,7 +1293,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
   const handleApplyTemplate = (templateHtml: string) => {
     if (editorRef.current) {
       const defaultForm = tenantForms.find((f) => f.isDefault) || tenantForms[0];
-      const fullHtml = `${templateHtml}\n${compileFormToHtml(defaultForm)}`;
+      const fullHtml = `${templateHtml}\n${compileFormToHtmlAndCss(defaultForm).combined}`;
       editorRef.current.setComponents(fullHtml);
       setHasUnsavedChanges(true);
       setIsTemplateBankOpen(false);
@@ -1274,6 +1333,25 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         landingPageSchema: schema,
       });
 
+      // Synchronize to server API /api/tenant for server-side rendering
+      try {
+        await fetch('/api/tenant', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subdomain: tenant.subdomain,
+            settings: {
+              ...((tenant.settings as any) || {}),
+              customHtml: html,
+              customCss: css || '',
+              landingPageSchema: schema,
+            },
+          }),
+        });
+      } catch (err) {
+        console.warn('Non-blocking server sync error:', err);
+      }
+
       setHasUnsavedChanges(false);
       onAddToast({
         type: 'success',
@@ -1298,18 +1376,159 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
     <div className="flex flex-col h-[calc(100vh-130px)] min-h-[680px] bg-white text-slate-900 rounded-3xl overflow-hidden border border-slate-200 shadow-xl font-sans">
       {/* GrapesJS Clean Default Theme Support */}
       <style>{`
+        :root,
+        .gjs-editor {
+          --gjs-left-width: 0px !important;
+          --gjs-canvas-top: 0px !important;
+        }
+        .gjs-editor-wrap,
+        .gjs-editor {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 100% !important;
+          position: relative !important;
+          background-color: #ffffff !important;
+        }
+        .gjs-cv-canvas {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 100% !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          position: absolute !important;
+          background-color: #ffffff !important;
+        }
+        .gjs-cv-canvas-bg {
+          background-color: #ffffff !important;
+        }
+        .gjs-cv-canvas__frames {
+          width: 100% !important;
+          height: 100% !important;
+          top: 0 !important;
+          left: 0 !important;
+          background-color: #ffffff !important;
+        }
+        .gjs-frame-wrapper {
+          width: 100% !important;
+          height: 100% !important;
+          top: 0 !important;
+          left: 0 !important;
+          bottom: 0 !important;
+          right: 0 !important;
+          background-color: #ffffff !important;
+        }
+        .gjs-frame {
+          width: 100% !important;
+          height: 100% !important;
+          top: 0 !important;
+          left: 0 !important;
+          border: none !important;
+          background-color: #ffffff !important;
+        }
+
+        /* Blocks manager: dark sleek cards with crisp WHITE icon and WHITE text */
+        .gjs-blocks-c {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          justify-content: flex-start !important;
+          gap: 6px !important;
+          padding: 4px 0 !important;
+        }
         .gjs-block {
-          border-radius: 10px !important;
-          transition: all 0.15s ease-in-out !important;
+          width: calc(50% - 6px) !important;
+          min-width: 75px !important;
+          min-height: 78px !important;
+          padding: 6px 4px !important;
+          margin: 0 !important;
+          background-color: #1e293b !important;
+          color: #ffffff !important;
+          border: 1px solid #334155 !important;
+          border-radius: 12px !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+          transition: all 0.2s ease-in-out !important;
           cursor: grab !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-sizing: border-box !important;
         }
         .gjs-block:hover {
-          transform: translateY(-1px) !important;
+          background-color: #0f172a !important;
+          border-color: #38bdf8 !important;
+          transform: translateY(-2px) !important;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+        }
+        .gjs-block:active {
+          cursor: grabbing !important;
+        }
+        .gjs-block svg {
+          stroke: #ffffff !important;
+          color: #ffffff !important;
+          fill: none !important;
+        }
+        .gjs-block svg * {
+          stroke: #ffffff !important;
+        }
+        .gjs-block span,
+        .gjs-block p,
+        .gjs-block .gjs-block-label,
+        .gjs-block * {
+          color: #ffffff !important;
+        }
+        .gjs-block-label {
+          color: #ffffff !important;
+          font-weight: 700 !important;
         }
         .gjs-block-category .gjs-title {
-          font-weight: 700 !important;
+          font-weight: 800 !important;
           font-size: 11px !important;
+          text-transform: uppercase !important;
           letter-spacing: 0.05em !important;
+          color: #1e293b !important;
+          background: #f1f5f9 !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 8px !important;
+          padding: 8px 12px !important;
+          margin: 10px 0 6px 0 !important;
+          cursor: pointer !important;
+        }
+        .gjs-block-category .gjs-title:hover {
+          background: #e2e8f0 !important;
+        }
+        .gjs-sm-sector .gjs-sm-sector-title {
+          font-weight: 800 !important;
+          font-size: 11px !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.05em !important;
+          color: #1e293b !important;
+          background: #f8fafc !important;
+          border-bottom: 1px solid #e2e8f0 !important;
+          padding: 10px 12px !important;
+        }
+        .gjs-sm-property {
+          padding: 8px 12px !important;
+          border-bottom: 1px solid #f1f5f9 !important;
+        }
+        .gjs-sm-property .gjs-sm-label {
+          font-size: 11px !important;
+          font-weight: 600 !important;
+          color: #475569 !important;
+        }
+        .gjs-field input, .gjs-field select {
+          border-radius: 6px !important;
+          border: 1px solid #cbd5e1 !important;
+          font-size: 12px !important;
+          color: #0f172a !important;
+          background: #ffffff !important;
+        }
+        .gjs-layer {
+          font-size: 12px !important;
+          color: #1e293b !important;
+          border-bottom: 1px solid #f1f5f9 !important;
+          padding: 6px 10px !important;
         }
       `}</style>
 
@@ -1434,32 +1653,85 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         {/* Left Sidepanel: Block Library & Tabs */}
         <div className="w-72 sm:w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-hidden shadow-xs">
           {/* Sidepanel Tabs */}
-          <div className="p-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
-            <div className="flex items-center gap-1.5">
-              <Layers className="w-4 h-4 text-blue-600" />
-              <span className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">Drag & Drop Blocks</span>
-            </div>
-            <span className="text-[10px] text-slate-500 font-bold bg-slate-200/80 px-2 py-0.5 rounded-full">28+ Blocks</span>
+          <div className="p-2 border-b border-slate-200 flex items-center gap-1 bg-slate-50/80">
+            <button
+              type="button"
+              onClick={() => setActiveSideTab('blocks')}
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeSideTab === 'blocks'
+                  ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Blocks</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveSideTab('styles')}
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeSideTab === 'styles'
+                  ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              <span>Styles (CSS)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveSideTab('layers')}
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeSideTab === 'layers'
+                  ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <LayoutTemplate className="w-3.5 h-3.5" />
+              <span>Layers</span>
+            </button>
           </div>
 
           {/* GrapesJS Rendered Block Container */}
           <div
             ref={blocksContainerRef}
-            className="flex-1 p-3 overflow-y-auto space-y-2 text-xs scrollbar-thin scrollbar-thumb-slate-300"
+            className={`flex-1 p-3 overflow-y-auto space-y-2 text-xs scrollbar-thin scrollbar-thumb-slate-300 ${
+              activeSideTab === 'blocks' ? 'block' : 'hidden'
+            }`}
+          />
+
+          {/* GrapesJS Style Manager Container */}
+          <div
+            ref={stylesContainerRef}
+            className={`flex-1 p-3 overflow-y-auto text-xs scrollbar-thin scrollbar-thumb-slate-300 ${
+              activeSideTab === 'styles' ? 'block' : 'hidden'
+            }`}
+          />
+
+          {/* GrapesJS Layers Tree Container */}
+          <div
+            ref={layersContainerRef}
+            className={`flex-1 p-3 overflow-y-auto text-xs scrollbar-thin scrollbar-thumb-slate-300 ${
+              activeSideTab === 'layers' ? 'block' : 'hidden'
+            }`}
           />
 
           {/* Bottom Quick Help */}
           <div className="p-3 border-t border-slate-200 bg-slate-50 text-[11px] text-slate-500 flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-slate-400 shrink-0" />
-            <span>Drag blocks onto the canvas. Click text to edit in-line.</span>
+            <span>
+              {activeSideTab === 'blocks' && 'Drag blocks onto canvas. User forms are under Admissions & Forms.'}
+              {activeSideTab === 'styles' && 'Click any element on canvas to customize its typography, colors, and margins.'}
+              {activeSideTab === 'layers' && 'Select elements in the layer tree to inspect and reorder DOM structure.'}
+            </span>
           </div>
         </div>
 
-        {/* Right: GrapesJS Visual Canvas */}
-        <div className="flex-1 flex flex-col relative bg-slate-100 overflow-hidden">
+        {/* Right: GrapesJS Visual Canvas (Pure White Canvas Area) */}
+        <div className="flex-1 relative bg-white overflow-hidden w-full h-full min-h-[600px]">
           <div
             ref={containerRef}
-            className="w-full h-full"
+            className="absolute inset-0 w-full h-full bg-white"
           />
         </div>
       </div>
@@ -1667,7 +1939,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">🌟 Quran & Sanad Academy</div>
+                  <div className="font-bold text-slate-900">Quran & Sanad Academy</div>
                   <div className="text-[10px] text-slate-500">Tajweed, Hifz, and verified chain</div>
                 </button>
 
@@ -1680,7 +1952,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">💻 Software Bootcamp</div>
+                  <div className="font-bold text-slate-900">Software Bootcamp</div>
                   <div className="text-[10px] text-slate-500">Next.js, TypeScript & Cloud</div>
                 </button>
 
@@ -1693,7 +1965,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">🕌 Weekend Islamic School</div>
+                  <div className="font-bold text-slate-900">Weekend Islamic School</div>
                   <div className="text-[10px] text-slate-500">Youth character & Quran fluency</div>
                 </button>
 
@@ -1706,7 +1978,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">📖 Accelerated Camp</div>
+                  <div className="font-bold text-slate-900">Accelerated Camp</div>
                   <div className="text-[10px] text-slate-500">Summer intensive immersion</div>
                 </button>
               </div>

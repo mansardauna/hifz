@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../src/lib/prisma';
 import { MOCK_COURSES } from '../../../src/services/mockData';
 import { handleApiError } from '../../../src/server/lib/apiResponse';
+import { isDemoTenant } from '../../../src/lib/tenants';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -9,7 +10,14 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get('tenantId') || 'tenant-hifz';
+    const tenantId = searchParams.get('tenantId') || request.headers.get('x-subdomain') || undefined;
+    
+    if (!tenantId) {
+      return NextResponse.json({ courses: [] });
+    }
+
+    const cleanSubdomain = tenantId.replace('tenant-', '');
+    const isDemo = isDemoTenant(cleanSubdomain) || isDemoTenant(tenantId);
 
     // 1. Try Prisma Database if configured
     if (process.env.DATABASE_URL) {
@@ -18,26 +26,40 @@ export async function GET(request: NextRequest) {
           where: {
             OR: [
               { tenantId },
-              { tenant: { subdomain: tenantId.replace('tenant-', '') } },
+              { tenant: { subdomain: cleanSubdomain } },
+              { tenant: { id: tenantId } },
             ],
           },
           orderBy: { createdAt: 'desc' },
         });
 
+        // Non-demo tenant: return real database courses (or empty array)
+        if (!isDemo) {
+          return NextResponse.json({ courses: dbCourses || [] });
+        }
+
         if (dbCourses && dbCourses.length > 0) {
           return NextResponse.json({ courses: dbCourses });
         }
       } catch (dbErr) {
-        console.warn('Prisma courses lookup fallback to mock:', dbErr);
+        console.warn('Prisma courses lookup error:', dbErr);
+        if (!isDemo) {
+          return NextResponse.json({ courses: [] });
+        }
       }
     }
 
-    // 2. Fallback to mock data matching tenant or defaults
+    // 2. Non-demo accounts without DB records must return clean empty list
+    if (!isDemo) {
+      return NextResponse.json({ courses: [] });
+    }
+
+    // 3. Fallback to mock data ONLY for demo sandbox tenants
     const filtered = MOCK_COURSES.filter(
-      (c) => c.tenantId === tenantId || c.tenantId === `tenant-${tenantId}` || tenantId.includes(c.tenantId)
+      (c) => c.tenantId === tenantId || c.tenantId === `tenant-${cleanSubdomain}` || tenantId.includes(c.tenantId)
     );
 
-    const courses = filtered.length > 0 ? filtered : MOCK_COURSES;
+    const courses = filtered.length > 0 ? filtered : (isDemo ? MOCK_COURSES : []);
     return NextResponse.json({ courses });
   } catch (error: any) {
     return handleApiError(error);

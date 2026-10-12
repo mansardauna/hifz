@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Badge, DataTablePagination } from '../ui';
+import { Badge, Button, Card, PageHeader, TablePagination, Avatar } from '../ui';
 import { FormConfig } from '../../types';
 
 export interface FormResponse {
@@ -60,73 +60,248 @@ interface FormResponsesTableProps {
 
 type SortField = 'studentName' | 'email' | 'submittedAt' | 'status' | string;
 
-import { MOCK_TENANTS } from '../../services/mockData';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 
-const DEMO_RESPONSES: FormResponse[] = [
-  {
-    id: 'resp-101',
-    formId: 'form-admissions',
-    formTitle: 'Direct Admissions & Evaluation Inquiry',
-    studentName: 'Zaid Al-Harithi',
-    email: 'zaid.harithi@example.com',
-    phone: '+966 50 123 4567',
-    submittedAt: '2026-09-02 14:30',
-    status: 'New',
-    data: {
-      'Parent / Guardian Name': 'Ibrahim Al-Harithi',
-      'Current Juz Memorized': '6 - 15 Juz',
-      'Preferred Class Timing': 'Evening (Isha-Night)',
-      'Selected Plan': 'Intensive Hifz Program ($140/mo)',
-      'Target Goal': 'Complete memorization of Surah Al-Kahf to An-Nas'
-    },
-    notes: 'Strong Tajweed foundation from local mosque.'
-  },
-  {
-    id: 'resp-102',
-    formId: 'form-admissions',
-    formTitle: 'Direct Admissions & Evaluation Inquiry',
-    studentName: 'Amina Khatun',
-    email: 'amina.khatun@example.co.uk',
-    phone: '+44 7700 900123',
-    submittedAt: '2026-09-01 09:15',
-    status: 'Under Review',
-    data: {
-      'Parent / Guardian Name': 'Farooq Khatun',
-      'Current Juz Memorized': '1 - 5 Juz',
-      'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
-      'Selected Plan': 'Foundational Tajweed Track ($65/mo)',
-      'Target Goal': 'Correct Makharij and learn Tuhfat al-Atfal'
-    },
-    notes: 'Scheduled for voice assessment.'
-  },
-  {
-    id: 'resp-103',
-    formId: 'form-placement',
-    formTitle: 'Tajweed & Memorization Placement Evaluation',
-    studentName: 'Tariq Mansoor',
-    email: 'tariq.mansoor@example.com',
-    phone: '+1 (555) 234-8899',
-    submittedAt: '2026-08-30 18:45',
-    status: 'Admitted',
-    data: {
-      'Current Juz Memorized': 'Complete Quran (30 Juz)',
-      'Familiarity with Tajweed Rules': 'Advanced (Studied Tuhfah/Jazariyyah)',
-      'Preferred Class Timing': 'Evening (Isha-Night)',
-      'Personal Memorization Goal': 'Obtain Sanad connected to Prophet Muhammad (PBUH)'
-    },
-    notes: 'Passed oral recitation check with 98% accuracy.'
+const getDemoResponses = (niche: string): FormResponse[] => {
+  if (niche === 'quran') {
+    return [
+      {
+        id: 'resp-101',
+        formId: 'form-admissions',
+        formTitle: 'Direct Admissions & Evaluation Inquiry',
+        studentName: 'Zaid Al-Harithi',
+        email: 'zaid.harithi@example.com',
+        phone: '+966 50 123 4567',
+        submittedAt: '2026-09-02 14:30',
+        status: 'New',
+        data: {
+          'Parent / Guardian Name': 'Ibrahim Al-Harithi',
+          'Current Juz Memorized': '6 - 15 Juz',
+          'Preferred Class Timing': 'Evening (Isha-Night)',
+          'Selected Plan': 'Intensive Hifz Program ($140/mo)',
+          'Target Goal': 'Complete memorization of Surah Al-Kahf to An-Nas'
+        },
+        notes: 'Strong Tajweed foundation from local mosque.'
+      },
+      {
+        id: 'resp-102',
+        formId: 'form-admissions',
+        formTitle: 'Direct Admissions & Evaluation Inquiry',
+        studentName: 'Amina Khatun',
+        email: 'amina.khatun@example.co.uk',
+        phone: '+44 7700 900123',
+        submittedAt: '2026-09-01 09:15',
+        status: 'Under Review',
+        data: {
+          'Parent / Guardian Name': 'Farooq Khatun',
+          'Current Juz Memorized': '1 - 5 Juz',
+          'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
+          'Selected Plan': 'Foundational Tajweed Track ($65/mo)',
+          'Target Goal': 'Correct Makharij and learn Tuhfat al-Atfal'
+        },
+        notes: 'Scheduled for voice assessment.'
+      },
+      {
+        id: 'resp-103',
+        formId: 'form-placement',
+        formTitle: 'Tajweed & Memorization Placement Evaluation',
+        studentName: 'Tariq Mansoor',
+        email: 'tariq.mansoor@example.com',
+        phone: '+1 (555) 234-8899',
+        submittedAt: '2026-08-30 18:45',
+        status: 'Admitted',
+        data: {
+          'Current Juz Memorized': 'Complete Quran (30 Juz)',
+          'Familiarity with Tajweed Rules': 'Advanced (Studied Tuhfah/Jazariyyah)',
+          'Preferred Class Timing': 'Evening (Isha-Night)',
+          'Personal Memorization Goal': 'Obtain Sanad connected to Prophet Muhammad (PBUH)'
+        },
+        notes: 'Passed oral recitation check with 98% accuracy.'
+      }
+    ];
   }
-];
+
+  if (niche === 'coding') {
+    return [
+      {
+        id: 'resp-101',
+        formId: 'form-admissions',
+        formTitle: 'Direct Admissions & Application Inquiry',
+        studentName: 'Alex Morgan',
+        email: 'alex.morgan@example.com',
+        phone: '+1 (555) 432-8765',
+        submittedAt: '2026-09-02 14:30',
+        status: 'New',
+        data: {
+          'Years of Experience': '1 - 2 Years (Self-Taught & Bootcamp)',
+          'Preferred Tech Stack': 'TypeScript, React 19, Node.js & Next.js',
+          'Preferred Cohort Timing': 'Evening Cohort (6:00 PM - 8:30 PM)',
+          'Selected Plan': 'Full-Stack Engineering Immersion ($140/mo)',
+          'Target Career Goal': 'Transition to Senior Full-Stack Software Engineer'
+        },
+        notes: 'Solid GitHub portfolio with 3 deployed applications.'
+      },
+      {
+        id: 'resp-102',
+        formId: 'form-admissions',
+        formTitle: 'Direct Admissions & Application Inquiry',
+        studentName: 'Elena Rostova',
+        email: 'elena.rostova@example.com',
+        phone: '+44 7911 123456',
+        submittedAt: '2026-09-01 09:15',
+        status: 'Under Review',
+        data: {
+          'Years of Experience': 'Beginner (Basic HTML/CSS & JS)',
+          'Preferred Tech Stack': 'JavaScript Fundamentals & React Basics',
+          'Preferred Cohort Timing': 'Weekend Intensive Track',
+          'Selected Plan': 'Foundational Frontend Track ($65/mo)',
+          'Target Career Goal': 'Build interactive web applications and prepare for tech roles'
+        },
+        notes: 'Passed technical diagnostic quiz with 92% score.'
+      },
+      {
+        id: 'resp-103',
+        formId: 'form-placement',
+        formTitle: 'Technical Competency & Placement Evaluation',
+        studentName: 'David Miller',
+        email: 'david.miller@example.com',
+        phone: '+1 (555) 345-6789',
+        submittedAt: '2026-08-30 18:45',
+        status: 'Admitted',
+        data: {
+          'Years of Experience': '3+ Years Professional Development',
+          'Preferred Tech Stack': 'Distributed Systems, Microservices & Cloud Architecture',
+          'Preferred Cohort Timing': 'Evening Cohort (6:00 PM - 8:30 PM)',
+          'Target Career Goal': 'Architect high-concurrency cloud systems'
+        },
+        notes: 'Passed code review assessment and algorithmic interview.'
+      }
+    ];
+  }
+
+  if (niche === 'school') {
+    return [
+      {
+        id: 'resp-101',
+        formId: 'form-admissions',
+        formTitle: 'Direct Student Admissions Application',
+        studentName: 'Lucas Bennett',
+        email: 'lucas.bennett@example.com',
+        phone: '+1 (555) 876-5432',
+        submittedAt: '2026-09-02 14:30',
+        status: 'New',
+        data: {
+          'Parent / Guardian Name': 'Robert Bennett',
+          'Current Academic Grade': 'Grade 11 (Honors)',
+          'Preferred Cohort Timing': 'Regular School Day Session',
+          'Selected Plan': 'Comprehensive Academic Curriculum ($140/mo)',
+          'Target Goal': 'Complete AP Calculus and Honors Physics coursework'
+        },
+        notes: 'Strong academic record with 3.9 GPA.'
+      },
+      {
+        id: 'resp-102',
+        formId: 'form-admissions',
+        formTitle: 'Direct Student Admissions Application',
+        studentName: 'Sophia Zhang',
+        email: 'sophia.zhang@example.com',
+        phone: '+1 (555) 765-4321',
+        submittedAt: '2026-09-01 09:15',
+        status: 'Under Review',
+        data: {
+          'Parent / Guardian Name': 'Mei Zhang',
+          'Current Academic Grade': 'Grade 9 (Foundations)',
+          'Preferred Cohort Timing': 'Morning Academic Cohort',
+          'Selected Plan': 'Standard Academic Foundations ($65/mo)',
+          'Target Goal': 'Excel in foundational STEM subjects and literature'
+        },
+        notes: 'Scheduled for placement diagnostic.'
+      },
+      {
+        id: 'resp-103',
+        formId: 'form-placement',
+        formTitle: 'Academic Placement & Diagnostic Assessment',
+        studentName: 'Hamza Al-Khatib',
+        email: 'hamza.khatib@example.com',
+        phone: '+1 (555) 654-3210',
+        submittedAt: '2026-08-30 18:45',
+        status: 'Admitted',
+        data: {
+          'Parent / Guardian Name': 'Samir Al-Khatib',
+          'Current Academic Grade': 'Grade 12 (Senior Capstone)',
+          'Preferred Cohort Timing': 'Afternoon Honors Seminar',
+          'Target Goal': 'Defend Senior Honors Capstone research paper'
+        },
+        notes: 'Scored 98th percentile on diagnostic mathematics assessment.'
+      }
+    ];
+  }
+
+  // General / Professional
+  return [
+    {
+      id: 'resp-101',
+      formId: 'form-admissions',
+      formTitle: 'Direct Admissions & Enrollment Inquiry',
+      studentName: 'Alex Parker',
+      email: 'alex.parker@example.com',
+      phone: '+1 (555) 432-1100',
+      submittedAt: '2026-09-02 14:30',
+      status: 'New',
+      data: {
+        'Sponsor / Organization': 'Parker & Associates Ltd.',
+        'Current Experience Level': 'Intermediate Practitioner',
+        'Preferred Session Timing': 'Evening Professional Cohort',
+        'Selected Plan': 'Comprehensive Professional Track ($140/mo)',
+        'Target Goal': 'Attain professional certification and operational mastery'
+      },
+      notes: 'Strong foundational background and clear learning objectives.'
+    },
+    {
+      id: 'resp-102',
+      formId: 'form-admissions',
+      formTitle: 'Direct Admissions & Enrollment Inquiry',
+      studentName: 'Sarah Jenkins',
+      email: 'sarah.jenkins@example.com',
+      phone: '+1 (555) 321-2200',
+      submittedAt: '2026-09-01 09:15',
+      status: 'Under Review',
+      data: {
+        'Sponsor / Organization': 'Independent Professional',
+        'Current Experience Level': 'Foundational Practitioner',
+        'Preferred Session Timing': 'Weekend Cohort',
+        'Selected Plan': 'Core Fundamentals Track ($65/mo)',
+        'Target Goal': 'Build structured competence in primary methodologies'
+      },
+      notes: 'Scheduled for initial intake interview.'
+    },
+    {
+      id: 'resp-103',
+      formId: 'form-placement',
+      formTitle: 'Competency & Placement Diagnostic',
+      studentName: 'Jordan Lee',
+      email: 'jordan.lee@example.com',
+      phone: '+1 (555) 210-3300',
+      submittedAt: '2026-08-30 18:45',
+      status: 'Admitted',
+      data: {
+        'Current Experience Level': 'Advanced Specialist',
+        'Preferred Session Timing': 'Evening Professional Cohort',
+        'Target Goal': 'Complete executive capstone and final defense'
+      },
+      notes: 'Passed entrance review with high distinction.'
+    }
+  ];
+};
 
 export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToast }) => {
   const { tenant, language } = useTenant();
   const isAr = language === 'ar';
+  const nicheType = detectTenantNicheType(tenant);
+  const isQuran = nicheType === 'quran';
+  const isCoding = nicheType === 'coding';
+  const isSchool = nicheType === 'school';
 
-  const isDemoTenant = Boolean(
-    MOCK_TENANTS[tenant.subdomain] ||
-    ['hifz-academy', 'al-furqan', 'madrasat-demo', 'code-academy', 'school-demo'].includes(tenant.subdomain) ||
-    tenant.subdomain.includes('demo')
-  );
 
   const [responses, setResponses] = useState<FormResponse[]>(() => {
     if (typeof window !== 'undefined') {
@@ -135,7 +310,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
         if (stored) return JSON.parse(stored);
       } catch (e) {}
     }
-    return isDemoTenant ? DEMO_RESPONSES : [];
+    return [];
   });
 
   // Load persistent submissions from localStorage on mount and when tenant changes
@@ -145,16 +320,14 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
         const stored = localStorage.getItem(`tenant_form_responses_${tenant.subdomain}`);
         if (stored) {
           setResponses(JSON.parse(stored));
-        } else if (!isDemoTenant) {
-          setResponses([]);
         } else {
-          setResponses(DEMO_RESPONSES);
+          setResponses([]);
         }
       } catch (e) {
         console.warn('Failed to parse cached responses:', e);
       }
     }
-  }, [tenant.subdomain, isDemoTenant]);
+  }, [tenant.subdomain]);
 
   // Available forms list from tenant
   const tenantForms: FormConfig[] = useMemo(() => {
@@ -172,7 +345,13 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
       },
       {
         id: 'form-placement',
-        title: 'Tajweed & Memorization Placement Evaluation',
+        title: isQuran
+          ? 'Tajweed & Memorization Placement Evaluation'
+          : isCoding
+          ? 'Technical Competency & Placement Evaluation'
+          : isSchool
+          ? 'Academic Placement & Diagnostic Assessment'
+          : 'Competency & Placement Diagnostic',
         description: 'Placement test for new admissions.',
         isDefault: false,
         status: 'active',
@@ -417,61 +596,46 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
 
   return (
     <div className="space-y-6 font-sans text-slate-900 animate-in fade-in duration-200">
-      {/* 1. Header & Quick Actions */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-bold shadow-xs">
-              <FileText className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                Form Submissions & Lead Responses
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Isolate, sort, and analyze prospective applicant responses for each intake form.
-              </p>
-            </div>
+      {/* 1. Page Header */}
+      <PageHeader
+        title="Form Submissions & Lead Responses"
+        subtitle="Isolate, sort, and analyze prospective applicant responses for each intake form."
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAnalyticsCharts((prev) => !prev)}
+              leftIcon={<BarChart3 className="w-4 h-4 text-emerald-600" />}
+            >
+              {showAnalyticsCharts ? 'Hide Charts' : 'Show Charts'}
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleExportCSV}
+              leftIcon={<Download className="w-4 h-4" />}
+            >
+              Export CSV
+            </Button>
           </div>
-        </div>
+        }
+      />
 
-        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-          <button
-            onClick={() => setShowAnalyticsCharts((prev) => !prev)}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
-              showAnalyticsCharts
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4 text-emerald-600" />
-            <span>{showAnalyticsCharts ? 'Hide Charts' : 'Show Charts'}</span>
-          </button>
-
-          <button
-            onClick={handleExportCSV}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Per-Form Navigation Tabs (Isolate Each Form) */}
-      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1.5 overflow-x-auto scrollbar-thin">
+      {/* 2. Per-Form Navigation Tabs */}
+      <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar space-x-1">
         <button
           onClick={() => setSelectedFormId('all')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all shrink-0 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             selectedFormId === 'all'
-              ? 'bg-slate-900 text-white shadow-xs'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
           <span>All Submissions</span>
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
-            selectedFormId === 'all' ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-600'
+            selectedFormId === 'all' ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold' : 'bg-slate-100 text-slate-600'
           }`}>
             {responses.length}
           </span>
@@ -485,16 +649,16 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             <button
               key={form.id}
               onClick={() => setSelectedFormId(form.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+              className={`py-3 px-5 font-bold text-xs border-b-2 transition-all shrink-0 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                 isSelected
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
               <span className="truncate max-w-[180px]">{form.title}</span>
               <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
-                isSelected ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600'
+                isSelected ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold' : 'bg-slate-100 text-slate-600'
               }`}>
                 {formCount}
               </span>
@@ -727,33 +891,38 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 font-medium">
               {filteredAndSortedResponses.length === 0 ? (
                 <tr>
-                  <td colSpan={6 + dynamicQuestionKeys.length} className="py-12 text-center text-slate-400">
-                    <FileText className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="font-bold text-sm text-slate-700">No submissions found</p>
-                    <p className="text-[11px] text-slate-400">No responses match the selected form or filters.</p>
+                  <td colSpan={6 + dynamicQuestionKeys.length} className="py-14 text-center text-slate-400">
+                    <Avatar size="xl" className="mx-auto mb-3" />
+                    <p className="font-bold text-base text-slate-800">No submissions found</p>
+                    <p className="text-sm text-slate-500 mt-1">No responses match the selected form or filters.</p>
                   </td>
                 </tr>
               ) : (
                 paginatedResponses.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
                     {/* Student Column */}
-                    <td className="py-3.5 px-4">
-                      <div className="font-extrabold text-slate-900 text-xs">{r.studentName}</div>
-                      <div className="text-[10px] text-slate-400 font-mono">{r.id}</div>
+                    <td className="py-4 px-5 font-bold text-slate-900">
+                      <div className="flex items-center gap-3">
+                        <Avatar name={r.studentName} size="md" />
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">{r.studentName}</div>
+                          <div className="text-xs text-slate-400 font-mono mt-0.5">{r.id}</div>
+                        </div>
+                      </div>
                     </td>
 
                     {/* Email & Phone */}
-                    <td className="py-3.5 px-4">
-                      <div className="text-slate-800 text-xs font-medium">{r.email}</div>
-                      <div className="text-[10px] text-slate-400">{r.phone}</div>
+                    <td className="py-4 px-5">
+                      <div className="text-slate-800 text-sm font-medium">{r.email}</div>
+                      <div className="text-xs text-slate-400 mt-0.5">{r.phone}</div>
                     </td>
 
                     {/* Dynamic Question Answers */}
                     {dynamicQuestionKeys.slice(0, 3).map((k) => (
-                      <td key={k} className="py-3.5 px-4 text-slate-700 text-xs">
+                      <td key={k} className="py-4 px-5 text-slate-700 text-sm">
                         <span className="line-clamp-1 max-w-[180px]">
                           {r.data?.[k] ? String(r.data[k]) : '—'}
                         </span>
@@ -761,16 +930,16 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                     ))}
 
                     {/* Submitted At */}
-                    <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                    <td className="py-4 px-5 text-slate-500 font-mono text-xs">
                       {r.submittedAt}
                     </td>
 
                     {/* Pipeline Status */}
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-5">
                       <select
                         value={r.status}
                         onChange={(e) => handleStatusChange(r.id, e.target.value as any)}
-                        className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border focus:outline-none cursor-pointer ${
+                        className={`text-xs font-semibold px-2.5 py-1.5 rounded-xl border focus:outline-none cursor-pointer ${
                           r.status === 'New'
                             ? 'bg-amber-50 text-amber-800 border-amber-200'
                             : r.status === 'Under Review'
@@ -821,7 +990,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
         </div>
 
         {/* Pagination Controls */}
-        <DataTablePagination
+        <TablePagination
           currentPage={currentPage}
           pageSize={pageSize}
           totalItems={filteredAndSortedResponses.length}
@@ -1144,7 +1313,15 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   </label>
                   <textarea
                     rows={2}
-                    placeholder="Add evaluation comments, Tajweed voice test scores, or next steps..."
+                    placeholder={
+                      isQuran
+                        ? "Add evaluation comments, Tajweed voice test scores, or next steps..."
+                        : isCoding
+                        ? "Add evaluation comments, technical review scores, or next steps..."
+                        : isSchool
+                        ? "Add evaluation comments, academic placement scores, or next steps..."
+                        : "Add evaluation comments, interview scores, or next steps..."
+                    }
                     value={viewingResponse.notes || ''}
                     onChange={(e) => {
                       const val = e.target.value;

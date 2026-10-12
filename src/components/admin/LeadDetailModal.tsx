@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Lead, LeadStatus, PaymentStatus } from '../../types';
 import { api } from '../../services/api';
 import { useTenant } from '../../context/TenantContext';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { ToastMessage } from '../ui/Toast';
 import { X, UserCheck, Calendar, Phone, Mail, Award, Clock, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, History, CreditCard, Download, Receipt } from 'lucide-react';
 
@@ -19,6 +20,8 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
   onAddToast,
 }) => {
   const { tenant, language, direction } = useTenant();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
   const [notes, setNotes] = useState<string>(lead.notes || '');
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(lead.paymentStatus || 'Pending');
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -103,8 +106,8 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
               <p className="font-bold text-slate-900 truncate mt-0.5">{lead.phone}</p>
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase">Arabic Level</p>
-              <p className="font-bold text-slate-900 truncate mt-0.5">{lead.arabicLevel}</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase">{isQuran ? "Arabic Level" : "Experience Level"}</p>
+              <p className="font-bold text-slate-900 truncate mt-0.5">{lead.arabicLevel || (isQuran ? 'Beginner' : 'Introductory')}</p>
             </div>
           </div>
 
@@ -121,7 +124,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
               <div>
                 <span className="text-slate-400 block">Enrolled Plan:</span>
-                <span className="font-bold text-slate-900">{lead.planName || 'Foundational Tajweed'}</span>
+                <span className="font-bold text-slate-900">{lead.planName || (isQuran ? 'Foundational Tajweed' : 'Foundational Track')}</span>
               </div>
               <div>
                 <span className="text-slate-400 block">Plan Fee:</span>
@@ -149,7 +152,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
                     paymentStatus === 'Paid' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-200'
                   }`}
                 >
-                  ✓ Mark Paid
+                  Mark Paid
                 </button>
                 <button
                   onClick={() => handlePaymentStatusToggle('Pending')}
@@ -165,7 +168,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
                     paymentStatus === 'Past Due' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-700 border-slate-200'
                   }`}
                 >
-                  ⚠ Past Due
+                  Past Due
                 </button>
               </div>
             </div>

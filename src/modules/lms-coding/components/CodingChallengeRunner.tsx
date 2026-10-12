@@ -119,7 +119,7 @@ export const CodingChallengeRunner: React.FC<CodingChallengeRunnerProps> = ({
       setAllPassed(everyTestPassed);
 
       if (everyTestPassed) {
-        success('Challenge Completed! 🎉', 'All unit test cases passed with flying colors!');
+        success('Challenge Completed!', 'All unit test cases passed with flying colors!');
         if (onComplete) onComplete(challenge.id);
       } else {
         error('Tests Failed', 'Some test cases did not pass. Check the assertions panel.');

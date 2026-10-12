@@ -48,6 +48,8 @@ export interface FormConfig {
   submitButtonText?: string;
   submitButtonTextAr?: string;
   customSuccessMessage?: string;
+  compiledHtml?: string;
+  compiledCss?: string;
 }
 
 export interface PageBlock {
@@ -174,6 +176,7 @@ export interface TenantConfig {
   subdomain: string;
   customDomain?: string;
   niche?: TenantNiche;
+  isDemo?: boolean;
   logoUrl: string;
   faviconUrl: string;
   theme: TenantTheme;
@@ -184,6 +187,8 @@ export interface TenantConfig {
   aboutTextAr: string;
   contactEmail: string;
   contactPhone: string;
+  contactAddress?: string;
+  currency?: string;
   admissionsOpen: boolean;
   pageBlocks: PageBlock[];
   customFormFields: FormFieldConfig[];
@@ -202,6 +207,9 @@ export interface TenantConfig {
   authCustomization?: AuthPageCustomization;
   preloaderCustomization?: PreloaderCustomization;
   builderLayout?: any;
+  settings?: any;
+  courses?: Course[];
+  enabledModules?: string[];
 }
 
 export interface Lesson {
@@ -325,6 +333,7 @@ export interface Surah {
 
 export interface RecitationSubmission {
   id: string;
+  tenantId?: string;
   studentId?: string;
   studentName?: string;
   surahNumber?: number;

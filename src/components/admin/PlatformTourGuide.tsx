@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../../context/ToastContext';
+import { useTenant } from '../../context/TenantContext';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { AdminTab } from '../layout/Sidebar';
 import {
   Sparkles,
@@ -29,63 +31,6 @@ interface TourStep {
   actionText: string;
 }
 
-const TOUR_STEPS: TourStep[] = [
-  {
-    id: 1,
-    title: 'Academy Overview',
-    tabTarget: 'overview',
-    badge: '1 of 6',
-    shortDesc: 'Track your student admissions funnel, active enrollments, and tuition revenue trends in real time.',
-    icon: LayoutDashboard,
-    actionText: 'Open Overview',
-  },
-  {
-    id: 2,
-    title: 'Visual Page Builder',
-    tabTarget: 'page_builder',
-    badge: '2 of 6',
-    shortDesc: 'Customize landing pages with drag-and-drop Tailwind blocks, calligraphy hero, and live preview.',
-    icon: Layers,
-    actionText: 'Open Builder',
-  },
-  {
-    id: 3,
-    title: 'Admissions Form Builder',
-    tabTarget: 'form_builder',
-    badge: '3 of 6',
-    shortDesc: 'Create intake questionnaires, customize themes, and collect student leads with live test preview.',
-    icon: FileCheck,
-    actionText: 'Open Form Builder',
-  },
-  {
-    id: 4,
-    title: 'Live WebRTC Classroom',
-    tabTarget: 'classroom',
-    badge: '4 of 6',
-    shortDesc: 'Host interactive Halaqah sessions with live multi-party video, audio verse looper, and whiteboard.',
-    icon: Video,
-    actionText: 'Enter Classroom',
-  },
-  {
-    id: 5,
-    title: 'Community Forum',
-    tabTarget: 'forum',
-    badge: '5 of 6',
-    shortDesc: 'Foster student discussions and homework Q&A with instructor badges, replies, and upvoting.',
-    icon: MessageSquare,
-    actionText: 'Open Forum',
-  },
-  {
-    id: 6,
-    title: 'Tuition & Payment Gateways',
-    tabTarget: 'pricing',
-    badge: '6 of 6',
-    shortDesc: 'Set up tuition tiers and connect Stripe, Moyasar (Mada/Apple Pay), or bank transfer gateways.',
-    icon: CreditCard,
-    actionText: 'Open Gateways',
-  },
-];
-
 interface PlatformTourGuideProps {
   isOpen: boolean;
   onClose: () => void;
@@ -99,11 +44,76 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
   onNavigateTab,
   academyName,
 }) => {
+  const { tenant } = useTenant();
   const { success } = useToast();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
+
+  const tourSteps: TourStep[] = useMemo(() => [
+    {
+      id: 1,
+      title: 'Academy Overview',
+      tabTarget: 'overview',
+      badge: '1 of 6',
+      shortDesc: 'Track your student admissions funnel, active enrollments, and tuition revenue trends in real time.',
+      icon: LayoutDashboard,
+      actionText: 'Open Overview',
+    },
+    {
+      id: 2,
+      title: 'Visual Page Builder',
+      tabTarget: 'page_builder',
+      badge: '2 of 6',
+      shortDesc: isQuran
+        ? 'Customize landing pages with drag-and-drop Tailwind blocks, calligraphy hero, and live preview.'
+        : 'Customize landing pages with drag-and-drop Tailwind blocks, hero sections, and live preview.',
+      icon: Layers,
+      actionText: 'Open Builder',
+    },
+    {
+      id: 3,
+      title: 'Admissions Form Builder',
+      tabTarget: 'form_builder',
+      badge: '3 of 6',
+      shortDesc: 'Create intake questionnaires, customize themes, and collect student leads with live test preview.',
+      icon: FileCheck,
+      actionText: 'Open Form Builder',
+    },
+    {
+      id: 4,
+      title: isQuran ? 'Live Virtual Halaqah' : 'Live Virtual Classroom',
+      tabTarget: 'classroom',
+      badge: '4 of 6',
+      shortDesc: isQuran
+        ? 'Host interactive Halaqah sessions with live multi-party video, audio verse looper, and whiteboard.'
+        : 'Host interactive live classroom sessions with multi-party video, breakout pods, and whiteboard.',
+      icon: Video,
+      actionText: 'Enter Classroom',
+    },
+    {
+      id: 5,
+      title: 'Community Forum',
+      tabTarget: 'forum',
+      badge: '5 of 6',
+      shortDesc: 'Foster student discussions and homework Q&A with instructor badges, replies, and upvoting.',
+      icon: MessageSquare,
+      actionText: 'Open Forum',
+    },
+    {
+      id: 6,
+      title: 'Tuition & Payment Gateways',
+      tabTarget: 'pricing',
+      badge: '6 of 6',
+      shortDesc: 'Set up tuition tiers and connect Stripe, Moyasar (Mada/Apple Pay), or bank transfer gateways.',
+      icon: CreditCard,
+      actionText: 'Open Gateways',
+    },
+  ], [isQuran]);
+
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  const currentStep = TOUR_STEPS[currentStepIndex];
-  const isLastStep = currentStepIndex === TOUR_STEPS.length - 1;
+  const currentStep = tourSteps[currentStepIndex];
+  const isLastStep = currentStepIndex === tourSteps.length - 1;
   const StepIcon = currentStep?.icon;
 
   const handleNext = () => {
@@ -112,7 +122,7 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
     } else {
       const nextIdx = currentStepIndex + 1;
       setCurrentStepIndex(nextIdx);
-      onNavigateTab(TOUR_STEPS[nextIdx].tabTarget);
+      onNavigateTab(tourSteps[nextIdx].tabTarget);
     }
   };
 
@@ -120,7 +130,7 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
     if (currentStepIndex > 0) {
       const prevIdx = currentStepIndex - 1;
       setCurrentStepIndex(prevIdx);
-      onNavigateTab(TOUR_STEPS[prevIdx].tabTarget);
+      onNavigateTab(tourSteps[prevIdx].tabTarget);
     }
   };
 
@@ -128,7 +138,7 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('techmadrasah_tour_completed', 'true');
     }
-    success('Tour Completed! 🎉', `Welcome to ${academyName}! Your academy workspace is ready.`);
+    success('Tour Completed!', `Welcome to ${academyName}! Your academy workspace is ready.`);
     onClose();
   };
 
@@ -193,12 +203,12 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
         {/* Step Progress Dots & Navigation Buttons */}
         <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800">
           <div className="flex items-center gap-1.5">
-            {TOUR_STEPS.map((s, idx) => (
+            {tourSteps.map((s, idx) => (
               <button
                 key={s.id}
                 onClick={() => {
                   setCurrentStepIndex(idx);
-                  onNavigateTab(TOUR_STEPS[idx].tabTarget);
+                  onNavigateTab(tourSteps[idx].tabTarget);
                 }}
                 className={`h-1.5 rounded-full transition-all cursor-pointer ${
                   idx === currentStepIndex

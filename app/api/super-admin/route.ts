@@ -1,12 +1,16 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { SuperAdminService } from '../../../src/server/services/superAdminService';
 import { apiError, handleApiError } from '../../../src/server/lib/apiResponse';
+import { requireAuth } from '../../../src/server/lib/serverAuth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Assert authenticated SuperAdmin access
+    requireAuth(request, ['superadmin']);
+
     const data = await SuperAdminService.getDashboardData();
     return NextResponse.json({
       success: true,
@@ -19,6 +23,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Assert authenticated SuperAdmin access
+    requireAuth(request, ['superadmin']);
+
     const body = await request.json();
     const { action, plans, tenantId, status, planId } = body;
 
@@ -30,8 +37,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (action === 'update_tenant_status' && tenantId) {
-      const updated = await SuperAdminService.updateTenantStatus(tenantId, status, planId);
+    if ((action === 'update_tenant_status' || action === 'update_tenant_plan') && tenantId) {
+      const updated = await SuperAdminService.updateTenantStatus(tenantId, status, planId, body.planSlug);
       return NextResponse.json({ success: true, tenant: updated });
     }
 

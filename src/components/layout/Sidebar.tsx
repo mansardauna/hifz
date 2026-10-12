@@ -26,9 +26,13 @@ import {
   Award,
   Mail,
   Lock,
+  UserCheck,
+  TrendingUp,
+  Key,
 } from 'lucide-react';
 import { Badge } from '../ui';
 import { TenantSubscriptionPlan } from '../../types';
+import { useConfirm } from '../../context/ConfirmModalContext';
 
 export type AdminTab =
   | 'overview'
@@ -37,12 +41,17 @@ export type AdminTab =
   | 'forum'
   | 'certificate_studio'
   | 'notifications_hub'
+  | 'users_staff'
   | 'page_builder'
   | 'form_builder'
   | 'form_responses'
   | 'crm'
+  | 'revenue'
   | 'pricing'
   | 'payment_gateways'
+  | 'integrations'
+  | 'staff_roles'
+  | 'white_labeling'
   | 'settings'
   | 'profile';
 
@@ -81,6 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { tenant } = useTenant();
   const { user, logout } = useAuth();
   const { t, isRtl } = useTranslation();
+  const confirm = useConfirm();
   const [collapsed, setCollapsed] = useState(false);
 
   const plan: TenantSubscriptionPlan = tenant.subscriptionPlan || 'free';
@@ -97,26 +107,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return (tierWeights[plan] || 1) >= (tierWeights[required] || 1);
   };
 
-  // Structured, non-redundant navigation sections
+  // Structured navigation sections
   const menuSections: MenuSection[] = [
     {
-      title: isRtl ? 'الأقسام الأساسية' : 'Academy Hubs',
+      title: isRtl ? 'الأكاديمية' : 'Academics',
       items: [
         { id: 'overview', label: t('nav.overview'), icon: LayoutDashboard },
         { id: 'classroom', label: t('nav.classroom'), icon: Video, requiredPlan: 'growth', planLabel: 'Growth' },
         { id: 'curriculum', label: t('nav.curriculum'), icon: BookOpen },
+        { id: 'users_staff', label: isRtl ? 'الهيئة والطلاب' : 'Faculty & Students', icon: UserCheck },
         { id: 'forum', label: t('nav.forum'), icon: MessageSquare, requiredPlan: 'qari', planLabel: 'Qari' },
       ],
     },
     {
-      title: isRtl ? 'الأسانيد والرسائل' : 'Certificates & Comms',
+      title: isRtl ? 'الأسانيد والإشعارات' : 'Certificates & Comms',
       items: [
         { id: 'certificate_studio', label: t('nav.certificates'), icon: Award, requiredPlan: 'enterprise', planLabel: 'Enterprise' },
         { id: 'notifications_hub', label: t('nav.notifications'), icon: Mail, requiredPlan: 'growth', planLabel: 'Growth' },
       ],
     },
     {
-      title: isRtl ? 'القبول والتسجيل' : 'Admissions & Funnels',
+      title: isRtl ? 'القبول والتسجيل' : 'Admissions',
       items: [
         { id: 'page_builder', label: t('nav.pageBuilder'), icon: Layers },
         { id: 'form_builder', label: t('nav.formBuilder'), icon: FileCheck },
@@ -127,12 +138,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       title: isRtl ? 'المالية والإعدادات' : 'Finance & Settings',
       items: [
+        { id: 'revenue', label: isRtl ? 'الإيرادات والمالية' : 'Revenue & Finance', icon: TrendingUp },
         { id: 'pricing', label: t('nav.pricing'), icon: DollarSign },
         { id: 'payment_gateways', label: t('nav.gateways'), icon: CreditCard },
+        { id: 'integrations', label: isRtl ? 'الربط والمفاتيح البرمجية' : 'Integrations & API Keys', icon: Key },
+        { id: 'staff_roles', label: isRtl ? 'الهيئة والصلاحيات' : 'Staff & Roles', icon: ShieldCheck },
+        { id: 'white_labeling', label: isRtl ? 'الهوية والعلامة التجارية' : 'Branding & White-label', icon: Palette },
         { id: 'settings', label: t('nav.settings'), icon: Settings },
       ],
     },
   ];
+
+  // Dynamic module determination by SuperAdmin & Admin: hide modules if disabled
+  const isModuleEnabled = (modId: AdminTab): boolean => {
+    if (['overview', 'settings', 'staff_roles', 'white_labeling', 'profile'].includes(modId)) return true;
+    const modulesList = tenant.enabledModules || tenant.settings?.enabledModules || tenant.settings?.modules;
+    if (Array.isArray(modulesList)) {
+      return modulesList.includes(modId);
+    } else if (modulesList && typeof modulesList === 'object') {
+      return modulesList[modId] !== false;
+    }
+    return true;
+  };
+
+  const filteredMenuSections: MenuSection[] = menuSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => isModuleEnabled(item.id)),
+    }))
+    .filter((section) => section.items.length > 0);
+
+  const handleSignOut = async () => {
+    const ok = await confirm({
+      title: 'Sign Out of Academy',
+      message: 'Are you sure you want to end your administrative session?',
+      confirmText: 'Sign Out',
+      cancelText: 'Stay Signed In',
+      variant: 'danger',
+    });
+    if (ok) {
+      logout();
+    }
+  };
 
   const handleItemClick = (item: MenuItem) => {
     onTabChange(item.id);
@@ -150,11 +197,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container: Flex-Aligned on Desktop, Slide-over Drawer on Mobile */}
       <aside
         style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
-        className={`fixed lg:static top-0 left-0 bottom-0 z-50 flex flex-col border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 h-[100dvh] lg:h-auto overflow-hidden ${
-          collapsed && !isOpenOnMobile ? 'w-20' : 'w-72 max-w-[85vw]'
+        className={`fixed inset-y-0 left-0 z-50 lg:static lg:inset-auto flex flex-col border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 h-full shadow-xl overflow-hidden ${
+          collapsed && !isOpenOnMobile ? 'w-20' : 'w-64 xl:w-72 max-w-[85vw]'
         } ${
           isOpenOnMobile
             ? 'translate-x-0 shadow-2xl'
@@ -220,11 +267,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
 
-          {/* Categorized Navigation Sections */}
-          {menuSections.map((section, sIdx) => (
+          {/* Categorized Navigation Sections (Dynamic by SuperAdmin & Admin) */}
+          {filteredMenuSections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1">
               {(!collapsed || isOpenOnMobile) && (
-                <div className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                <div className="px-3 pt-2.5 pb-1 text-xs font-bold uppercase tracking-wider text-slate-400">
                   {section.title}
                 </div>
               )}
@@ -239,7 +286,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <button
                       key={item.id}
                       onClick={() => handleItemClick(item)}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none ${
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none ${
                         isActive
                           ? 'bg-[var(--color-primary,#047857)] text-white shadow-sm font-bold'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -247,16 +294,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       title={collapsed ? item.label : undefined}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                        <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                         {(!collapsed || isOpenOnMobile) && (
-                          <span className="truncate text-xs font-medium">{item.label}</span>
+                          <span className="truncate text-sm font-semibold">{item.label}</span>
                         )}
                       </div>
 
                       {/* Locked Badge if on lower plan */}
                       {(!collapsed || isOpenOnMobile) && !unlocked && (
-                        <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[9px] font-bold tracking-tight shrink-0 flex items-center gap-1 border border-amber-500/30">
-                          <Lock className="w-2.5 h-2.5" />
+                        <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold tracking-tight shrink-0 flex items-center gap-1 border border-amber-500/30">
+                          <Lock className="w-3 h-3" />
                           <span>{item.planLabel}</span>
                         </span>
                       )}
@@ -273,10 +320,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {(!collapsed || isOpenOnMobile) && (
             <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Plan Tier</span>
-                <span className="text-[11px] font-black text-emerald-400 uppercase tracking-wide">{plan}</span>
+                <span className="text-xs uppercase font-bold text-slate-400">Plan Tier</span>
+                <span className="text-xs font-black text-emerald-400 uppercase tracking-wide">{plan}</span>
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 {plan === 'free'
                   ? 'Up to 15 Students'
                   : plan === 'qari'
@@ -315,7 +362,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           <button
-            onClick={logout}
+            onClick={handleSignOut}
             className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer ${
               collapsed && !isOpenOnMobile ? 'justify-center' : ''
             }`}

@@ -36,12 +36,23 @@ import {
   Play,
   RotateCcw,
   Compass,
-  FileCheck
+  FileCheck,
+  AlertTriangle,
 } from 'lucide-react';
 import { InteractiveWhiteboard } from '../../collaboration/InteractiveWhiteboard';
 import { ClassroomParticipant, TenantNiche } from '../../types';
 import { Room, RoomEvent, RemoteTrack, RemoteParticipant, Track } from 'livekit-client';
 import { Button, Card, Badge } from '../ui';
+import { useTenant } from '../../context/TenantContext';
+import { isDemoTenant } from '../../lib/tenants';
+import {
+  getClassroomConfig,
+  saveClassroomConfig,
+  getDefaultClassroomConfig,
+  detectTenantNicheType,
+  ClassroomCustomizationConfig
+} from '../../services/classroomCustomizationService';
+import { ClassroomConfigModal } from './ClassroomConfigModal';
 
 export type StudentLevelTier = 'beginner' | 'intermediate' | 'advanced';
 
@@ -59,7 +70,7 @@ export interface StudentLevelConfig {
 interface LiveClassroomHubProps {
   roomTitle?: string;
   courseTitle?: string;
-  userRole?: 'teacher' | 'student';
+  userRole?: 'teacher' | 'student' | 'admin';
   currentUserName?: string;
   niche?: TenantNiche;
   studentLevel?: StudentLevelTier;
@@ -72,83 +83,65 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   courseTitle = 'Curriculum & Live Coaching',
   userRole = 'student',
   currentUserName = 'Student',
-  niche = 'coding',
+  niche,
   studentLevel = 'intermediate',
   onLeaveRoom,
   renderWorkspacePlugin
 }) => {
-  const isCoding = niche === 'coding' || niche === 'code_academy';
-  const isSchool = niche === 'school';
-  const isQuran = !isCoding && !isSchool;
+  const { tenant, updateTenantConfig } = useTenant();
 
-  // Vertical-Specific Level Tiers Definitions
+  // Load customizable classroom configuration
+  const [classroomConfig, setClassroomConfig] = useState<ClassroomCustomizationConfig>(() =>
+    getClassroomConfig(tenant || { niche })
+  );
+  const [isAdminConfigOpen, setIsAdminConfigOpen] = useState<boolean>(false);
+  const [adminConfigTab, setAdminConfigTab] = useState<'pods' | 'agenda' | 'rubric' | 'channels'>('pods');
+
+  useEffect(() => {
+    setClassroomConfig(getClassroomConfig(tenant || { niche }));
+  }, [tenant, niche]);
+
+  const nicheType = detectTenantNicheType(tenant || { niche });
+  const isCoding = nicheType === 'coding';
+  const isSchool = nicheType === 'school';
+  const isQuran = nicheType === 'quran';
+
+  // Dynamic Level Tiers configured by Admin
+  const beginnerPod = classroomConfig.pods.find((p) => p.tier === 'beginner' || p.id === 'beginner') || classroomConfig.pods[0];
+  const intermediatePod = classroomConfig.pods.find((p) => p.tier === 'intermediate' || p.id === 'intermediate') || classroomConfig.pods[1] || classroomConfig.pods[0];
+  const advancedPod = classroomConfig.pods.find((p) => p.tier === 'advanced' || p.id === 'advanced') || classroomConfig.pods[2] || classroomConfig.pods[0];
+
   const levelConfigs: Record<StudentLevelTier, StudentLevelConfig> = {
     beginner: {
       id: 'beginner',
-      label: isQuran
-        ? 'Level 1: Noorani Qaidah & Makharij'
-        : isCoding
-        ? 'Tier 1: Core Fundamentals & JS'
-        : 'Grade 9: Foundation & Core Syllabi',
-      sublabel: isQuran
-        ? 'Phonetics, letter exits (Makharij), short & long vowels'
-        : isCoding
-        ? 'Variables, loops, DOM, functions, Git basics'
-        : 'Algebra I, Biology foundations, Intro Essay Composition',
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-      borderColor: 'border-emerald-200',
-      bgLight: 'bg-emerald-50/60',
+      label: beginnerPod?.label || 'Level 1: Core Fundamentals',
+      sublabel: beginnerPod?.sublabel || 'Foundations & core principles',
+      badgeColor: beginnerPod?.badgeColor || 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      borderColor: beginnerPod?.borderColor || 'border-emerald-200',
+      bgLight: beginnerPod?.bgLight || 'bg-emerald-50/60',
       icon: isQuran ? BookOpen : isCoding ? Code : GraduationCap,
-      targetTopics: isQuran
-        ? ['Arabic Alphabet Makharij (ح، خ، ع)', 'Harakat (Fatha, Kasra, Damma)', 'Basic Madd Rules (2 Harakah)']
-        : isCoding
-        ? ['JavaScript ES6+ Syntax', 'Array & Object Methods', 'DOM Manipulation & Events']
-        : ['Polynomial Equations', 'Cellular Respiration', 'Thesis Statement Structure']
+      targetTopics: beginnerPod?.targetTopics || ['Core Principles', 'Foundational Concepts'],
     },
     intermediate: {
       id: 'intermediate',
-      label: isQuran
-        ? 'Level 2: Juz Amma & Tajweed Application'
-        : isCoding
-        ? 'Tier 2: Full-Stack React & APIs'
-        : 'Grade 11: Honors & AP Coursework',
-      sublabel: isQuran
-        ? 'Ahkam Al-Nun & Al-Meem, Mudood, fluent Juz 30 recitation'
-        : isCoding
-        ? 'React 19 Server Components, TypeScript, Next.js, REST/GraphQL'
-        : 'AP Calculus AB, Organic Chemistry, Analytical Literature',
-      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
-      borderColor: 'border-blue-200',
-      bgLight: 'bg-blue-50/60',
+      label: intermediatePod?.label || 'Level 2: Applied Skills & Practice',
+      sublabel: intermediatePod?.sublabel || 'Hands-on practice & applied case studies',
+      badgeColor: intermediatePod?.badgeColor || 'bg-blue-100 text-blue-800 border-blue-300',
+      borderColor: intermediatePod?.borderColor || 'border-blue-200',
+      bgLight: intermediatePod?.bgLight || 'bg-blue-50/60',
       icon: isQuran ? Award : isCoding ? Layers : Award,
-      targetTopics: isQuran
-        ? ['Idgham, Ikhfa, Iqlab, Izhar', 'Madd Lazim & Munfasil', 'Juz 30 Continuous Fluency']
-        : isCoding
-        ? ['React 19 Server Actions & Hooks', 'TypeScript Strict Typing', 'Optimistic UI & Cache Revalidation']
-        : ['Taylor & Maclaurin Series', 'Chemical Reaction Kinetics', 'Rhetorical Analysis & Synthesis']
+      targetTopics: intermediatePod?.targetTopics || ['Practical Execution', 'Case Studies'],
     },
     advanced: {
       id: 'advanced',
-      label: isQuran
-        ? 'Level 3: Hifz Revision & Sanad Ijazah'
-        : isCoding
-        ? 'Tier 3: Distributed Systems & Cloud'
-        : 'Grade 12: Senior Capstone & Honors',
-      sublabel: isQuran
-        ? 'Multi-Juz memorization, Waqf & Ibtida\', Sanad precision'
-        : isCoding
-        ? 'System Design, Microservices, CI/CD, Redis caching, high load'
-        : 'Multivariable Calculus, Advanced Physics, Capstone Thesis',
-      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
-      borderColor: 'border-purple-200',
-      bgLight: 'bg-purple-50/60',
+      label: advancedPod?.label || 'Level 3: Strategic Mastery & Capstone',
+      sublabel: advancedPod?.sublabel || 'Advanced mastery & capstone project review',
+      badgeColor: advancedPod?.badgeColor || 'bg-purple-100 text-purple-800 border-purple-300',
+      borderColor: advancedPod?.borderColor || 'border-purple-200',
+      bgLight: advancedPod?.bgLight || 'bg-purple-50/60',
       icon: isQuran ? Star : isCoding ? Sparkles : Star,
-      targetTopics: isQuran
-        ? ['Waqf & Ibtida\' Precision Rules', 'Mutashabihat Al-Quran Mastery', 'Sanad Chain Oral Audit']
-        : isCoding
-        ? ['High-Concurrency Architecture', 'Microservices & Message Queues', 'Distributed Database Sharding']
-        : ['Stokes & Green\'s Theorems', 'Quantum Mechanics Intro', 'Peer-Reviewed Capstone Defense']
-    }
+      targetTopics: advancedPod?.targetTopics || ['Advanced Systems', 'Independent Capstone'],
+    },
   };
 
   // Active level filter for the live room view
@@ -161,11 +154,13 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   // Classroom Tabs
   const [activeTab, setActiveTab] = useState<'forum' | 'video' | 'agenda' | 'whiteboard' | 'workspace' | 'pods' | 'attendance'>('video');
 
+  const isDemo = isDemoTenant(tenant?.subdomain);
+
   // Automated Live Attendance Tracking State with Level Classification
   const [liveAttendees, setLiveAttendees] = useState<{
     id: string;
     name: string;
-    role: 'teacher' | 'student';
+    role: 'teacher' | 'student' | 'admin';
     level: StudentLevelTier;
     joinedAt: string;
     secondsPresent: number;
@@ -173,55 +168,20 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     avatar: string;
     currentScore?: number;
     notes?: string;
-  }[]>([
-    {
-      id: 'att-1',
-      name: currentUserName,
-      role: userRole,
-      level: activeUserLevel,
-      joinedAt: '10:00 AM',
-      secondsPresent: 240,
-      completionStatus: 'Attended (Active)',
-      avatar: currentUserName.slice(0, 2).toUpperCase(),
-      currentScore: 94
-    },
-    {
-      id: 'att-2',
-      name: isSchool ? 'Fatima Al-Zahra' : isCoding ? 'David Miller' : 'Zaid Al-Mansoor',
-      role: 'student',
-      level: 'intermediate',
-      joinedAt: '10:01 AM',
-      secondsPresent: 235,
-      completionStatus: 'Attended (Active)',
-      avatar: 'FZ',
-      currentScore: 88,
-      notes: isQuran ? 'Fluent in Juz 30, practicing Ikhfa' : isCoding ? 'Built Next.js CRUD API' : 'Completed Problem Set 4'
-    },
-    {
-      id: 'att-3',
-      name: isSchool ? 'Tariq Ibn Ziyad' : isCoding ? 'Omar Farooq' : 'Aisha Siddiqa',
-      role: 'student',
-      level: 'beginner',
-      joinedAt: '10:03 AM',
-      secondsPresent: 210,
-      completionStatus: 'Attended (Active)',
-      avatar: 'TZ',
-      currentScore: 92,
-      notes: isQuran ? 'Mastering throat letters (Makharij)' : isCoding ? 'Working on async/await loops' : 'Studying Polynomial Derivations'
-    },
-    {
-      id: 'att-4',
-      name: isSchool ? 'Hamza Al-Khatib' : isCoding ? 'Elena Rostova' : 'Bilal Ibn Rabah',
-      role: 'student',
-      level: 'advanced',
-      joinedAt: '09:58 AM',
-      secondsPresent: 260,
-      completionStatus: 'Completed Full Class',
-      avatar: 'HR',
-      currentScore: 98,
-      notes: isQuran ? '10 Juz Hifz Murajaah in progress' : isCoding ? 'Architecting Redis pub/sub' : 'Preparing Honors Capstone'
-    }
-  ]);
+  }[]>(() => {
+    return [
+      {
+        id: 'att-self',
+        name: currentUserName,
+        role: userRole,
+        level: activeUserLevel,
+        joinedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        secondsPresent: 0,
+        completionStatus: 'Attended (Active)',
+        avatar: currentUserName.slice(0, 2).toUpperCase(),
+      }
+    ];
+  });
 
   // Call & Media State
   const [isInCall, setIsInCall] = useState<boolean>(false);
@@ -249,46 +209,58 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const [livekitNotice, setLivekitNotice] = useState<string | null>(null);
 
   // Messages Stream (Strictly Decoupled for School vs Coding vs Quran)
   const [forumMessages, setForumMessages] = useState<{
     id: string;
     sender: string;
-    role: 'teacher' | 'student';
+    role: 'teacher' | 'student' | 'admin';
     text: string;
     time: string;
     pinned?: boolean;
     attachment?: { name: string; size: string };
-  }[]>([
-    {
-      id: 'm-1',
-      sender: isSchool ? 'Dr. Eleanor Vance' : isCoding ? 'Sarah Jenkins' : 'Shaykh Dr. Abdul Rahman',
-      role: 'teacher',
-      text: isSchool
-        ? 'Welcome to the live academic lecture! Today we cover Unit 5 Taylor series derivations, radius of convergence, and problem set 5.'
-        : isCoding
-        ? 'Welcome to the Live Coding Session! Today we cover React 19 Server Actions, optimistic mutations, and custom hook architectures.'
-        : 'Assalamu Alaikum. Welcome everyone to today\'s live halaqah! We will practice Tajweed rules and oral recitations.',
-      time: '10:00 AM',
-      pinned: true,
-      attachment: isSchool
-        ? { name: 'Unit5_Taylor_Series_Slides.pdf', size: '3.4 MB' }
-        : isCoding
-        ? { name: 'React19_Server_Actions.md', size: '42 KB' }
-        : { name: 'Tajweed_Rules_Guide.pdf', size: '1.2 MB' }
-    },
-    {
-      id: 'm-2',
-      sender: isSchool ? 'Alex Mercer' : isCoding ? 'David Miller' : 'Fatima Zahra',
-      role: 'student',
-      text: isSchool
-        ? 'Good morning Professor, ready with the textbook proofs and derivation notes.'
-        : isCoding
-        ? 'Ready with my local sandbox repository and unit test suite.'
-        : 'Wa Alaikum Assalam Ustadh, completed the recitation homework.',
-      time: '10:02 AM'
+  }[]>(() => {
+    if (isDemo) {
+      return [
+        {
+          id: 'm-1',
+          sender: isSchool ? 'Dr. Eleanor Vance' : isCoding ? 'Sarah Jenkins' : isQuran ? 'Shaykh Dr. Abdul Rahman' : 'Lead Faculty Instructor',
+          role: 'teacher',
+          text: isSchool
+            ? 'Welcome to the live academic lecture! Today we cover Unit 5 Taylor series derivations, radius of convergence, and problem set 5.'
+            : isCoding
+            ? 'Welcome to the Live Coding Session! Today we cover React 19 Server Actions, optimistic mutations, and custom hook architectures.'
+            : isQuran
+            ? 'Assalamu Alaikum. Welcome everyone to today\'s live halaqah! We will practice Tajweed rules and oral recitations.'
+            : `Welcome everyone to today's live session for ${tenant?.name || 'the academy'}! We will review our active module goals and collaborate on key practical exercises.`,
+          time: '10:00 AM',
+          pinned: true,
+          attachment: isSchool
+            ? { name: 'Unit5_Taylor_Series_Slides.pdf', size: '3.4 MB' }
+            : isCoding
+            ? { name: 'React19_Server_Actions.md', size: '42 KB' }
+            : isQuran
+            ? { name: 'Tajweed_Rules_Guide.pdf', size: '1.2 MB' }
+            : { name: 'Session_Curriculum_Guide.pdf', size: '1.5 MB' }
+        },
+        {
+          id: 'm-2',
+          sender: isSchool ? 'Alex Mercer' : isCoding ? 'David Miller' : isQuran ? 'Fatima Zahra' : 'Morgan Avery',
+          role: 'student',
+          text: isSchool
+            ? 'Good morning Professor, ready with the textbook proofs and derivation notes.'
+            : isCoding
+            ? 'Ready with my local sandbox repository and unit test suite.'
+            : isQuran
+            ? 'Wa Alaikum Assalam Ustadh, completed the recitation homework.'
+            : 'Good morning Instructor, completed the module preparation and exercises.',
+          time: '10:02 AM'
+        }
+      ];
     }
-  ]);
+    return [];
+  });
   const [messageInput, setMessageInput] = useState<string>('');
 
   // Call timer
@@ -303,6 +275,45 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     }
     return () => clearInterval(interval);
   }, [isInCall]);
+
+  // Load live enrolled students from MySQL for classroom attendees
+  useEffect(() => {
+    if (!tenant?.id && !tenant?.subdomain) return;
+    fetch(`/api/tenant/members?tenantId=${encodeURIComponent(tenant.id || tenant.subdomain)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.students && data.students.length > 0) {
+          const liveStudents = data.students.map((st: any, idx: number) => ({
+            id: st.id || `att-student-${idx}`,
+            name: st.name,
+            role: 'student' as const,
+            level: (idx % 3 === 0 ? 'advanced' : idx % 2 === 0 ? 'intermediate' : 'beginner') as StudentLevelTier,
+            joinedAt: '10:00 AM',
+            secondsPresent: 200 + idx * 15,
+            completionStatus: 'Attended (Active)' as const,
+            avatar: st.name.slice(0, 2).toUpperCase(),
+            currentScore: 90 + (idx % 10),
+            notes: st.enrolledCourse ? `Enrolled in ${st.enrolledCourse}` : 'Active student participant',
+          }));
+
+          setLiveAttendees((prev) => {
+            const selfAttendee = prev.find((p) => p.id === 'att-1' || p.id === 'att-self') || {
+              id: 'att-self',
+              name: currentUserName,
+              role: userRole,
+              level: activeUserLevel,
+              joinedAt: '10:00 AM',
+              secondsPresent: 240,
+              completionStatus: 'Attended (Active)' as const,
+              avatar: currentUserName.slice(0, 2).toUpperCase(),
+              currentScore: 98,
+            };
+            return [selfAttendee, ...liveStudents];
+          });
+        }
+      })
+      .catch((err) => console.warn('Could not load classroom members:', err));
+  }, [tenant?.id, tenant?.subdomain, currentUserName, userRole, activeUserLevel]);
 
   const formatTimer = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -456,7 +467,12 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
       );
       if (tokenRes.ok) {
         const { token, wsUrl, isFallback } = await tokenRes.json();
-        if (token && wsUrl && !isFallback) {
+        if (isFallback) {
+          setLivekitNotice(
+            'LiveKit Cloud API key is not connected. Video room is operating on local peer-to-peer browser mesh. Connect LiveKit keys in Admin Settings > Integrations for high-capacity multi-participant SFU cloud streaming.'
+          );
+        } else if (token && wsUrl && !isFallback) {
+          setLivekitNotice(null);
           try {
             const room = new Room({
               adaptiveStream: true,
@@ -639,11 +655,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         {/* Title & Status */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-white flex items-center justify-center font-bold shrink-0 ${
-              isCoding ? 'bg-blue-600' : 'bg-emerald-600'
-            }`}>
-              {isCoding ? <Code className="w-4 h-4 sm:w-4.5 sm:h-4.5" /> : <BookOpen className="w-4 h-4 sm:w-4.5 sm:h-4.5" />}
-            </div>
+            {isCoding ? <Code className="w-5 h-5 text-blue-600 shrink-0" /> : <BookOpen className="w-5 h-5 text-emerald-600 shrink-0" />}
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h2 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate leading-none">{roomTitle}</h2>
@@ -806,6 +818,21 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         </div>
       </header>
 
+      {livekitNotice && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-xs text-amber-900 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>{livekitNotice}</span>
+          </div>
+          <button
+            onClick={() => setLivekitNotice(null)}
+            className="text-amber-700 hover:text-amber-900 font-bold ml-2 text-xs cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* 2. DYNAMIC LEVEL CLASSIFIER & POD FILTER SUB-BAR */}
       <div className="bg-white border-b border-slate-200 px-3 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0 shadow-2xs">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
@@ -965,9 +992,9 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 )}
 
                 <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-bold flex items-center gap-2 border border-slate-700/60">
-                  <span>{remoteParticipantName || (isSchool ? 'Faculty: Dr. Eleanor Vance' : isCoding ? 'Mentor: Sarah Jenkins' : 'Ustaz: Shaykh Abdul Rahman')}</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    Lead Faculty
+                  <span>{remoteParticipantName || (isDemo ? (isSchool ? 'Faculty: Dr. Eleanor Vance' : isCoding ? 'Mentor: Sarah Jenkins' : 'Ustaz: Shaykh Abdul Rahman') : (userRole === 'teacher' ? 'Waiting for Student to Join' : 'Waiting for Instructor to Join'))}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    {remoteParticipantName ? 'Connected' : 'Room Channel'}
                   </span>
                   {remoteParticipantName && <Volume2 className="w-3 h-3 text-emerald-400" />}
                 </div>
@@ -1039,16 +1066,32 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               <div>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                   <Layers className="w-5 h-5 text-indigo-600" />
-                  {isQuran ? 'Level-Based Halaqah Breakout Pods' : isCoding ? 'Level-Based Engineering Pairing Pods' : 'Academic Grade Study Pods'}
+                  {classroomConfig.breakoutPodsTitle}
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Students collaborate in focused pods tailored to their level tier, allowing tailored pacing without overwhelming beginners or slowing down advanced learners.
+                  {classroomConfig.breakoutPodsSubtitle}
                 </p>
               </div>
 
-              <Badge variant="info" className="font-bold text-xs shrink-0">
-                Main Room + 3 Active Pods
-              </Badge>
+              <div className="flex items-center gap-2 shrink-0">
+                {(userRole === 'teacher' || userRole === 'admin') && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setAdminConfigTab('pods');
+                      setIsAdminConfigOpen(true);
+                    }}
+                    leftIcon={<Sliders className="w-3.5 h-3.5 text-indigo-600" />}
+                    className="font-bold text-xs"
+                  >
+                    Configure Pods
+                  </Button>
+                )}
+                <Badge variant="info" className="font-bold text-xs shrink-0">
+                  Main Room + {classroomConfig.pods.length} Active Pods
+                </Badge>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1151,16 +1194,16 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 flex flex-col justify-between bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden max-w-5xl mx-auto w-full">
             <div className="p-3.5 sm:p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Radio className={`w-4 h-4 animate-pulse ${isCoding ? 'text-blue-600' : isSchool ? 'text-purple-600' : 'text-emerald-600'}`} />
+                <Radio className={`w-4 h-4 animate-pulse ${isCoding ? 'text-blue-600' : isSchool ? 'text-purple-600' : isQuran ? 'text-emerald-600' : 'text-slate-800'}`} />
                 <span className="text-xs sm:text-sm font-bold text-slate-900">
-                  {isCoding ? 'Engineering Discussion Thread & Code Snippets' : isSchool ? 'Academic Lecture Thread & Lecture Slides' : 'Halaqah Thread & Tajweed Inquiries'}
+                  {isCoding ? 'Engineering Discussion Thread & Code Snippets' : isSchool ? 'Academic Lecture Thread & Lecture Slides' : isQuran ? 'Halaqah Thread & Tajweed Inquiries' : `${roomTitle} Discussion & Inquiries`}
                 </span>
               </div>
               {!isInCall && (
                 <button
                   onClick={handleStartCall}
                   className={`text-xs font-bold hover:underline flex items-center gap-1 cursor-pointer ${
-                    isCoding ? 'text-blue-700' : isSchool ? 'text-purple-700' : 'text-emerald-700'
+                    isCoding ? 'text-blue-700' : isSchool ? 'text-purple-700' : isQuran ? 'text-emerald-700' : 'text-slate-800'
                   }`}
                 >
                   <VideoIcon className="w-3.5 h-3.5" /> Start Video &rarr;
@@ -1169,41 +1212,49 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
             </div>
 
             <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto space-y-4">
-              {forumMessages.map((msg) => (
-                <div key={msg.id} className="flex items-start gap-2.5 sm:gap-3">
-                  <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                    {msg.sender.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="flex-1 space-y-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-xs text-slate-900">{msg.sender}</span>
-                      {msg.role === 'teacher' && (
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                          isCoding ? 'bg-blue-100 text-blue-800' : isSchool ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800'
-                        }`}>
-                          {isCoding ? 'Lead Mentor' : isSchool ? 'Professor' : 'Ustadh'}
-                        </span>
-                      )}
-                      <span className="text-[10px] text-slate-400">{msg.time}</span>
-                      {msg.pinned && (
-                        <span className="text-[10px] text-amber-600 font-bold flex items-center gap-0.5">
-                          <Pin className="w-2.5 h-2.5" /> Pinned
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-200/80 break-words">
-                      {msg.text}
-                    </div>
-                    {msg.attachment && (
-                      <div className="inline-flex items-center gap-2 p-2 rounded-lg bg-slate-100 text-xs text-blue-700 border border-slate-200">
-                        <FileText className="w-3.5 h-3.5 shrink-0" />
-                        <span className="font-semibold text-slate-800 truncate">{msg.attachment.name}</span>
-                        <span className="text-[10px] text-slate-500 shrink-0">({msg.attachment.size})</span>
-                      </div>
-                    )}
-                  </div>
+              {forumMessages.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2 my-auto">
+                  <MessageSquare className="w-10 h-10 text-slate-300 mx-auto" />
+                  <p className="text-sm font-bold text-slate-700">No classroom messages yet</p>
+                  <p className="text-xs text-slate-400">Post a message below to begin discussion with the class.</p>
                 </div>
-              ))}
+              ) : (
+                forumMessages.map((msg) => (
+                  <div key={msg.id} className="flex items-start gap-2.5 sm:gap-3">
+                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                      {msg.sender.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1 space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-xs text-slate-900">{msg.sender}</span>
+                        {msg.role === 'teacher' && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                            isCoding ? 'bg-blue-100 text-blue-800' : isSchool ? 'bg-purple-100 text-purple-800' : isQuran ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800'
+                          }`}>
+                            {isCoding ? 'Lead Mentor' : isSchool ? 'Professor' : isQuran ? 'Ustadh' : 'Instructor'}
+                          </span>
+                        )}
+                        <span className="text-[10px] text-slate-400">{msg.time}</span>
+                        {msg.pinned && (
+                          <span className="text-[10px] text-amber-600 font-bold flex items-center gap-0.5">
+                            <Pin className="w-2.5 h-2.5" /> Pinned
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-200/80 break-words">
+                        {msg.text}
+                      </div>
+                      {msg.attachment && (
+                        <div className="inline-flex items-center gap-2 p-2 rounded-lg bg-slate-100 text-xs text-blue-700 border border-slate-200">
+                          <FileText className="w-3.5 h-3.5 shrink-0" />
+                          <span className="font-semibold text-slate-800 truncate">{msg.attachment.name}</span>
+                          <span className="text-[10px] text-slate-500 shrink-0">({msg.attachment.size})</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
@@ -1232,14 +1283,28 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               <div>
                 <h3 className="font-extrabold text-sm sm:text-base text-slate-900 flex items-center gap-2">
                   <ListTodo className="w-4.5 h-4.5 text-amber-600" />
-                  {isCoding ? 'Full-Stack Curriculum Milestones' : isSchool ? 'Academic Syllabi & Lecture Agenda' : 'Hifz & Tajweed Progression Agenda'}
+                  {classroomConfig.agendaTitle}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Milestones are organized by level tier to give each cohort clear learning objectives.
+                  {classroomConfig.agendaSubtitle}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
+                {(userRole === 'teacher' || userRole === 'admin') && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setAdminConfigTab('agenda');
+                      setIsAdminConfigOpen(true);
+                    }}
+                    leftIcon={<Sliders className="w-3.5 h-3.5 text-amber-600" />}
+                    className="font-bold text-xs"
+                  >
+                    Configure Agenda
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="outline"
@@ -1258,50 +1323,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 .filter((lvl) => selectedLevelFilter === 'all' || selectedLevelFilter === lvl)
                 .map((lvl) => {
                   const cfg = levelConfigs[lvl];
-                  const milestones = isSchool
-                    ? lvl === 'beginner'
-                      ? [
-                          { title: 'Algebra I: Solving Linear Inequalities & Graphing', done: true },
-                          { title: 'Biology: Cell Membrane Transport & Osmosis', done: false }
-                        ]
-                      : lvl === 'intermediate'
-                      ? [
-                          { title: 'AP Calculus AB: Taylor & Maclaurin Polynomial Proofs', done: true },
-                          { title: 'Organic Chemistry: Nucleophilic Substitution Mechanisms', done: false }
-                        ]
-                      : [
-                          { title: 'Multivariable Calculus: Stokes\' Theorem on Surfaces', done: true },
-                          { title: 'Senior Honors Capstone: Peer Literature Defense', done: false }
-                        ]
-                    : isCoding
-                    ? lvl === 'beginner'
-                      ? [
-                          { title: 'JavaScript ES6: Arrow Functions, Map, Filter & Reduce', done: true },
-                          { title: 'DOM Events & Asynchronous Fetch API Requests', done: false }
-                        ]
-                      : lvl === 'intermediate'
-                      ? [
-                          { title: 'React 19: Server Actions & Optimistic State Mutations', done: true },
-                          { title: 'Building Strongly-Typed Next.js REST & GraphQL APIs', done: false }
-                        ]
-                      : [
-                          { title: 'Distributed Systems: Microservices & Event Streams', done: true },
-                          { title: 'Redis Cache Layer Invalidation & High-Throughput Load Testing', done: false }
-                        ]
-                    : lvl === 'beginner'
-                    ? [
-                        { title: 'Noorani Qaidah: Throat & Tongue Makharij Verification (ح، خ، ع)', done: true },
-                        { title: 'Harakat Precision: Distinguishing Fatha vs Short Alif', done: false }
-                      ]
-                    : lvl === 'intermediate'
-                    ? [
-                        { title: 'Surah Al-Mulk: Precision Tajweed & Ahkam Al-Nun (Ayahs 1-10)', done: true },
-                        { title: 'Oral Recitation Audits with Floating Audio Looper', done: false }
-                      ]
-                    : [
-                        { title: '10 Juz Muraja\'ah: Mutashabihat Cross-Surah Retention Audit', done: true },
-                        { title: 'Sanad Chain Recitation Verification & Waqf Mastery', done: false }
-                      ];
+                  const tierMilestones = classroomConfig.milestones.filter((m) => m.tier === lvl);
 
                   return (
                     <div key={lvl} className="border border-slate-200 rounded-2xl p-4 bg-slate-50/60 space-y-3">
@@ -1313,26 +1335,51 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                           <span className="text-xs text-slate-500 font-medium hidden sm:inline">{cfg.sublabel}</span>
                         </div>
                         <span className="text-[10px] font-mono font-bold text-slate-500">
-                          {milestones.filter((m) => m.done).length}/{milestones.length} Done
+                          {tierMilestones.filter((m) => m.done).length}/{tierMilestones.length} Done
                         </span>
                       </div>
 
                       <div className="space-y-2">
-                        {milestones.map((item, idx) => (
-                          <div key={idx} className="p-3 rounded-xl border border-slate-200 bg-white flex items-start gap-3">
-                            <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
-                              item.done
-                                ? isSchool ? 'bg-purple-600 text-white' : isCoding ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
-                                : 'border border-slate-300 bg-white'
-                            }`}>
-                              {item.done && <CheckCircle2 className="w-3.5 h-3.5" />}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className={`text-xs sm:text-sm font-bold ${item.done ? 'text-slate-700 line-through' : 'text-slate-900'}`}>{item.title}</p>
-                              <span className="text-[10px] text-slate-400">Target Time: 20 mins</span>
-                            </div>
+                        {tierMilestones.length === 0 ? (
+                          <div className="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                            No milestones defined for this level. Click &quot;Configure Agenda&quot; above to add milestones.
                           </div>
-                        ))}
+                        ) : (
+                          tierMilestones.map((item) => (
+                            <div
+                              key={item.id}
+                              onClick={() => {
+                                const updatedMilestones = classroomConfig.milestones.map((m) =>
+                                  m.id === item.id ? { ...m, done: !m.done } : m
+                                );
+                                const updatedConfig = { ...classroomConfig, milestones: updatedMilestones };
+                                setClassroomConfig(updatedConfig);
+                                saveClassroomConfig(tenant, updatedConfig, updateTenantConfig);
+                              }}
+                              className="p-3 rounded-xl border border-slate-200 bg-white flex items-start gap-3 cursor-pointer hover:border-slate-300 transition-all select-none"
+                            >
+                              <div
+                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
+                                  item.done
+                                    ? isSchool
+                                      ? 'bg-purple-600 text-white'
+                                      : isCoding
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-emerald-600 text-white'
+                                    : 'border border-slate-300 bg-white'
+                                }`}
+                              >
+                                {item.done && <CheckCircle2 className="w-3.5 h-3.5" />}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className={`text-xs sm:text-sm font-bold ${item.done ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                                  {item.title}
+                                </p>
+                                <span className="text-[10px] text-slate-400">Target Time: {item.targetMinutes || 20} mins</span>
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
                   );
@@ -1498,7 +1545,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-black text-slate-900">
-                    {isQuran ? 'Tajweed & Hifz Oral Level Rubric' : isCoding ? 'Software Engineering Competency Rubric' : 'Academic Mastery & Proof Rubric'}
+                    {classroomConfig.rubricTitle}
                   </h3>
                   <p className="text-[11px] text-slate-500">
                     Evaluating: <strong className="text-slate-800">{assessmentStudent?.name || currentUserName}</strong>
@@ -1506,58 +1553,60 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowAssessmentModal(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm cursor-pointer"
-              >
-                &times;
-              </button>
+              <div className="flex items-center gap-2">
+                {(userRole === 'teacher' || userRole === 'admin') && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setAdminConfigTab('rubric');
+                      setIsAdminConfigOpen(true);
+                    }}
+                    leftIcon={<Sliders className="w-3.5 h-3.5 text-emerald-600" />}
+                    className="font-bold text-xs"
+                  >
+                    Edit Criteria
+                  </Button>
+                )}
+                <button
+                  onClick={() => setShowAssessmentModal(false)}
+                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm cursor-pointer"
+                >
+                  &times;
+                </button>
+              </div>
             </div>
 
             {/* Rubric Evaluation Criteria */}
             <div className="space-y-3.5">
-              {(isQuran
-                ? [
-                    { name: 'Makharij (Letter Exits & Throat Articulation)', desc: 'Precision of ح، خ، ع، غ articulation without distortion' },
-                    { name: 'Ahkam Al-Nun & Meem (Idgham, Ikhfa, Iqlab)', desc: 'Applying Ghunnah 2 counts and clear Izhar' },
-                    { name: 'Mudood (Madd Lazim, Munfasil, Muttasil)', desc: 'Rhythmic timing of elongated vowels (2, 4, 6 Harakat)' },
-                    { name: 'Waqf & Ibtida\' (Stopping and Starting)', desc: 'Stopping on complete semantic meanings without breaking context' }
-                  ]
-                : isCoding
-                ? [
-                    { name: 'Algorithmic Efficiency & Big-O Time Complexity', desc: 'Optimal loop structures, hash maps vs nested arrays' },
-                    { name: 'React 19 & Clean Architecture Patterns', desc: 'Proper hook abstraction, optimistic state, server actions' },
-                    { name: 'TypeScript Strictness & Type Safety', desc: 'No any types, robust interfaces, generics where appropriate' },
-                    { name: 'Error Handling & Edge Cases', desc: 'Try/catch boundaries, loading skeletons, fallback UI handling' }
-                  ]
-                : [
-                    { name: 'Mathematical Proof & Theoretical Rigor', desc: 'Step-by-step logic, correct theorem citations and assumptions' },
-                    { name: 'Computational Accuracy & Derivation Steps', desc: 'Precision in calculus steps, algebraic simplification' },
-                    { name: 'Critical Reasoning & Problem Synthesis', desc: 'Applying foundational principles to novel problem sets' },
-                    { name: 'Clarity of Solution Presentation', desc: 'Neat documentation, clean diagrams, clear final deductions' }
-                  ]
-              ).map((crit, idx) => (
-                <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">{crit.name}</span>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                      Grade: 5 / 5
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500">{crit.desc}</p>
-                  <div className="flex items-center gap-1.5 pt-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        className="p-1 rounded hover:bg-slate-200 text-amber-500 cursor-pointer"
-                      >
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                      </button>
-                    ))}
-                  </div>
+              {classroomConfig.rubricCriteria.length === 0 ? (
+                <div className="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                  No criteria defined. Click &quot;Edit Criteria&quot; above to add rubric criteria.
                 </div>
-              ))}
+              ) : (
+                classroomConfig.rubricCriteria.map((crit, idx) => (
+                  <div key={crit.id || idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900">{crit.name}</span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                        Max: {crit.maxScore || 5} pts
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">{crit.desc}</p>
+                    <div className="flex items-center gap-1.5 pt-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          className="p-1 rounded hover:bg-slate-200 text-amber-500 cursor-pointer"
+                        >
+                          <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Target Level Reclassification Selector */}
@@ -1619,6 +1668,23 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           </div>
         </div>
       )}
+
+      {/* Classroom Configuration Modal for Teachers/Admins */}
+      <ClassroomConfigModal
+        isOpen={isAdminConfigOpen}
+        onClose={() => setIsAdminConfigOpen(false)}
+        initialTab={adminConfigTab}
+        config={classroomConfig}
+        onSave={(updated) => {
+          setClassroomConfig(updated);
+          saveClassroomConfig(tenant, updated, updateTenantConfig);
+        }}
+        onResetDefaults={() => {
+          const defaults = getDefaultClassroomConfig(tenant);
+          setClassroomConfig(defaults);
+          saveClassroomConfig(tenant, defaults, updateTenantConfig);
+        }}
+      />
     </div>
   );
 };

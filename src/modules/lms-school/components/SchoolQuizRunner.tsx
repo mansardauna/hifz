@@ -76,7 +76,7 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
     setIsSubmitted(true);
 
     if (passed) {
-      success('Assessment Passed! 🎓', `You scored ${calculatedPercent}% (Passing requirement: ${assessment.passingScorePercent}%).`);
+      success('Assessment Passed!', `You scored ${calculatedPercent}% (Passing requirement: ${assessment.passingScorePercent}%).`);
     } else {
       error('Assessment Failed', `You scored ${calculatedPercent}%. You can review the explanations and try again.`);
     }

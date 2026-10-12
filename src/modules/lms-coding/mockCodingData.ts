@@ -6,7 +6,7 @@ export const DEFAULT_CODING_TRACKS: CodingTrack[] = [
     title: 'JavaScript Algorithms & Core Foundations',
     slug: 'javascript-foundations',
     description: 'Master core computational thinking, functions, loops, and data structures with real-time test validation.',
-    icon: '⚡',
+    icon: 'Zap',
     modules: [
       {
         id: 'mod-js-1',

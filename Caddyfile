@@ -1,0 +1,65 @@
+# ==============================================================================
+# Caddyfile: Automated HTTPS & Wildcard Multi-Tenant Reverse Proxy
+# For Ankabit Multi-Tenant Academy Platform (1M+ Scale)
+# ==============================================================================
+
+{
+    # Set ACME account email for Let's Encrypt / ZeroSSL notifications
+    email {$ACME_EMAIL:admin@ankabit.app}
+    
+    # Enable admin API only inside Docker network
+    admin off
+}
+
+# 1. Main Apex & Wildcard Subdomain Block (*.ankabit.app & ankabit.app)
+{$ROOT_DOMAIN:ankabit.app}, *.{$ROOT_DOMAIN:ankabit.app} {
+    encode gzip zstd
+
+    # Enterprise HTTP Security Headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(self), microphone=(self), display-capture=(self)"
+        -Server
+    }
+
+    # Proxy to Standalone Next.js Application
+    reverse_proxy app:3000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+
+        # WebSocket support for Real-Time Halaqat & LiveKit signaling
+        transport http {
+            keepalive 120s
+            keepalive_idle_conns 100
+        }
+    }
+}
+
+# 2. Dynamic Custom Tenant Domains (e.g. al-furqan.org, quranacademy.co.uk)
+# Automatically requests free SSL via On-Demand TLS for custom tenant domains
+https:// {
+    tls {
+        on_demand
+    }
+    encode gzip zstd
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    reverse_proxy app:3000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}

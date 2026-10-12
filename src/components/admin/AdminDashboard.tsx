@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, AdminTab } from '../layout/Sidebar';
-import { PuckPageBuilderStudio } from '../builder/PuckPageBuilderStudio';
+import { RealGrapesBuilder } from '../builder/RealGrapesBuilder';
 import { ModularSectionPageBuilder } from '../builder/ModularSectionPageBuilder';
 import { VisualFormBuilder } from '../builder/VisualFormBuilder';
 import { CourseBuilder } from './CourseBuilder';
@@ -9,6 +9,9 @@ import { PaymentGatewaySetup } from './PaymentGatewaySetup';
 import { LeadsCRM } from './LeadsCRM';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { ModernAcademySettings } from './ModernAcademySettings';
+import { GeneralAcademySettings } from './settings/GeneralAcademySettings';
+import { StaffRolesManager } from './settings/StaffRolesManager';
+import { BrandingWhiteLabeling } from './settings/BrandingWhiteLabeling';
 import { IntegrationsManager } from './IntegrationsManager';
 import { OnboardingWizard } from './OnboardingWizard';
 import { UserProfilePage } from '../profile/UserProfilePage';
@@ -23,11 +26,14 @@ import { LMSCommunityForum } from '../forum/LMSCommunityForum';
 import { CommunicationAutomationHub } from './CommunicationAutomationHub';
 import { SanadCertificateBuilder } from './SanadCertificateBuilder';
 import { LockedFeatureCard } from './LockedFeatureCard';
+import { StaffAndStudentManager } from './StaffAndStudentManager';
+import { RevenueFinanceManager } from './RevenueFinanceManager';
 import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
 import { ToastMessage } from '../ui/Toast';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { Button } from '../ui';
-import { Search, X, Command, Sparkles, BookOpen, Users, Video, Bell, CreditCard, Award, Settings, Layout, FileText, CheckCircle2 } from 'lucide-react';
+import { Search, X, Command, Sparkles, BookOpen, Users, Video, Bell, CreditCard, Award, Settings, Layout, FileText, CheckCircle2, Key } from 'lucide-react';
 import { ExternalLink, Menu, SlidersHorizontal, Globe } from 'lucide-react';
 
 interface SearchOption {
@@ -38,18 +44,23 @@ interface SearchOption {
 }
 
 const SEARCH_SHORTCUTS: SearchOption[] = [
-  { title: 'Curriculum & Courses Syllabus', category: 'Academics', tab: 'curriculum', icon: <BookOpen className="w-4 h-4 text-emerald-600" /> },
-  { title: 'Admissions CRM & Leads', category: 'Students', tab: 'crm', icon: <Users className="w-4 h-4 text-blue-600" /> },
-  { title: 'Admissions Form Responses', category: 'Students', tab: 'form_responses', icon: <FileText className="w-4 h-4 text-indigo-600" /> },
-  { title: 'Live WebRTC Video Classroom', category: 'Teaching', tab: 'classroom', icon: <Video className="w-4 h-4 text-purple-600" /> },
-  { title: 'WhatsApp & Email Notifications Hub', category: 'Communications', tab: 'notifications_hub', icon: <Bell className="w-4 h-4 text-amber-600" /> },
-  { title: 'Tuition Pricing & Subscription Plans', category: 'Finances', tab: 'pricing', icon: <CreditCard className="w-4 h-4 text-emerald-600" /> },
-  { title: 'Payment Gateways (Stripe, Moyasar)', category: 'Finances', tab: 'payment_gateways', icon: <CreditCard className="w-4 h-4 text-teal-600" /> },
-  { title: 'Ijazah & Sanad Certificate Studio', category: 'Certificates', tab: 'certificate_studio', icon: <Award className="w-4 h-4 text-amber-600" /> },
-  { title: 'Visual Landing Page Builder', category: 'Branding', tab: 'page_builder', icon: <Layout className="w-4 h-4 text-pink-600" /> },
-  { title: 'Admissions Form Builder', category: 'Branding', tab: 'form_builder', icon: <FileText className="w-4 h-4 text-cyan-600" /> },
-  { title: 'Staff, Teachers & Academy Settings', category: 'Administration', tab: 'settings', icon: <Settings className="w-4 h-4 text-slate-600" /> },
-  { title: 'Campus & Student Forum', category: 'Community', tab: 'forum', icon: <Users className="w-4 h-4 text-blue-600" /> },
+  { title: 'Curriculum', category: 'Academics', tab: 'curriculum', icon: <BookOpen className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Faculty & Students', category: 'Academics', tab: 'users_staff', icon: <Users className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Student CRM', category: 'Admissions', tab: 'crm', icon: <Users className="w-4 h-4 text-blue-600" /> },
+  { title: 'Submissions', category: 'Admissions', tab: 'form_responses', icon: <FileText className="w-4 h-4 text-indigo-600" /> },
+  { title: 'Live Classroom', category: 'Academics', tab: 'classroom', icon: <Video className="w-4 h-4 text-purple-600" /> },
+  { title: 'Revenue & Finance', category: 'Finance', tab: 'revenue', icon: <CreditCard className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Notifications', category: 'Comms', tab: 'notifications_hub', icon: <Bell className="w-4 h-4 text-amber-600" /> },
+  { title: 'Tuition & Plans', category: 'Finance', tab: 'pricing', icon: <CreditCard className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Payment Gateways', category: 'Finance', tab: 'payment_gateways', icon: <CreditCard className="w-4 h-4 text-teal-600" /> },
+  { title: 'Integrations & API Keys', category: 'Finance', tab: 'integrations', icon: <Key className="w-4 h-4 text-amber-600" /> },
+  { title: 'Certificates', category: 'Academics', tab: 'certificate_studio', icon: <Award className="w-4 h-4 text-amber-600" /> },
+  { title: 'Staff & Roles', category: 'Administration', tab: 'staff_roles', icon: <Users className="w-4 h-4 text-emerald-600" /> },
+  { title: 'Branding & White-label', category: 'Design', tab: 'white_labeling', icon: <Layout className="w-4 h-4 text-purple-600" /> },
+  { title: 'Page Builder', category: 'Design', tab: 'page_builder', icon: <Layout className="w-4 h-4 text-pink-600" /> },
+  { title: 'Form Builder', category: 'Design', tab: 'form_builder', icon: <FileText className="w-4 h-4 text-cyan-600" /> },
+  { title: 'Academy Settings', category: 'Administration', tab: 'settings', icon: <Settings className="w-4 h-4 text-slate-600" /> },
+  { title: 'Community Forum', category: 'Academics', tab: 'forum', icon: <Users className="w-4 h-4 text-blue-600" /> },
 ];
 
 interface AdminDashboardProps {
@@ -63,6 +74,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const { tenant, direction, language, setLanguage } = useTenant();
   const { addToast } = useToast();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isOnboardingWizardOpen, setIsOnboardingWizardOpen] = useState(false);
@@ -126,21 +139,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Setup Wizard & Tour Guide Lifecycle Orchestration
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const setupCompleted = localStorage.getItem(`setup_completed_${tenant.subdomain}`);
+      const setupCompleted =
+        localStorage.getItem(`setup_completed_${tenant.subdomain}`) === 'true' ||
+        Boolean((tenant.settings as any)?.onboardingCompleted);
       const setupDismissed = localStorage.getItem(`setup_dismissed_${tenant.subdomain}`);
-      const progress = calculateSetupProgress();
-      if (!setupCompleted && !setupDismissed && progress.percentage < 100) {
+      if (!setupCompleted && !setupDismissed) {
         setIsOnboardingWizardOpen(true);
+      } else {
+        setIsOnboardingWizardOpen(false);
       }
     }
-  }, [tenant.subdomain]);
+  }, [tenant.subdomain, (tenant.settings as any)?.onboardingCompleted]);
 
   // Calculate real dynamic setup wizard completion percentage
   const calculateSetupProgress = () => {
+    const isCompleted =
+      (typeof window !== 'undefined' &&
+        localStorage.getItem(`setup_completed_${tenant.subdomain}`) === 'true') ||
+      Boolean((tenant.settings as any)?.onboardingCompleted);
+
+    if (isCompleted) {
+      return { completed: 8, total: 8, percentage: 100 };
+    }
+
     let completed = 0;
     const total = 5;
     if (tenant.name && tenant.contactEmail) completed += 1;
-    if (tenant.theme?.primaryColor) completed += 1;
+    if (tenant.theme?.primaryColor || (tenant as any).brandColor) completed += 1;
     if (tenant.pricingPlans && tenant.pricingPlans.length > 0) completed += 1;
     if (tenant.paymentGateways && tenant.paymentGateways.some((g) => g.enabled)) completed += 1;
     if (tenant.customFormFields && tenant.customFormFields.length > 0) completed += 1;
@@ -156,7 +181,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex font-sans text-slate-900 overflow-x-hidden" dir={direction}>
+    <div className="h-screen w-full flex overflow-hidden font-sans text-slate-900 bg-slate-100" dir={direction}>
       {/* Sidebar with Direct Tab Switchers */}
       <Sidebar
         activeTab={activeTab}
@@ -175,9 +200,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       />
 
       {/* Main Content Workspace */}
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto bg-slate-50">
         {/* Top Header */}
-        <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-20 shadow-xs">
+        <header className="bg-white border-b border-slate-200 py-2.5 sm:py-3.5 px-3 sm:px-8 flex items-center justify-between gap-2 sm:gap-4 sticky top-0 z-20 shadow-xs shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
@@ -231,9 +256,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-left cursor-pointer group"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-emerald-50 flex items-center justify-center shrink-0">
+                              <span className="text-slate-500 group-hover:text-emerald-600 shrink-0">
                                 {item.icon}
-                              </div>
+                              </span>
                               <div>
                                 <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">
                                   {item.title}
@@ -297,24 +322,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <span className="sm:hidden">{setupProgress.percentage}%</span>
               </Button>
             )}
-
-            {/* Live Site CTA */}
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onViewLiveSite}
-              rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
-              className="px-2.5 sm:px-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
-            >
-              <span className="hidden sm:inline">Live Site</span>
-              <span className="sm:hidden">Live</span>
-            </Button>
           </div>
         </header>
 
         {/* Tab Content Body */}
-        <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
-          {isOnboardingWizardOpen ? (
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+          <div className="w-11/12 mx-auto space-y-6">
+            {isOnboardingWizardOpen ? (
             <OnboardingWizard
               onAddToast={handleToast}
               onComplete={() => {
@@ -330,13 +344,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           ) : (
             <>
               {activeTab === 'overview' && (
-                <AnalyticsDashboard onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+                <AnalyticsDashboard
+                  onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)}
+                  onNavigateToCourses={() => setActiveTab('curriculum')}
+                  onNavigateToAdmissions={() => setActiveTab('crm')}
+                  onNavigateTab={(tab: any) => setActiveTab(tab)}
+                />
               )}
               {activeTab === 'notifications_hub' && (
                 !isPlanUnlocked('growth') ? (
                   <LockedFeatureCard
-                    title="Automated Email & WhatsApp Communication Hub"
-                    description="Automate welcome emails with student portal credentials, parent WhatsApp reminders for upcoming halaqahs, and tuition invoice alerts via Resend & Twilio."
+                    title={isQuran ? "Automated Email & WhatsApp Communication Hub" : "Automated Student & Staff Communication Hub"}
+                    description={isQuran ? "Automate welcome emails with student portal credentials, parent WhatsApp reminders for upcoming halaqahs, and tuition invoice alerts via Resend & Twilio." : "Automate welcome emails with student credentials, SMS/WhatsApp reminders for upcoming live classes, and tuition invoice receipts via Resend & Twilio."}
                     requiredPlan="growth"
                     onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
                   />
@@ -347,8 +366,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {activeTab === 'certificate_studio' && (
                 !isPlanUnlocked('enterprise') ? (
                   <LockedFeatureCard
-                    title="Sanad & Ijazah Certificate Generator Studio"
-                    description="Create authenticated graduation certificates with authentic Islamic Khatam borders, Sheikh wax seals, and public QR code tamper-proof verification."
+                    title={isQuran ? "Sanad & Ijazah Certificate Generator Studio" : "Institutional Certificate Generator Studio"}
+                    description={isQuran ? "Create authenticated graduation certificates with authentic Islamic Khatam borders, Sheikh wax seals, and public QR code tamper-proof verification." : "Create authenticated course graduation certificates with institutional emblems, department director seals, and tamper-proof verification."}
                     requiredPlan="enterprise"
                     onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
                   />
@@ -357,7 +376,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 )
               )}
               {activeTab === 'page_builder' && (
-                <ModularSectionPageBuilder />
+                <RealGrapesBuilder onAddToast={handleToast} />
               )}
               {activeTab === 'form_builder' && (
                 <VisualFormBuilder onAddToast={handleToast} />
@@ -372,7 +391,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 !isPlanUnlocked('growth') ? (
                   <LockedFeatureCard
                     title="Live Virtual Classroom with Real-time WebRTC"
-                    description="Host HD live halaqah sessions, interactive multi-student recitations, whiteboard tajweed diagrams, and automated attendance logging."
+                    description={isQuran ? "Host HD live halaqah sessions, interactive multi-student recitations, whiteboard tajweed diagrams, and automated attendance logging." : "Host HD live interactive classroom sessions, breakout pods, real-time whiteboard diagrams, and automated attendance logging."}
                     requiredPlan="growth"
                     onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
                   />
@@ -383,7 +402,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       courseTitle={tenant.tagline || 'Interactive Curriculum'}
                       userRole="teacher"
                       currentUserName="Academy Director"
-                      niche={tenant.niche || 'quran'}
+                      niche={niche}
                     />
                   </div>
                 )
@@ -392,7 +411,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 !isPlanUnlocked('qari') ? (
                   <LockedFeatureCard
                     title="LMS Community & Discussion Forum"
-                    description="Engage students and teachers in dedicated halaqah threads, recitation peer feedback, and community announcements."
+                    description={isQuran ? "Engage students and teachers in dedicated halaqah threads, recitation peer feedback, and community announcements." : "Engage students and instructors in dedicated cohort discussion channels, project collaboration, and community announcements."}
                     requiredPlan="qari"
                     onUpgrade={() => setIsPlanUpgradeModalOpen(true)}
                   />
@@ -400,23 +419,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <LMSCommunityForum onAddToast={handleToast} />
                 )
               )}
+              {activeTab === 'users_staff' && (
+                <StaffAndStudentManager />
+              )}
+              {activeTab === 'revenue' && (
+                <RevenueFinanceManager />
+              )}
               {activeTab === 'pricing' && (
                 <TenantPricingEditor onAddToast={handleToast} />
               )}
               {activeTab === 'payment_gateways' && (
                 <PaymentGatewaySetup onAddToast={handleToast} />
               )}
+              {activeTab === 'integrations' && (
+                <IntegrationsManager onAddToast={handleToast} />
+              )}
               {activeTab === 'crm' && (
                 <LeadsCRM onAddToast={handleToast} />
               )}
+              {activeTab === 'staff_roles' && (
+                <StaffRolesManager />
+              )}
+              {activeTab === 'white_labeling' && (
+                <BrandingWhiteLabeling onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+              )}
               {activeTab === 'settings' && (
-                <ModernAcademySettings onAddToast={handleToast} onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
+                <GeneralAcademySettings onOpenUpgradeModal={() => setIsPlanUpgradeModalOpen(true)} />
               )}
               {activeTab === 'profile' && (
                 <UserProfilePage onAddToast={handleToast} />
               )}
             </>
           )}
+          </div>
         </main>
       </div>
 

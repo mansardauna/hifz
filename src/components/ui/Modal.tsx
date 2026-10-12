@@ -65,16 +65,16 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || description) && (
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
+          <div className="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
             <div>
-              {title && <h3 className="text-base font-extrabold text-slate-900">{title}</h3>}
-              {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
+              {title && <h3 className="text-lg font-bold text-slate-900">{title}</h3>}
+              {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         )}

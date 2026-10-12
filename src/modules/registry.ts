@@ -21,73 +21,70 @@ export interface LmsModuleDescriptor {
 }
 
 export function detectLmsEngineType(niche?: TenantNiche, subdomain: string = ''): LmsEngineType {
-  if (niche === 'coding' || niche === 'code_academy' || subdomain.includes('code')) {
+  const sub = (subdomain || '').toLowerCase();
+  if (niche === 'coding' || niche === 'code_academy' || sub.includes('code') || sub.includes('dev')) {
     return 'coding';
   }
   if (
-    niche === 'school' ||
-    subdomain.includes('school') ||
-    subdomain.includes('oxford') ||
-    subdomain.includes('horizon')
+    niche === 'madrasat' ||
+    niche === 'quran' ||
+    sub.includes('hifz') ||
+    sub.includes('quran') ||
+    sub.includes('madrasa')
   ) {
-    return 'school';
+    return 'quran';
   }
-  return 'quran';
+  // Default for school, vocational, general, poultry, language, business, etc. is 'school' (Curriculum & Assessments)
+  return 'school';
 }
 
 export const LMS_MODULE_REGISTRY: Record<LmsEngineType, LmsModuleDescriptor> = {
   quran: {
     engineType: 'quran',
-    displayName: 'Quran & Islamic Madrasat LMS',
-    displayNameAr: 'منظومة المدرسة القرآنية وحفظ المتون',
-    tagline: 'Uthmani Recitation, Tajweed Rules & Hifz Progress Mastery',
+    displayName: 'Quran & Islamic Studies',
+    displayNameAr: 'المدرسة القرآنية',
+    tagline: 'Quran Recitation, Tajweed & Hifz Tracking',
     defaultTab: 'quran',
     primaryNicheColor: '#059669', // Emerald
     tabs: [
-      // Domain Peculiar
       { id: 'quran', label: 'Quran Reader', labelAr: 'المصحف الشريف', iconName: 'BookOpen', isCommon: false },
       { id: 'audio', label: 'Reciter Looper', labelAr: 'التكرار الصوتي', iconName: 'Volume2', isCommon: false },
       { id: 'progress', label: 'Hifz Tracker', labelAr: 'متابعة الحفظ', iconName: 'Award', isCommon: false },
-      // Common Universal
-      { id: 'classroom', label: 'Live Virtual Halaqah', labelAr: 'الحلقة المباشرة', iconName: 'Radio', isCommon: true },
-      { id: 'forum', label: 'Discussion Forum', labelAr: 'المنتدى التعليمي', iconName: 'MessageSquare', isCommon: true },
+      { id: 'classroom', label: 'Live Halaqah', labelAr: 'الحلقة المباشرة', iconName: 'Radio', isCommon: true },
+      { id: 'forum', label: 'Community Forum', labelAr: 'المنتدى التعليمي', iconName: 'MessageSquare', isCommon: true },
       { id: 'tuition', label: 'Tuition & Invoices', labelAr: 'الرسوم والفواتير', iconName: 'CreditCard', isCommon: true },
-      { id: 'profile', label: 'Profile & Settings', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
+      { id: 'profile', label: 'Profile', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
     ]
   },
   school: {
     engineType: 'school',
-    displayName: 'School & Vocational Training LMS',
-    displayNameAr: 'منظومة المدارس والمعاهد المهنية الشاملة',
-    tagline: 'Practical Syllabus, Workshop Guides, Quizzes & Vocational Assessments',
+    displayName: 'School & Vocational Academy',
+    displayNameAr: 'المدرسة الأكاديمية والمهنية',
+    tagline: 'Curriculum, Workshops & Assessments',
     defaultTab: 'courses',
     primaryNicheColor: '#2563eb', // Royal Blue
     tabs: [
-      // Domain Peculiar
-      { id: 'courses', label: 'Syllabus & Workshop Guides', labelAr: 'المقررات والورش العملية', iconName: 'GraduationCap', isCommon: false },
-      { id: 'assessments', label: 'Exams & Practical Submissions', labelAr: 'الاختبارات والمشاريع التطبيقية', iconName: 'FileCheck2', isCommon: false },
-      // Common Universal
-      { id: 'classroom', label: 'Live Virtual Workshop', labelAr: 'الورشة والصف المباشر', iconName: 'Radio', isCommon: true },
-      { id: 'forum', label: 'Student & Craft Forum', labelAr: 'منتدى الطلاب والمهن', iconName: 'MessageSquare', isCommon: true },
+      { id: 'courses', label: 'Curriculum', labelAr: 'المقررات الدراسية', iconName: 'GraduationCap', isCommon: false },
+      { id: 'assessments', label: 'Assessments', labelAr: 'الاختبارات والتطبيقات', iconName: 'FileCheck2', isCommon: false },
+      { id: 'classroom', label: 'Live Classroom', labelAr: 'الفصل المباشر', iconName: 'Radio', isCommon: true },
+      { id: 'forum', label: 'Community Forum', labelAr: 'المنتدى الطلابي', iconName: 'MessageSquare', isCommon: true },
       { id: 'tuition', label: 'Tuition & Fees', labelAr: 'المصروفات والرسوم', iconName: 'CreditCard', isCommon: true },
-      { id: 'profile', label: 'Profile & Settings', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
+      { id: 'profile', label: 'Profile', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
     ]
   },
   coding: {
     engineType: 'coding',
-    displayName: 'Coding & Tech Academy LMS',
-    displayNameAr: 'أكاديمية البرمجة والتقنيات التفاعلية',
-    tagline: 'FreeCodeCamp Style Challenges, Automated Test Suites & Live IDE',
+    displayName: 'Software & Tech Academy',
+    displayNameAr: 'أكاديمية البرمجة والتقنية',
+    tagline: 'Interactive Code Challenges & Web IDE',
     defaultTab: 'coding',
     primaryNicheColor: '#10b981', // Mint/Emerald
     tabs: [
-      // Domain Peculiar
-      { id: 'coding', label: 'Interactive Challenges (FCC Style)', labelAr: 'التحديات البرمجية والاختبارات', iconName: 'Code2', isCommon: false },
-      // Common Universal
-      { id: 'classroom', label: 'Live Pair Programming', labelAr: 'غرفة البرمجة المباشرة', iconName: 'Radio', isCommon: true },
+      { id: 'coding', label: 'Code Labs', labelAr: 'المختبر البرمجي', iconName: 'Code2', isCommon: false },
+      { id: 'classroom', label: 'Live Classroom', labelAr: 'غرفة البرمجة المباشرة', iconName: 'Radio', isCommon: true },
       { id: 'forum', label: 'Developer Forum', labelAr: 'منتدى المطورين', iconName: 'MessageSquare', isCommon: true },
-      { id: 'tuition', label: 'Bootcamp Tuition', labelAr: 'رسوم المعسكر', iconName: 'CreditCard', isCommon: true },
-      { id: 'profile', label: 'Profile & Settings', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
+      { id: 'tuition', label: 'Tuition', labelAr: 'رسوم المعسكر', iconName: 'CreditCard', isCommon: true },
+      { id: 'profile', label: 'Profile', labelAr: 'الملف الشخصي', iconName: 'User', isCommon: true }
     ]
   }
 };

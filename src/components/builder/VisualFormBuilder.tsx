@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FormFieldConfig, FormConfig, FieldType, FieldWidth, FormUiTheme } from '../../types';
 import { useTenant } from '../../context/TenantContext';
+import { isDemoTenant } from '../../lib/tenants';
 import { ToastMessage } from '../ui/Toast';
 import { ThemedFormRenderer, THEME_COLOR_MAP } from '../forms/ThemedFormRenderer';
 import {
@@ -43,10 +44,12 @@ import {
   ExternalLink,
   Clock,
   UserCheck,
-  XCircle,
-  MessageSquare
+  MessageSquare,
+  Code2
 } from 'lucide-react';
 import { Badge, DataTablePagination } from '../ui';
+import { compileFormToHtmlAndCss } from '../../utils/formHtmlCssCompiler';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 
 interface VisualFormBuilderProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -65,79 +68,195 @@ export interface FormResponseItem {
   notes?: string;
 }
 
-type FormStudioTab = 'questions' | 'responses' | 'themes' | 'preview_embed';
+type FormStudioTab = 'questions' | 'responses' | 'themes' | 'preview_embed' | 'code_export';
 
 export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast }) => {
   const { tenant, updateTenantConfig, language, direction } = useTenant();
   const isAr = language === 'ar';
 
-  const isDemoAcademy = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo'].includes(tenant.subdomain || '');
+  const nicheType = detectTenantNicheType(tenant);
+  const isDemoAcademy = isDemoTenant(tenant.subdomain);
 
   // Initialize forms list from tenant
-  const initialForms: FormConfig[] = tenant.forms && tenant.forms.length > 0
-    ? tenant.forms
-    : isDemoAcademy
-    ? [
+  const initialForms: FormConfig[] = useMemo(() => {
+    if (tenant.forms && tenant.forms.length > 0) {
+      return tenant.forms;
+    }
+    if (isDemoAcademy) {
+      if (nicheType === 'quran') {
+        return [
+          {
+            id: 'form-admissions',
+            title: tenant.formTitle || 'Quran & Tajweed Admissions Form',
+            titleAr: 'نموذج القبول وتقييم المستوى في القرآن والتجويد',
+            description: tenant.formDescription || 'Complete your student details below for immediate review by our admissions committee.',
+            isDefault: true,
+            status: 'active',
+            themeStyle: 'material',
+            accentColor: 'emerald',
+            acceptingResponses: true,
+            submissionsCount: 48,
+            createdAt: '2026-08-01',
+            submitButtonText: 'Submit Application',
+            submitButtonTextAr: 'إرسال طلب القبول',
+            fields: [
+              { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
+              { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 },
+              { id: 'preferredTime', label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 3 }
+            ]
+          },
+          {
+            id: 'form-ijazah',
+            title: 'Sanad Ijazah & Khatmah Application',
+            titleAr: 'طلب الالتحاق بمسار الإسناد والإجازة',
+            description: 'Application for students seeking unbroken Sanad chains and complete oral recitation verification.',
+            isDefault: false,
+            status: 'active',
+            themeStyle: 'islamic_heritage',
+            accentColor: 'emerald',
+            acceptingResponses: true,
+            submissionsCount: 14,
+            createdAt: '2026-08-10',
+            submitButtonText: 'Submit Sanad Application',
+            fields: [
+              { id: 'priorCertification', label: 'Prior Tajweed Certifications (e.g. Tuhfat al-Atfal, Jazariyyah)', labelAr: 'المتون المحفوظة (تحفة الأطفال، الجزرية)', type: 'text', required: true, placeholder: 'List certified texts...', width: 'full', order: 1 },
+              { id: 'qiraahPreference', label: 'Target Qira\'ah Track', labelAr: 'الرواية المطلوبة', type: 'select', required: true, options: ['Hafs \'an \'Asim (حفص عن عاصم)', 'Warsh \'an Nafi\' (ورش عن نافع)', 'Qalun \'an Nafi\' (قالون عن نافع)'], width: 'half', order: 2 },
+              { id: 'weeklyAvailability', label: 'Hours Dedicated Weekly for Muraja\'ah', labelAr: 'ساعات المراجعة الأسبوعية', type: 'select', required: true, options: ['5 - 10 hours', '10 - 20 hours', '20+ hours (Intensive)'], width: 'half', order: 3 }
+            ]
+          }
+        ];
+      }
+
+      if (nicheType === 'coding') {
+        return [
+          {
+            id: 'form-admissions',
+            title: tenant.formTitle || 'Software Engineering Bootcamp Application',
+            titleAr: 'طلب الالتحاق بمعسكر هندسة البرمجيات',
+            description: tenant.formDescription || 'Submit your engineering application and background information for our technical review team.',
+            isDefault: true,
+            status: 'active',
+            themeStyle: 'cyber_dark',
+            accentColor: 'blue',
+            acceptingResponses: true,
+            submissionsCount: 36,
+            createdAt: '2026-08-01',
+            submitButtonText: 'Submit Bootcamp Application',
+            fields: [
+              { id: 'targetTrack', label: 'Target Engineering Track', labelAr: 'المسار البرمجي المفضل', type: 'select', required: true, options: ['Full-Stack Web (React & Node)', 'Python & AI Engineering', 'Cloud & DevOps'], width: 'half', order: 1 },
+              { id: 'experienceLevel', label: 'Prior Development Experience', labelAr: 'مستوى الخبرة البرمجية', type: 'select', required: true, options: ['Complete Beginner', 'Self-Taught / Basic Projects', 'Junior Developer (1+ years)'], width: 'half', order: 2 },
+              { id: 'weeklyHours', label: 'Hours Dedicated Weekly', labelAr: 'الساعات المخصصة أسبوعياً', type: 'select', required: true, options: ['10-15 Hours (Part-Time)', '20-30 Hours (Intensive)', '40+ Hours (Full Immersion)'], width: 'full', order: 3 }
+            ]
+          },
+          {
+            id: 'form-tech-assessment',
+            title: 'Coding Entrance & Portfolio Review',
+            titleAr: 'تقييم القبول ومراجعة المعرض البرمجي',
+            description: 'Technical background and repository portfolio submission for advanced cohort placement.',
+            isDefault: false,
+            status: 'active',
+            themeStyle: 'cyber_dark',
+            accentColor: 'indigo',
+            acceptingResponses: true,
+            submissionsCount: 22,
+            createdAt: '2026-08-15',
+            submitButtonText: 'Submit Portfolio Review',
+            fields: [
+              { id: 'githubUrl', label: 'GitHub / Portfolio URL', labelAr: 'رابط ملف جيت هاب أو المعرض', type: 'text', required: false, placeholder: 'https://github.com/username', width: 'half', order: 1 },
+              { id: 'primaryLanguages', label: 'Primary Languages / Frameworks', labelAr: 'لغات البرمجة الأساسية', type: 'text', required: true, placeholder: 'e.g. JavaScript, Python, TypeScript', width: 'half', order: 2 },
+              { id: 'projectHighlight', label: 'Key Project Description', labelAr: 'وصف لأهم مشروع قمت ببنائه', type: 'textarea', required: true, placeholder: 'Briefly describe a project you developed or contributed to...', width: 'full', order: 3 }
+            ]
+          }
+        ];
+      }
+
+      if (nicheType === 'school') {
+        return [
+          {
+            id: 'form-admissions',
+            title: tenant.formTitle || 'Academic Year Student Enrollment',
+            titleAr: 'نموذج التسجيل والالتحاق للعام الأكاديمي',
+            description: tenant.formDescription || 'Submit student profile and academic history for enrollment and advisory placement.',
+            isDefault: true,
+            status: 'active',
+            themeStyle: 'material',
+            accentColor: 'blue',
+            acceptingResponses: true,
+            submissionsCount: 42,
+            createdAt: '2026-08-01',
+            submitButtonText: 'Submit Enrollment Form',
+            fields: [
+              { id: 'parentName', label: 'Parent / Legal Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: true, placeholder: 'e.g. Sarah Miller', width: 'half', order: 1 },
+              { id: 'gradeLevel', label: 'Target Grade Level / Year', labelAr: 'السنة الدراسية المستهدفة', type: 'select', required: true, options: ['Elementary (Grades 1-5)', 'Middle School (Grades 6-8)', 'High School (Grades 9-12)'], width: 'half', order: 2 },
+              { id: 'academicHistory', label: 'Previous School & Cumulative GPA', labelAr: 'المدرسة السابقة والمعدل التراكمي', type: 'text', required: false, placeholder: 'School name, GPA...', width: 'full', order: 3 }
+            ]
+          },
+          {
+            id: 'form-academic-placement',
+            title: 'Honors & Advanced Placement Evaluation',
+            titleAr: 'طلب الالتحاق بالمسار الأكاديمي المتقدم',
+            description: 'Evaluation form for students applying for accelerated tracks and honors coursework.',
+            isDefault: false,
+            status: 'active',
+            themeStyle: 'minimalist',
+            accentColor: 'indigo',
+            acceptingResponses: true,
+            submissionsCount: 18,
+            createdAt: '2026-08-12',
+            submitButtonText: 'Submit Placement Request',
+            fields: [
+              { id: 'focusSubjects', label: 'Core Subject Focus', labelAr: 'المواد الأكاديمية المستهدفة', type: 'select', required: true, options: ['STEM & Advanced Mathematics', 'Humanities & Literature', 'Scientific Inquiry & Biology'], width: 'half', order: 1 },
+              { id: 'priorHonors', label: 'Prior Honors / AP Courses', labelAr: 'المقررات المتقدمة السابقة', type: 'text', required: false, placeholder: 'List any previous advanced classes...', width: 'half', order: 2 },
+              { id: 'academicGoals', label: 'Academic Objectives', labelAr: 'الأهداف الأكاديمية', type: 'textarea', required: true, placeholder: 'Describe your academic goals for this term...', width: 'full', order: 3 }
+            ]
+          }
+        ];
+      }
+
+      // General fallback
+      return [
         {
           id: 'form-admissions',
-          title: tenant.formTitle || 'Direct Admissions & Placement Inquiry',
-          titleAr: 'نموذج القبول وتقييم المستوى',
-          description: tenant.formDescription || 'Complete your student details below for immediate review by our admissions committee.',
+          title: tenant.formTitle || 'General Student Registration & Placement',
+          titleAr: 'نموذج التسجيل وتحديد المستوى الأكاديمي',
+          description: tenant.formDescription || 'Submit your information below to register and receive cohort placement.',
           isDefault: true,
           status: 'active',
           themeStyle: 'material',
-          accentColor: 'emerald',
-          acceptingResponses: true,
-          submissionsCount: 48,
-          createdAt: '2026-08-01',
-          submitButtonText: 'Submit Application',
-          submitButtonTextAr: 'إرسال طلب القبول',
-          fields: [
-            { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, placeholder: 'e.g. Ahmad Al-Mansoor', width: 'half', order: 1 },
-            { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, options: ['0 (Beginner)', '1 - 5 Juz', '6 - 15 Juz', '16 - 29 Juz', 'Complete Quran (30 Juz)'], width: 'half', order: 2 },
-            { id: 'preferredTime', label: 'Preferred Class Timing', labelAr: 'الوقت المفضل للحصص', type: 'select', required: true, options: ['Morning (Fajr-Zuhr)', 'Afternoon (Asr-Maghrib)', 'Evening (Isha-Night)'], width: 'full', order: 3 }
-          ]
-        },
-        {
-          id: 'form-ijazah',
-          title: 'Sanad Ijazah & Khatmah Application',
-          titleAr: 'طلب الالتحاق بمسار الإسناد والإجازة',
-          description: 'Application for students seeking unbroken Sanad chains and complete oral recitation verification.',
-          isDefault: false,
-          status: 'active',
-          themeStyle: 'islamic_heritage',
-          accentColor: 'emerald',
-          acceptingResponses: true,
-          submissionsCount: 14,
-          createdAt: '2026-08-10',
-          submitButtonText: 'Submit Sanad Application',
-          fields: [
-            { id: 'priorCertification', label: 'Prior Tajweed Certifications (e.g. Tuhfat al-Atfal, Jazariyyah)', labelAr: 'المتون المحفوظة (تحفة الأطفال، الجزرية)', type: 'text', required: true, placeholder: 'List certified texts...', width: 'full', order: 1 },
-            { id: 'qiraahPreference', label: 'Target Qira\'ah Track', labelAr: 'الرواية المطلوبة', type: 'select', required: true, options: ['Hafs \'an \'Asim (حفص عن عاصم)', 'Warsh \'an Nafi\' (ورش عن نافع)', 'Qalun \'an Nafi\' (قالون عن نافع)'], width: 'half', order: 2 },
-            { id: 'weeklyAvailability', label: 'Hours Dedicated Weekly for Muraja\'ah', labelAr: 'ساعات المراجعة الأسبوعية', type: 'select', required: true, options: ['5 - 10 hours', '10 - 20 hours', '20+ hours (Intensive)'], width: 'half', order: 3 }
-          ]
-        },
-        {
-          id: 'form-tech-assessment',
-          title: 'Coding Bootcamp Entrance Assessment',
-          titleAr: 'تقييم القبول لمعسكر البرمجة',
-          description: 'Application for aspiring software engineers and full-stack developers.',
-          isDefault: false,
-          status: 'active',
-          themeStyle: 'cyber_dark',
           accentColor: 'blue',
           acceptingResponses: true,
-          submissionsCount: 22,
-          createdAt: '2026-08-15',
-          submitButtonText: 'Submit Assessment',
+          submissionsCount: 28,
+          createdAt: '2026-08-01',
+          submitButtonText: 'Submit Registration',
           fields: [
-            { id: 'githubUrl', label: 'GitHub / Portfolio URL', labelAr: 'رابط ملف جيت هاب', type: 'text', required: false, placeholder: 'https://github.com/username', width: 'half', order: 1 },
-            { id: 'experienceLevel', label: 'Prior Coding Background', labelAr: 'الخبرة السابقة', type: 'select', required: true, options: ['Absolute Beginner', 'HTML/CSS/JS Basics', 'Intermediate React/Node'], width: 'half', order: 2 },
-            { id: 'trackGoal', label: 'Target Track Goal', labelAr: 'الهدف من المعسكر', type: 'textarea', required: true, placeholder: 'Describe your transition goals...', width: 'full', order: 3 }
+            { id: 'contactName', label: 'Student or Guardian Full Name', labelAr: 'الاسم الكامل للطالب أو ولي الأمر', type: 'text', required: true, placeholder: 'Full Name', width: 'half', order: 1 },
+            { id: 'experienceTier', label: 'Current Proficiency Tier', labelAr: 'المستوى الحالي', type: 'select', required: true, options: ['Foundation (Level 1)', 'Intermediate (Level 2)', 'Advanced Mastery (Level 3)'], width: 'half', order: 2 },
+            { id: 'preferredSchedule', label: 'Preferred Class Schedule', labelAr: 'الجدول المفضل للحصص', type: 'select', required: true, options: ['Morning Cohort', 'Afternoon Cohort', 'Weekend Intensive'], width: 'full', order: 3 }
+          ]
+        },
+        {
+          id: 'form-placement',
+          title: 'Course Placement & Skills Inquiry',
+          titleAr: 'نموذج تقييم المهارات وتحديد المسار',
+          description: 'Consultation and evaluation inquiry to align student goals with learning roadmaps.',
+          isDefault: false,
+          status: 'active',
+          themeStyle: 'minimalist',
+          accentColor: 'emerald',
+          acceptingResponses: true,
+          submissionsCount: 15,
+          createdAt: '2026-08-10',
+          submitButtonText: 'Submit Skills Inquiry',
+          fields: [
+            { id: 'learningGoal', label: 'Primary Learning Goal', labelAr: 'الهدف التعليمي الأساسي', type: 'text', required: true, placeholder: 'What do you aim to achieve?', width: 'full', order: 1 },
+            { id: 'weeklyCommitment', label: 'Weekly Study Hours Available', labelAr: 'ساعات الدراسة الأسبوعية', type: 'select', required: true, options: ['3-5 hours', '6-10 hours', '12+ hours'], width: 'half', order: 2 },
+            { id: 'notes', label: 'Additional Background or Questions', labelAr: 'ملاحظات إضافية', type: 'textarea', required: false, placeholder: 'Any background details or questions...', width: 'full', order: 3 }
           ]
         }
-      ]
-    : [];
+      ];
+    }
+    return [];
+  }, [tenant, isDemoAcademy, nicheType]);
 
   const [formsList, setFormsList] = useState<FormConfig[]>(initialForms);
   const [editingFormId, setEditingFormId] = useState<string | null>(null);
@@ -157,68 +276,175 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
         if (stored) return JSON.parse(stored);
       } catch (e) {}
     }
-    return isDemoAcademy ? [
+    if (!isDemoAcademy) return [];
+
+    if (nicheType === 'quran') {
+      return [
+        {
+          id: 'resp-1',
+          formId: 'form-admissions',
+          formTitle: 'Quran & Tajweed Admissions Form',
+          studentName: 'Zaid Al-Harithi',
+          email: 'zaid@example.com',
+          phone: '+966 50 123 4567',
+          submittedAt: '2026-09-02 14:30',
+          status: 'New',
+          data: {
+            'Parent / Guardian Name': 'Ibrahim Al-Harithi',
+            'Current Juz Memorized': '6 - 15 Juz',
+            'Preferred Class Timing': 'Evening (Isha-Night)',
+          }
+        },
+        {
+          id: 'resp-2',
+          formId: 'form-admissions',
+          formTitle: 'Quran & Tajweed Admissions Form',
+          studentName: 'Amina Khatun',
+          email: 'amina@example.com',
+          phone: '+44 7700 900123',
+          submittedAt: '2026-09-01 09:15',
+          status: 'Under Review',
+          data: {
+            'Parent / Guardian Name': 'Farooq Khatun',
+            'Current Juz Memorized': '1 - 5 Juz',
+            'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
+          }
+        },
+        {
+          id: 'resp-3',
+          formId: 'form-ijazah',
+          formTitle: 'Sanad Ijazah & Khatmah Application',
+          studentName: 'Tariq Mansoor',
+          email: 'tariq.mansoor@example.com',
+          phone: '+1 (555) 234-8899',
+          submittedAt: '2026-08-30 18:45',
+          status: 'Admitted',
+          data: {
+            'Prior Tajweed Certifications': 'Tuhfat al-Atfal & Jazariyyah completed',
+            'Target Qira\'ah Track': 'Hafs \'an \'Asim',
+            'Weekly Availability': '10 - 20 hours',
+          }
+        }
+      ];
+    }
+
+    if (nicheType === 'coding') {
+      return [
+        {
+          id: 'resp-1',
+          formId: 'form-admissions',
+          formTitle: 'Software Engineering Bootcamp Application',
+          studentName: 'Karim Bennani',
+          email: 'karim@techdev.io',
+          phone: '+33 6 12 34 56 78',
+          submittedAt: '2026-09-10 11:20',
+          status: 'Interview Scheduled',
+          data: {
+            'Target Engineering Track': 'Full-Stack Web (React & Node)',
+            'Prior Development Experience': 'Self-Taught / Basic Projects',
+            'Hours Dedicated Weekly': '20-30 Hours (Intensive)'
+          }
+        },
+        {
+          id: 'resp-2',
+          formId: 'form-tech-assessment',
+          formTitle: 'Coding Entrance & Portfolio Review',
+          studentName: 'Alex Chen',
+          email: 'alex.chen@example.com',
+          phone: '+1 (415) 890-1234',
+          submittedAt: '2026-09-08 16:45',
+          status: 'Under Review',
+          data: {
+            'GitHub / Portfolio URL': 'https://github.com/alexchen-dev',
+            'Primary Languages / Frameworks': 'TypeScript, Python, Docker',
+            'Key Project Description': 'Built an automated REST microservice with Redis caching.'
+          }
+        },
+        {
+          id: 'resp-3',
+          formId: 'form-admissions',
+          formTitle: 'Software Engineering Bootcamp Application',
+          studentName: 'Sarah Jenkins',
+          email: 'sarah.j@example.com',
+          phone: '+44 7911 123456',
+          submittedAt: '2026-09-05 13:10',
+          status: 'Admitted',
+          data: {
+            'Target Engineering Track': 'Python & AI Engineering',
+            'Prior Development Experience': 'Junior Developer (1+ years)',
+            'Hours Dedicated Weekly': '40+ Hours (Full Immersion)'
+          }
+        }
+      ];
+    }
+
+    if (nicheType === 'school') {
+      return [
+        {
+          id: 'resp-1',
+          formId: 'form-admissions',
+          formTitle: 'Academic Year Student Enrollment',
+          studentName: 'Liam Davis',
+          email: 'liam.davis@example.com',
+          phone: '+1 (555) 789-0123',
+          submittedAt: '2026-09-03 10:15',
+          status: 'New',
+          data: {
+            'Parent / Legal Guardian Name': 'Sarah Miller',
+            'Target Grade Level / Year': 'Middle School (Grades 6-8)',
+            'Previous School & Cumulative GPA': 'Oakridge Academy, 3.8 GPA'
+          }
+        },
+        {
+          id: 'resp-2',
+          formId: 'form-academic-placement',
+          formTitle: 'Honors & Advanced Placement Evaluation',
+          studentName: 'Emily Watson',
+          email: 'emily.w@example.com',
+          phone: '+1 (555) 456-7890',
+          submittedAt: '2026-09-01 14:00',
+          status: 'Admitted',
+          data: {
+            'Core Subject Focus': 'STEM & Advanced Mathematics',
+            'Prior Honors / AP Courses': 'Pre-Calculus Honors, Physics 1',
+            'Academic Objectives': 'Prepare for regional Olympiad and college-level engineering tracks.'
+          }
+        }
+      ];
+    }
+
+    return [
       {
         id: 'resp-1',
         formId: 'form-admissions',
-        formTitle: 'Direct Admissions & Placement Inquiry',
-        studentName: 'Zaid Al-Harithi',
-        email: 'zaid@example.com',
-        phone: '+966 50 123 4567',
-        submittedAt: '2026-09-02 14:30',
+        formTitle: 'General Student Registration & Placement',
+        studentName: 'Alex Morgan',
+        email: 'alex.morgan@example.com',
+        phone: '+1 (555) 321-6540',
+        submittedAt: '2026-09-04 11:30',
         status: 'New',
         data: {
-          'Parent / Guardian Name': 'Ibrahim Al-Harithi',
-          'Current Juz Memorized': '6 - 15 Juz',
-          'Preferred Class Timing': 'Evening (Isha-Night)',
+          'Student or Guardian Full Name': 'Alex Morgan',
+          'Current Proficiency Tier': 'Intermediate (Level 2)',
+          'Preferred Class Schedule': 'Evening Cohort'
         }
       },
       {
         id: 'resp-2',
-        formId: 'form-admissions',
-        formTitle: 'Direct Admissions & Placement Inquiry',
-        studentName: 'Amina Khatun',
-        email: 'amina@example.com',
-        phone: '+44 7700 900123',
-        submittedAt: '2026-09-01 09:15',
+        formId: 'form-placement',
+        formTitle: 'Course Placement & Skills Inquiry',
+        studentName: 'Jordan Taylor',
+        email: 'jordan.t@example.com',
+        phone: '+1 (555) 654-9870',
+        submittedAt: '2026-09-02 15:45',
         status: 'Under Review',
         data: {
-          'Parent / Guardian Name': 'Farooq Khatun',
-          'Current Juz Memorized': '1 - 5 Juz',
-          'Preferred Class Timing': 'Morning (Fajr-Zuhr)',
-        }
-      },
-      {
-        id: 'resp-3',
-        formId: 'form-ijazah',
-        formTitle: 'Sanad Ijazah & Khatmah Application',
-        studentName: 'Tariq Mansoor',
-        email: 'tariq.mansoor@example.com',
-        phone: '+1 (555) 234-8899',
-        submittedAt: '2026-08-30 18:45',
-        status: 'Admitted',
-        data: {
-          'Prior Tajweed Certifications': 'Tuhfat al-Atfal & Jazariyyah completed',
-          'Target Qira\'ah Track': 'Hafs \'an \'Asim',
-          'Weekly Availability': '10 - 20 hours',
-        }
-      },
-      {
-        id: 'resp-4',
-        formId: 'form-tech-assessment',
-        formTitle: 'Coding Bootcamp Entrance Assessment',
-        studentName: 'Karim Bennani',
-        email: 'karim@techdev.io',
-        phone: '+33 6 12 34 56 78',
-        submittedAt: '2026-09-10 11:20',
-        status: 'Interview Scheduled',
-        data: {
-          'GitHub / Portfolio URL': 'https://github.com/kbennani',
-          'Prior Coding Background': 'HTML/CSS/JS Basics',
-          'Target Track Goal': 'Full-Stack React & Next.js transition'
+          'Primary Learning Goal': 'Master core competency benchmarks for upcoming certification.',
+          'Weekly Study Hours Available': '6-10 hours',
+          'Additional Background or Questions': 'Seeking personalized instructor feedback.'
         }
       }
-    ] : [];
+    ];
   });
 
   // Responses dedicated to the currently opened form
@@ -256,10 +482,20 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
 
   // Save changes to tenant and local storage
   const persistForms = (newForms: FormConfig[]) => {
-    setFormsList(newForms);
-    const defaultForm = newForms.find((f) => f.isDefault) || newForms[0];
+    // Automatically compile pure HTML and scoped pure CSS for every form
+    const enrichedForms = newForms.map((f) => {
+      const { html, css } = compileFormToHtmlAndCss(f);
+      return {
+        ...f,
+        compiledHtml: html,
+        compiledCss: css,
+      };
+    });
+
+    setFormsList(enrichedForms);
+    const defaultForm = enrichedForms.find((f) => f.isDefault) || enrichedForms[0];
     updateTenantConfig({
-      forms: newForms,
+      forms: enrichedForms,
       customFormFields: defaultForm?.fields || [],
       formTitle: defaultForm?.title,
       formDescription: defaultForm?.description,
@@ -510,15 +746,13 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
           <div>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shadow-sm">
-                <FileCheck className="w-6 h-6 text-emerald-600" />
-              </div>
+              <FileCheck className="w-7 h-7 text-emerald-600 shrink-0" />
               <div>
                 <h1 className={`text-2xl sm:text-3xl font-black text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
-                  {isAr ? 'استوديو النماذج والاستبيانات الذكية' : 'Google Forms & Admissions Studio'}
+                  {isAr ? 'استوديو النماذج والاستبيانات المخصصة' : 'Custom Forms & Survey Studio'}
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {isAr ? 'إنشاء نماذج مخصصة لكل تخصص، مع ثيمات متقدمة (Material UI) وردود معزولة لكل نموذج' : 'Create Google Forms-style multi-forms with Material UI themes, isolated response repositories, and landing page embeds.'}
+                  {isAr ? 'إنشاء نماذج مخصصة واستبيانات وتقييمات مع حقول ديناميكية، تتبع الردود، والدمج المباشر في صفحات الأكاديمية' : 'Create dynamic multi-purpose forms, surveys, assessments, and questionnaires with isolated response vaults and live page embeds.'}
                 </p>
               </div>
             </div>
@@ -784,6 +1018,19 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           >
             <Eye className="w-4 h-4" />
             <span>Live Preview & Embed</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveStudioTab('code_export')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+              activeStudioTab === 'code_export'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Code2 className="w-4 h-4" />
+            <span>HTML & CSS (GrapesJS)</span>
           </button>
         </div>
       </div>
@@ -1262,7 +1509,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
 
                     <div className="pt-2 flex items-center justify-between">
                       <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-700' : 'text-slate-400'}`}>
-                        {isSelected ? '✓ Active Theme' : 'Select'}
+                        {isSelected ? 'Active Theme' : 'Select'}
                       </span>
                     </div>
                   </div>
@@ -1399,6 +1646,86 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
         </div>
       )}
 
+      {/* ------------------------------------------------------------- */}
+      {/* TAB 5: STANDALONE HTML & PURE CSS CODE FOR GRAPESJS INJECTION */}
+      {/* ------------------------------------------------------------- */}
+      {activeStudioTab === 'code_export' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">GrapesJS Native Block Code</span>
+                <h3 className="font-extrabold text-base text-slate-900">Standalone HTML & Scoped CSS</h3>
+                <p className="text-xs text-slate-500">
+                  This form is automatically populated as a draggable block in your <strong>GrapesJS Page Builder</strong> under "Admissions & Forms".
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const compiled = compileFormToHtmlAndCss(activeForm);
+                    navigator.clipboard.writeText(compiled.combined);
+                    onAddToast({ type: 'success', title: 'Code Copied', message: 'Combined HTML & CSS copied to clipboard!' });
+                  }}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Combined HTML & CSS</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+              {/* HTML Snippet */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-700">Semantic HTML Markup</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const compiled = compileFormToHtmlAndCss(activeForm);
+                      navigator.clipboard.writeText(compiled.html);
+                      onAddToast({ type: 'success', title: 'HTML Copied', message: 'Form HTML copied to clipboard.' });
+                    }}
+                    className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" />
+                    <span>Copy HTML</span>
+                  </button>
+                </div>
+                <pre className="p-4 rounded-2xl bg-slate-900 text-slate-100 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-[360px] scrollbar-thin">
+                  {compileFormToHtmlAndCss(activeForm).html}
+                </pre>
+              </div>
+
+              {/* CSS Snippet */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-700">Scoped Pure CSS (Theme: {activeForm.themeStyle || 'minimalist'})</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const compiled = compileFormToHtmlAndCss(activeForm);
+                      navigator.clipboard.writeText(compiled.css);
+                      onAddToast({ type: 'success', title: 'CSS Copied', message: 'Form CSS copied to clipboard.' });
+                    }}
+                    className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" />
+                    <span>Copy CSS</span>
+                  </button>
+                </div>
+                <pre className="p-4 rounded-2xl bg-slate-900 text-slate-100 font-mono text-[11px] leading-relaxed overflow-x-auto max-h-[360px] scrollbar-thin">
+                  {compileFormToHtmlAndCss(activeForm).css}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Inspection Modal for Single Response */}
       {selectedResponseForModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans">
@@ -1413,7 +1740,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                 onClick={() => setSelectedResponseForModal(null)}
                 className="text-slate-400 hover:text-slate-600 font-bold"
               >
-                ✕
+                
               </button>
             </div>
 

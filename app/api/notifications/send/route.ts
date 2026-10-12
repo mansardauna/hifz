@@ -1,9 +1,16 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { NotificationService } from '../../../../src/server/services/notificationService';
-import { apiSuccess, apiError, handleApiError } from '../../../../src/server/lib/apiResponse';
+import { apiError, handleApiError } from '../../../../src/server/lib/apiResponse';
+import { requireAuth } from '../../../../src/server/lib/serverAuth';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    // Assert staff authorization to eliminate open relay vulnerabilities
+    requireAuth(request, ['admin', 'superadmin', 'teacher']);
+
     const body = await request.json();
     const { channel, recipient, subject, content, source, provider, metadata, customConfig } = body;
 

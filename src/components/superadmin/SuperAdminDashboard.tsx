@@ -84,18 +84,20 @@ import { Button, Input, Card, Badge, Modal, DataTablePagination } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
 import { AnkabitLogo } from '../brand/AnkabitLogo';
 import { useTranslation } from '../../modules/i18n';
+import { useConfirm } from '../../context/ConfirmModalContext';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
   const { user, login, logout } = useAuth();
+  const confirm = useConfirm();
   const { language, setLanguage, supportedLanguages, isRtl, t } = useTranslation();
 
   // Mobile sidebar toggle
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Login Gate State (for direct navigators)
-  const [adminEmailInput, setAdminEmailInput] = useState('superadmin@ankabit.app');
-  const [adminPasswordInput, setAdminPasswordInput] = useState('superadmin123');
+  const [adminEmailInput, setAdminEmailInput] = useState('');
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // Active View Navigation
@@ -439,9 +441,28 @@ export const SuperAdminDashboard: React.FC = () => {
     );
   };
 
-  const handleChangeTenantPlan = (tenantId: string, newPlanId: string) => {
+  const handleChangeTenantPlan = async (tenantId: string, newPlanId: string) => {
     const selectedPlan = plans.find((p) => p.id === newPlanId);
     if (!selectedPlan) return;
+
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('ankabit_auth_token') : null;
+      await fetch('/api/super-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          action: 'update_tenant_plan',
+          tenantId,
+          planId: newPlanId,
+          planSlug: selectedPlan.slug || selectedPlan.name.toLowerCase(),
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to persist tenant plan to DB:', err);
+    }
 
     setTenants((prev) =>
       prev.map((t) => {
@@ -468,32 +489,38 @@ export const SuperAdminDashboard: React.FC = () => {
         })
       );
     }
-    success('Impersonation Active 🕵️', `Switched into ${targetTenant.name} as Administrator.`);
+    success('Impersonation Active', `Switched into ${targetTenant.name} as Administrator.`);
     window.location.href = `/${targetTenant.subdomain}/admin`;
   };
 
   // Authentication Handler for SuperAdmin Gate
   const isSuperAdminAuthenticated = user?.role === 'superadmin';
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!adminEmailInput || !adminPasswordInput) {
       error('Validation Error', 'Please enter your SuperAdmin email and password.');
       return;
     }
     setIsAuthenticating(true);
-    setTimeout(() => {
-      setIsAuthenticating(false);
-      if (
-        (adminEmailInput.toLowerCase().includes('superadmin') || adminEmailInput === 'admin@ankabit.app') &&
-        adminPasswordInput === 'superadmin123'
-      ) {
-        login(adminEmailInput, 'superadmin', 'Platform SuperAdmin');
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: adminEmailInput, password: adminPasswordInput }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.user?.role === 'superadmin') {
+        login(data.user.email, data.user.role, data.user.name, data.token, data.user.tenantId);
         success('Access Granted', 'Welcome to the Platform SuperAdmin Console.');
       } else {
-        error('Access Denied', 'Invalid SuperAdmin credentials. Use superadmin@ankabit.app / superadmin123');
+        error('Access Denied', data.message || data.error || 'Invalid SuperAdmin credentials.');
       }
-    }, 400);
+    } catch (err: any) {
+      error('Authentication Error', err.message || 'Unable to connect to authentication server.');
+    } finally {
+      setIsAuthenticating(false);
+    }
   };
 
   // Filtered & Sorted Tenants List
@@ -684,7 +711,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span>Overview & Analytics</span>
+                <span>Overview</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'overview' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -703,7 +730,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Layers className="w-4 h-4 text-emerald-400" />
-                <span>Subscription Plans</span>
+                <span>Plans</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'plans' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -722,7 +749,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Building2 className="w-4 h-4 text-emerald-400" />
-                <span>Academies Directory</span>
+                <span>Academies</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'academies' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -741,7 +768,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Sliders className="w-4 h-4 text-emerald-400" />
-                <span>Communication Gateways</span>
+                <span>Gateways</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'gateways' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -760,7 +787,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Users className="w-4 h-4 text-emerald-400" />
-                <span>Roles & Staff</span>
+                <span>Staff & Roles</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'roles' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -779,7 +806,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <CreditCard className="w-4 h-4 text-emerald-400" />
-                <span>Billing & Subscribers</span>
+                <span>Subscribers</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'subscribers' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -802,7 +829,7 @@ export const SuperAdminDashboard: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <Settings className="w-4 h-4 text-emerald-400" />
-                <span>Settings & API Integrations</span>
+                <span>Settings</span>
               </div>
               <ChevronRight className={`w-3.5 h-3.5 transition-transform ${activeTab === 'settings' ? 'text-white' : 'text-slate-500'}`} />
             </button>
@@ -823,9 +850,18 @@ export const SuperAdminDashboard: React.FC = () => {
             </div>
 
             <button
-              onClick={() => {
-                logout();
-                info('Logged Out', 'SuperAdmin session locked.');
+              onClick={async () => {
+                const ok = await confirm({
+                  title: 'Lock SuperAdmin Console',
+                  message: 'Are you sure you want to end your SuperAdmin root administrative session?',
+                  confirmText: 'Lock Console',
+                  cancelText: 'Cancel',
+                  variant: 'danger',
+                });
+                if (ok) {
+                  logout();
+                  info('Logged Out', 'SuperAdmin session locked.');
+                }
               }}
               title="Lock & Log Out"
               className="p-2 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer"
@@ -919,9 +955,18 @@ export const SuperAdminDashboard: React.FC = () => {
             </button>
 
             <button
-              onClick={() => {
-                logout();
-                info('Session Locked', 'Logged out from SuperAdmin console.');
+              onClick={async () => {
+                const ok = await confirm({
+                  title: 'Lock SuperAdmin Console',
+                  message: 'Are you sure you want to end your SuperAdmin root administrative session?',
+                  confirmText: 'Lock Console',
+                  cancelText: 'Cancel',
+                  variant: 'danger',
+                });
+                if (ok) {
+                  logout();
+                  info('Session Locked', 'Logged out from SuperAdmin console.');
+                }
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition-colors border border-rose-200 cursor-pointer"
             >
@@ -932,7 +977,7 @@ export const SuperAdminDashboard: React.FC = () => {
         </header>
 
         {/* Content Container */}
-        <main className="p-4 sm:p-8 space-y-6 flex-1 max-w-7xl mx-auto w-full">
+        <main className="p-4 sm:p-8 space-y-6 flex-1 w-11/12 mx-auto">
 
           {/* ========================================================= */}
           {/* TAB: OVERVIEW & ANALYTICS WITH CLEAN CHARTS */}

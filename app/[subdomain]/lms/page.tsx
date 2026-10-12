@@ -19,8 +19,8 @@ interface LmsPageProps {
 }
 
 export default function TenantLmsPage({ params }: LmsPageProps) {
-  const { setTenantBySubdomain } = useTenant();
-  const { isAuthenticated } = useAuth();
+  const { setTenantBySubdomain, tenant, isLoading: isTenantLoading } = useTenant();
+  const { user, isAuthenticated, isLoading: isAuthLoading, isUserValidForSubdomain } = useAuth();
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -31,13 +31,31 @@ export default function TenantLmsPage({ params }: LmsPageProps) {
   }, [params.subdomain, setTenantBySubdomain]);
 
   useEffect(() => {
-    const isDemo = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo', 'demo'].includes(params.subdomain);
-    if (!isDemo && !isAuthenticated) {
+    // Wait for auth context to finish hydrating from localStorage
+    if (isAuthLoading) return;
+
+    // Assert strict authentication
+    if (!isAuthenticated || !user) {
       router.push(`/${params.subdomain}/login?redirect=lms`);
       return;
     }
+
+    // Wait for tenant config to finish loading from database
+    if (isTenantLoading) return;
+
+    // Verify user belongs to this specific academy workspace
+    if (!isUserValidForSubdomain(params.subdomain, tenant?.id)) {
+      router.push(`/${params.subdomain}/login?redirect=lms&error=workspace_mismatch`);
+      return;
+    }
+
+    if (user.role === 'admin' || user.role === 'superadmin') {
+      router.push(`/${params.subdomain}/admin`);
+      return;
+    }
+
     setIsCheckingAuth(false);
-  }, [isAuthenticated, params.subdomain, router]);
+  }, [isAuthenticated, user, isAuthLoading, isTenantLoading, params.subdomain, tenant?.id, router, isUserValidForSubdomain]);
 
   const handleAddToast = (toast: any) => {
     console.log('LMS Toast:', toast);

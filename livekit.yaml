@@ -1,0 +1,21 @@
+# ==============================================================================
+# LiveKit Server Configuration for Ankabit Virtual Classrooms
+# (Used only if self-hosting LiveKit instead of LiveKit Cloud)
+# ==============================================================================
+
+port: 7880
+bind_addresses:
+  - ""
+
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 50100
+  use_external_ip: true
+
+# API Keys & Secrets for JWT Authentication
+keys:
+  devkey_hifz_2026: "secret_hifz_production_webrtc_cloud_2026_super_key"
+
+logging:
+  level: info

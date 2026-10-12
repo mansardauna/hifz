@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTenant } from '../../context/TenantContext';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { ToastMessage } from '../ui/Toast';
 import { Modal, Button, Input, Card } from '../ui';
 import { User, Settings, Mail, Phone, Lock, Save } from 'lucide-react';
@@ -14,12 +15,14 @@ interface UserProfileModalProps {
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, onAddToast }) => {
   const { user } = useAuth();
   const { tenant } = useTenant();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
 
   const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
 
   // Profile Form State
-  const [name, setName] = useState<string>(user?.name || 'Abdullah Ahmad');
-  const [email, setEmail] = useState<string>(user?.email || 'user@hifz.app');
+  const [name, setName] = useState<string>(user?.name || (isQuran ? 'Abdullah Ahmad' : 'Alex Morgan'));
+  const [email, setEmail] = useState<string>(user?.email || (isQuran ? 'student@hifz.app' : 'student@academy.com'));
   const [phone, setPhone] = useState<string>('+1 (555) 345-6789');
 
   // Password / Security Form State

@@ -1,8 +1,15 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Poppins, DM_Sans, Amiri } from 'next/font/google';
+import { Inter, Poppins, DM_Sans, Amiri } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -63,8 +70,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${poppins.variable} ${dmSans.variable} ${amiri.variable}`}>
-      <body className="bg-slate-50 text-slate-900 antialiased font-sans">
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable} ${dmSans.variable} ${amiri.variable}`}>
+      <body suppressHydrationWarning className="bg-slate-50 text-slate-900 antialiased font-sans">
         <Providers>{children}</Providers>
       </body>
     </html>

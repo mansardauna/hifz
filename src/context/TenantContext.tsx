@@ -1,14 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { TenantConfig, Direction, Course, FormFieldConfig } from '../types';
 import { MOCK_TENANTS, MOCK_COURSES } from '../services/mockData';
 import { api } from '../services/api';
+import { DEMO_SUBDOMAINS, isDemoTenant } from '../lib/tenants';
+
+export { DEMO_SUBDOMAINS, isDemoTenant };
 
 export type AppRole = 'saas_home' | 'landing' | 'admin' | 'student' | 'signin' | 'signup' | 'create_academy' | 'forgot-password';
 export type AppLanguage = 'en' | 'ar';
-
-export const DEMO_SUBDOMAINS = ['hifz-academy', 'al-furqan', 'code-academy', 'school-demo', 'madrasat-demo', 'demo'];
-export const isDemoTenant = (subdomain?: string): boolean =>
-  DEMO_SUBDOMAINS.includes(subdomain || '') || (subdomain || '').endsWith('-demo');
 
 export const createCleanTenantConfig = (subdomain: string): TenantConfig => {
   const isCoding = subdomain.includes('code');
@@ -77,9 +78,31 @@ interface TenantContextType {
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
 
+const resolveInitialSubdomain = (): string => {
+  if (typeof window !== 'undefined') {
+    const path = window.location.pathname;
+    const segments = path.split('/').filter(Boolean);
+    const rootRoutes = ['login', 'register', 'create-academy', 'super-admin', 'verify', 'api'];
+    if (segments.length > 0 && !rootRoutes.includes(segments[0])) {
+      return segments[0];
+    }
+    const host = window.location.hostname;
+    const parts = host.split('.');
+    if (parts.length > 2 && parts[0] !== 'www' && !host.endsWith('.vercel.app')) {
+      return parts[0];
+    }
+  }
+  return 'demo';
+};
+
 export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentSubdomain, setCurrentSubdomain] = useState<string>('hifz-academy');
-  const [tenant, setTenant] = useState<TenantConfig>(MOCK_TENANTS['hifz-academy']);
+  const [currentSubdomain, setCurrentSubdomain] = useState<string>(() => resolveInitialSubdomain());
+  const [tenant, setTenant] = useState<TenantConfig>(() => {
+    const sub = resolveInitialSubdomain();
+    return isDemoTenant(sub)
+      ? (MOCK_TENANTS[sub] || createCleanTenantConfig(sub))
+      : createCleanTenantConfig(sub);
+  });
   const [courses, setCourses] = useState<Course[]>([]);
   const [activeRole, setActiveRole] = useState<AppRole>('saas_home');
   const [direction, setDirection] = useState<Direction>('ltr');
@@ -89,71 +112,70 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Auto-detect subdomain from window.location pathname or hostname in real multi-tenant deployment
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const path = window.location.pathname;
-    const segments = path.split('/').filter(Boolean);
-    const rootRoutes = ['login', 'register', 'create-academy', 'super-admin', 'verify', 'api'];
-    if (segments.length > 0 && !rootRoutes.includes(segments[0])) {
-      const detected = segments[0];
+    const detected = resolveInitialSubdomain();
+    if (detected && detected !== currentSubdomain) {
       setCurrentSubdomain(detected);
-      return;
-    }
-
-    const host = window.location.hostname;
-    const parts = host.split('.');
-    if (parts.length > 2 && parts[0] !== 'www' && !host.endsWith('.vercel.app')) {
-      const detectedSubdomain = parts[0];
-      setCurrentSubdomain(detectedSubdomain);
-      setActiveRole('landing');
     }
   }, []);
 
   // Fetch tenant config, merge persistent localStorage overrides, and inject dynamic CSS variables
   useEffect(() => {
+    if (!currentSubdomain) return;
     setIsLoading(true);
-    api.getTenantConfig(currentSubdomain).then((baseConfig) => {
-      let mergedConfig = baseConfig;
-      if (typeof window !== 'undefined') {
-        try {
-          const cachedJson = localStorage.getItem(`tenant_config_${currentSubdomain}`);
-          const cachedHtml = localStorage.getItem(`tenant_customHtml_${currentSubdomain}`);
-          const cachedCss = localStorage.getItem(`tenant_customCss_${currentSubdomain}`);
-          const cachedSchema = localStorage.getItem(`tenant_schema_${currentSubdomain}`);
+    let isCancelled = false;
 
-          if (cachedJson) {
-            const parsed = JSON.parse(cachedJson);
-            mergedConfig = { ...mergedConfig, ...parsed };
-          }
-          if (cachedHtml) {
-            mergedConfig.customHtml = cachedHtml;
-          }
-          if (cachedCss) {
-            mergedConfig.customCss = cachedCss;
-          }
-          if (cachedSchema) {
-            try {
-              mergedConfig.landingPageSchema = JSON.parse(cachedSchema);
-            } catch (e) {}
-          }
-        } catch (e) {
-          console.warn('localStorage tenant load error:', e);
+    // Immediately apply cached or clean skeleton config for responsive rendering
+    const isDemo = isDemoTenant(currentSubdomain);
+    const base = isDemo ? (MOCK_TENANTS[currentSubdomain] || MOCK_TENANTS['demo'] || createCleanTenantConfig(currentSubdomain)) : createCleanTenantConfig(currentSubdomain);
+    let mergedLocal = { ...base };
+    if (typeof window !== 'undefined') {
+      try {
+        const cachedJson = localStorage.getItem(`tenant_config_${currentSubdomain}`);
+        const cachedHtml = localStorage.getItem(`tenant_customHtml_${currentSubdomain}`);
+        const cachedCss = localStorage.getItem(`tenant_customCss_${currentSubdomain}`);
+        const cachedSchema = localStorage.getItem(`tenant_schema_${currentSubdomain}`);
+
+        if (cachedJson) mergedLocal = { ...mergedLocal, ...JSON.parse(cachedJson) };
+        if (cachedHtml) mergedLocal.customHtml = cachedHtml;
+        if (cachedCss) mergedLocal.customCss = cachedCss;
+        if (cachedSchema) {
+          try {
+            mergedLocal.landingPageSchema = JSON.parse(cachedSchema);
+          } catch (e) {}
         }
+      } catch (e) {
+        console.warn('localStorage tenant load error:', e);
       }
+    }
 
-      setTenant(mergedConfig);
+    setTenant(mergedLocal);
+    injectCssVariables(mergedLocal);
+
+    api.getTenantConfig(currentSubdomain).then((serverConfig) => {
+      if (isCancelled) return;
+      const finalConfig = { ...mergedLocal, ...serverConfig };
+      setTenant(finalConfig);
       if (activeRole === 'landing') {
-        setDirection(mergedConfig.defaultDirection);
-        setLanguage(mergedConfig.defaultDirection === 'rtl' ? 'ar' : 'en');
+        setDirection(finalConfig.defaultDirection);
+        setLanguage(finalConfig.defaultDirection === 'rtl' ? 'ar' : 'en');
       }
-      injectCssVariables(mergedConfig);
+      injectCssVariables(finalConfig);
 
       // Load tenant-specific courses
-      api.getCourses(mergedConfig.id || currentSubdomain).then((loadedCourses) => {
+      api.getCourses(finalConfig.id || currentSubdomain).then((loadedCourses) => {
+        if (isCancelled) return;
         setCourses(loadedCourses);
         setIsLoading(false);
       }).catch(() => {
-        setIsLoading(false);
+        if (!isCancelled) setIsLoading(false);
       });
+    }).catch(() => {
+      if (!isCancelled) setIsLoading(false);
     });
+
+    return () => {
+      isCancelled = true;
+    };
   }, [currentSubdomain]);
 
   const hexToRgb = (hex: string): string => {
@@ -208,33 +230,14 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     link.href = faviconUrl;
   };
 
-  const setTenantBySubdomain = (subdomain: string) => {
-    let base = MOCK_TENANTS[subdomain];
-    if (!base) {
-      base = createCleanTenantConfig(subdomain);
-    }
-    let merged = { ...base };
-    if (typeof window !== 'undefined') {
-      try {
-        const cachedJson = localStorage.getItem(`tenant_config_${subdomain}`);
-        const cachedHtml = localStorage.getItem(`tenant_customHtml_${subdomain}`);
-        const cachedCss = localStorage.getItem(`tenant_customCss_${subdomain}`);
-        const cachedSchema = localStorage.getItem(`tenant_schema_${subdomain}`);
-        if (cachedJson) merged = { ...merged, ...JSON.parse(cachedJson) };
-        if (cachedHtml) merged.customHtml = cachedHtml;
-        if (cachedCss) merged.customCss = cachedCss;
-        if (cachedSchema) {
-          try {
-            merged.landingPageSchema = JSON.parse(cachedSchema);
-          } catch (e) {}
-        }
-      } catch (e) {}
-    }
-    setCurrentSubdomain(subdomain);
-    setTenant(merged);
-    injectCssVariables(merged);
-    setActiveRole('landing');
-  };
+  const setTenantBySubdomain = useCallback((subdomain: string) => {
+    if (!subdomain) return;
+    const clean = subdomain.trim();
+    setCurrentSubdomain((prev) => {
+      if (prev === clean) return prev;
+      return clean;
+    });
+  }, []);
 
   const toggleLanguage = () => {
     const nextLang = language === 'en' ? 'ar' : 'en';
@@ -246,12 +249,19 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const updateTenantConfig = (updates: Partial<TenantConfig>) => {
     setTenant((prev) => {
       const updated = { ...prev, ...updates };
-      if (updates.theme) injectCssVariables(updated);
+      injectCssVariables(updated);
+
+      if (updated.subdomain && updated.subdomain !== prev.subdomain) {
+        setCurrentSubdomain(updated.subdomain);
+      }
 
       // Persist to localStorage immediately
       if (typeof window !== 'undefined') {
         try {
           localStorage.setItem(`tenant_config_${updated.subdomain}`, JSON.stringify(updated));
+          if (prev.subdomain && prev.subdomain !== updated.subdomain) {
+            localStorage.setItem(`tenant_config_${prev.subdomain}`, JSON.stringify(updated));
+          }
           if (updates.customHtml) {
             localStorage.setItem(`tenant_customHtml_${updated.subdomain}`, updates.customHtml);
           }
@@ -264,6 +274,31 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         } catch (e) {
           console.warn('localStorage tenant save error:', e);
         }
+
+        // Persist to MySQL in the background
+        try {
+          const token = localStorage.getItem('ankabit_auth_token');
+          fetch('/api/tenant', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({
+              id: updated.id,
+              currentSubdomain: prev.subdomain,
+              subdomain: updated.subdomain,
+              name: updated.name,
+              tagline: updated.tagline,
+              brandColor: updated.theme?.primaryColor || (updated as any).brandColor,
+              settings: updated.settings || {},
+              pricingPlans: updated.pricingPlans || [],
+              paymentGateways: updated.paymentGateways || [],
+            }),
+          }).catch((err) => {
+            console.warn('Background tenant DB sync warning:', err);
+          });
+        } catch (e) {}
       }
 
       return updated;

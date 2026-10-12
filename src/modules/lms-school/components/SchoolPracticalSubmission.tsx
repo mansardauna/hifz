@@ -84,7 +84,7 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
     }
 
     setSubmissionStatus('submitted');
-    success('Project Submitted! 🚀', 'Your vocational assignment has been sent to your instructor for grading.');
+    success('Project Submitted!', 'Your vocational assignment has been sent to your instructor for grading.');
     if (onSubmitSuccess) onSubmitSuccess();
   };
 

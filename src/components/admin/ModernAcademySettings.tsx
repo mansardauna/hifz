@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { useToast } from '../../context/ToastContext';
 import { useNotifications } from '../../context/NotificationContext';
-import { Button, Input, Card, Badge, AppPreloader, ToastMessage } from '../ui';
+import { Button, Input, Card, Badge, AppPreloader, ToastMessage, PageHeader } from '../ui';
 import { LockedFeatureCard } from './LockedFeatureCard';
 import { AuthPageCustomization, FormFieldConfig } from '../../types';
 import {
@@ -37,7 +37,24 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  X,
+  Save,
+  ListTodo,
+  Award,
+  Layers,
+  Copy,
+  Loader2
 } from 'lucide-react';
+import {
+  getClassroomConfig,
+  saveClassroomConfig,
+  detectTenantNicheType,
+  ClassroomCustomizationConfig,
+  BreakoutPodConfig,
+  AgendaMilestoneConfig,
+  RubricCriteriaConfig,
+  ForumChannelConfig
+} from '../../services/classroomCustomizationService';
 
 interface ModernAcademySettingsProps {
   onAddToast?: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -71,6 +88,19 @@ interface StaffMember {
   role: 'admin' | 'teacher' | 'registrar' | 'parent';
   status: 'active' | 'invited';
   assignedClasses: number;
+  phone?: string;
+  assignedCourses?: string[];
+}
+
+interface PendingApplicant {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  track: string;
+  submittedTime: string;
+  status: string;
+  phone?: string;
 }
 
 export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
@@ -80,19 +110,31 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
   const { tenant, updateTenantConfig } = useTenant();
   const { success, error, info } = useToast();
   const { triggerEventNotification } = useNotifications();
+  const niche = detectTenantNicheType(tenant);
+  const isQuran = niche === 'quran';
   const plan = tenant.subscriptionPlan || 'free';
   const isCustomDomainUnlocked = plan === 'growth' || plan === 'enterprise';
 
   // Navigation tab
-  const [activeTab, setActiveTab] = useState<'general' | 'branding' | 'roles_permissions' | 'auth_layout' | 'security'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'branding' | 'roles_permissions' | 'auth_layout' | 'security' | 'classroom_community'>('general');
+
+  // Classroom & Community Customization State
+  const [classroomConfig, setClassroomConfig] = useState<ClassroomCustomizationConfig>(() =>
+    getClassroomConfig(tenant)
+  );
+  const [activeClassroomSubTab, setActiveClassroomSubTab] = useState<'pods' | 'agenda' | 'rubric' | 'forum'>('pods');
+  const [classroomTopicInputs, setClassroomTopicInputs] = useState<Record<string, string>>({});
+  const [newChannelLabel, setNewChannelLabel] = useState<string>('');
+  const [newChannelDesc, setNewChannelDesc] = useState<string>('');
+  const [newChannelIcon, setNewChannelIcon] = useState<string>('MessageSquare');
 
   // General Settings
-  const [companyName, setCompanyName] = useState<string>(tenant.name || 'Hifz Quran Academy');
-  const [companyId, setCompanyId] = useState<string>(tenant.id || 'ACAD-2F2467890');
-  const [phoneNumber, setPhoneNumber] = useState<string>(tenant.contactPhone || '+966 50 123 4567');
-  const [contactEmail, setContactEmail] = useState<string>(tenant.contactEmail || 'admissions@academy.com');
+  const [companyName, setCompanyName] = useState<string>(tenant.name || '');
+  const [companyId, setCompanyId] = useState<string>(tenant.id || '');
+  const [phoneNumber, setPhoneNumber] = useState<string>(tenant.contactPhone || '');
+  const [contactEmail, setContactEmail] = useState<string>(tenant.contactEmail || '');
   const [timeZone, setTimeZone] = useState<string>('UTC +3:00 Arabia Standard Time (Makkah)');
-  const [subdomain, setSubdomain] = useState<string>(tenant.subdomain || 'hifz-academy');
+  const [subdomain, setSubdomain] = useState<string>(tenant.subdomain || '');
   const [customDomain, setCustomDomain] = useState<string>(tenant.customDomain || '');
   const [isVerifyingDomain, setIsVerifyingDomain] = useState(false);
 
@@ -126,42 +168,131 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
     tenant.authCustomization?.backgroundImageUrl || ''
   );
   const [calligraphyText, setCalligraphyText] = useState<string>(
-    tenant.authCustomization?.calligraphyText || 'وَقُل رَّبِّ زِدْنِي عِلْمًا'
+    tenant.authCustomization?.calligraphyText || (isQuran ? 'وَقُل رَّبِّ زِدْنِي عِلْمًا' : 'Inspiring Excellence Through Learning')
   );
   const [calligraphyTranslation, setCalligraphyTranslation] = useState<string>(
-    tenant.authCustomization?.calligraphyTranslation || '“And say: My Lord, increase me in knowledge” • Surah Taha: 114'
+    tenant.authCustomization?.calligraphyTranslation || (isQuran ? '“And say: My Lord, increase me in knowledge” • Surah Taha: 114' : 'Dedicated to lifelong education and professional development')
   );
 
   // Custom Fields for Student Registration
   const [customFields, setCustomFields] = useState<FormFieldConfig[]>(
-    tenant.customFormFields || [
-      { id: 'parentName', label: 'Parent / Guardian Name', labelAr: 'اسم ولي الأمر', type: 'text', required: false, width: 'half' },
-      { id: 'memorizedJuz', label: 'Current Juz Memorized (0-30)', labelAr: 'عدد الأجزاء المحفوظة', type: 'select', required: true, width: 'half' }
-    ]
+    tenant.customFormFields || []
   );
   const [newFieldName, setNewFieldName] = useState<string>('');
   const [newFieldType, setNewFieldType] = useState<'text' | 'select' | 'phone'>('text');
 
-  // Staff & RBAC State
-  const [staffList, setStaffList] = useState<StaffMember[]>([
-    { id: 'st-1', name: 'Sheikh Tariq Al-Mansoor', email: 'director@academy.com', role: 'admin', status: 'active', assignedClasses: 6 },
-    { id: 'st-2', name: 'Ustadh Bilal Hashmi', email: 'bilal@academy.com', role: 'teacher', status: 'active', assignedClasses: 4 },
-    { id: 'st-3', name: 'Ustadha Fatima Zahra', email: 'fatima@academy.com', role: 'teacher', status: 'active', assignedClasses: 3 },
-    { id: 'st-4', name: 'Brother Kareem Said', email: 'admissions@academy.com', role: 'registrar', status: 'invited', assignedClasses: 0 },
-  ]);
+  // Staff & RBAC State (Dynamic from MySQL)
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [isLoadingStaff, setIsLoadingStaff] = useState<boolean>(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isProvisioning, setIsProvisioning] = useState<boolean>(false);
   const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'admin' | 'teacher' | 'registrar'>('teacher');
+  const [provisionedCredentials, setProvisionedCredentials] = useState<{
+    name: string;
+    email: string;
+    role: string;
+    temporaryPassword?: string;
+  } | null>(null);
 
-  // Role Permissions Matrix
-  const [rolePermissions, setRolePermissions] = useState({
-    admin: { manageBilling: true, editLanding: true, manageCourses: true, gradeSubmissions: true, liveClass: true, forumMod: true },
-    teacher: { manageBilling: false, editLanding: false, manageCourses: true, gradeSubmissions: true, liveClass: true, forumMod: true },
-    registrar: { manageBilling: false, editLanding: false, manageCourses: false, gradeSubmissions: false, liveClass: false, forumMod: false },
-    student: { manageBilling: false, editLanding: false, manageCourses: false, gradeSubmissions: false, liveClass: true, forumMod: true },
-    parent: { manageBilling: false, editLanding: false, manageCourses: false, gradeSubmissions: false, liveClass: false, forumMod: false },
+  // Applicant Queue State (Dynamic from MySQL)
+  const [applicantsList, setApplicantsList] = useState<PendingApplicant[]>([]);
+  const [isLoadingApplicants, setIsLoadingApplicants] = useState<boolean>(true);
+  const [processingApplicantId, setProcessingApplicantId] = useState<string | null>(null);
+
+  // Role Permissions Matrix State
+  const defaultRolePermissions = {
+    admin: { manageBilling: true, liveClass: true, gradeSubmissions: true, forumMod: true, viewChildReports: true },
+    teacher: { manageBilling: false, liveClass: true, gradeSubmissions: true, forumMod: true, viewChildReports: false },
+    registrar: { manageBilling: false, liveClass: false, gradeSubmissions: false, forumMod: true, viewChildReports: true },
+    student: { manageBilling: false, liveClass: true, gradeSubmissions: false, forumMod: true, viewChildReports: false },
+    parent: { manageBilling: false, liveClass: false, gradeSubmissions: false, forumMod: false, viewChildReports: true },
+  };
+
+  const [rolePermissions, setRolePermissions] = useState<typeof defaultRolePermissions>(() => {
+    return (tenant.settings as any)?.rolePermissions || defaultRolePermissions;
   });
+  const [isSavingPermissions, setIsSavingPermissions] = useState<boolean>(false);
+
+  // Fetch real staff from MySQL
+  const fetchStaff = async () => {
+    setIsLoadingStaff(true);
+    try {
+      const res = await fetch(`/api/tenant/members?tenantId=${encodeURIComponent(tenant.id || tenant.subdomain)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const mappedStaff: StaffMember[] = (data.staff || []).map((s: any) => ({
+          id: s.id,
+          name: s.name,
+          email: s.email,
+          role: s.role,
+          status: s.status === 'Active' ? 'active' : 'invited',
+          assignedClasses: s.assignedCourses ? s.assignedCourses.length : 0,
+          phone: s.phone,
+          assignedCourses: s.assignedCourses || [],
+        }));
+        setStaffList(mappedStaff);
+      }
+    } catch (err) {
+      console.error('Failed to load staff roster from MySQL:', err);
+    } finally {
+      setIsLoadingStaff(false);
+    }
+  };
+
+  // Fetch real pending applicants from MySQL
+  const fetchApplicants = async () => {
+    setIsLoadingApplicants(true);
+    try {
+      const res = await fetch(`/api/leads?tenantId=${encodeURIComponent(tenant.id || tenant.subdomain)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const allLeads = Array.isArray(data) ? data : (data.leads || []);
+        // Filter for applicants waiting in review queue
+        const pending = allLeads
+          .filter((l: any) => 
+            l.status === 'Under Review' || l.status === 'New' || l.status === 'Pending' || l.status === 'Interview'
+          )
+          .map((l: any) => {
+            const isTeacher = (l.notes || '').toLowerCase().includes('teacher') || (l.notes || '').toLowerCase().includes('instructor');
+            return {
+              id: l.id,
+              name: l.studentName || l.name || 'Anonymous Applicant',
+              email: l.email,
+              role: isTeacher ? 'teacher' : 'student',
+              track: l.courseInterest || l.planName || 'Core Curriculum',
+              submittedTime: l.createdAt ? new Date(l.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently',
+              status: l.status,
+              phone: l.phone,
+            };
+          });
+        setApplicantsList(pending);
+      }
+    } catch (err) {
+      console.error('Failed to load applicant queue from MySQL:', err);
+    } finally {
+      setIsLoadingApplicants(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tenant.id || tenant.subdomain) {
+      fetchStaff();
+      fetchApplicants();
+    }
+  }, [tenant.id, tenant.subdomain]);
+
+  useEffect(() => {
+    if (tenant.name) setCompanyName(tenant.name);
+    if (tenant.id) setCompanyId(tenant.id);
+    if (tenant.contactPhone) setPhoneNumber(tenant.contactPhone);
+    if (tenant.contactEmail) setContactEmail(tenant.contactEmail);
+    if (tenant.subdomain) setSubdomain(tenant.subdomain);
+    if (tenant.customDomain) setCustomDomain(tenant.customDomain);
+    if (tenant.theme?.primaryColor) setPrimaryColor(tenant.theme.primaryColor);
+    if (tenant.theme?.secondaryColor) setSecondaryColor(tenant.theme.secondaryColor);
+  }, [tenant.name, tenant.id, tenant.contactPhone, tenant.contactEmail, tenant.subdomain, tenant.customDomain, tenant.theme?.primaryColor, tenant.theme?.secondaryColor]);
 
   // Security State
   const [currentPassword, setCurrentPassword] = useState('');
@@ -189,33 +320,169 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
     info('Field Removed', 'Registration field removed.');
   };
 
-  const handleInviteStaff = () => {
+  const handleInviteStaff = async () => {
     if (!inviteEmail.trim() || !inviteName.trim()) {
       error('Missing Details', 'Please provide a staff name and valid email address.');
       return;
     }
-    const newMember: StaffMember = {
-      id: `st-${Date.now()}`,
-      name: inviteName.trim(),
-      email: inviteEmail.trim(),
-      role: inviteRole,
-      status: 'invited',
-      assignedClasses: 0,
-    };
-    setStaffList([...staffList, newMember]);
-    setInviteName('');
-    setInviteEmail('');
-    setIsInviteModalOpen(false);
-    success('Invitation Sent', `Sent role invitation to ${newMember.email} as ${newMember.role.toUpperCase()}.`);
+    setIsProvisioning(true);
+    const tempPassword = 'Staff' + Math.floor(100000 + Math.random() * 900000) + '!';
+    try {
+      const res = await fetch('/api/tenant/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId: tenant.id || tenant.subdomain,
+          name: inviteName.trim(),
+          email: inviteEmail.trim(),
+          role: inviteRole,
+          phone: '',
+          temporaryPassword: tempPassword,
+          assignedCourses: [],
+          assignedTasks: ['Onboard to cohort curriculum', 'Access instructor workstation']
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setProvisionedCredentials({
+          name: inviteName.trim(),
+          email: inviteEmail.trim(),
+          role: inviteRole,
+          temporaryPassword: data.temporaryPassword || tempPassword,
+        });
+        success('Staff Provisioned in Database', `Account directly created in MySQL for ${inviteName.trim()} (${inviteEmail.trim()}).`);
+        setInviteName('');
+        setInviteEmail('');
+        setIsInviteModalOpen(false);
+        await fetchStaff();
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        error('Provisioning Failed', errData.message || 'Could not save staff to database.');
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to connect to members API.');
+    } finally {
+      setIsProvisioning(false);
+    }
   };
 
-  const handleRemoveStaff = (id: string) => {
-    setStaffList(staffList.filter(s => s.id !== id));
-    info('Staff Member Removed', 'Staff access has been revoked.');
+  const handleRemoveStaff = async (id: string, name: string) => {
+    try {
+      const res = await fetch(`/api/tenant/members?id=${encodeURIComponent(id)}&tenantId=${encodeURIComponent(tenant.id || tenant.subdomain)}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        setStaffList(prev => prev.filter(s => s.id !== id));
+        info('Staff Access Revoked', `${name}'s access revoked from MySQL.`);
+      } else {
+        error('Revoke Failed', 'Could not delete staff member from database.');
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to revoke staff access.');
+    }
+  };
+
+  const handleAcceptApplicant = async (app: PendingApplicant) => {
+    setProcessingApplicantId(app.id);
+    try {
+      // 1. Update lead in MySQL to Admitted
+      await fetch('/api/leads', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: app.id,
+          status: 'Admitted',
+          paymentStatus: 'Paid'
+        })
+      });
+
+      // 2. Provision user account in MySQL
+      const tempPassword = 'User' + Math.floor(100000 + Math.random() * 900000) + '!';
+      await fetch('/api/tenant/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId: tenant.id || tenant.subdomain,
+          name: app.name,
+          email: app.email,
+          role: app.role,
+          phone: app.phone || '',
+          enrolledCourse: app.track,
+          temporaryPassword: tempPassword,
+          status: 'Admitted'
+        })
+      });
+
+      setProvisionedCredentials({
+        name: app.name,
+        email: app.email,
+        role: app.role,
+        temporaryPassword: tempPassword
+      });
+
+      success('Applicant Approved & Admitted!', `Granted dashboard access to ${app.name} (${app.email}) and created user in MySQL.`);
+      await fetchApplicants();
+      await fetchStaff();
+    } catch (err: any) {
+      error('Approval Failed', err.message || 'Could not process applicant approval.');
+    } finally {
+      setProcessingApplicantId(null);
+    }
+  };
+
+  const handleDeclineApplicant = async (app: PendingApplicant) => {
+    setProcessingApplicantId(app.id);
+    try {
+      await fetch('/api/leads', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: app.id,
+          status: 'Rejected'
+        })
+      });
+      info('Application Rejected', `Declined applicant ${app.name} in MySQL.`);
+      await fetchApplicants();
+    } catch (err: any) {
+      error('Decline Failed', err.message || 'Could not update applicant record.');
+    } finally {
+      setProcessingApplicantId(null);
+    }
+  };
+
+  const togglePermission = (role: keyof typeof defaultRolePermissions, perm: keyof typeof defaultRolePermissions['admin']) => {
+    if (role === 'admin' && perm === 'manageBilling') {
+      info('Locked Permission', 'Academy Admin billing capability is locked for security integrity.');
+      return;
+    }
+    setRolePermissions(prev => ({
+      ...prev,
+      [role]: {
+        ...prev[role],
+        [perm]: !prev[role][perm]
+      }
+    }));
+  };
+
+  const handleSaveRolePermissions = () => {
+    setIsSavingPermissions(true);
+    updateTenantConfig({
+      settings: {
+        ...(tenant.settings as any),
+        rolePermissions,
+      }
+    });
+    setTimeout(() => {
+      setIsSavingPermissions(false);
+      success('Role Permissions Saved', 'Granular permissions matrix persisted to MySQL academy configuration.');
+    }, 400);
   };
 
   const handleSaveGeneral = () => {
+    const finalSubdomain = subdomain.trim().toLowerCase() || tenant.subdomain;
     updateTenantConfig({
+      subdomain: finalSubdomain,
       name: companyName,
       contactPhone: phoneNumber,
       contactEmail: contactEmail,
@@ -264,6 +531,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
     success('Login Experience Updated', 'Authentication layout, custom background image, and registration fields updated.');
   };
 
+  const handleSaveClassroomCommunity = () => {
+    saveClassroomConfig(tenant, classroomConfig, updateTenantConfig);
+    success('Classroom Settings Saved', 'Breakout pods, curriculum progression agenda, rubrics, and discussion channels updated.');
+    triggerEventNotification('settings_saved');
+  };
+
   const handleVerifyCustomDomain = () => {
     if (!customDomain.trim()) {
       error('Domain Required', 'Please enter your custom domain (e.g. academy.com).');
@@ -276,7 +549,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
     setIsVerifyingDomain(true);
     setTimeout(() => {
       setIsVerifyingDomain(false);
-      success('DNS Connected! 🎉', `CNAME record for ${customDomain} successfully resolved to Vercel.`);
+      success('DNS Connected!', `CNAME record for ${customDomain} successfully resolved to Vercel.`);
     }, 1200);
   };
 
@@ -292,40 +565,28 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12 font-sans">
-      {/* Header Banner */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <Badge variant="primary" className="mb-2">
-            Academy Architecture & RBAC
-          </Badge>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Settings, Staff Roles & White-labeling
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Configure institutional profile, branding tokens, staff role permissions, and authentication security.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
-            Active Tier: <strong className="uppercase">{plan}</strong>
-          </span>
-          {plan !== 'enterprise' && onOpenUpgradeModal && (
-            <Button variant="outline" size="sm" onClick={onOpenUpgradeModal} className="font-bold text-xs">
-              Upgrade Plan
+      {/* Page Header */}
+      <PageHeader
+        title="Settings, Staff Roles & White-labeling"
+        subtitle="Configure institutional profile, branding tokens, staff role permissions, and authentication security."
+        badge={{ text: `Active Tier: ${plan.toUpperCase()}`, variant: "neutral" }}
+        action={
+          plan !== 'enterprise' && onOpenUpgradeModal ? (
+            <Button variant="outline" size="sm" onClick={onOpenUpgradeModal}>
+              <Sparkles className="w-4 h-4 mr-1 text-amber-500" /> Upgrade Plan
             </Button>
-          )}
-        </div>
-      </div>
+          ) : undefined
+        }
+      />
 
       {/* Navigation Tabs Bar */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+      <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('general')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'general'
-              ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Building2 className="w-4 h-4" />
@@ -334,10 +595,10 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('branding')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'branding'
-              ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Palette className="w-4 h-4" />
@@ -346,25 +607,31 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('roles_permissions')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'roles_permissions'
-              ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Users className="w-4 h-4" />
           <span>Staff Roles & RBAC</span>
-          <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-black">
+          <span
+            className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
+              activeTab === 'roles_permissions'
+                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold'
+                : 'bg-slate-100 text-slate-500'
+            }`}
+          >
             {staffList.length}
           </span>
         </button>
 
         <button
           onClick={() => setActiveTab('auth_layout')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'auth_layout'
-              ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Layout className="w-4 h-4" />
@@ -373,14 +640,26 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('security')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap ${
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'security'
-              ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
-              : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Shield className="w-4 h-4" />
           <span>Security & Sessions</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('classroom_community')}
+          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            activeTab === 'classroom_community'
+              ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Sliders className="w-4 h-4" />
+          <span>Classroom & Discussion Channels</span>
         </button>
       </div>
 
@@ -450,19 +729,29 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   Default Platform Subdomain (Free & Always Active)
                 </label>
                 <div className="flex items-center">
-                  <span className="px-3 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-xl text-xs font-mono text-slate-600 font-bold">
+                  <span className="px-3 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-xl text-xs font-mono text-slate-600 font-bold select-none">
                     https://
                   </span>
                   <input
                     type="text"
-                    disabled
                     value={subdomain}
-                    className="w-48 px-3 py-2 border-y border-slate-300 text-xs font-mono font-bold bg-slate-50 text-slate-800 cursor-not-allowed"
+                    onChange={(e) => {
+                      const cleanVal = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 32);
+                      setSubdomain(cleanVal);
+                    }}
+                    placeholder="academy-subdomain"
+                    className="w-56 px-3 py-2 border-y border-slate-300 text-xs font-mono font-bold bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
-                  <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 rounded-r-xl text-xs font-mono text-slate-600 font-bold">
+                  <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 rounded-r-xl text-xs font-mono text-slate-600 font-bold select-none">
                     .ankabit.app
                   </span>
                 </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Portal address:{' '}
+                  <span className="font-mono font-semibold text-slate-700">
+                    https://{subdomain || 'academy'}.ankabit.app
+                  </span>
+                </p>
               </div>
 
               {/* Custom Domain (Feature Gated) */}
@@ -924,21 +1213,33 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                   <Users className="w-5 h-5 text-emerald-600" />
                   <span>Academy Staff & Direct Role Assignment</span>
+                  <span className="text-xs font-bold text-slate-500 font-mono">({staffList.length})</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Directly provision accounts or assign roles for teachers, registrars, and sub-administrators.
                 </p>
               </div>
 
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsInviteModalOpen(true)}
-                leftIcon={<UserPlus className="w-4 h-4" />}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
-              >
-                Provision / Invite Staff
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchStaff}
+                  leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingStaff ? 'animate-spin' : ''}`} />}
+                  className="text-xs font-bold"
+                >
+                  Refresh
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setIsInviteModalOpen(true)}
+                  leftIcon={<UserPlus className="w-4 h-4" />}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                >
+                  Provision / Invite Staff
+                </Button>
+              </div>
             </div>
 
             {/* Staff Table */}
@@ -954,34 +1255,62 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {staffList.map((staff) => (
-                    <tr key={staff.id} className="hover:bg-slate-50/60">
-                      <td className="py-3.5 px-4">
-                        <div className="font-extrabold text-slate-900">{staff.name}</div>
-                        <div className="text-slate-500 text-[11px]">{staff.email}</div>
-                      </td>
-                      <td className="py-3.5 px-4 font-bold capitalize">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 text-[11px]">
-                          {staff.role}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 font-semibold">{staff.assignedClasses} Courses</td>
-                      <td className="py-3.5 px-4">
-                        <Badge variant={staff.status === 'active' ? 'success' : 'warning'}>
-                          {staff.status}
-                        </Badge>
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => handleRemoveStaff(staff.id)}
-                          className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer font-semibold text-xs"
-                          title="Revoke access"
-                        >
-                          Revoke
-                        </button>
+                  {isLoadingStaff ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400">
+                        <Loader2 className="w-6 h-6 animate-spin text-emerald-600 mx-auto mb-2" />
+                        <span>Loading staff roster from MySQL...</span>
                       </td>
                     </tr>
-                  ))}
+                  ) : staffList.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-500">
+                        <Users className="w-6 h-6 text-slate-300 mx-auto mb-2" />
+                        <p className="font-bold text-xs text-slate-700">No staff members found in database</p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">Click "Provision / Invite Staff" above to add instructors and administrators.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    staffList.map((staff) => (
+                      <tr key={staff.id} className="hover:bg-slate-50/60">
+                        <td className="py-3.5 px-4">
+                          <div className="font-extrabold text-slate-900">{staff.name}</div>
+                          <div className="text-slate-500 text-[11px] font-mono">{staff.email}</div>
+                          {staff.phone && <div className="text-slate-400 text-[10px]">{staff.phone}</div>}
+                        </td>
+                        <td className="py-3.5 px-4 font-bold capitalize">
+                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-extrabold ${
+                            staff.role === 'admin'
+                              ? 'bg-purple-100 text-purple-800'
+                              : staff.role === 'teacher'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-slate-100 text-slate-800'
+                          }`}>
+                            {staff.role}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-semibold">{staff.assignedClasses} Courses</td>
+                        <td className="py-3.5 px-4">
+                          <Badge variant={staff.status === 'active' ? 'success' : 'warning'}>
+                            {staff.status}
+                          </Badge>
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <button
+                            onClick={() => {
+                              if (confirm(`Revoke access for ${staff.name}? This will remove their credentials from MySQL.`)) {
+                                handleRemoveStaff(staff.id, staff.name);
+                              }
+                            }}
+                            className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer font-semibold text-xs transition-colors"
+                            title="Revoke access"
+                          >
+                            Revoke
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1000,9 +1329,20 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 </p>
               </div>
 
-              <span className="text-xs font-bold px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">
-                3 Pending Review
-              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchApplicants}
+                  leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingApplicants ? 'animate-spin' : ''}`} />}
+                  className="text-xs font-bold"
+                >
+                  Refresh Queue
+                </Button>
+                <span className="text-xs font-bold px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">
+                  {applicantsList.length} Pending Review
+                </span>
+              </div>
             </div>
 
             <div className="border border-slate-200 rounded-xl overflow-hidden">
@@ -1017,47 +1357,61 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {[
-                    { id: 'app-1', name: 'Zaid Al-Mansoor', email: 'zaid@student.com', role: 'student', track: 'Quran Hifz & Tajweed', time: '10 mins ago' },
-                    { id: 'app-2', name: 'Maryam Al-Sabah', email: 'maryam@learner.com', role: 'student', track: 'Full Quran Memorization', time: '1 hour ago' },
-                    { id: 'app-3', name: 'Ustadh Hisham Qureshi', email: 'hisham.q@instructor.com', role: 'teacher', track: 'Advanced Qira\'at Halaqah', time: 'Yesterday' },
-                  ].map((app) => (
-                    <tr key={app.id} className="hover:bg-slate-50/60">
-                      <td className="py-3.5 px-4">
-                        <div className="font-extrabold text-slate-900">{app.name}</div>
-                        <div className="text-slate-500 text-[11px] font-mono">{app.email}</div>
-                      </td>
-                      <td className="py-3.5 px-4 font-bold capitalize">
-                        <span className={`px-2 py-0.5 rounded-md text-[11px] font-extrabold ${app.role === 'teacher' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
-                          {app.role}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 font-semibold text-slate-700">{app.track}</td>
-                      <td className="py-3.5 px-4 text-slate-500 text-[11px]">{app.time}</td>
-                      <td className="py-3.5 px-4 text-right space-x-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => {
-                            success('Applicant Approved! 🚀', `Granted dashboard access to ${app.name} (${app.email}) and dispatched welcome credentials.`);
-                          }}
-                          className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] py-1 px-2.5"
-                        >
-                          Accept & Activate
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            info('Application Rejected', `Declined applicant ${app.name}.`);
-                          }}
-                          className="text-rose-600 hover:bg-rose-50 text-[11px] py-1 px-2 border-rose-200"
-                        >
-                          Decline
-                        </Button>
+                  {isLoadingApplicants ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400">
+                        <Loader2 className="w-6 h-6 animate-spin text-indigo-600 mx-auto mb-2" />
+                        <span>Querying pending applicant leads from MySQL...</span>
                       </td>
                     </tr>
-                  ))}
+                  ) : applicantsList.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-500">
+                        <UserCheck className="w-6 h-6 text-slate-300 mx-auto mb-2" />
+                        <p className="font-bold text-xs text-slate-700">No pending applications awaiting review</p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">When students or educators submit registration forms, they will appear here instantly for approval.</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    applicantsList.map((app) => (
+                      <tr key={app.id} className="hover:bg-slate-50/60">
+                        <td className="py-3.5 px-4">
+                          <div className="font-extrabold text-slate-900">{app.name}</div>
+                          <div className="text-slate-500 text-[11px] font-mono">{app.email}</div>
+                          {app.phone && <div className="text-slate-400 text-[10px]">{app.phone}</div>}
+                        </td>
+                        <td className="py-3.5 px-4 font-bold capitalize">
+                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-extrabold ${
+                            app.role === 'teacher' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            {app.role}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-semibold text-slate-700">{app.track}</td>
+                        <td className="py-3.5 px-4 text-slate-500 text-[11px]">{app.submittedTime}</td>
+                        <td className="py-3.5 px-4 text-right space-x-2">
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            disabled={processingApplicantId === app.id}
+                            onClick={() => handleAcceptApplicant(app)}
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] py-1 px-2.5"
+                          >
+                            {processingApplicantId === app.id ? 'Processing...' : 'Accept & Activate'}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={processingApplicantId === app.id}
+                            onClick={() => handleDeclineApplicant(app)}
+                            className="text-rose-600 hover:bg-rose-50 text-[11px] py-1 px-2 border-rose-200 font-bold"
+                          >
+                            Decline
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1065,13 +1419,28 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
           {/* Role Permissions Matrix */}
           <Card className="p-6 space-y-4">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-600" />
-              <span>Granular Role Permission Matrix</span>
-            </h3>
-            <p className="text-xs text-slate-500">
-              Configure what actions each account role is permitted to perform.
-            </p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                  <span>Granular Role Permission Matrix</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Configure and toggle what actions each account role is permitted to perform across the academy portal.
+                </p>
+              </div>
+
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveRolePermissions}
+                disabled={isSavingPermissions}
+                leftIcon={<Save className="w-4 h-4" />}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+              >
+                {isSavingPermissions ? 'Saving...' : 'Save Role Permissions Matrix'}
+              </Button>
+            </div>
 
             <div className="overflow-x-auto border border-slate-200 rounded-xl">
               <table className="w-full text-left text-xs">
@@ -1086,46 +1455,42 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
-                  <tr>
-                    <td className="py-3 px-4 font-semibold">Manage Billing & Gateways</td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold">Host Live WebRTC Classrooms</td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold">Grade Recitations & Feedback</td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold">Post in Community Forum</td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold">View Child Attendance & Invoices</td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                    <td className="text-center py-3"><Lock className="w-4 h-4 text-slate-300 mx-auto" /></td>
-                    <td className="text-center py-3"><CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto" /></td>
-                  </tr>
+                  {[
+                    { key: 'manageBilling' as const, label: 'Manage Billing & Gateways' },
+                    { key: 'liveClass' as const, label: 'Host Live WebRTC Classrooms' },
+                    { key: 'gradeSubmissions' as const, label: 'Grade Recitations & Feedback' },
+                    { key: 'forumMod' as const, label: 'Post in Community Forum' },
+                    { key: 'viewChildReports' as const, label: 'View Child Attendance & Invoices' },
+                  ].map((row) => (
+                    <tr key={row.key} className="hover:bg-slate-50/50">
+                      <td className="py-3 px-4 font-semibold text-slate-900">{row.label}</td>
+                      {(['admin', 'teacher', 'registrar', 'student', 'parent'] as const).map((role) => {
+                        const isGranted = (rolePermissions as any)[role]?.[row.key] ?? false;
+                        const isLockedAdmin = role === 'admin' && row.key === 'manageBilling';
+                        return (
+                          <td key={role} className="text-center py-2 px-3">
+                            <button
+                              type="button"
+                              onClick={() => togglePermission(role, row.key)}
+                              disabled={isLockedAdmin}
+                              title={isLockedAdmin ? 'Admin billing is locked for security' : `Click to toggle for ${role}`}
+                              className={`p-1.5 rounded-lg transition-all inline-flex items-center justify-center ${
+                                isGranted
+                                  ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 ring-1 ring-emerald-200/50'
+                                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                              } ${isLockedAdmin ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
+                            >
+                              {isGranted ? (
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                              ) : (
+                                <Lock className="w-4 h-4 text-slate-400" />
+                              )}
+                            </button>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -1237,7 +1602,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 type="text"
                 value={welcomeSubtitle}
                 onChange={(e) => setWelcomeSubtitle(e.target.value)}
-                placeholder="e.g. Enter credentials to access live halaqahs..."
+                placeholder={isQuran ? "e.g. Enter credentials to access live halaqahs..." : "e.g. Enter credentials to access your live classes..."}
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs"
               />
             </div>
@@ -1374,6 +1739,579 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         </Card>
       )}
 
+      {/* TAB 6: CLASSROOM & DISCUSSION CHANNELS */}
+      {activeTab === 'classroom_community' && (
+        <div className="space-y-6">
+          <Card className="p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                  <Sliders className="w-5 h-5 text-indigo-600" />
+                  <span>Classroom Pods, Agenda & Discussion Channels</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Customize the breakout pod tiers, live curriculum progression agenda, grading rubrics, and discussion forum channels for all students and instructors.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSaveClassroomCommunity}
+                  leftIcon={<Save className="w-4 h-4" />}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs"
+                >
+                  Save Classroom Settings
+                </Button>
+              </div>
+            </div>
+
+            {/* Sub-tab Navigation */}
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3 overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setActiveClassroomSubTab('pods')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  activeClassroomSubTab === 'pods'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Breakout Pods ({classroomConfig.pods.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveClassroomSubTab('agenda')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  activeClassroomSubTab === 'agenda'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <ListTodo className="w-3.5 h-3.5" />
+                <span>Progression Agenda ({classroomConfig.milestones.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveClassroomSubTab('rubric')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  activeClassroomSubTab === 'rubric'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <Award className="w-3.5 h-3.5" />
+                <span>Grading Rubric ({classroomConfig.rubricCriteria.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveClassroomSubTab('forum')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                  activeClassroomSubTab === 'forum'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Discussion Channels ({classroomConfig.forumChannels.length})</span>
+              </button>
+            </div>
+
+            {/* Sub-tab 1: BREAKOUT PODS */}
+            {activeClassroomSubTab === 'pods' && (
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Section Title in Live Classroom</label>
+                    <input
+                      type="text"
+                      value={classroomConfig.breakoutPodsTitle}
+                      onChange={(e) => setClassroomConfig({ ...classroomConfig, breakoutPodsTitle: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Section Description</label>
+                    <input
+                      type="text"
+                      value={classroomConfig.breakoutPodsSubtitle}
+                      onChange={(e) => setClassroomConfig({ ...classroomConfig, breakoutPodsSubtitle: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-indigo-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {classroomConfig.pods.map((pod, pIdx) => {
+                    const key = `set-pod-${pIdx}`;
+                    return (
+                      <div key={pod.id || pIdx} className="p-4 rounded-2xl border border-slate-200 bg-white space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${pod.badgeColor || 'bg-slate-100 text-slate-700'}`}>
+                            {pod.tier.toUpperCase()} TIER
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">Pod #{pIdx + 1}</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold text-slate-600 mb-1">Pod Name / Level Title</label>
+                            <input
+                              type="text"
+                              value={pod.label}
+                              onChange={(e) => {
+                                const updated = [...classroomConfig.pods];
+                                updated[pIdx] = { ...pod, label: e.target.value };
+                                setClassroomConfig({ ...classroomConfig, pods: updated });
+                              }}
+                              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold text-slate-600 mb-1">Level Description / Focus</label>
+                            <input
+                              type="text"
+                              value={pod.sublabel}
+                              onChange={(e) => {
+                                const updated = [...classroomConfig.pods];
+                                updated[pIdx] = { ...pod, sublabel: e.target.value };
+                                setClassroomConfig({ ...classroomConfig, pods: updated });
+                              }}
+                              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-indigo-600"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Focus Topics */}
+                        <div className="space-y-2 pt-2 border-t border-slate-100">
+                          <label className="block text-[11px] font-bold text-slate-600">Focus Topics</label>
+                          <div className="flex flex-wrap gap-1.5">
+                            {pod.targetTopics.map((topic, tIdx) => (
+                              <span
+                                key={tIdx}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-[11px] font-medium"
+                              >
+                                <span>{topic}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = [...classroomConfig.pods];
+                                    updated[pIdx] = {
+                                      ...pod,
+                                      targetTopics: pod.targetTopics.filter((_, i) => i !== tIdx),
+                                    };
+                                    setClassroomConfig({ ...classroomConfig, pods: updated });
+                                  }}
+                                  className="text-slate-400 hover:text-red-600 cursor-pointer"
+                                >
+                                  &times;
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-1">
+                            <input
+                              type="text"
+                              value={classroomTopicInputs[key] || ''}
+                              onChange={(e) => setClassroomTopicInputs({ ...classroomTopicInputs, [key]: e.target.value })}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const val = (classroomTopicInputs[key] || '').trim();
+                                  if (!val) return;
+                                  const updated = [...classroomConfig.pods];
+                                  updated[pIdx] = { ...pod, targetTopics: [...pod.targetTopics, val] };
+                                  setClassroomConfig({ ...classroomConfig, pods: updated });
+                                  setClassroomTopicInputs({ ...classroomTopicInputs, [key]: '' });
+                                }
+                              }}
+                              placeholder="Add topic..."
+                              className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-indigo-600"
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const val = (classroomTopicInputs[key] || '').trim();
+                                if (!val) return;
+                                const updated = [...classroomConfig.pods];
+                                updated[pIdx] = { ...pod, targetTopics: [...pod.targetTopics, val] };
+                                setClassroomConfig({ ...classroomConfig, pods: updated });
+                                setClassroomTopicInputs({ ...classroomTopicInputs, [key]: '' });
+                              }}
+                              leftIcon={<Plus className="w-3.5 h-3.5" />}
+                              className="text-xs"
+                            >
+                              Add
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-tab 2: CURRICULUM AGENDA */}
+            {activeClassroomSubTab === 'agenda' && (
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Agenda Header Title</label>
+                    <input
+                      type="text"
+                      value={classroomConfig.agendaTitle}
+                      onChange={(e) => setClassroomConfig({ ...classroomConfig, agendaTitle: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Agenda Subtitle</label>
+                    <input
+                      type="text"
+                      value={classroomConfig.agendaSubtitle}
+                      onChange={(e) => setClassroomConfig({ ...classroomConfig, agendaSubtitle: e.target.value })}
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-amber-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Milestones List ({classroomConfig.milestones.length})</h4>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newMs: AgendaMilestoneConfig = {
+                          id: `ms-${Date.now()}`,
+                          tier: 'beginner',
+                          title: 'New Curriculum Objective',
+                          targetMinutes: 20,
+                          done: false,
+                        };
+                        setClassroomConfig({ ...classroomConfig, milestones: [...classroomConfig.milestones, newMs] });
+                      }}
+                      leftIcon={<Plus className="w-3.5 h-3.5" />}
+                      className="text-xs font-bold"
+                    >
+                      Add Milestone
+                    </Button>
+                  </div>
+
+                  {classroomConfig.milestones.map((ms, idx) => (
+                    <div key={ms.id || idx} className="p-3.5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <select
+                          value={ms.tier}
+                          onChange={(e) => {
+                            const updated = [...classroomConfig.milestones];
+                            updated[idx] = { ...ms, tier: e.target.value };
+                            setClassroomConfig({ ...classroomConfig, milestones: updated });
+                          }}
+                          className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-bold bg-slate-50 text-slate-800 focus:outline-none"
+                        >
+                          <option value="beginner">Level 1 (Beginner)</option>
+                          <option value="intermediate">Level 2 (Intermediate)</option>
+                          <option value="advanced">Level 3 (Advanced)</option>
+                        </select>
+
+                        <label className="flex items-center gap-1 text-[11px] font-bold text-slate-600 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={ms.done}
+                            onChange={(e) => {
+                              const updated = [...classroomConfig.milestones];
+                              updated[idx] = { ...ms, done: e.target.checked };
+                              setClassroomConfig({ ...classroomConfig, milestones: updated });
+                            }}
+                            className="rounded text-amber-600 focus:ring-0"
+                          />
+                          <span>Done</span>
+                        </label>
+                      </div>
+
+                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                        <input
+                          type="text"
+                          value={ms.title}
+                          onChange={(e) => {
+                            const updated = [...classroomConfig.milestones];
+                            updated[idx] = { ...ms, title: e.target.value };
+                            setClassroomConfig({ ...classroomConfig, milestones: updated });
+                          }}
+                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                        />
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <input
+                            type="number"
+                            value={ms.targetMinutes || 20}
+                            onChange={(e) => {
+                              const updated = [...classroomConfig.milestones];
+                              updated[idx] = { ...ms, targetMinutes: parseInt(e.target.value) || 20 };
+                              setClassroomConfig({ ...classroomConfig, milestones: updated });
+                            }}
+                            className="w-14 px-2 py-1.5 border border-slate-200 rounded-xl text-xs text-center font-mono text-slate-800 focus:outline-none"
+                            min={5}
+                            max={180}
+                          />
+                          <span className="text-[10px] text-slate-400">mins</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setClassroomConfig({
+                              ...classroomConfig,
+                              milestones: classroomConfig.milestones.filter((m) => m.id !== ms.id),
+                            });
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-red-600 cursor-pointer shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-tab 3: EVALUATION RUBRIC */}
+            {activeClassroomSubTab === 'rubric' && (
+              <div className="space-y-5">
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Rubric Title</label>
+                  <input
+                    type="text"
+                    value={classroomConfig.rubricTitle}
+                    onChange={(e) => setClassroomConfig({ ...classroomConfig, rubricTitle: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Evaluation Criteria ({classroomConfig.rubricCriteria.length})</h4>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newCrit: RubricCriteriaConfig = {
+                          id: `crit-${Date.now()}`,
+                          name: 'New Criterion',
+                          desc: 'Description of grading standard',
+                          maxScore: 5,
+                        };
+                        setClassroomConfig({ ...classroomConfig, rubricCriteria: [...classroomConfig.rubricCriteria, newCrit] });
+                      }}
+                      leftIcon={<Plus className="w-3.5 h-3.5" />}
+                      className="text-xs font-bold"
+                    >
+                      Add Criterion
+                    </Button>
+                  </div>
+
+                  {classroomConfig.rubricCriteria.map((crit, idx) => (
+                    <div key={crit.id || idx} className="p-4 rounded-2xl border border-slate-200 bg-white space-y-2.5">
+                      <div className="flex items-center justify-between gap-3">
+                        <input
+                          type="text"
+                          value={crit.name}
+                          onChange={(e) => {
+                            const updated = [...classroomConfig.rubricCriteria];
+                            updated[idx] = { ...crit, name: e.target.value };
+                            setClassroomConfig({ ...classroomConfig, rubricCriteria: updated });
+                          }}
+                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                          placeholder="Criterion Name"
+                        />
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <span className="text-[11px] font-bold text-slate-500">Max:</span>
+                          <input
+                            type="number"
+                            value={crit.maxScore || 5}
+                            onChange={(e) => {
+                              const updated = [...classroomConfig.rubricCriteria];
+                              updated[idx] = { ...crit, maxScore: parseInt(e.target.value) || 5 };
+                              setClassroomConfig({ ...classroomConfig, rubricCriteria: updated });
+                            }}
+                            className="w-12 px-2 py-1 border border-slate-200 rounded-xl text-xs text-center font-bold text-emerald-800 bg-emerald-50 focus:outline-none"
+                            min={1}
+                            max={100}
+                          />
+                          <span className="text-[10px] text-slate-400">pts</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setClassroomConfig({
+                              ...classroomConfig,
+                              rubricCriteria: classroomConfig.rubricCriteria.filter((c) => c.id !== crit.id),
+                            });
+                          }}
+                          className="p-1 text-slate-400 hover:text-red-600 cursor-pointer shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <textarea
+                        rows={2}
+                        value={crit.desc}
+                        onChange={(e) => {
+                          const updated = [...classroomConfig.rubricCriteria];
+                          updated[idx] = { ...crit, desc: e.target.value };
+                          setClassroomConfig({ ...classroomConfig, rubricCriteria: updated });
+                        }}
+                        className="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:border-emerald-600"
+                        placeholder="Description of performance standard..."
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-tab 4: DISCUSSION CHANNELS */}
+            {activeClassroomSubTab === 'forum' && (
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Community Discussion Channels ({classroomConfig.forumChannels.length})</h4>
+                    <p className="text-xs text-slate-500">Create, edit, or remove discussion channels displayed in the LMS community forum.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {classroomConfig.forumChannels.map((chan, idx) => (
+                    <div key={chan.id || idx} className="p-3.5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-mono font-bold text-slate-600 shrink-0">
+                          #{chan.id}
+                        </span>
+
+                        <input
+                          type="text"
+                          value={chan.label}
+                          onChange={(e) => {
+                            const updated = [...classroomConfig.forumChannels];
+                            updated[idx] = { ...chan, label: e.target.value };
+                            setClassroomConfig({ ...classroomConfig, forumChannels: updated });
+                          }}
+                          className="w-48 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600"
+                          placeholder="Channel Label"
+                        />
+
+                        <input
+                          type="text"
+                          value={chan.description || ''}
+                          onChange={(e) => {
+                            const updated = [...classroomConfig.forumChannels];
+                            updated[idx] = { ...chan, description: e.target.value };
+                            setClassroomConfig({ ...classroomConfig, forumChannels: updated });
+                          }}
+                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs text-slate-600 focus:outline-none focus:border-blue-600"
+                          placeholder="Channel Purpose / Description"
+                        />
+                      </div>
+
+                      {chan.id !== 'all' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setClassroomConfig({
+                              ...classroomConfig,
+                              forumChannels: classroomConfig.forumChannels.filter((c) => c.id !== chan.id),
+                            });
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-red-600 cursor-pointer shrink-0"
+                          title="Delete Channel"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Inline Add Channel Row */}
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                  <h5 className="text-xs font-bold text-slate-800">Add New Discussion Channel</h5>
+                  <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Channel Name (e.g. Study Circle Alpha)"
+                      value={newChannelLabel}
+                      onChange={(e) => setNewChannelLabel(e.target.value)}
+                      className="w-full sm:w-56 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Purpose / Guidance for students..."
+                      value={newChannelDesc}
+                      onChange={(e) => setNewChannelDesc(e.target.value)}
+                      className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-blue-600"
+                    />
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        const trimmed = newChannelLabel.trim();
+                        if (!trimmed) return;
+                        const newId = trimmed.toLowerCase().replace(/[^a-z0-9_-]+/g, '_');
+                        const newChan: ForumChannelConfig = {
+                          id: newId,
+                          label: trimmed,
+                          description: newChannelDesc.trim() || undefined,
+                          icon: newChannelIcon,
+                        };
+                        setClassroomConfig({
+                          ...classroomConfig,
+                          forumChannels: [...classroomConfig.forumChannels, newChan],
+                        });
+                        setNewChannelLabel('');
+                        setNewChannelDesc('');
+                      }}
+                      leftIcon={<Plus className="w-4 h-4" />}
+                      className="text-xs font-bold whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    >
+                      Add Channel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-4 border-t border-slate-100">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSaveClassroomCommunity}
+                leftIcon={<Save className="w-4 h-4" />}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
+              >
+                Save Classroom & Community Settings
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Staff Invite Modal */}
       {isInviteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs font-sans">
@@ -1384,7 +2322,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 <span>Invite New Staff Member</span>
               </h3>
               <button onClick={() => setIsInviteModalOpen(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                ✕
+                
               </button>
             </div>
 
@@ -1429,8 +2367,70 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <Button variant="outline" size="sm" onClick={() => setIsInviteModalOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="primary" size="sm" onClick={handleInviteStaff} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
-                Send Invite
+              <Button variant="primary" size="sm" onClick={handleInviteStaff} disabled={isProvisioning} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+                {isProvisioning ? 'Provisioning...' : 'Provision Account'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generated Credentials Modal */}
+      {provisionedCredentials && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs font-sans">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full border border-slate-200 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900">Account Provisioned in Database</h3>
+                <p className="text-xs text-slate-500">Live credentials stored securely in MySQL</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 text-xs">
+              <div>
+                <span className="text-slate-400 font-medium">Name:</span>{' '}
+                <span className="font-bold text-slate-800">{provisionedCredentials.name}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-medium">Login Email:</span>{' '}
+                <span className="font-mono font-bold text-emerald-800">{provisionedCredentials.email}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-medium">Assigned Role:</span>{' '}
+                <span className="font-bold text-slate-800 capitalize">{provisionedCredentials.role}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-medium">Temporary Password:</span>{' '}
+                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                  {provisionedCredentials.temporaryPassword || 'Password123!'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `Login Email: ${provisionedCredentials.email}\nPassword: ${provisionedCredentials.temporaryPassword || 'Password123!'}`
+                  );
+                  success('Copied!', 'Credentials copied to clipboard.');
+                }}
+                leftIcon={<Copy className="w-3.5 h-3.5" />}
+              >
+                Copy Credentials
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setProvisionedCredentials(null)}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+              >
+                Done
               </Button>
             </div>
           </div>

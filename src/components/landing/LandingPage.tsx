@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Render } from '@measured/puck';
 import { createPuckConfig } from '../builder/puckConfig';
 import { useTenant } from '../../context/TenantContext';
+import { isDemoTenant as checkIsDemoTenant } from '../../lib/tenants';
 import { useAuth } from '../../context/AuthContext';
 import { Header } from './Header';
 import { api } from '../../services/api';
@@ -38,12 +39,14 @@ import {
   HelpCircle,
   Hammer
 } from 'lucide-react';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 interface LandingPageProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
+  initialServerTenant?: any;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialServerTenant }) => {
   const { tenant, courses, language, direction } = useTenant();
   const { user } = useAuth();
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -53,9 +56,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
   const [selectedPlanForEnroll, setSelectedPlanForEnroll] = useState<PricingPlan | null>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  // Live published HTML/CSS state synced with localStorage and tenant config
-  const [liveHtml, setLiveHtml] = useState<string>(tenant.customHtml || '');
-  const [liveCss, setLiveCss] = useState<string>(tenant.customCss || '');
+  const serverHtml = initialServerTenant?.customHtml || (initialServerTenant?.settings as any)?.customHtml || tenant.customHtml || (tenant.settings as any)?.customHtml || '';
+  const serverCss = initialServerTenant?.customCss || (initialServerTenant?.settings as any)?.customCss || tenant.customCss || (tenant.settings as any)?.customCss || '';
+
+  // Live published HTML/CSS state synced with server and localStorage
+  const [liveHtml, setLiveHtml] = useState<string>(serverHtml);
+  const [liveCss, setLiveCss] = useState<string>(serverCss);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -63,19 +69,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
       const cachedCss = localStorage.getItem(`tenant_customCss_${tenant.subdomain}`);
       if (cached) {
         setLiveHtml(cached);
+      } else if (serverHtml) {
+        setLiveHtml(serverHtml);
       } else if (tenant.customHtml) {
         setLiveHtml(tenant.customHtml);
-      } else {
-        setLiveHtml('');
       }
 
       if (cachedCss) {
         setLiveCss(cachedCss);
+      } else if (serverCss) {
+        setLiveCss(serverCss);
       } else if (tenant.customCss) {
         setLiveCss(tenant.customCss);
       }
     }
-  }, [tenant.customHtml, tenant.customCss, tenant.subdomain]);
+  }, [tenant.customHtml, tenant.customCss, tenant.subdomain, serverHtml, serverCss]);
 
   const isAr = language === 'ar';
   const isCodingNiche = tenant.niche === 'coding' || tenant.subdomain.includes('code');
@@ -349,14 +357,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
     })),
   };
 
-  const isDemoTenant = Boolean(
-    tenant.subdomain === 'hifz-academy' ||
-    tenant.subdomain === 'al-furqan' ||
-    tenant.subdomain === 'madrasat-demo' ||
-    tenant.subdomain === 'code-academy' ||
-    tenant.subdomain === 'school-demo' ||
-    tenant.subdomain?.includes('demo')
-  );
+  const isDemoTenant = checkIsDemoTenant(tenant.subdomain);
 
   const puckConfig = useMemo(
     () =>
@@ -403,11 +404,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast }) => {
 
       {/* Main Landmark */}
       <main id="main-content" role="main">
-        {/* 1. If Tenant has customized HTML, render liveHtml */}
+        {/* 1. If Tenant has customized HTML & pure CSS from GrapesJS, render server HTML/CSS */}
         {liveHtml ? (
-          <div>
-            {liveCss && <style>{liveCss}</style>}
-            <div dangerouslySetInnerHTML={{ __html: liveHtml }} />
+          <div className="grapesjs-landing-wrapper w-full min-h-screen bg-white">
+            {liveCss && (
+              <style
+                id="grapesjs-published-css"
+                dangerouslySetInnerHTML={{ __html: liveCss }}
+              />
+            )}
+            <div
+              id="grapesjs-landing-body"
+              className="w-full"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(liveHtml) }}
+            />
           </div>
         ) : hasPuckLayout ? (
           /* 2. Visual Canvas Builder (Puck) Render */

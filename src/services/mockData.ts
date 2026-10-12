@@ -9,7 +9,7 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     taglineAr: 'حفظ وتثبيت القرآن الكريم بالسند المتصل وأحكام التجويد المتقنة',
     subdomain: 'hifz-academy',
     logoUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=150&q=80',
-    faviconUrl: '📖',
+    faviconUrl: '/icons/quran.svg',
     niche: 'quran',
     theme: {
       primaryColor: '#059669',
@@ -76,7 +76,7 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     taglineAr: 'تعلّم هندسة البرمجيات وتطوير الويب عبر بيئات برمجية سحابية مباشرة',
     subdomain: 'code-academy',
     logoUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=150&q=80',
-    faviconUrl: '💻',
+    faviconUrl: '/icons/code.svg',
     niche: 'coding',
     theme: {
       primaryColor: '#2563eb',
@@ -131,7 +131,7 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     taglineAr: 'منهاج إسلامي متكامل ودراسات في اللغة العربية والعلوم الشرعية',
     subdomain: 'al-furqan',
     logoUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=150&q=80',
-    faviconUrl: '📖',
+    faviconUrl: '/icons/quran.svg',
     niche: 'general',
     theme: {
       primaryColor: '#0d9488',
@@ -186,7 +186,7 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     taglineAr: 'فهم لغة القرآن الكريم من البلاغة إلى النحو والصرف',
     subdomain: 'bayyinah-arabic',
     logoUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=150&q=80',
-    faviconUrl: '✒️',
+    faviconUrl: '/icons/sanad.svg',
     niche: 'language',
     theme: {
       primaryColor: '#7c3aed',
@@ -241,7 +241,7 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
     taglineAr: 'الريادة الأكاديمية والتميز في العلوم وبرامج التحضير الجامعي المتقدم',
     subdomain: 'horizon-school',
     logoUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=150&q=80',
-    faviconUrl: '🎓',
+    faviconUrl: '/icons/academy.svg',
     niche: 'school',
     theme: {
       primaryColor: '#7e22ce',
@@ -292,6 +292,15 @@ export const MOCK_TENANTS: Record<string, TenantConfig> = {
 };
 
 // Aliases
+MOCK_TENANTS['demo'] = {
+  ...MOCK_TENANTS['hifz-academy'],
+  id: 'tenant-demo',
+  subdomain: 'demo',
+  name: 'Demo Academy',
+  nameAr: 'أكاديمية تجريبية',
+};
+MOCK_TENANTS['sample-demo'] = MOCK_TENANTS['demo'];
+
 export const MOCK_TENANT = MOCK_TENANTS['hifz-academy'];
 
 export const MOCK_COURSES: Course[] = [
@@ -304,13 +313,13 @@ export const MOCK_COURSES: Course[] = [
     description: 'Learn fundamental Tajweed rules including Nun Sakinah, Tanween, Meem Sakinah, and Madd elongation with live oral correction.',
     descriptionAr: 'دورة متكاملة لدراسة أحكام النون الساكنة والتنوين والميم الساكنة والمدود مع التدريب العملي.',
     level: 'Beginner',
-    instructorName: 'Shaykh Ahmad Al-Mansoor',
-    instructorNameAr: 'الشيخ أحمد المنصور',
+    instructorName: 'Ustadhah Zainab Al-Fayez (Senior Qariyah & Sanad Holder)',
+    instructorNameAr: 'الشيخة زينب الفايز (مقرئة ومجازة بالسند المتصل)',
     durationWeeks: 12,
     sessionsPerWeek: 3,
     price: 49,
     enrolledStudentsCount: 342,
-    imageUrl: 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=600&q=80',
+    imageUrl: '/images/muslim_teacher_woman.jpg',
     modules: [
       {
         id: 'mod-1',
@@ -466,8 +475,8 @@ export const MOCK_LEADS: Lead[] = [
   {
     id: 'lead-101',
     tenantId: 'tenant-hifz',
-    studentName: 'Youssef El-Amrani',
-    email: 'youssef.amrani@gmail.com',
+    studentName: 'Maryam Al-Mansoor',
+    email: 'maryam.mansoor@gmail.com',
     phone: '+1 (555) 234-5678',
     country: 'United States',
     courseInterest: 'Foundations of Tajweed & Recitation (Tuhfat al-Atfal)',
@@ -580,7 +589,7 @@ export const MOCK_RECITATIONS: RecitationSubmission[] = [
   {
     id: 'rec-1',
     studentId: 'std-201',
-    studentName: 'Tariq Al-Sabah',
+    studentName: 'Maryam Al-Mansoor',
     surahName: 'Surah Al-Mulk (الملك)',
     ayahRange: 'Ayah 1 - 5',
     audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/5242.mp3',
@@ -596,6 +605,7 @@ export const MOCK_ANALYTICS = {
   enrolledStudents: 89,
   recitationSubmissions: 342,
   completionRatePercent: 78,
+  monthlyRevenue: 14850,
   monthlyEnrollment: [
     { month: 'Jan', leads: 24, enrolled: 18 },
     { month: 'Feb', leads: 32, enrolled: 22 },

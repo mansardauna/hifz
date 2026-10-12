@@ -13,6 +13,7 @@ import {
   Hammer,
   ClipboardList,
   Sparkles,
+  GraduationCap
 } from 'lucide-react';
 import { Button, Input, Modal, Badge } from '../../../components/ui';
 import { useToast } from '../../../context/ToastContext';
@@ -134,7 +135,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🏫</span>
+            <GraduationCap className="w-7 h-7 text-emerald-600" />
             <h2 className="text-xl font-black text-slate-900">Syllabus & Lesson Creator</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">

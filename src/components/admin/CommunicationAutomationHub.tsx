@@ -17,9 +17,11 @@ import {
   KeyRound,
   ExternalLink,
   Lock,
+  CheckCheck
 } from 'lucide-react';
 import { Button, Card, Badge } from '../ui';
 import { resolveNotificationChannel, getProviderDisplayName } from '../../services/notificationRouter';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 import { EmailProviderType, WhatsAppProviderType, TenantEmailGatewayConfig, TenantWhatsAppGatewayConfig } from '../../types';
 
 interface TemplateItem {
@@ -94,9 +96,10 @@ export const CommunicationAutomationHub: React.FC = () => {
   // Resolve dispatch routing for current tenant
   const emailResolution = resolveNotificationChannel('email', tenant);
   const waResolution = resolveNotificationChannel('whatsapp', tenant);
+  const isQuran = detectTenantNicheType(tenant) === 'quran';
 
-  // Default clean templates
-  const [templates, setTemplates] = useState<TemplateItem[]>([
+  // Default clean templates tailored to academy niche
+  const [templates, setTemplates] = useState<TemplateItem[]>(() => [
     {
       id: 'email-welcome',
       channel: 'email',
@@ -104,7 +107,8 @@ export const CommunicationAutomationHub: React.FC = () => {
       category: 'Admissions',
       triggerDescription: 'Sent automatically when student application is approved',
       subject: `Welcome to ${tenant.name || 'Academy'} - Your Student LMS Credentials`,
-      body: `Assalamu Alaikum wa Rahmatullah {{student_name}},
+      body: isQuran
+        ? `Assalamu Alaikum wa Rahmatullah {{student_name}},
 
 Alhamdulillah! We are delighted to welcome you to {{course_title}} at ${tenant.name || 'our academy'}.
 
@@ -116,6 +120,19 @@ Your student portal account has been prepared:
 Please sign in to access your classroom schedule, curriculum resources, and orientation halaqah.
 
 Barakallahu Feekum,
+Admissions Team, ${tenant.name || 'Academy'}`
+        : `Dear {{student_name}},
+
+We are delighted to welcome you to {{course_title}} at ${tenant.name || 'our academy'}.
+
+Your student portal account has been prepared:
+• Student Portal: {{portal_url}}
+• Login Email: {{student_email}}
+• Temporary Password: {{temp_password}}
+
+Please sign in to access your classroom schedule, curriculum resources, and orientation session.
+
+Sincerely,
 Admissions Team, ${tenant.name || 'Academy'}`,
       enabled: true,
     },
@@ -126,7 +143,8 @@ Admissions Team, ${tenant.name || 'Academy'}`,
       category: 'Billing',
       triggerDescription: 'Sent automatically 3 days before monthly invoice due date',
       subject: `Tuition Invoice Due for {{course_title}} - ${tenant.name || 'Academy'}`,
-      body: `Assalamu Alaikum {{parent_name}},
+      body: isQuran
+        ? `Assalamu Alaikum {{parent_name}},
 
 This is a gentle reminder that your tuition payment of {{invoice_amount}} for {{course_title}} is due on {{due_date}}.
 
@@ -135,17 +153,32 @@ You can securely pay online with Card or Apple Pay using the link below:
 
 Thank you for your continuous support.
 
+Finance & Accounts, ${tenant.name || 'Academy'}`
+        : `Dear {{parent_name}},
+
+This is a reminder that your tuition payment of {{invoice_amount}} for {{course_title}} is due on {{due_date}}.
+
+You can securely pay online with Card or Apple Pay using the link below:
+{{payment_link}}
+
+Thank you for your prompt attention.
+
 Finance & Accounts, ${tenant.name || 'Academy'}`,
       enabled: true,
     },
     {
       id: 'email-feedback',
       channel: 'email',
-      name: 'Teacher Recitation Feedback',
+      name: isQuran ? 'Teacher Recitation Feedback' : 'Teacher Coursework Feedback',
       category: 'LMS Feedback',
-      triggerDescription: 'Sent automatically when instructor reviews and grades an audio recitation',
-      subject: `New Teacher Feedback for Surah {{surah_name}} - ${tenant.name || 'Academy'}`,
-      body: `Assalamu Alaikum {{student_name}},
+      triggerDescription: isQuran
+        ? 'Sent automatically when instructor reviews and grades an audio recitation'
+        : 'Sent automatically when instructor reviews and grades a coursework submission',
+      subject: isQuran
+        ? `New Teacher Feedback for Surah {{surah_name}} - ${tenant.name || 'Academy'}`
+        : `New Instructor Feedback for {{module_name}} - ${tenant.name || 'Academy'}`,
+      body: isQuran
+        ? `Assalamu Alaikum {{student_name}},
 
 Your teacher {{teacher_name}} has reviewed your recitation submission for Surah {{surah_name}} (Ayah {{ayah_start}} to {{ayah_end}}).
 
@@ -156,7 +189,19 @@ Your teacher {{teacher_name}} has reviewed your recitation submission for Surah 
 Sign in to your student portal to listen to your teacher's voice feedback:
 {{portal_url}}/lms/recitations
 
-Keep up the excellent effort in your recitation!`,
+Keep up the excellent effort in your recitation!`
+        : `Dear {{student_name}},
+
+Your instructor {{teacher_name}} has reviewed your project submission for {{module_name}}.
+
+• Score: {{grade_score}} / 100
+• Grade: {{submission_status}}
+• Instructor Comments: "{{teacher_comments}}"
+
+Sign in to your student portal to view detailed rubrics and feedback:
+{{portal_url}}/lms/submissions
+
+Keep up the great work on your learning journey!`,
       enabled: true,
     },
     {
@@ -165,14 +210,23 @@ Keep up the excellent effort in your recitation!`,
       name: 'Live Class Starting Soon',
       category: 'Classroom',
       triggerDescription: 'Sent automatically 15 minutes before scheduled live class session',
-      body: `🔔 *Live Halaqah Starting in 15 Minutes!*
+      body: isQuran
+        ? `*Notice: Live Halaqah Starting in 15 Minutes!*
 
 Assalamu Alaikum {{student_name}}, your live session for *{{course_title}}* with {{teacher_name}} starts in 15 minutes.
 
-📲 *Join Live Classroom:*
+*Join Live Classroom:*
 {{room_url}}
 
-Please have your Mushaf ready and join in a quiet environment.`,
+Please have your Mushaf ready and join in a quiet environment.`
+        : `*Notice: Live Class Starting in 15 Minutes!*
+
+Hello {{student_name}}, your live session for *{{course_title}}* with {{teacher_name}} starts in 15 minutes.
+
+*Join Live Classroom:*
+{{room_url}}
+
+Please ensure your workspace is ready and join on time.`,
       enabled: true,
     },
     {
@@ -180,14 +234,26 @@ Please have your Mushaf ready and join in a quiet environment.`,
       channel: 'whatsapp',
       name: 'Milestone Celebration',
       category: 'Milestones',
-      triggerDescription: 'Sent automatically when student completes a Surah or milestone test',
-      body: `🎉 *Mubarak! Memorization Milestone Achieved!*
+      triggerDescription: isQuran
+        ? 'Sent automatically when student completes a Surah or milestone test'
+        : 'Sent automatically when student completes a module or milestone test',
+      body: isQuran
+        ? `*Mubarak: Memorization Milestone Achieved!*
 
 Assalamu Alaikum {{parent_name}},
 
 Alhamdulillah! Your child *{{student_name}}* has successfully completed the recitation and Tajweed test for *{{surah_name}}* with a score of *{{grade_score}}%*!
 
 May Allah bless their journey in memorizing and understanding the Holy Quran.
+
+— ${tenant.name || 'Academy'}`
+        : `*Congratulations: Milestone Achieved!*
+
+Dear {{parent_name}},
+
+We are pleased to inform you that *{{student_name}}* has successfully completed the assessment for *{{module_name}}* with a score of *{{grade_score}}%*!
+
+Congratulations on reaching this important milestone in the curriculum.
 
 — ${tenant.name || 'Academy'}`,
       enabled: true,
@@ -197,14 +263,24 @@ May Allah bless their journey in memorizing and understanding the Holy Quran.
       channel: 'whatsapp',
       name: 'Class Absence Notice',
       category: 'Attendance',
-      triggerDescription: 'Sent automatically if student is marked absent from live halaqah',
-      body: `⚠️ *Attendance Notice - ${tenant.name || 'Academy'}*
+      triggerDescription: isQuran
+        ? 'Sent automatically if student is marked absent from live halaqah'
+        : 'Sent automatically if student is marked absent from live class',
+      body: isQuran
+        ? `*Notice: Attendance Notice - ${tenant.name || 'Academy'}*
 
 Assalamu Alaikum {{parent_name}},
 
 Our records indicate that *{{student_name}}* was marked absent for today's live class *{{course_title}}* at {{halaqah_time}}.
 
-If this was due to an excused emergency, please contact us at {{contact_phone}}.`,
+If this was due to an excused emergency, please contact us at {{contact_phone}}.`
+        : `*Notice: Attendance Notice - ${tenant.name || 'Academy'}*
+
+Dear {{parent_name}},
+
+Our records indicate that *{{student_name}}* was marked absent for today's live class *{{course_title}}* at {{class_time}}.
+
+If this was due to an excused absence, please contact us at {{contact_phone}}.`,
       enabled: true,
     },
   ]);
@@ -343,7 +419,7 @@ If this was due to an excused emergency, please contact us at {{contact_phone}}.
     { tag: '{{due_date}}', desc: 'Due Date' },
     { tag: '{{payment_link}}', desc: 'Payment Checkout URL' },
     { tag: '{{teacher_name}}', desc: 'Instructor Name' },
-    { tag: '{{surah_name}}', desc: 'Surah / Topic Name' },
+    { tag: isQuran ? '{{surah_name}}' : '{{module_name}}', desc: isQuran ? 'Surah / Topic Name' : 'Module / Topic Name' },
     { tag: '{{grade_score}}', desc: 'Grade / Score' },
     { tag: '{{submission_status}}', desc: 'Status / Grade Label' },
     { tag: '{{teacher_comments}}', desc: 'Teacher Notes' },
@@ -352,29 +428,31 @@ If this was due to an excused emergency, please contact us at {{contact_phone}}.
   // Helper for dynamic preview interpolation
   const interpolatePreview = (text: string = '') => {
     return text
-      .replace(/\{\{student_name\}\}/g, 'Tariq Ibn Ziyad')
-      .replace(/\{\{parent_name\}\}/g, 'Abu Tariq')
-      .replace(/\{\{course_title\}\}/g, 'Tajweed & Memorization Halaqah')
+      .replace(/\{\{student_name\}\}/g, isQuran ? 'Tariq Ibn Ziyad' : 'Alex Morgan')
+      .replace(/\{\{parent_name\}\}/g, isQuran ? 'Abu Tariq' : 'David Morgan')
+      .replace(/\{\{course_title\}\}/g, isQuran ? 'Tajweed & Memorization Halaqah' : 'Full-Stack Web Engineering')
       .replace(/\{\{portal_url\}\}/g, `https://${academyDomain}/login`)
-      .replace(/\{\{student_email\}\}/g, 'tariq@example.com')
-      .replace(/\{\{temp_password\}\}/g, 'Hifz@2026!')
-      .replace(/\{\{room_url\}\}/g, `https://${academyDomain}/classroom/halaqah-1`)
+      .replace(/\{\{student_email\}\}/g, isQuran ? 'tariq@example.com' : 'alex@example.com')
+      .replace(/\{\{temp_password\}\}/g, isQuran ? 'Hifz@2026!' : 'Academy@2026!')
+      .replace(/\{\{room_url\}\}/g, `https://${academyDomain}/classroom/session-1`)
       .replace(/\{\{invoice_amount\}\}/g, '$65.00')
       .replace(/\{\{due_date\}\}/g, 'Sep 15, 2026')
       .replace(/\{\{payment_link\}\}/g, `https://${academyDomain}/pay/inv_1042`)
-      .replace(/\{\{teacher_name\}\}/g, 'Sheikh Tariq Al-Madani')
-      .replace(/\{\{surah_name\}\}/g, 'Surah Maryam')
+      .replace(/\{\{teacher_name\}\}/g, isQuran ? 'Sheikh Tariq Al-Madani' : 'Dr. Sarah Jenkins')
+      .replace(/\{\{surah_name\}\}/g, isQuran ? 'Surah Maryam' : 'Module 3: Core Foundations')
+      .replace(/\{\{module_name\}\}/g, 'Module 3: Core Foundations')
       .replace(/\{\{ayah_start\}\}/g, '1')
       .replace(/\{\{ayah_end\}\}/g, '15')
       .replace(/\{\{grade_score\}\}/g, '96')
-      .replace(/\{\{submission_status\}\}/g, 'Mumtaz (Excellent)')
-      .replace(/\{\{teacher_comments\}\}/g, 'MashaAllah, outstanding pronunciation and Madd timing.')
+      .replace(/\{\{submission_status\}\}/g, isQuran ? 'Mumtaz (Excellent)' : 'Distinction (Honors)')
+      .replace(/\{\{teacher_comments\}\}/g, isQuran ? 'MashaAllah, outstanding pronunciation and Madd timing.' : 'Outstanding grasp of principles and practical problem solving.')
       .replace(/\{\{halaqah_time\}\}/g, '5:30 PM UTC')
+      .replace(/\{\{class_time\}\}/g, '5:30 PM UTC')
       .replace(/\{\{contact_phone\}\}/g, tenant.contactPhone || '+1 (555) 234-5678');
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12 font-sans">
+    <div className="space-y-6 w-11/12 mx-auto pb-12 font-sans">
       {/* Header & Navigation Bar */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
@@ -1318,7 +1396,7 @@ If this was due to an excused emergency, please contact us at {{contact_phone}}.
                     </div>
                     <div className="text-[9px] text-slate-400 text-right font-mono flex items-center justify-end gap-1 pt-1">
                       <span>10:30 AM</span>
-                      <span className="text-sky-500 font-bold">✓✓</span>
+                      <CheckCheck className="w-3.5 h-3.5 text-sky-500 inline" />
                     </div>
                   </div>
                 </div>

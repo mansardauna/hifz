@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { PricingPlan } from '../../types';
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
-import { Button, Input, Card, Badge } from '../ui';
-import { Plus, Edit3, Trash2, Check, Save } from 'lucide-react';
+import { Button, Input, Card, Badge, PageHeader } from '../ui';
+import { Plus, Edit3, Trash2, Check, Save, X } from 'lucide-react';
 
 interface TenantPricingEditorProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -53,22 +53,20 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
 
   return (
     <div className="space-y-6 font-sans">
-      {/* Header Card */}
-      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-slate-900">Tuition & Pricing Plans</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Configure subscription fee tiers displayed on your public academy landing page.</p>
-        </div>
-
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleAddPlan}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Add Tuition Plan
-        </Button>
-      </Card>
+      {/* Page Header */}
+      <PageHeader
+        title="Tuition & Pricing Plans"
+        subtitle="Configure subscription fee tiers displayed on your public academy landing page."
+        actions={
+          <Button
+            variant="primary"
+            onClick={handleAddPlan}
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Add Tuition Plan
+          </Button>
+        }
+      />
 
       {/* Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -137,7 +135,7 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
           <div className="bg-white rounded-sm max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-bold text-sm text-slate-900">Edit Tuition Plan</h3>
-              <button onClick={() => setEditingPlan(null)} className="text-slate-400 hover:text-slate-600">✕</button>
+              <button onClick={() => setEditingPlan(null)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
             </div>
 
             <form onSubmit={handleSaveEdit} className="space-y-4 text-xs">
@@ -223,7 +221,7 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
                   type="submit"
                   className="px-4 py-2 bg-teal-600 text-white font-bold rounded-sm shadow-sm"
                 >
-                  Save Changes
+                  Save
                 </button>
               </div>
             </form>

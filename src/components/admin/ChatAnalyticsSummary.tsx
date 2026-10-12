@@ -23,6 +23,7 @@ import {
 import { useTenant } from '../../context/TenantContext';
 import { ToastMessage } from '../ui/Toast';
 import { Badge } from '../ui';
+import { detectTenantNicheType } from '../../services/classroomCustomizationService';
 
 interface ChatMessageRecord {
   id: string;
@@ -42,43 +43,58 @@ interface ChatAnalyticsSummaryProps {
 
 export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAddToast }) => {
   const { tenant } = useTenant();
-  const isCoding = tenant.niche === 'coding';
+  const nicheType = detectTenantNicheType(tenant);
+  const isCoding = nicheType === 'coding';
+  const isSchool = nicheType === 'school';
+  const isQuran = nicheType === 'quran';
 
   const [chatRecords, setChatRecords] = useState<ChatMessageRecord[]>([
     {
       id: 'msg-101',
       channel: 'Live Classroom',
-      senderName: 'Fatima Zahra',
+      senderName: isQuran ? 'Fatima Zahra' : 'Sarah Jenkins',
       senderRole: 'student',
       message: isCoding
         ? 'How do we handle optimistic UI rollback if the server action throws a database error?'
-        : 'Ustadh, should the Ghunnah on Noon Sakinah with Ikhfaa be held for exactly 2 harakahs in Surah Al-Mulk ayah 12?',
+        : isQuran
+        ? 'Ustadh, should the Ghunnah on Noon Sakinah with Ikhfaa be held for exactly 2 harakahs in Surah Al-Mulk ayah 12?'
+        : isSchool
+        ? 'Professor, should the derivation for the Taylor series error bound be evaluated at the interval endpoint?'
+        : 'Instructor, how should we structure the project rubric evaluation for Module 3 practical case studies?',
       timestamp: 'Today at 10:14 AM',
       sentiment: 'question',
       resolved: true,
-      topicTag: isCoding ? 'Server Actions' : 'Tajweed - Ghunnah'
+      topicTag: isCoding ? 'Server Actions' : isQuran ? 'Tajweed - Ghunnah' : isSchool ? 'Calculus - Taylor Series' : 'Module 3 Rubric'
     },
     {
       id: 'msg-102',
       channel: 'Live Classroom',
-      senderName: 'Ibrahim Khalil',
+      senderName: isQuran ? 'Ibrahim Khalil' : 'Alex Parker',
       senderRole: 'student',
       message: isCoding
         ? 'The sandbox terminal is showing an undefined token for the Prisma client inside edge runtime.'
-        : 'Is it permissible to connect the recitation with the Basmalah between Surah Al-Anfal and At-Tawbah?',
+        : isQuran
+        ? 'Is it permissible to connect the recitation with the Basmalah between Surah Al-Anfal and At-Tawbah?'
+        : isSchool
+        ? 'In lab assignment 4, does the cellular respiration rate require temperature normalization?'
+        : 'In the practical simulation, should we account for seasonal variance in our financial model?',
       timestamp: 'Today at 10:22 AM',
       sentiment: 'difficulty',
       resolved: false,
-      topicTag: isCoding ? 'Prisma Edge' : 'Tajweed - Basmalah'
+      topicTag: isCoding ? 'Prisma Edge' : isQuran ? 'Tajweed - Basmalah' : isSchool ? 'Biology Lab' : 'Simulation Model'
     },
     {
       id: 'msg-103',
       channel: 'Admissions Helpdesk',
-      senderName: 'Dr. Tariq Al-Mansoor (Parent)',
+      senderName: isQuran ? 'Dr. Tariq Al-Mansoor (Parent)' : 'David Morgan (Parent / Sponsor)',
       senderRole: 'prospect',
       message: isCoding
         ? 'Do bootcamp graduates receive 1-on-1 portfolio code reviews and mock technical interviews?'
-        : 'Do you offer flexible evening Muraja\'ah revision halaqahs for full-time working professionals?',
+        : isQuran
+        ? 'Do you offer flexible evening Muraja\'ah revision halaqahs for full-time working professionals?'
+        : isSchool
+        ? 'Do you offer AP Calculus and Honors Chemistry tutoring during after-school sessions?'
+        : 'Do you offer flexible evening cohorts for working professionals in the executive track?',
       timestamp: 'Yesterday at 16:40',
       sentiment: 'positive',
       resolved: true,
@@ -87,15 +103,19 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
     {
       id: 'msg-104',
       channel: 'Student Forum',
-      senderName: 'Amina Khatun',
+      senderName: isQuran ? 'Amina Khatun' : 'Elena Rostova',
       senderRole: 'student',
       message: isCoding
         ? 'Completed the React custom hook exercise! The live compiler feedback made debugging seamless.'
-        : 'Alhamdulillah completed the audio recording loop for Juz 29 with 95% accuracy score today!',
+        : isQuran
+        ? 'Alhamdulillah completed the audio recording loop for Juz 29 with 95% accuracy score today!'
+        : isSchool
+        ? 'Submitted the Physics lab derivation with 96% accuracy on the experimental data graphs!'
+        : 'Completed the applied capstone case study with 95% evaluation score today!',
       timestamp: 'Yesterday at 19:10',
       sentiment: 'positive',
       resolved: true,
-      topicTag: isCoding ? 'Coursework Feedback' : 'Hifz Progress'
+      topicTag: isCoding ? 'Coursework Feedback' : isQuran ? 'Hifz Progress' : isSchool ? 'Lab Submission' : 'Capstone Progress'
     },
     {
       id: 'msg-105',
@@ -104,11 +124,15 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
       senderRole: 'student',
       message: isCoding
         ? 'Could we review TypeScript discriminated unions before the weekly project submission?'
-        : 'Ustadh, please re-demonstrate the Makhraj of letter Dad (ض) with the audio looper tool.',
+        : isQuran
+        ? 'Ustadh, please re-demonstrate the Makhraj of letter Dad (ض) with the audio looper tool.'
+        : isSchool
+        ? 'Could we review Stokes\' Theorem problem sets before tomorrow\'s seminar session?'
+        : 'Could we review the performance optimization criteria before our weekly project defense?',
       timestamp: 'Sept 1 at 11:05 AM',
       sentiment: 'question',
       resolved: true,
-      topicTag: isCoding ? 'TypeScript' : 'Makharij'
+      topicTag: isCoding ? 'TypeScript' : isQuran ? 'Makharij' : isSchool ? 'Multivariable Calculus' : 'Project Defense'
     }
   ]);
 
@@ -225,25 +249,49 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
           <div className="space-y-3 text-xs">
             <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
               <div className="flex items-center justify-between font-bold">
-                <span className="text-slate-900 font-bold">{isCoding ? 'React 19 Server Actions & Mutation State' : 'Tajweed: Makhraj of Heavy Letters (ض, ط, ق)'}</span>
+                <span className="text-slate-900 font-bold">
+                  {isCoding
+                    ? 'React 19 Server Actions & Mutation State'
+                    : isQuran
+                    ? 'Tajweed: Makhraj of Heavy Letters (ض, ط, ق)'
+                    : isSchool
+                    ? 'Calculus: Taylor Series & Radius of Convergence'
+                    : 'Module 3: Core Frameworks & Practical Analysis'}
+                </span>
                 <span className="text-blue-600 font-mono text-[11px]">42 questions (38%)</span>
               </div>
               <p className="text-slate-600 leading-relaxed text-[11px]">
                 {isCoding
                   ? 'Students frequently asked about rollback strategies and optimistic state updates during async mutations.'
-                  : 'Multiple students requested oral audio loop demonstrations on proper tongue elevation and Makhraj alignment.'}
+                  : isQuran
+                  ? 'Multiple students requested oral audio loop demonstrations on proper tongue elevation and Makhraj alignment.'
+                  : isSchool
+                  ? 'Students requested step-by-step demonstrations on radius of convergence and integral test derivations.'
+                  : 'Students asked for detailed walkthroughs of real-world case studies and diagnostic frameworks.'}
               </p>
             </div>
 
             <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
               <div className="flex items-center justify-between font-bold">
-                <span className="text-slate-900 font-bold">{isCoding ? 'TypeScript Generic Constraints' : 'Sanad Certification & Muraja\'ah Schedules'}</span>
+                <span className="text-slate-900 font-bold">
+                  {isCoding
+                    ? 'TypeScript Generic Constraints'
+                    : isQuran
+                    ? 'Sanad Certification & Muraja\'ah Schedules'
+                    : isSchool
+                    ? 'Advanced Placement Honors Lab Reports'
+                    : 'Capstone Projects & Executive Certification'}
+                </span>
                 <span className="text-emerald-600 font-mono text-[11px]">28 inquiries (25%)</span>
               </div>
               <p className="text-slate-600 leading-relaxed text-[11px]">
                 {isCoding
                   ? 'Inquiries regarding narrowing types and discriminated union patterns in component props.'
-                  : 'Prospective students inquiring about evening track availability and verified teacher chains of transmission.'}
+                  : isQuran
+                  ? 'Prospective students inquiring about evening track availability and verified teacher chains of transmission.'
+                  : isSchool
+                  ? 'Inquiries regarding honors grading rubrics and college credit preparation tracks.'
+                  : 'Inquiries regarding flexible evening cohorts and accredited certification requirements.'}
               </p>
             </div>
           </div>
@@ -265,7 +313,11 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
                 <p className="font-bold text-emerald-950">
                   {isCoding
                     ? 'Dedicate 10 minutes in next live session to Server Action error handling.'
-                    : 'Demonstrate Surah Al-Mulk Ayahs 10-15 oral recitation in the next Halaqah.'}
+                    : isQuran
+                    ? 'Demonstrate Surah Al-Mulk Ayahs 10-15 oral recitation in the next Halaqah.'
+                    : isSchool
+                    ? 'Dedicate 10 minutes in next lecture to Taylor series error bound proofs.'
+                    : 'Dedicate 10 minutes in next live session to Module 3 practical case studies.'}
                 </p>
                 <span className="text-[10px] text-emerald-700">Generated from 8 student chat requests</span>
               </div>
@@ -277,7 +329,11 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
                 <p className="font-bold text-blue-950">
                   {isCoding
                     ? 'Upload TypeScript sandbox starter template to student repository downloads.'
-                    : 'Publish Tajweed reference cheat-sheet for Ikhfaa and Idghaam rules.'}
+                    : isQuran
+                    ? 'Publish Tajweed reference cheat-sheet for Ikhfaa and Idghaam rules.'
+                    : isSchool
+                    ? 'Upload problem set solutions and chemistry lab formula reference sheet.'
+                    : 'Upload reference workbook and standard operating procedure template to resources.'}
                 </p>
                 <span className="text-[10px] text-blue-700">Helps resolve 14 pending student questions</span>
               </div>

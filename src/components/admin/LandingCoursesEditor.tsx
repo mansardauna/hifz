@@ -137,7 +137,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
               <h3 className="font-bold text-base font-display text-slate-900">
                 {isAr ? 'تعديل بيانات الدورة' : 'Edit Program Showcase Details'}
               </h3>
-              <button onClick={() => setEditingCourse(null)} className="text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer">✕</button>
+              <button onClick={() => setEditingCourse(null)} className="text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer"><X className="w-4 h-4" /></button>
             </div>
 
             <form onSubmit={handleSaveCourse} className="space-y-4 text-xs">

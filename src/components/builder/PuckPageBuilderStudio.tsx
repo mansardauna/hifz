@@ -95,7 +95,7 @@ export const PuckPageBuilderStudio: React.FC = () => {
     updateTenantConfig({
       builderLayout: data,
     });
-    success('Landing Page Published! 🚀', 'Your visual layout has been published live to your subdomain.');
+    success('Landing Page Published!', 'Your visual layout has been published live to your subdomain.');
   };
 
   const handleApplyPreset = (key: string) => {
