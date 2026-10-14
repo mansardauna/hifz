@@ -126,7 +126,7 @@ interface TeacherDashboardProps {
 }
 
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }) => {
-  const { tenant, direction } = useTenant();
+  const { tenant, direction, courses } = useTenant();
   const { user, logout } = useAuth();
   const confirm = useConfirm();
 
@@ -676,10 +676,15 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
   // Live Classroom Host State & Lifecycle
   const [activeTeacherSession, setActiveTeacherSession] = useState<LiveClassSession | null>(null);
   const [sessionTitleInput, setSessionTitleInput] = useState<string>('');
-  const [sessionLevelInput, setSessionLevelInput] = useState<StudentLevelTier | 'all'>('all');
-  const [sessionCohortInput, setSessionCohortInput] = useState<string>('all');
+  const [selectedCourseTitle, setSelectedCourseTitle] = useState<string>('');
   const [targetStudentIds, setTargetStudentIds] = useState<string[]>([]);
   const [isCopiedInvite, setIsCopiedInvite] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!selectedCourseTitle && courses.length > 0) {
+      setSelectedCourseTitle(courses[0].title);
+    }
+  }, [courses, selectedCourseTitle]);
 
   // Sync existing sessions on mount
   useEffect(() => {
@@ -691,26 +696,29 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
   }, [tenant.subdomain]);
 
   const handleLaunchSession = () => {
+    const effectiveCourseTitle = selectedCourseTitle.trim() || courses[0]?.title || tenant.name || 'Core Curriculum';
+    const effectiveTopic = sessionTitleInput.trim() || `${effectiveCourseTitle} Live Session`;
+
     const newSession: LiveClassSession = {
       id: `room-${tenant.subdomain}-${Date.now().toString().slice(-6)}`,
-      title: sessionTitleInput.trim() || (isCodingNiche ? 'Live Mentor Pairing & Code Review' : isSchoolNiche ? 'Live Virtual Academic Lecture' : isMadrasatNiche ? 'Live Quran Halaqah & Tajweed' : 'Live Interactive Classroom Workshop'),
-      courseTitle: isCodingNiche ? 'Full-Stack Software Engineering' : isSchoolNiche ? 'Academic Faculty Hall' : isMadrasatNiche ? 'Tajweed & Sanad Mastery' : (tenant.name || 'Core Academy Curriculum'),
+      title: effectiveTopic,
+      courseTitle: effectiveCourseTitle,
       teacherId: user?.id || 'teacher-host',
       teacherName: user?.name || teacherPersona.defaultName,
-      targetLevel: sessionLevelInput,
-      targetCohort: sessionCohortInput === 'all' ? (isMadrasatNiche ? 'All Cohorts / Halaqahs' : 'All Cohorts') : sessionCohortInput,
+      targetLevel: 'all',
+      targetCohort: effectiveCourseTitle,
       allowedStudentIds: targetStudentIds,
       startedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       status: 'live',
       subdomain: tenant.subdomain,
-      niche: tenant.niche
+      niche: tenant.niche,
     };
     classroomSessionService.startSession(newSession);
     setActiveTeacherSession(newSession);
     onAddToast({
       type: 'success',
-      title: 'Classroom Launched & Broadcasted!',
-      message: `Session is live. Enrolled students will receive the live notification and can auto-join.`
+      title: 'Classroom Broadcasted',
+      message: `Live class for "${effectiveCourseTitle}" is now active. Enrolled students can now join.`
     });
   };
 
@@ -1273,10 +1281,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-slate-900 tracking-tight">
-                          {isCodingNiche ? 'Launch Live Engineering Huddle / Pair Room' : isSchoolNiche ? 'Start Academic Virtual Lecture' : 'Start Live Quran Halaqah'}
+                          Start Live Classroom Session
                         </h3>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          Configure session topics, select student level & cohort, and generate direct student access links.
+                          Select an academy course defined by your administrator, set your topic, and start live streaming.
                         </p>
                       </div>
                     </div>
@@ -1287,6 +1295,28 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Academy Course Selector */}
+                    <div className="space-y-1.5 md:col-span-2">
+                      <label className="text-xs font-semibold text-slate-800">Select Academy Course</label>
+                      <select
+                        value={selectedCourseTitle}
+                        onChange={(e) => setSelectedCourseTitle(e.target.value)}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                      >
+                        {courses.length > 0 ? (
+                          courses.map((c) => (
+                            <option key={c.id} value={c.title}>
+                              {c.title}
+                            </option>
+                          ))
+                        ) : (
+                          <option value={tenant.name || 'Core Curriculum'}>
+                            {tenant.name || 'Core Curriculum'} (General Course)
+                          </option>
+                        )}
+                      </select>
+                    </div>
+
                     {/* Session Title */}
                     <div className="space-y-1.5 md:col-span-2">
                       <label className="text-xs font-semibold text-slate-800">Live Session Title / Topic</label>
@@ -1294,73 +1324,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         type="text"
                         value={sessionTitleInput}
                         onChange={(e) => setSessionTitleInput(e.target.value)}
-                        placeholder={
-                          isCodingNiche
-                            ? 'e.g. React 19 Server Actions & Optimistic UI Architecture Review'
-                            : isSchoolNiche
-                            ? 'e.g. Unit 5: Taylor & Maclaurin Series Derivation Lecture'
-                            : 'e.g. Surah Al-Mulk: Tajweed Makharij & Ahkam Al-Nun Oral Halaqah'
-                        }
+                        placeholder="e.g. Chapter 4 Review, Midterm Prep, Q&A Session..."
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                       />
-                    </div>
-
-                    {/* Level Classification Target */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-800">Target Student Level Tier</label>
-                      <select
-                        value={sessionLevelInput}
-                        onChange={(e) => setSessionLevelInput(e.target.value as any)}
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                      >
-                        <option value="all">All Student Levels (Mixed Cohort)</option>
-                        <option value="beginner">
-                          {classroomConfig.pods.find((p) => p.tier === 'beginner')?.label || (isMadrasatNiche ? 'Level 1 - Noorani Qaidah & Makharij (Beginner)' : isCodingNiche ? 'Level 1 - Core Fundamentals & JS' : 'Level 1 - Foundation Core')}
-                        </option>
-                        <option value="intermediate">
-                          {classroomConfig.pods.find((p) => p.tier === 'intermediate')?.label || (isMadrasatNiche ? 'Level 2 - Juz Amma & Tajweed Application' : isCodingNiche ? 'Level 2 - Full-Stack React & APIs' : 'Level 2 - Intermediate Application')}
-                        </option>
-                        <option value="advanced">
-                          {classroomConfig.pods.find((p) => p.tier === 'advanced')?.label || (isMadrasatNiche ? 'Level 3 - Hifz Revision & Sanad Ijazah' : isCodingNiche ? 'Level 3 - Systems & Cloud Architect' : 'Level 3 - Advanced Mastery')}
-                        </option>
-                      </select>
-                    </div>
-
-                    {/* Cohort / Halaqah Filter */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-slate-800">Target Cohort / Group</label>
-                      <select
-                        value={sessionCohortInput}
-                        onChange={(e) => setSessionCohortInput(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                      >
-                        <option value="all">{isMadrasatNiche ? 'All Enrolled Cohorts / Halaqahs' : 'All Enrolled Cohorts'}</option>
-                        {isMadrasatNiche ? (
-                          <>
-                            <option value="Halaqah Al-Nour (Morning)">Halaqah Al-Nour (Morning)</option>
-                            <option value="Halaqah Al-Furqan (Evening)">Halaqah Al-Furqan (Evening)</option>
-                            <option value="Hifz Intensive Track">Hifz Intensive Track</option>
-                          </>
-                        ) : isCodingNiche ? (
-                          <>
-                            <option value="Full-Stack Next.js Bootcamp">Full-Stack Next.js Bootcamp</option>
-                            <option value="Frontend Engineering Cohort">Frontend Engineering Cohort</option>
-                            <option value="Cloud Architecture Masterclass">Cloud Architecture Masterclass</option>
-                          </>
-                        ) : isSchoolNiche ? (
-                          <>
-                            <option value="Grade 11 - Section A (Honors)">Grade 11 - Section A (Honors)</option>
-                            <option value="Grade 11 - Section B">Grade 11 - Section B</option>
-                            <option value="AP Calculus Cohort">AP Calculus Cohort</option>
-                          </>
-                        ) : (
-                          <>
-                            <option value="Executive Cohort Alpha">Executive Cohort Alpha</option>
-                            <option value="Applied Practicum Cohort">Applied Practicum Cohort</option>
-                            <option value="Advanced Diploma Track">Advanced Diploma Track</option>
-                          </>
-                        )}
-                      </select>
                     </div>
                   </div>
 
@@ -1465,25 +1431,28 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                     </div>
                   </div>
 
-                  <LiveClassroomHub
-                    userRole="teacher"
-                    currentUserName={user?.name || teacherPersona.defaultName}
-                    niche={tenant.niche}
-                    roomTitle={activeTeacherSession.title}
-                    courseTitle={activeTeacherSession.courseTitle || `${tenant.name} Live Studio`}
-                    studentLevel={activeTeacherSession.targetLevel !== 'all' ? activeTeacherSession.targetLevel : 'intermediate'}
-                    renderWorkspacePlugin={
-                      isSchoolNiche ? (
-                        <SchoolLMSWorkspace onAddToast={onAddToast} />
-                      ) : isCodingNiche ? (
-                        <CodingSandboxWorkspace />
-                      ) : isMadrasatNiche ? (
-                        <QuranLMSWorkspace />
-                      ) : (
-                        <SchoolLMSWorkspace onAddToast={onAddToast} />
-                      )
-                    }
-                  />
+                  <div className="h-[750px] rounded-3xl overflow-hidden shadow-xl border border-slate-800">
+                    <LiveClassroomHub
+                      userRole="teacher"
+                      currentUserName={user?.name || teacherPersona.defaultName}
+                      niche={tenant.niche}
+                      roomTitle={activeTeacherSession.title}
+                      courseTitle={activeTeacherSession.courseTitle || `${tenant.name} Live Studio`}
+                      studentLevel="intermediate"
+                      onLeaveRoom={handleEndSession}
+                      renderWorkspacePlugin={
+                        isSchoolNiche ? (
+                          <SchoolLMSWorkspace onAddToast={onAddToast} />
+                        ) : isCodingNiche ? (
+                          <CodingSandboxWorkspace />
+                        ) : isMadrasatNiche ? (
+                          <QuranLMSWorkspace />
+                        ) : (
+                          <SchoolLMSWorkspace onAddToast={onAddToast} />
+                        )
+                      }
+                    />
+                  </div>
                 </div>
               )}
             </div>

@@ -113,25 +113,43 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
   const [activeLiveSession, setActiveLiveSession] = useState<LiveClassSession | null>(null);
   const [studentLevel, setStudentLevel] = useState<StudentLevelTier>('intermediate');
 
-  // Subscribe to Live Sessions broadcast by teachers
+  // Identify the student's exact enrolled course
+  const studentEnrolledCourse = courses.find((c) => c.title === user?.cohort || c.id === user?.cohort) || courses[0] || null;
+  const enrolledCourseTitle = studentEnrolledCourse?.title || user?.cohort || tenant.name || 'Academy Course';
+  const enrolledInstructorName = studentEnrolledCourse?.instructorName || `${tenant.name || 'Academy'} Instructor`;
+
+  // Subscribe to Live Sessions broadcast by teachers specifically matching this student's class
   useEffect(() => {
     const active = classroomSessionService.getActiveSessionForStudent(
       tenant.subdomain,
       user?.id,
       user?.cohort,
+      enrolledCourseTitle,
       studentLevel
     );
     if (active) setActiveLiveSession(active);
 
     const unsubscribe = classroomSessionService.subscribe((event) => {
       if (event.type === 'SESSION_STARTED' && event.session && event.session.subdomain === tenant.subdomain) {
-        setActiveLiveSession(event.session);
+        const s = event.session;
+        const matchesStudentId = Boolean(s.allowedStudentIds && s.allowedStudentIds.length > 0 && user?.id && s.allowedStudentIds.includes(user.id));
+        const matchesCourse = Boolean(s.courseTitle && s.courseTitle.trim().toLowerCase() === enrolledCourseTitle.trim().toLowerCase());
+        const matchesCohort = Boolean(s.targetCohort && (s.targetCohort.trim().toLowerCase() === 'all' || s.targetCohort.trim().toLowerCase() === (user?.cohort || '').trim().toLowerCase()));
+
+        if (matchesStudentId || matchesCourse || matchesCohort) {
+          setActiveLiveSession(s);
+          onAddToast({
+            type: 'info',
+            title: 'Live Class Started',
+            message: `"${s.courseTitle}" is now live with ${s.teacherName}. Click "Live Classroom" to join.`
+          });
+        }
       } else if (event.type === 'SESSION_ENDED') {
         setActiveLiveSession((prev) => (prev && prev.id === event.sessionId ? null : prev));
       }
     });
     return () => unsubscribe();
-  }, [tenant.subdomain, user?.id, user?.cohort, studentLevel]);
+  }, [tenant.subdomain, user?.id, user?.cohort, enrolledCourseTitle, studentLevel, onAddToast]);
 
   // URL query parameter listener
   useEffect(() => {
@@ -322,7 +340,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 badge={{ text: isDemo ? (isQuran ? 'ACTIVE QARIYAH' : 'HONORS STUDENT') : 'ACTIVE STUDENT', variant: 'success' }}
               />
 
-              {/* Live Classroom / Halaqah Broadcast Banner */}
+              {/* Live Classroom Broadcast Banner */}
               {activeLiveSession && (
                 <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-emerald-500/30">
                   <div className="flex items-center gap-3">
@@ -332,9 +350,9 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     </span>
                     <div>
                       <h4 className="text-sm font-semibold flex items-center gap-2">
-                        <span>{activeLiveSession.teacherName || 'Ustadhah'} is LIVE Now</span>
+                        <span>{activeLiveSession.teacherName || 'Instructor'} is Live Now</span>
                         <span className="text-xs bg-rose-500/20 text-rose-200 border border-rose-400/30 px-2.5 py-0.5 rounded-full font-mono font-semibold capitalize">
-                          Halaqah Active
+                          Class Active
                         </span>
                       </h4>
                       <p className="text-xs text-emerald-100 mt-0.5">
@@ -347,7 +365,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     onClick={() => setActiveTab('videos')}
                     className="h-9 px-4 rounded-xl bg-white text-emerald-950 font-semibold text-xs sm:text-sm shadow-sm hover:bg-emerald-50 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
                   >
-                    <Play className="w-3.5 h-3.5 fill-current" /> Join Live Halaqah
+                    <Play className="w-3.5 h-3.5 fill-current" /> Join Live Class
                   </button>
                 </div>
               )}
@@ -965,53 +983,63 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
 
           {/* Other Active Module Tabs */}
           {activeTab === 'videos' && (
-            <div className="space-y-6">
+            <div className="h-full flex flex-col min-h-0">
               {activeLiveSession ? (
-                <LiveClassroomHub
-                  roomTitle={activeLiveSession.title}
-                  courseTitle={activeLiveSession.courseTitle}
-                  userRole="student"
-                  currentUserName={user?.name || 'Enrolled Student'}
-                  niche={tenant.niche}
-                  studentLevel={studentLevel}
-                  onLeaveRoom={() => setActiveLiveSession(null)}
-                />
+                <div className="flex-1 min-h-0 h-full rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+                  <LiveClassroomHub
+                    roomTitle={activeLiveSession.title}
+                    courseTitle={activeLiveSession.courseTitle}
+                    userRole="student"
+                    currentUserName={user?.name || 'Enrolled Student'}
+                    niche={tenant.niche}
+                    studentLevel={studentLevel}
+                    onLeaveRoom={() => setActiveLiveSession(null)}
+                  />
+                </div>
               ) : (
-                <div className="bg-white rounded-2xl p-8 border border-slate-200 text-center space-y-4 max-w-2xl mx-auto shadow-sm">
-                  <Radio className="w-12 h-12 text-emerald-600 mx-auto animate-pulse" />
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">
-                      {isQuran ? 'Live Halaqah Portal' : 'Live Interactive Classroom'}
+                <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 text-center space-y-5 max-w-xl mx-auto shadow-sm my-auto">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-900 text-white flex items-center justify-center mx-auto shadow-md">
+                    <Video className="w-8 h-8 text-emerald-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                      <span>Enrolled Class:</span>
+                      <strong className="text-slate-900">{enrolledCourseTitle}</strong>
+                    </div>
+                    <h3 className="text-xl font-semibold text-slate-900">
+                      {enrolledCourseTitle} Live Classroom
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {isQuran
-                        ? 'Connect to real-time WebRTC audio & video halaqahs led by verified Ustadhahs.'
-                        : 'Connect to real-time WebRTC interactive lectures, breakout pods, and collaborative workshops.'}
+                    <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+                      Connect directly to your instructor and classmates in real-time. Video, audio, whiteboard collaboration, and classroom chat are synchronized for your enrolled class.
                     </p>
                   </div>
-                  <button
-                    onClick={() => {
-                      const mockSession: LiveClassSession = {
-                        id: `room-${tenant.subdomain}-${Date.now().toString().slice(-4)}`,
-                        title: isQuran ? 'Al-Baqarah Recitation Halaqah' : isCoding ? 'Live System Architecture Huddle' : 'Live Interactive Masterclass',
-                        courseTitle: tenant.name || (isQuran ? 'Madrasat Live Halaqah' : 'Academy Live Interactive Classroom'),
-                        teacherId: 'teacher-1',
-                        teacherName: isDemo ? (isQuran ? 'Ustadhah Zainab Al-Fayez' : 'Senior Faculty Instructor') : (courses[0]?.instructorName || `${tenant.name || 'Academy'} Instructor`),
-                        targetLevel: 'intermediate',
-                        targetCohort: user?.cohort || (isDemo ? (isQuran ? 'Morning Hifz Cohort A' : 'Cohort Alpha') : 'General Cohort'),
-                        allowedStudentIds: [],
-                        startedAt: new Date().toLocaleTimeString(),
-                        status: 'live',
-                        subdomain: tenant.subdomain,
-                        niche: tenant.niche
-                      };
-                      classroomSessionService.startSession(mockSession);
-                      setActiveLiveSession(mockSession);
-                    }}
-                    className="px-6 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer active:scale-[0.98]"
-                  >
-                    <Play className="w-4 h-4" /> {isQuran ? 'Enter Live Halaqah Room' : 'Enter Live Classroom'}
-                  </button>
+
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button
+                      onClick={() => {
+                        const directSession: LiveClassSession = {
+                          id: `room-${tenant.subdomain}-${Date.now().toString().slice(-5)}`,
+                          title: `${enrolledCourseTitle} Live Session`,
+                          courseTitle: enrolledCourseTitle,
+                          teacherId: 'instructor',
+                          teacherName: enrolledInstructorName,
+                          targetLevel: 'all',
+                          targetCohort: enrolledCourseTitle,
+                          allowedStudentIds: [],
+                          startedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                          status: 'live',
+                          subdomain: tenant.subdomain,
+                          niche: tenant.niche,
+                        };
+                        classroomSessionService.startSession(directSession);
+                        setActiveLiveSession(directSession);
+                      }}
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-md transition-all inline-flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98]"
+                    >
+                      <Play className="w-4 h-4 fill-current text-emerald-400" />
+                      <span>Enter {enrolledCourseTitle} Live Room</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

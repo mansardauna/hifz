@@ -9,65 +9,24 @@ import {
   MessageSquare,
   Users,
   PhoneOff,
-  Sparkles,
   PenTool,
-  Code,
-  BookOpen,
   Send,
-  Radio,
-  FileText,
-  Pin,
-  PhoneCall,
-  CheckCircle2,
-  ListTodo,
   Volume2,
-  UserCheck,
-  Clock,
-  ShieldCheck,
-  Layers,
-  GraduationCap,
-  Award,
-  Filter,
-  Check,
-  Star,
-  ChevronRight,
-  TrendingUp,
-  Sliders,
-  Play,
-  RotateCcw,
-  Compass,
-  FileCheck,
   AlertTriangle,
+  Check,
+  X,
+  VolumeX,
+  Sparkles,
 } from 'lucide-react';
 import { InteractiveWhiteboard } from '../../collaboration/InteractiveWhiteboard';
-import { ClassroomParticipant, TenantNiche } from '../../types';
+import { TenantNiche } from '../../types';
 import { Room, RoomEvent, RemoteTrack, RemoteParticipant, Track } from 'livekit-client';
-import { Button, Card, Badge } from '../ui';
+import { Button } from '../ui';
 import { useTenant } from '../../context/TenantContext';
-import { isDemoTenant } from '../../lib/tenants';
-import {
-  getClassroomConfig,
-  saveClassroomConfig,
-  getDefaultClassroomConfig,
-  detectTenantNicheType,
-  ClassroomCustomizationConfig
-} from '../../services/classroomCustomizationService';
-import { ClassroomConfigModal } from './ClassroomConfigModal';
 
 export type StudentLevelTier = 'beginner' | 'intermediate' | 'advanced';
 
-export interface StudentLevelConfig {
-  id: StudentLevelTier;
-  label: string;
-  sublabel: string;
-  badgeColor: string;
-  borderColor: string;
-  bgLight: string;
-  icon: any;
-  targetTopics: string[];
-}
-
-interface LiveClassroomHubProps {
+export interface LiveClassroomHubProps {
   roomTitle?: string;
   courseTitle?: string;
   userRole?: 'teacher' | 'student' | 'admin';
@@ -79,123 +38,34 @@ interface LiveClassroomHubProps {
 }
 
 export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
-  roomTitle = 'Live Interactive Session',
-  courseTitle = 'Curriculum & Live Coaching',
+  roomTitle = 'Live Classroom Session',
+  courseTitle = 'Academy Curriculum',
   userRole = 'student',
   currentUserName = 'Student',
-  niche,
-  studentLevel = 'intermediate',
   onLeaveRoom,
-  renderWorkspacePlugin
+  renderWorkspacePlugin,
 }) => {
-  const { tenant, updateTenantConfig } = useTenant();
+  const { tenant } = useTenant();
 
-  // Load customizable classroom configuration
-  const [classroomConfig, setClassroomConfig] = useState<ClassroomCustomizationConfig>(() =>
-    getClassroomConfig(tenant || { niche })
-  );
-  const [isAdminConfigOpen, setIsAdminConfigOpen] = useState<boolean>(false);
-  const [adminConfigTab, setAdminConfigTab] = useState<'pods' | 'agenda' | 'rubric' | 'channels'>('pods');
-
-  useEffect(() => {
-    setClassroomConfig(getClassroomConfig(tenant || { niche }));
-  }, [tenant, niche]);
-
-  const nicheType = detectTenantNicheType(tenant || { niche });
-  const isCoding = nicheType === 'coding';
-  const isSchool = nicheType === 'school';
-  const isQuran = nicheType === 'quran';
-
-  // Dynamic Level Tiers configured by Admin
-  const beginnerPod = classroomConfig.pods.find((p) => p.tier === 'beginner' || p.id === 'beginner') || classroomConfig.pods[0];
-  const intermediatePod = classroomConfig.pods.find((p) => p.tier === 'intermediate' || p.id === 'intermediate') || classroomConfig.pods[1] || classroomConfig.pods[0];
-  const advancedPod = classroomConfig.pods.find((p) => p.tier === 'advanced' || p.id === 'advanced') || classroomConfig.pods[2] || classroomConfig.pods[0];
-
-  const levelConfigs: Record<StudentLevelTier, StudentLevelConfig> = {
-    beginner: {
-      id: 'beginner',
-      label: beginnerPod?.label || 'Level 1: Core Fundamentals',
-      sublabel: beginnerPod?.sublabel || 'Foundations & core principles',
-      badgeColor: beginnerPod?.badgeColor || 'bg-emerald-100 text-emerald-800 border-emerald-300',
-      borderColor: beginnerPod?.borderColor || 'border-emerald-200',
-      bgLight: beginnerPod?.bgLight || 'bg-emerald-50/60',
-      icon: isQuran ? BookOpen : isCoding ? Code : GraduationCap,
-      targetTopics: beginnerPod?.targetTopics || ['Core Principles', 'Foundational Concepts'],
-    },
-    intermediate: {
-      id: 'intermediate',
-      label: intermediatePod?.label || 'Level 2: Applied Skills & Practice',
-      sublabel: intermediatePod?.sublabel || 'Hands-on practice & applied case studies',
-      badgeColor: intermediatePod?.badgeColor || 'bg-blue-100 text-blue-800 border-blue-300',
-      borderColor: intermediatePod?.borderColor || 'border-blue-200',
-      bgLight: intermediatePod?.bgLight || 'bg-blue-50/60',
-      icon: isQuran ? Award : isCoding ? Layers : Award,
-      targetTopics: intermediatePod?.targetTopics || ['Practical Execution', 'Case Studies'],
-    },
-    advanced: {
-      id: 'advanced',
-      label: advancedPod?.label || 'Level 3: Strategic Mastery & Capstone',
-      sublabel: advancedPod?.sublabel || 'Advanced mastery & capstone project review',
-      badgeColor: advancedPod?.badgeColor || 'bg-purple-100 text-purple-800 border-purple-300',
-      borderColor: advancedPod?.borderColor || 'border-purple-200',
-      bgLight: advancedPod?.bgLight || 'bg-purple-50/60',
-      icon: isQuran ? Star : isCoding ? Sparkles : Star,
-      targetTopics: advancedPod?.targetTopics || ['Advanced Systems', 'Independent Capstone'],
-    },
-  };
-
-  // Active level filter for the live room view
-  const [selectedLevelFilter, setSelectedLevelFilter] = useState<'all' | StudentLevelTier>('all');
-  const [activeUserLevel, setActiveUserLevel] = useState<StudentLevelTier>(studentLevel);
-  const [activeBreakoutPod, setActiveBreakoutPod] = useState<string>('main');
-  const [showAssessmentModal, setShowAssessmentModal] = useState<boolean>(false);
-  const [assessmentStudent, setAssessmentStudent] = useState<any>(null);
-
-  // Classroom Tabs
-  const [activeTab, setActiveTab] = useState<'forum' | 'video' | 'agenda' | 'whiteboard' | 'workspace' | 'pods' | 'attendance'>('video');
-
-  const isDemo = isDemoTenant(tenant?.subdomain);
-
-  // Automated Live Attendance Tracking State with Level Classification
-  const [liveAttendees, setLiveAttendees] = useState<{
-    id: string;
-    name: string;
-    role: 'teacher' | 'student' | 'admin';
-    level: StudentLevelTier;
-    joinedAt: string;
-    secondsPresent: number;
-    completionStatus: 'Attended (Active)' | 'Completed Full Class' | 'Left Early (Incomplete)';
-    avatar: string;
-    currentScore?: number;
-    notes?: string;
-  }[]>(() => {
-    return [
-      {
-        id: 'att-self',
-        name: currentUserName,
-        role: userRole,
-        level: activeUserLevel,
-        joinedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        secondsPresent: 0,
-        completionStatus: 'Attended (Active)',
-        avatar: currentUserName.slice(0, 2).toUpperCase(),
-      }
-    ];
-  });
+  // Classroom Mode: Video Stage vs Whiteboard vs Workspace
+  const [activeStage, setActiveStage] = useState<'video' | 'whiteboard' | 'workspace'>('video');
+  const [sidePanel, setSidePanel] = useState<null | 'chat' | 'participants'>(null);
 
   // Call & Media State
-  const [isInCall, setIsInCall] = useState<boolean>(false);
+  const [isInCall, setIsInCall] = useState<boolean>(true);
   const [micEnabled, setMicEnabled] = useState<boolean>(true);
   const [videoEnabled, setVideoEnabled] = useState<boolean>(true);
   const [screenSharing, setScreenSharing] = useState<boolean>(false);
   const [handRaised, setHandRaised] = useState<boolean>(false);
   const [sessionSeconds, setSessionSeconds] = useState<number>(0);
   const [audioLevel, setAudioLevel] = useState<number>(0);
+  const [unreadChatCount, setUnreadChatCount] = useState<number>(0);
 
-  // LiveKit WebRTC Peer Connection State
+  // LiveKit & WebRTC Peer Connection State
   const [isConnectedToSFU, setIsConnectedToSFU] = useState<boolean>(false);
   const [remoteParticipantName, setRemoteParticipantName] = useState<string | null>(null);
   const [hasRemoteVideo, setHasRemoteVideo] = useState<boolean>(false);
+  const [livekitNotice, setLivekitNotice] = useState<string | null>(null);
 
   // Video Element Refs
   const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -209,111 +79,60 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
-  const [livekitNotice, setLivekitNotice] = useState<string | null>(null);
 
-  // Messages Stream (Strictly Decoupled for School vs Coding vs Quran)
-  const [forumMessages, setForumMessages] = useState<{
+  // In-call Chat Messages
+  const [messages, setMessages] = useState<{
     id: string;
     sender: string;
     role: 'teacher' | 'student' | 'admin';
     text: string;
     time: string;
-    pinned?: boolean;
-    attachment?: { name: string; size: string };
-  }[]>(() => {
-    if (isDemo) {
-      return [
-        {
-          id: 'm-1',
-          sender: isSchool ? 'Dr. Eleanor Vance' : isCoding ? 'Sarah Jenkins' : isQuran ? 'Shaykh Dr. Abdul Rahman' : 'Lead Faculty Instructor',
-          role: 'teacher',
-          text: isSchool
-            ? 'Welcome to the live academic lecture! Today we cover Unit 5 Taylor series derivations, radius of convergence, and problem set 5.'
-            : isCoding
-            ? 'Welcome to the Live Coding Session! Today we cover React 19 Server Actions, optimistic mutations, and custom hook architectures.'
-            : isQuran
-            ? 'Assalamu Alaikum. Welcome everyone to today\'s live halaqah! We will practice Tajweed rules and oral recitations.'
-            : `Welcome everyone to today's live session for ${tenant?.name || 'the academy'}! We will review our active module goals and collaborate on key practical exercises.`,
-          time: '10:00 AM',
-          pinned: true,
-          attachment: isSchool
-            ? { name: 'Unit5_Taylor_Series_Slides.pdf', size: '3.4 MB' }
-            : isCoding
-            ? { name: 'React19_Server_Actions.md', size: '42 KB' }
-            : isQuran
-            ? { name: 'Tajweed_Rules_Guide.pdf', size: '1.2 MB' }
-            : { name: 'Session_Curriculum_Guide.pdf', size: '1.5 MB' }
-        },
-        {
-          id: 'm-2',
-          sender: isSchool ? 'Alex Mercer' : isCoding ? 'David Miller' : isQuran ? 'Fatima Zahra' : 'Morgan Avery',
-          role: 'student',
-          text: isSchool
-            ? 'Good morning Professor, ready with the textbook proofs and derivation notes.'
-            : isCoding
-            ? 'Ready with my local sandbox repository and unit test suite.'
-            : isQuran
-            ? 'Wa Alaikum Assalam Ustadh, completed the recitation homework.'
-            : 'Good morning Instructor, completed the module preparation and exercises.',
-          time: '10:02 AM'
-        }
-      ];
-    }
-    return [];
-  });
+  }[]>([]);
   const [messageInput, setMessageInput] = useState<string>('');
+  const chatMessagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Call timer
+  // Attendees List
+  const [liveAttendees, setLiveAttendees] = useState<{
+    id: string;
+    name: string;
+    role: 'teacher' | 'student' | 'admin';
+    isMuted?: boolean;
+    handRaised?: boolean;
+  }[]>([
+    {
+      id: 'self',
+      name: currentUserName,
+      role: userRole,
+      isMuted: false,
+      handRaised: false,
+    },
+  ]);
+
+  // Session Timer
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isInCall) {
       interval = setInterval(() => {
         setSessionSeconds((prev) => prev + 1);
       }, 1000);
-    } else {
-      setSessionSeconds(0);
     }
     return () => clearInterval(interval);
   }, [isInCall]);
 
-  // Load live enrolled students from MySQL for classroom attendees
+  // Scroll to bottom of chat when new message arrives
   useEffect(() => {
-    if (!tenant?.id && !tenant?.subdomain) return;
-    fetch(`/api/tenant/members?tenantId=${encodeURIComponent(tenant.id || tenant.subdomain)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.students && data.students.length > 0) {
-          const liveStudents = data.students.map((st: any, idx: number) => ({
-            id: st.id || `att-student-${idx}`,
-            name: st.name,
-            role: 'student' as const,
-            level: (idx % 3 === 0 ? 'advanced' : idx % 2 === 0 ? 'intermediate' : 'beginner') as StudentLevelTier,
-            joinedAt: '10:00 AM',
-            secondsPresent: 200 + idx * 15,
-            completionStatus: 'Attended (Active)' as const,
-            avatar: st.name.slice(0, 2).toUpperCase(),
-            currentScore: 90 + (idx % 10),
-            notes: st.enrolledCourse ? `Enrolled in ${st.enrolledCourse}` : 'Active student participant',
-          }));
+    if (sidePanel === 'chat') {
+      chatMessagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, sidePanel]);
 
-          setLiveAttendees((prev) => {
-            const selfAttendee = prev.find((p) => p.id === 'att-1' || p.id === 'att-self') || {
-              id: 'att-self',
-              name: currentUserName,
-              role: userRole,
-              level: activeUserLevel,
-              joinedAt: '10:00 AM',
-              secondsPresent: 240,
-              completionStatus: 'Attended (Active)' as const,
-              avatar: currentUserName.slice(0, 2).toUpperCase(),
-              currentScore: 98,
-            };
-            return [selfAttendee, ...liveStudents];
-          });
-        }
-      })
-      .catch((err) => console.warn('Could not load classroom members:', err));
-  }, [tenant?.id, tenant?.subdomain, currentUserName, userRole, activeUserLevel]);
+  // Initialize WebRTC & Media Stream on mount
+  useEffect(() => {
+    startMedia();
+    return () => {
+      cleanupMedia();
+    };
+  }, []);
 
   const formatTimer = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -321,14 +140,11 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // WebRTC & Camera Initialization (Dual Engine: LiveKit Cloud SFU + Real Browser WebRTC Mesh)
-  const handleStartCall = async () => {
-    setIsInCall(true);
-    setActiveTab('video');
+  const startMedia = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: true
+        audio: true,
       });
       localStreamRef.current = stream;
       if (localVideoRef.current) {
@@ -359,33 +175,30 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         requestAnimationFrame(checkLevel);
       }
 
-      const roomName = `room-${roomTitle.toLowerCase().replace(/\s+/g, '-')}`;
+      const roomChannelName = `webrtc_room_${(roomTitle || 'live').toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
 
-      // 1. Direct WebRTC Peer Connection with BroadcastChannel Cross-Tab Signaling
+      // BroadcastChannel signaling for browser-to-browser WebRTC
       if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
-        const bc = new BroadcastChannel(`hifz_webrtc_${roomName}`);
+        const bc = new BroadcastChannel(roomChannelName);
         broadcastChannelRef.current = bc;
 
         const pc = new RTCPeerConnection({
           iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' }
-          ]
+            { urls: 'stun:stun2.l.google.com:19302' },
+          ],
         });
         peerConnectionRef.current = pc;
 
-        // Add local tracks to WebRTC peer connection
-        stream.getTracks().forEach((track) => {
-          pc.addTrack(track, stream);
-        });
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
         pc.onicecandidate = (event) => {
           if (event.candidate && bc) {
             bc.postMessage({
               type: 'ice_candidate',
               candidate: event.candidate,
-              sender: currentUserName
+              sender: currentUserName,
             });
           }
         };
@@ -404,13 +217,20 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
           if (data.type === 'peer_join') {
             setRemoteParticipantName(data.sender);
+            setLiveAttendees((prev) => {
+              if (prev.some((a) => a.name === data.sender)) return prev;
+              return [
+                ...prev,
+                { id: `peer-${Date.now()}`, name: data.sender, role: data.role || 'student' },
+              ];
+            });
             try {
               const offer = await pc.createOffer();
               await pc.setLocalDescription(offer);
               bc.postMessage({
                 type: 'peer_offer',
                 sdp: offer,
-                sender: currentUserName
+                sender: currentUserName,
               });
             } catch (err) {
               console.warn('WebRTC offer error:', err);
@@ -424,7 +244,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               bc.postMessage({
                 type: 'peer_answer',
                 sdp: answer,
-                sender: currentUserName
+                sender: currentUserName,
               });
             } catch (err) {
               console.warn('WebRTC answer error:', err);
@@ -443,64 +263,62 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               console.warn('WebRTC candidate error:', err);
             }
           } else if (data.type === 'chat_message') {
-            setForumMessages((prev) => [...prev, data.message]);
+            setMessages((prev) => [...prev, data.message]);
+            if (sidePanel !== 'chat') {
+              setUnreadChatCount((prev) => prev + 1);
+            }
+          } else if (data.type === 'mute_all') {
+            if (userRole === 'student') {
+              setMicEnabled(false);
+              if (localStreamRef.current) {
+                const track = localStreamRef.current.getAudioTracks()[0];
+                if (track) track.enabled = false;
+              }
+            }
           } else if (data.type === 'peer_leave') {
             if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = null;
             }
             setHasRemoteVideo(false);
             setRemoteParticipantName(null);
+            setLiveAttendees((prev) => prev.filter((a) => a.name !== data.sender));
           }
         };
 
-        // Announce presence to other peers in room
         bc.postMessage({
           type: 'peer_join',
           sender: currentUserName,
-          role: userRole
+          role: userRole,
         });
       }
 
-      // 2. Connect to LiveKit Cloud WebRTC SFU (if configured)
+      // LiveKit Cloud SFU fallback (if credentials configured)
       const tokenRes = await fetch(
-        `/api/livekit/token?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(currentUserName)}`
-      );
-      if (tokenRes.ok) {
+        `/api/livekit/token?room=${encodeURIComponent(roomChannelName)}&username=${encodeURIComponent(currentUserName)}`
+      ).catch(() => null);
+
+      if (tokenRes && tokenRes.ok) {
         const { token, wsUrl, isFallback } = await tokenRes.json();
         if (isFallback) {
-          setLivekitNotice(
-            'LiveKit Cloud API key is not connected. Video room is operating on local peer-to-peer browser mesh. Connect LiveKit keys in Admin Settings > Integrations for high-capacity multi-participant SFU cloud streaming.'
-          );
-        } else if (token && wsUrl && !isFallback) {
           setLivekitNotice(null);
+        } else if (token && wsUrl) {
           try {
-            const room = new Room({
-              adaptiveStream: true,
-              dynacast: true,
-            });
+            const room = new Room({ adaptiveStream: true, dynacast: true });
             livekitRoomRef.current = room;
 
-            // Wire remote participant track events
             room.on(RoomEvent.Connected, () => {
               setIsConnectedToSFU(true);
-              room.remoteParticipants.forEach((participant) => {
-                setRemoteParticipantName(participant.name || participant.identity);
-                participant.trackPublications.forEach((pub) => {
-                  if (pub.isSubscribed && pub.track) {
-                    if (pub.track.kind === Track.Kind.Video && remoteVideoRef.current) {
-                      pub.track.attach(remoteVideoRef.current);
-                      setHasRemoteVideo(true);
-                    }
-                    if (pub.track.kind === Track.Kind.Audio && remoteAudioRef.current) {
-                      pub.track.attach(remoteAudioRef.current);
-                    }
-                  }
-                });
+              room.remoteParticipants.forEach((p) => {
+                setRemoteParticipantName(p.name || p.identity);
               });
             });
 
-            room.on(RoomEvent.ParticipantConnected, (participant: RemoteParticipant) => {
-              setRemoteParticipantName(participant.name || participant.identity);
+            room.on(RoomEvent.ParticipantConnected, (p: RemoteParticipant) => {
+              setRemoteParticipantName(p.name || p.identity);
+              setLiveAttendees((prev) => {
+                if (prev.some((a) => a.name === (p.name || p.identity))) return prev;
+                return [...prev, { id: p.sid, name: p.name || p.identity, role: 'student' }];
+              });
             });
 
             room.on(RoomEvent.ParticipantDisconnected, () => {
@@ -510,8 +328,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               }
             });
 
-            room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, participant: RemoteParticipant) => {
-              setRemoteParticipantName(participant.name || participant.identity);
+            room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack) => {
               if (track.kind === Track.Kind.Video && remoteVideoRef.current) {
                 track.attach(remoteVideoRef.current);
                 setHasRemoteVideo(true);
@@ -520,35 +337,23 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               }
             });
 
-            room.on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
-              track.detach();
-              if (track.kind === Track.Kind.Video) {
-                setHasRemoteVideo(false);
-              }
-            });
-
             await room.connect(wsUrl, token);
             await room.localParticipant.enableCameraAndMicrophone();
           } catch (e) {
-            console.warn('LiveKit cloud connection notice (using P2P mesh):', e);
+            console.warn('LiveKit cloud notice:', e);
           }
         }
       }
     } catch (err) {
-      console.warn('Camera & WebRTC connection error:', err);
+      console.warn('Media initialization notice:', err);
     }
   };
 
-  const handleLeaveCall = () => {
-    setIsInCall(false);
-    setIsConnectedToSFU(false);
-    setRemoteParticipantName(null);
-    setHasRemoteVideo(false);
-
+  const cleanupMedia = () => {
     if (broadcastChannelRef.current) {
       broadcastChannelRef.current.postMessage({
         type: 'peer_leave',
-        sender: currentUserName
+        sender: currentUserName,
       });
       broadcastChannelRef.current.close();
       broadcastChannelRef.current = null;
@@ -558,11 +363,11 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
       peerConnectionRef.current = null;
     }
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current.getTracks().forEach((t) => t.stop());
       localStreamRef.current = null;
     }
     if (screenStreamRef.current) {
-      screenStreamRef.current.getTracks().forEach((track) => track.stop());
+      screenStreamRef.current.getTracks().forEach((t) => t.stop());
       screenStreamRef.current = null;
     }
     if (audioContextRef.current) {
@@ -575,15 +380,20 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
     }
   };
 
+  const handleLeaveCall = () => {
+    cleanupMedia();
+    setIsInCall(false);
+    if (onLeaveRoom) {
+      onLeaveRoom();
+    }
+  };
+
   const toggleMic = async () => {
     const nextState = !micEnabled;
     setMicEnabled(nextState);
-
     if (localStreamRef.current) {
       const audioTrack = localStreamRef.current.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = nextState;
-      }
+      if (audioTrack) audioTrack.enabled = nextState;
     }
     if (livekitRoomRef.current?.localParticipant) {
       await livekitRoomRef.current.localParticipant.setMicrophoneEnabled(nextState);
@@ -593,12 +403,9 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
   const toggleVideo = async () => {
     const nextState = !videoEnabled;
     setVideoEnabled(nextState);
-
     if (localStreamRef.current) {
       const videoTrack = localStreamRef.current.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.enabled = nextState;
-      }
+      if (videoTrack) videoTrack.enabled = nextState;
     }
     if (livekitRoomRef.current?.localParticipant) {
       await livekitRoomRef.current.localParticipant.setCameraEnabled(nextState);
@@ -620,7 +427,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
       }
     } else {
       if (screenStreamRef.current) {
-        screenStreamRef.current.getTracks().forEach((track) => track.stop());
+        screenStreamRef.current.getTracks().forEach((t) => t.stop());
       }
       setScreenSharing(false);
     }
@@ -637,267 +444,98 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
       text: messageInput.trim(),
       time: now,
     };
-    setForumMessages((prev) => [...prev, newMsg]);
+    setMessages((prev) => [...prev, newMsg]);
     if (broadcastChannelRef.current) {
       broadcastChannelRef.current.postMessage({
         type: 'chat_message',
         message: newMsg,
-        sender: currentUserName
+        sender: currentUserName,
       });
     }
     setMessageInput('');
   };
 
+  const handleTeacherMuteAll = () => {
+    if (broadcastChannelRef.current) {
+      broadcastChannelRef.current.postMessage({
+        type: 'mute_all',
+        sender: currentUserName,
+      });
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full bg-slate-50 text-slate-900 font-sans overflow-hidden">
-      {/* 1. CLEAN MODERN TOP HEADER (Light Mode & Highly Responsive) */}
-      <header className="bg-white border-b border-slate-200 px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row md:items-center justify-between gap-2.5 shrink-0 shadow-xs">
-        {/* Title & Status */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {isCoding ? <Code className="w-5 h-5 text-blue-600 shrink-0" /> : <BookOpen className="w-5 h-5 text-emerald-600 shrink-0" />}
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-xs sm:text-sm font-semibold text-slate-900 truncate leading-none">{roomTitle}</h2>
-                {isInCall ? (
-                  <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 shrink-0">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                    Live ({formatTimer(sessionSeconds)})
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                    Forum
-                  </span>
-                )}
-              </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">{courseTitle}</p>
+    <div className="flex flex-col h-full w-full bg-slate-950 text-slate-100 font-sans overflow-hidden select-none">
+      {/* 1. TOP HEADER - Clean, Streamlined & Dynamic */}
+      <header className="h-14 bg-slate-900 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+        {/* Class Details & Live Indicator */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-semibold text-white shadow-xs shrink-0">
+            {tenant?.name ? tenant.name.charAt(0) : 'A'}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs sm:text-sm font-semibold text-white truncate leading-none">
+                {courseTitle}
+              </h2>
+              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30 text-[10px] font-semibold font-mono shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                Live {formatTimer(sessionSeconds)}
+              </span>
             </div>
-          </div>
-
-          {/* Quick Call Action on Mobile */}
-          <div className="flex md:hidden items-center gap-1.5">
-            {!isInCall ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleStartCall}
-                leftIcon={<PhoneCall className="w-3.5 h-3.5" />}
-                className="font-semibold text-xs px-3"
-              >
-                Call
-              </Button>
-            ) : (
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={handleLeaveCall}
-                leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
-                className="font-semibold text-xs px-3"
-              >
-                Leave
-              </Button>
-            )}
+            <p className="text-[10px] sm:text-[11px] text-slate-400 truncate mt-0.5">
+              {roomTitle}
+            </p>
           </div>
         </div>
 
-        {/* Center Smart Tab Pills — Horizontally Scrollable on Mobile */}
-        <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 overflow-x-auto no-scrollbar max-w-full">
-          <button
-            onClick={() => setActiveTab('video')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'video' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <VideoIcon className={`w-3.5 h-3.5 shrink-0 ${isCoding ? 'text-blue-600' : isSchool ? 'text-purple-600' : 'text-emerald-600'}`} />
-            <span>Live Class ({liveAttendees.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('pods')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'pods' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-            <span>Level Pods (3)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('forum')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'forum' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-            <span>Discussion</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('agenda')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'agenda' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <ListTodo className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-            <span>Curriculum Agenda</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('whiteboard')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'whiteboard' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <PenTool className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-            <span>Whiteboard</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('workspace')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'workspace' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <Sparkles className={`w-3.5 h-3.5 shrink-0 ${isCoding ? 'text-blue-600' : isSchool ? 'text-purple-600' : 'text-emerald-600'}`} />
-            <span>{isCoding ? 'Code Sandbox' : isSchool ? 'Academic SIS Lab' : 'Mushaf Reader'}</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('attendance')}
-            className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
-              activeTab === 'attendance' ? 'bg-white text-slate-900 shadow-xs' : 'hover:text-slate-900'
-            }`}
-          >
-            <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>Attendance & Levels</span>
-          </button>
-        </div>
-
-        {/* Desktop Call Actions */}
-        <div className="hidden md:flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAssessmentModal(true)}
-            leftIcon={<Award className="w-3.5 h-3.5 text-amber-500" />}
-            className="font-semibold text-xs"
-          >
-            Level Rubric
-          </Button>
-
-          {!isInCall ? (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleStartCall}
-              leftIcon={<PhoneCall className="w-3.5 h-3.5" />}
-              className="font-semibold text-xs"
-            >
-              Start Class Call
-            </Button>
-          ) : (
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={handleLeaveCall}
-              leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
-            >
-              Leave Call
-            </Button>
-          )}
-
-          {onLeaveRoom && (
+        {/* Header Right Actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          {userRole === 'teacher' && (
             <button
-              onClick={onLeaveRoom}
-              className="text-xs text-slate-500 hover:text-slate-800 px-2 py-1 transition-colors cursor-pointer"
+              onClick={handleTeacherMuteAll}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700 transition-colors cursor-pointer"
+              title="Mute all student microphones"
             >
-              Exit
+              <VolumeX className="w-3.5 h-3.5" />
+              <span>Mute All</span>
             </button>
           )}
+
+          {renderWorkspacePlugin && (
+            <button
+              onClick={() => setActiveStage(activeStage === 'workspace' ? 'video' : 'workspace')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeStage === 'workspace'
+                  ? 'bg-blue-600 border-blue-500 text-white'
+                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Workspace</span>
+            </button>
+          )}
+
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={handleLeaveCall}
+            leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
+            className="text-xs font-semibold px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs"
+          >
+            Leave Class
+          </Button>
         </div>
       </header>
 
-      {livekitNotice && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-xs text-amber-900 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>{livekitNotice}</span>
-          </div>
-          <button
-            onClick={() => setLivekitNotice(null)}
-            className="text-amber-700 hover:text-amber-900 font-semibold ml-2 text-xs cursor-pointer"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* 2. DYNAMIC LEVEL CLASSIFIER & POD FILTER SUB-BAR */}
-      <div className="bg-white border-b border-slate-200 px-3 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0 shadow-2xs">
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-1.5 text-slate-500 font-semibold text-[11px] shrink-0">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span>Filter by Level:</span>
-          </div>
-
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-            <button
-              onClick={() => setSelectedLevelFilter('all')}
-              className={`px-2.5 py-1 rounded-md font-semibold text-[11px] transition-all cursor-pointer select-none ${
-                selectedLevelFilter === 'all'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              All Levels ({liveAttendees.length})
-            </button>
-            {(['beginner', 'intermediate', 'advanced'] as StudentLevelTier[]).map((lvl) => {
-              const cfg = levelConfigs[lvl];
-              const count = liveAttendees.filter((a) => a.level === lvl).length;
-              const isSelected = selectedLevelFilter === lvl;
-              return (
-                <button
-                  key={lvl}
-                  onClick={() => setSelectedLevelFilter(lvl)}
-                  className={`px-2.5 py-1 rounded-md font-semibold text-[11px] transition-all cursor-pointer select-none flex items-center gap-1 ${
-                    isSelected
-                      ? `${cfg.badgeColor} shadow-2xs font-semibold`
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  <span>{lvl === 'beginner' ? 'Level 1' : lvl === 'intermediate' ? 'Level 2' : 'Level 3'}</span>
-                  <span className="font-mono text-[10px] opacity-75">({count})</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Current Active User Level Badge & Pod Indicator */}
-        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-          <span className="text-[11px] text-slate-500 font-medium">Your Track:</span>
-          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${levelConfigs[activeUserLevel].badgeColor} flex items-center gap-1`}>
-            {React.createElement(levelConfigs[activeUserLevel].icon, { className: 'w-3 h-3' })}
-            {levelConfigs[activeUserLevel].label}
-          </span>
-          {activeBreakoutPod !== 'main' && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
-              Pod: {activeBreakoutPod}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* 3. BODY CONTENT */}
-      <div className="flex-1 flex overflow-hidden p-2.5 sm:p-4 min-w-0">
-        {/* Tab 1: Live Video Call */}
-        {activeTab === 'video' && (
-          <div className="flex-1 flex flex-col justify-between bg-slate-900 rounded-2xl overflow-hidden relative shadow-xl">
-            {/* Video Streams Grid */}
-            <div className="flex-1 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 overflow-y-auto items-center justify-center">
-              {/* Local Participant Card */}
-              <div className="relative aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center shadow-lg w-full max-h-[380px] mx-auto">
+      {/* 2. MAIN STAGE & COLLAPSIBLE SIDE PANELS */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Stage Content */}
+        <div className="flex-1 flex flex-col justify-between p-3 sm:p-5 overflow-hidden relative bg-slate-950 min-w-0">
+          {activeStage === 'video' && (
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 overflow-y-auto items-center justify-center p-1">
+              {/* Local Video Tile */}
+              <div className="relative aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center shadow-lg w-full max-h-[420px] mx-auto">
                 <video
                   ref={localVideoRef}
                   autoPlay
@@ -907,21 +545,16 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 />
                 {!videoEnabled && (
                   <div className="flex flex-col items-center gap-2">
-                    <div className={`w-16 h-16 rounded-full text-white flex items-center justify-center font-semibold text-xl shadow-lg ${
-                      isCoding ? 'bg-blue-600' : isSchool ? 'bg-purple-600' : 'bg-emerald-600'
-                    }`}>
+                    <div className="w-16 h-16 rounded-full bg-slate-800 text-white flex items-center justify-center font-semibold text-xl border border-slate-700 shadow-md">
                       {currentUserName.charAt(0)}
                     </div>
                     <span className="text-xs text-slate-400 font-semibold">{currentUserName} (Camera Off)</span>
                   </div>
                 )}
 
-                {/* Floating Indicators */}
-                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-semibold flex items-center gap-2 border border-slate-700/60">
+                {/* Local Info Tag */}
+                <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-semibold flex items-center gap-2 border border-slate-800">
                   <span>{currentUserName} (You)</span>
-                  <span className={`text-[10px] px-2 py-0.2 rounded-md font-semibold ${levelConfigs[activeUserLevel].badgeColor}`}>
-                    {activeUserLevel === 'beginner' ? 'Lvl 1' : activeUserLevel === 'intermediate' ? 'Lvl 2' : 'Lvl 3'}
-                  </span>
                   {micEnabled ? (
                     <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-mono">
                       <Volume2 className="w-3 h-3" />
@@ -933,14 +566,14 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 </div>
 
                 {handRaised && (
-                  <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-2 rounded-xl font-semibold shadow-lg animate-bounce">
-                    <Hand className="w-4 h-4" />
+                  <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 px-2.5 py-1 rounded-xl text-xs font-semibold shadow-md flex items-center gap-1">
+                    <Hand className="w-3.5 h-3.5" /> Hand Raised
                   </div>
                 )}
               </div>
 
-              {/* Remote Participant / Real WebRTC Stream Card */}
-              <div className="relative aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center shadow-lg w-full max-h-[380px] mx-auto">
+              {/* Remote Participant / Screen Share Tile */}
+              <div className="relative aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center shadow-lg w-full max-h-[420px] mx-auto">
                 <audio ref={remoteAudioRef} autoPlay />
 
                 {screenSharing ? (
@@ -960,734 +593,271 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                     />
 
                     {!hasRemoteVideo && (
-                      <div className="flex flex-col items-center text-center p-4 gap-2.5">
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-semibold text-xl shadow-lg ${
-                          remoteParticipantName
-                            ? 'bg-blue-600 text-white ring-2 ring-blue-400/40'
-                            : 'bg-slate-800 text-slate-400 ring-2 ring-slate-700/50'
-                        }`}>
-                          {remoteParticipantName ? remoteParticipantName.slice(0, 2).toUpperCase() : <Users className="w-7 h-7 text-slate-400" />}
+                      <div className="flex flex-col items-center text-center p-6 gap-3">
+                        <div className="w-16 h-16 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-semibold text-xl border border-slate-700 shadow-md">
+                          <Users className="w-7 h-7" />
                         </div>
-                        
                         <div className="space-y-1 max-w-xs">
                           <span className="text-xs font-semibold text-white block">
-                            {remoteParticipantName || (userRole === 'teacher' ? 'Waiting for student to connect...' : 'Instructor / Peer Session')}
+                            {remoteParticipantName || (userRole === 'teacher' ? 'Waiting for students to join...' : 'Waiting for instructor to connect...')}
                           </span>
                           <span className="text-[11px] text-slate-400 leading-tight block">
                             {remoteParticipantName
-                              ? 'Connected via Real WebRTC P2P Mesh'
-                              : 'Open this classroom in a second browser window or student tab to experience 2-way live video, audio & whiteboard syncing!'}
+                              ? 'Live video stream connecting...'
+                              : 'Real-time WebRTC audio, video & whiteboard mesh active for this class.'}
                           </span>
                         </div>
-
-                        {isConnectedToSFU && (
-                          <span className="text-[10px] text-emerald-400 flex items-center gap-1.5 font-mono bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800/60">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            Live Mesh Connected
-                          </span>
-                        )}
                       </div>
                     )}
                   </>
                 )}
 
-                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-semibold flex items-center gap-2 border border-slate-700/60">
-                  <span>{remoteParticipantName || (isDemo ? (isSchool ? 'Faculty: Dr. Eleanor Vance' : isCoding ? 'Mentor: Sarah Jenkins' : 'Ustaz: Shaykh Abdul Rahman') : (userRole === 'teacher' ? 'Waiting for Student to Join' : 'Waiting for Instructor to Join'))}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    {remoteParticipantName ? 'Connected' : 'Room Channel'}
+                {/* Remote Info Tag */}
+                <div className="absolute bottom-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-semibold flex items-center gap-2 border border-slate-800">
+                  <span>{remoteParticipantName || (userRole === 'teacher' ? 'Student Stream' : 'Instructor Stream')}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    {remoteParticipantName ? 'Connected' : 'Room Ready'}
                   </span>
-                  {remoteParticipantName && <Volume2 className="w-3 h-3 text-emerald-400" />}
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Bottom Floating Media Controls */}
-            <div className="p-3 sm:p-4 bg-slate-950/90 backdrop-blur-md border-t border-slate-800/80 flex items-center justify-center gap-2.5 sm:gap-4 shrink-0">
+          {activeStage === 'whiteboard' && (
+            <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-xl flex flex-col min-h-0">
+              <InteractiveWhiteboard
+                roomName={`wb_${(roomTitle || 'class').toLowerCase().replace(/[^a-z0-9]/g, '_')}`}
+                teacherName={userRole === 'teacher' ? currentUserName : undefined}
+                isTeacher={userRole === 'teacher'}
+              />
+            </div>
+          )}
+
+          {activeStage === 'workspace' && renderWorkspacePlugin && (
+            <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-xl p-4 min-h-0">
+              {renderWorkspacePlugin}
+            </div>
+          )}
+
+          {/* 3. BOTTOM FLOATING MEDIA CONTROLS DOCK */}
+          <div className="mt-3 flex items-center justify-center gap-2.5 sm:gap-4 shrink-0">
+            <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 px-4 py-2.5 rounded-2xl flex items-center gap-2 sm:gap-3 shadow-2xl">
+              {/* Mic Toggle */}
               <button
                 onClick={toggleMic}
-                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   micEnabled
                     ? 'bg-slate-800 hover:bg-slate-700 text-white'
                     : 'bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-400/40'
                 }`}
-                title={micEnabled ? 'Mute Mic' : 'Unmute Mic'}
+                title={micEnabled ? 'Mute Microphone' : 'Unmute Microphone'}
               >
-                {micEnabled ? <Mic className="w-4.5 h-4.5 sm:w-5 sm:h-5" /> : <MicOff className="w-4.5 h-4.5 sm:w-5 sm:h-5" />}
+                {micEnabled ? <Mic className="w-4 h-4 sm:w-5 sm:h-5" /> : <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
 
+              {/* Video Toggle */}
               <button
                 onClick={toggleVideo}
-                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   videoEnabled
                     ? 'bg-slate-800 hover:bg-slate-700 text-white'
                     : 'bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-400/40'
                 }`}
                 title={videoEnabled ? 'Turn Camera Off' : 'Turn Camera On'}
               >
-                {videoEnabled ? <VideoIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5" /> : <VideoOff className="w-4.5 h-4.5 sm:w-5 sm:h-5" />}
+                {videoEnabled ? <VideoIcon className="w-4 h-4 sm:w-5 sm:h-5" /> : <VideoOff className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
 
+              {/* Screen Share */}
               <button
                 onClick={toggleScreenShare}
-                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   screenSharing ? 'bg-blue-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                 }`}
-                title="Share Screen"
+                title={screenSharing ? 'Stop Screen Share' : 'Share Screen'}
               >
-                <MonitorUp className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
+                <MonitorUp className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
+              {/* Hand Raise */}
               <button
                 onClick={() => setHandRaised(!handRaised)}
-                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
-                  handRaised ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                  handRaised ? 'bg-amber-500 text-slate-950 font-semibold' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                 }`}
-                title="Raise Hand"
+                title={handRaised ? 'Lower Hand' : 'Raise Hand'}
               >
-                <Hand className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
+                <Hand className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
+              <div className="h-6 w-px bg-slate-800 mx-1" />
+
+              {/* Whiteboard Mode Toggle */}
               <button
-                onClick={handleLeaveCall}
-                className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-2 shadow-lg transition-all cursor-pointer select-none active:scale-95"
-                title="End Call"
+                onClick={() => setActiveStage(activeStage === 'whiteboard' ? 'video' : 'whiteboard')}
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                  activeStage === 'whiteboard' ? 'bg-purple-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                }`}
+                title="Toggle Whiteboard"
               >
-                <PhoneOff className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline text-xs sm:text-sm">End Call</span>
+                <PenTool className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+
+              {/* Chat Panel Toggle */}
+              <button
+                onClick={() => {
+                  setSidePanel(sidePanel === 'chat' ? null : 'chat');
+                  setUnreadChatCount(0);
+                }}
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 relative ${
+                  sidePanel === 'chat' ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                }`}
+                title="Toggle Classroom Chat"
+              >
+                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+                {unreadChatCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {unreadChatCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Participants Roster Toggle */}
+              <button
+                onClick={() => setSidePanel(sidePanel === 'participants' ? null : 'participants')}
+                className={`p-3 rounded-xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
+                  sidePanel === 'participants' ? 'bg-emerald-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                }`}
+                title="Toggle Participants"
+              >
+                <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Tab 2: Level Breakout Pods */}
-        {activeTab === 'pods' && (
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-5xl mx-auto w-full shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold text-slate-900 flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-indigo-600" />
-                  {classroomConfig.breakoutPodsTitle}
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  {classroomConfig.breakoutPodsSubtitle}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                {(userRole === 'teacher' || userRole === 'admin') && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setAdminConfigTab('pods');
-                      setIsAdminConfigOpen(true);
-                    }}
-                    leftIcon={<Sliders className="w-3.5 h-3.5 text-indigo-600" />}
-                    className="font-semibold text-xs"
-                  >
-                    Configure Pods
-                  </Button>
-                )}
-                <Badge variant="info" className="font-semibold text-xs shrink-0">
-                  Main Room + {classroomConfig.pods.length} Active Pods
-                </Badge>
-              </div>
+        {/* 4. DOCKED SLIDE-IN SIDE PANEL (CHAT & PARTICIPANTS) */}
+        {sidePanel === 'chat' && (
+          <aside className="w-80 sm:w-96 bg-slate-900 border-l border-slate-800 flex flex-col justify-between shrink-0 shadow-2xl z-30">
+            <div className="h-12 px-4 border-b border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-semibold text-white flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-emerald-400" />
+                Classroom Chat
+              </span>
+              <button
+                onClick={() => setSidePanel(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(['beginner', 'intermediate', 'advanced'] as StudentLevelTier[]).map((tier) => {
-                const cfg = levelConfigs[tier];
-                const podStudents = liveAttendees.filter((a) => a.level === tier);
-                const isMyPod = activeUserLevel === tier;
-                const isJoined = activeBreakoutPod === tier;
-
-                return (
-                  <div
-                    key={tier}
-                    className={`rounded-2xl border p-4.5 flex flex-col justify-between transition-all ${
-                      isJoined
-                        ? 'border-indigo-500 ring-2 ring-indigo-300 bg-indigo-50/40'
-                        : `${cfg.borderColor} bg-white hover:border-slate-400 hover:shadow-xs`
-                    }`}
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badgeColor}`}>
-                          {tier.toUpperCase()}
-                        </span>
-                        {isMyPod && (
-                          <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
-                            Your Assigned Pod
-                          </span>
-                        )}
-                      </div>
-
-                      <div>
-                        <h4 className="font-semibold text-sm text-slate-900 leading-snug">{cfg.label}</h4>
-                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">{cfg.sublabel}</p>
-                      </div>
-
-                      {/* Target Learning Objectives */}
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 space-y-1.5">
-                        <span className="text-[10px] font-semibold capitalize text-slate-500 tracking-wider block">Pod Focus Topics:</span>
-                        <ul className="space-y-1 text-xs text-slate-700">
-                          {cfg.targetTopics.map((topic, i) => (
-                            <li key={i} className="flex items-start gap-1.5 text-[11px]">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0 mt-0.5" />
-                              <span className="leading-tight">{topic}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Current Attendees in Pod */}
-                      <div className="space-y-1.5">
-                        <span className="text-[10px] font-semibold capitalize text-slate-400 tracking-wider">
-                          Active Learners ({podStudents.length}):
-                        </span>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          {podStudents.map((st) => (
-                            <div
-                              key={st.id}
-                              className="px-2 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-semibold flex items-center gap-1"
-                            >
-                              <div className="w-4 h-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-semibold">
-                                {st.avatar}
-                              </div>
-                              <span>{st.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-100 mt-4">
-                      {isJoined ? (
-                        <button
-                          onClick={() => setActiveBreakoutPod('main')}
-                          className="w-full py-2 rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700 transition-all cursor-pointer"
-                        >
-                          Return to Main Stage
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setActiveBreakoutPod(tier);
-                            setActiveTab('video');
-                          }}
-                          className="w-full py-2.5 rounded-xl bg-[var(--color-primary,#047857)] text-white text-xs font-semibold hover:brightness-95 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs outline-none"
-                        >
-                          <Users className="w-3.5 h-3.5" />
-                          <span>Join {tier === 'beginner' ? 'Level 1' : tier === 'intermediate' ? 'Level 2' : 'Level 3'} Pod</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Discussion Forum */}
-        {activeTab === 'forum' && (
-          <div className="flex-1 flex flex-col justify-between bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden max-w-5xl mx-auto w-full">
-            <div className="p-3.5 sm:p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Radio className={`w-4 h-4 animate-pulse ${isCoding ? 'text-blue-600' : isSchool ? 'text-purple-600' : isQuran ? 'text-emerald-600' : 'text-slate-800'}`} />
-                <span className="text-xs sm:text-sm font-semibold text-slate-900">
-                  {isCoding ? 'Engineering Discussion Thread & Code Snippets' : isSchool ? 'Academic Lecture Thread & Lecture Slides' : isQuran ? 'Halaqah Thread & Tajweed Inquiries' : `${roomTitle} Discussion & Inquiries`}
-                </span>
-              </div>
-              {!isInCall && (
-                <button
-                  onClick={handleStartCall}
-                  className={`text-xs font-semibold hover:underline flex items-center gap-1 cursor-pointer ${
-                    isCoding ? 'text-blue-700' : isSchool ? 'text-purple-700' : isQuran ? 'text-emerald-700' : 'text-slate-800'
-                  }`}
-                >
-                  <VideoIcon className="w-3.5 h-3.5" /> Start Video &rarr;
-                </button>
-              )}
-            </div>
-
-            <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto space-y-4">
-              {forumMessages.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2 my-auto">
-                  <MessageSquare className="w-10 h-10 text-slate-300 mx-auto" />
-                  <p className="text-sm font-semibold text-slate-700">No classroom messages yet</p>
-                  <p className="text-xs text-slate-400">Post a message below to begin discussion with the class.</p>
+            {/* Chat Messages */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-3">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-4 text-slate-500 space-y-2">
+                  <MessageSquare className="w-8 h-8 text-slate-700" />
+                  <p className="text-xs font-semibold">No messages yet</p>
+                  <p className="text-[11px] text-slate-500">Send a message to everyone in this class.</p>
                 </div>
               ) : (
-                forumMessages.map((msg) => (
-                  <div key={msg.id} className="flex items-start gap-2.5 sm:gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-semibold text-xs shrink-0">
-                      {msg.sender.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="flex-1 space-y-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-xs text-slate-900">{msg.sender}</span>
-                        {msg.role === 'teacher' && (
-                          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded capitalize ${
-                            isCoding ? 'bg-blue-100 text-blue-800' : isSchool ? 'bg-purple-100 text-purple-800' : isQuran ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800'
-                          }`}>
-                            {isCoding ? 'Lead Mentor' : isSchool ? 'Professor' : isQuran ? 'Ustadh' : 'Instructor'}
-                          </span>
+                messages.map((m) => {
+                  const isMe = m.sender === currentUserName;
+                  return (
+                    <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} space-y-1`}>
+                      <div className="flex items-center gap-1.5 text-[10px] text-slate-400 px-1">
+                        <span className="font-semibold text-slate-300">{m.sender}</span>
+                        {m.role === 'teacher' && (
+                          <span className="px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Teacher</span>
                         )}
-                        <span className="text-[10px] text-slate-400">{msg.time}</span>
-                        {msg.pinned && (
-                          <span className="text-[10px] text-amber-600 font-semibold flex items-center gap-0.5">
-                            <Pin className="w-2.5 h-2.5" /> Pinned
-                          </span>
-                        )}
+                        <span>{m.time}</span>
                       </div>
-                      <div className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-200/80 break-words">
-                        {msg.text}
+                      <div
+                        className={`px-3.5 py-2 rounded-2xl text-xs max-w-[85%] break-words leading-relaxed ${
+                          isMe ? 'bg-emerald-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700'
+                        }`}
+                      >
+                        {m.text}
                       </div>
-                      {msg.attachment && (
-                        <div className="inline-flex items-center gap-2 p-2 rounded-lg bg-slate-100 text-xs text-blue-700 border border-slate-200">
-                          <FileText className="w-3.5 h-3.5 shrink-0" />
-                          <span className="font-semibold text-slate-800 truncate">{msg.attachment.name}</span>
-                          <span className="text-[10px] text-slate-500 shrink-0">({msg.attachment.size})</span>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
+              <div ref={chatMessagesEndRef} />
             </div>
 
-            <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+            {/* Chat Input */}
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-800 flex items-center gap-2">
               <input
                 type="text"
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
-                placeholder={`Post update to ${roomTitle}...`}
-                className="flex-1 px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800"
+                placeholder="Type a message..."
+                className="flex-1 px-3.5 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
               />
               <button
                 type="submit"
-                className="p-3 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-                aria-label="Send message"
+                disabled={!messageInput.trim()}
+                className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white transition-colors cursor-pointer shrink-0"
               >
                 <Send className="w-4 h-4" />
               </button>
             </form>
-          </div>
+          </aside>
         )}
 
-        {/* Tab 4: Level-Tailored Curriculum Agenda */}
-        {activeTab === 'agenda' && (
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h3 className="font-semibold text-sm sm:text-base text-slate-900 flex items-center gap-2">
-                  <ListTodo className="w-4.5 h-4.5 text-amber-600" />
-                  {classroomConfig.agendaTitle}
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {classroomConfig.agendaSubtitle}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {(userRole === 'teacher' || userRole === 'admin') && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setAdminConfigTab('agenda');
-                      setIsAdminConfigOpen(true);
-                    }}
-                    leftIcon={<Sliders className="w-3.5 h-3.5 text-amber-600" />}
-                    className="font-semibold text-xs"
-                  >
-                    Configure Agenda
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowAssessmentModal(true)}
-                  leftIcon={<Award className="w-3.5 h-3.5 text-amber-500" />}
-                  className="font-semibold text-xs"
-                >
-                  Grade Rubric
-                </Button>
-              </div>
+        {sidePanel === 'participants' && (
+          <aside className="w-80 sm:w-96 bg-slate-900 border-l border-slate-800 flex flex-col justify-between shrink-0 shadow-2xl z-30">
+            <div className="h-12 px-4 border-b border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-semibold text-white flex items-center gap-2">
+                <Users className="w-4 h-4 text-emerald-400" />
+                Participants ({liveAttendees.length})
+              </span>
+              <button
+                onClick={() => setSidePanel(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            {/* Level Tier Agendas */}
-            <div className="space-y-5">
-              {(['beginner', 'intermediate', 'advanced'] as StudentLevelTier[])
-                .filter((lvl) => selectedLevelFilter === 'all' || selectedLevelFilter === lvl)
-                .map((lvl) => {
-                  const cfg = levelConfigs[lvl];
-                  const tierMilestones = classroomConfig.milestones.filter((m) => m.tier === lvl);
-
-                  return (
-                    <div key={lvl} className="border border-slate-200 rounded-2xl p-4 bg-slate-50/60 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badgeColor}`}>
-                            {cfg.label}
-                          </span>
-                          <span className="text-xs text-slate-500 font-medium hidden sm:inline">{cfg.sublabel}</span>
-                        </div>
-                        <span className="text-[10px] font-mono font-semibold text-slate-500">
-                          {tierMilestones.filter((m) => m.done).length}/{tierMilestones.length} Done
-                        </span>
-                      </div>
-
-                      <div className="space-y-2">
-                        {tierMilestones.length === 0 ? (
-                          <div className="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
-                            No milestones defined for this level. Click &quot;Configure Agenda&quot; above to add milestones.
-                          </div>
-                        ) : (
-                          tierMilestones.map((item) => (
-                            <div
-                              key={item.id}
-                              onClick={() => {
-                                const updatedMilestones = classroomConfig.milestones.map((m) =>
-                                  m.id === item.id ? { ...m, done: !m.done } : m
-                                );
-                                const updatedConfig = { ...classroomConfig, milestones: updatedMilestones };
-                                setClassroomConfig(updatedConfig);
-                                saveClassroomConfig(tenant, updatedConfig, updateTenantConfig);
-                              }}
-                              className="p-3 rounded-xl border border-slate-200 bg-white flex items-start gap-3 cursor-pointer hover:border-slate-300 transition-all select-none"
-                            >
-                              <div
-                                className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5 ${
-                                  item.done
-                                    ? isSchool
-                                      ? 'bg-purple-600 text-white'
-                                      : isCoding
-                                      ? 'bg-blue-600 text-white'
-                                      : 'bg-emerald-600 text-white'
-                                    : 'border border-slate-300 bg-white'
-                                }`}
-                              >
-                                {item.done && <CheckCircle2 className="w-3.5 h-3.5" />}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className={`text-xs sm:text-sm font-semibold ${item.done ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
-                                  {item.title}
-                                </p>
-                                <span className="text-[10px] text-slate-400">Target Time: {item.targetMinutes || 20} mins</span>
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
+            <div className="flex-1 p-3 overflow-y-auto space-y-2">
+              {liveAttendees.map((att) => (
+                <div
+                  key={att.id}
+                  className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-between gap-2"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-full bg-slate-700 text-white text-xs font-semibold flex items-center justify-center shrink-0">
+                      {att.name.charAt(0)}
                     </div>
-                  );
-                })}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Whiteboard */}
-        {activeTab === 'whiteboard' && (
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs flex flex-col">
-            <InteractiveWhiteboard
-              roomName={`whiteboard-${roomTitle.toLowerCase().replace(/\s+/g, '-')}`}
-              teacherName={userRole === 'teacher' ? currentUserName : undefined}
-              isTeacher={userRole === 'teacher'}
-            />
-          </div>
-        )}
-
-        {/* Tab 6: Interactive Workspace Plugin */}
-        {activeTab === 'workspace' && (
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-3 sm:p-6 overflow-y-auto shadow-xs">
-            {renderWorkspacePlugin || (
-              <div className="p-8 text-center text-slate-400 space-y-3">
-                <Sparkles className="w-8 h-8 mx-auto text-blue-500" />
-                <p className="text-xs sm:text-sm font-semibold">Interactive Workspace Plugin Enabled for this Session.</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Tab 7: Automated Live Attendance & Level Classification Roster */}
-        {activeTab === 'attendance' && (
-          <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-900 flex items-center gap-2">
-                  <UserCheck className="w-4.5 h-4.5 text-emerald-600" />
-                  Live Classroom Roster & Level Classification
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Real-time attendance tracking with automated completion tagging and student level classification.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="primary"
-                  onClick={() => setShowAssessmentModal(true)}
-                  leftIcon={<Award className="w-3.5 h-3.5" />}
-                  className="font-semibold text-xs"
-                >
-                  Evaluate Level
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200">
-                <span className="text-[10px] capitalize font-semibold text-emerald-800 tracking-wider block">Total Active</span>
-                <span className="text-lg font-semibold text-emerald-950">{liveAttendees.length} Students</span>
-                <p className="text-[11px] text-emerald-700 mt-0.5">Automated WebRTC presence</p>
-              </div>
-
-              <div className="p-3.5 bg-purple-50 rounded-xl border border-purple-200">
-                <span className="text-[10px] capitalize font-semibold text-purple-800 tracking-wider block">Session Duration</span>
-                <span className="text-lg font-semibold text-purple-950 font-mono">{formatTimer(sessionSeconds)}</span>
-                <p className="text-[11px] text-purple-700 mt-0.5">Target: 45 Minutes</p>
-              </div>
-
-              <div className="p-3.5 bg-blue-50 rounded-xl border border-blue-200">
-                <span className="text-[10px] capitalize font-semibold text-blue-800 tracking-wider block">Level Distribution</span>
-                <span className="text-sm font-semibold text-blue-950 flex items-center gap-1.5 mt-1">
-                  <span className="text-emerald-700">L1: {liveAttendees.filter((a) => a.level === 'beginner').length}</span> • 
-                  <span className="text-blue-700">L2: {liveAttendees.filter((a) => a.level === 'intermediate').length}</span> • 
-                  <span className="text-purple-700">L3: {liveAttendees.filter((a) => a.level === 'advanced').length}</span>
-                </span>
-                <p className="text-[11px] text-blue-700 mt-0.5">Classified into 3 Tiers</p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-semibold text-slate-700 capitalize tracking-wider">
-                  Participant Roster {selectedLevelFilter !== 'all' ? `(Filtered by ${selectedLevelFilter})` : ''}
-                </h4>
-                <span className="text-xs text-slate-500 font-medium">Click "Evaluate" to assess live performance</span>
-              </div>
-
-              <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden bg-white">
-                {liveAttendees
-                  .filter((att) => selectedLevelFilter === 'all' || att.level === selectedLevelFilter)
-                  .map((att) => {
-                    const isCompleted = sessionSeconds > 30 || att.completionStatus === 'Completed Full Class';
-                    const cfg = levelConfigs[att.level];
-                    return (
-                      <div key={att.id} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-semibold text-xs flex items-center justify-center shrink-0">
-                            {att.avatar}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-xs font-semibold text-slate-900 truncate">{att.name}</p>
-                              <span className={`px-2 py-0.2 rounded-full text-[10px] font-semibold border ${cfg.badgeColor}`}>
-                                {cfg.label.split(':')[0]}
-                              </span>
-                              {att.currentScore && (
-                                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">
-                                  Score: {att.currentScore}%
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[10px] text-slate-500 mt-0.5">
-                              Joined {att.joinedAt} • {att.notes || cfg.sublabel}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                          {isCompleted ? (
-                            <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                              <ShieldCheck className="w-3.5 h-3.5" />
-                              Completed
-                            </span>
-                          ) : (
-                            <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
-                              <Clock className="w-3.5 h-3.5 animate-spin text-amber-700" />
-                              Attending
-                            </span>
-                          )}
-
-                          <button
-                            onClick={() => {
-                              setAssessmentStudent(att);
-                              setShowAssessmentModal(true);
-                            }}
-                            className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
-                          >
-                            Rubric
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* 4. LIVE LEVEL ASSESSMENT & RUBRIC EVALUATION MODAL */}
-      {showAssessmentModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-5 sm:p-6 space-y-5 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-white font-semibold ${
-                  isCoding ? 'bg-blue-600' : isSchool ? 'bg-purple-600' : 'bg-emerald-600'
-                }`}>
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-                    {classroomConfig.rubricTitle}
-                  </h3>
-                  <p className="text-[11px] text-slate-500">
-                    Evaluating: <strong className="text-slate-800">{assessmentStudent?.name || currentUserName}</strong>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {(userRole === 'teacher' || userRole === 'admin') && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setAdminConfigTab('rubric');
-                      setIsAdminConfigOpen(true);
-                    }}
-                    leftIcon={<Sliders className="w-3.5 h-3.5 text-emerald-600" />}
-                    className="font-semibold text-xs"
-                  >
-                    Edit Criteria
-                  </Button>
-                )}
-                <button
-                  onClick={() => setShowAssessmentModal(false)}
-                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-semibold text-sm cursor-pointer"
-                >
-                  &times;
-                </button>
-              </div>
-            </div>
-
-            {/* Rubric Evaluation Criteria */}
-            <div className="space-y-3.5">
-              {classroomConfig.rubricCriteria.length === 0 ? (
-                <div className="p-4 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
-                  No criteria defined. Click &quot;Edit Criteria&quot; above to add rubric criteria.
-                </div>
-              ) : (
-                classroomConfig.rubricCriteria.map((crit, idx) => (
-                  <div key={crit.id || idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-slate-900">{crit.name}</span>
-                      <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                        Max: {crit.maxScore || 5} pts
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500">{crit.desc}</p>
-                    <div className="flex items-center gap-1.5 pt-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          className="p-1 rounded hover:bg-slate-200 text-amber-500 cursor-pointer"
-                        >
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                        </button>
-                      ))}
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-white truncate">{att.name}</p>
+                      <span className="text-[10px] text-slate-400 capitalize">{att.role}</span>
                     </div>
                   </div>
-                ))
-              )}
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {att.handRaised && <Hand className="w-3.5 h-3.5 text-amber-400" />}
+                    {att.isMuted ? <MicOff className="w-3.5 h-3.5 text-red-400" /> : <Mic className="w-3.5 h-3.5 text-emerald-400" />}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Target Level Reclassification Selector */}
-            <div className="p-3.5 bg-indigo-50/70 rounded-2xl border border-indigo-200 space-y-2">
-              <span className="text-xs font-semibold text-indigo-950 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-indigo-600" />
-                Assign Level Promotion / Track:
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                {(['beginner', 'intermediate', 'advanced'] as StudentLevelTier[]).map((lvl) => {
-                  const cfg = levelConfigs[lvl];
-                  const isCur = activeUserLevel === lvl;
-                  return (
-                    <button
-                      key={lvl}
-                      type="button"
-                      onClick={() => {
-                        setActiveUserLevel(lvl);
-                        if (assessmentStudent) {
-                          setLiveAttendees((prev) =>
-                            prev.map((a) => (a.id === assessmentStudent.id ? { ...a, level: lvl } : a))
-                          );
-                        }
-                      }}
-                      className={`p-2 rounded-xl text-center border font-semibold text-xs transition-all cursor-pointer ${
-                        isCur
-                          ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
-                      }`}
-                    >
-                      <span>{lvl === 'beginner' ? 'Level 1' : lvl === 'intermediate' ? 'Level 2' : 'Level 3'}</span>
-                    </button>
-                  );
-                })}
+            {userRole === 'teacher' && (
+              <div className="p-3 border-t border-slate-800">
+                <button
+                  onClick={handleTeacherMuteAll}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
+                  <VolumeX className="w-4 h-4" /> Mute All Students
+                </button>
               </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAssessmentModal(false)}
-                className="font-semibold text-xs"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => {
-                  setShowAssessmentModal(false);
-                }}
-                leftIcon={<Check className="w-3.5 h-3.5" />}
-                className="font-semibold text-xs"
-              >
-                Save Evaluation & Update Level
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Classroom Configuration Modal for Teachers/Admins */}
-      <ClassroomConfigModal
-        isOpen={isAdminConfigOpen}
-        onClose={() => setIsAdminConfigOpen(false)}
-        initialTab={adminConfigTab}
-        config={classroomConfig}
-        onSave={(updated) => {
-          setClassroomConfig(updated);
-          saveClassroomConfig(tenant, updated, updateTenantConfig);
-        }}
-        onResetDefaults={() => {
-          const defaults = getDefaultClassroomConfig(tenant);
-          setClassroomConfig(defaults);
-          saveClassroomConfig(tenant, defaults, updateTenantConfig);
-        }}
-      />
+            )}
+          </aside>
+        )}
+      </div>
     </div>
   );
 };
-
-export default LiveClassroomHub;
-

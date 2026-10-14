@@ -102,18 +102,19 @@ export const classroomSessionService = {
     }
   },
 
-  // Find active live session matching student's account ID, cohort, or level
+  // Find active live session matching student's account ID, enrolled course, or cohort
   getActiveSessionForStudent(
     subdomain: string,
     studentId?: string,
     studentCohort?: string,
+    enrolledCourseTitle?: string,
     studentLevel?: StudentLevelTier
   ): LiveClassSession | null {
     const sessions = this.getSessions(subdomain);
     const liveSessions = sessions.filter((s) => s.status === 'live');
     if (liveSessions.length === 0) return null;
 
-    // 1. Direct student ID match
+    // 1. Direct student ID match (if teacher targeted specific students)
     if (studentId) {
       const directMatch = liveSessions.find(
         (s) => s.allowedStudentIds && s.allowedStudentIds.length > 0 && s.allowedStudentIds.includes(studentId)
@@ -121,24 +122,44 @@ export const classroomSessionService = {
       if (directMatch) return directMatch;
     }
 
-    // 2. Cohort match
+    // 2. Exact enrolled course match
+    if (enrolledCourseTitle) {
+      const cleanCourse = enrolledCourseTitle.trim().toLowerCase();
+      const courseMatch = liveSessions.find((s) => {
+        if (!s.courseTitle) return false;
+        const targetCourse = s.courseTitle.trim().toLowerCase();
+        return (
+          targetCourse === cleanCourse ||
+          targetCourse.includes(cleanCourse) ||
+          cleanCourse.includes(targetCourse)
+        );
+      });
+      if (courseMatch) return courseMatch;
+    }
+
+    // 3. Cohort match
     if (studentCohort) {
-      const cohortMatch = liveSessions.find(
-        (s) => s.targetCohort && s.targetCohort.toLowerCase() === studentCohort.toLowerCase()
-      );
+      const cleanCohort = studentCohort.trim().toLowerCase();
+      const cohortMatch = liveSessions.find((s) => {
+        if (!s.targetCohort) return false;
+        const target = s.targetCohort.trim().toLowerCase();
+        return (
+          target === cleanCohort ||
+          target.includes(cleanCohort) ||
+          cleanCohort.includes(target)
+        );
+      });
       if (cohortMatch) return cohortMatch;
     }
 
-    // 3. Level match
-    if (studentLevel) {
-      const levelMatch = liveSessions.find(
-        (s) => s.targetLevel === 'all' || s.targetLevel === studentLevel
-      );
-      if (levelMatch) return levelMatch;
-    }
+    // 4. Fallback only if session is explicitly open to all students and unassigned
+    const openGeneralSession = liveSessions.find(
+      (s) =>
+        (!s.allowedStudentIds || s.allowedStudentIds.length === 0) &&
+        (s.targetCohort?.toLowerCase() === 'all' || s.targetCohort?.toLowerCase() === 'all cohorts')
+    );
 
-    // 4. Default to first open live session for this tenant
-    return liveSessions[0] || null;
+    return openGeneralSession || null;
   },
 
   // Generate shareable student direct invitation URL
