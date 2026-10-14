@@ -508,7 +508,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
           <button
             onClick={handleExportImage}
             title="Download PNG"
-            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Export</span>
@@ -582,7 +582,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
                   <button
                     type="button"
                     onClick={commitCurrentText}
-                    className="px-2.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors shadow-sm"
+                    className="px-2.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors shadow-sm"
                   >
                     Done
                   </button>
@@ -604,7 +604,7 @@ export const InteractiveWhiteboard: React.FC<InteractiveWhiteboardProps> = ({
               style={{ backgroundColor: cursor.color }}
             />
             <span
-              className="text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full shadow-sm"
+              className="text-[10px] font-semibold text-white px-1.5 py-0.5 rounded-full shadow-sm"
               style={{ backgroundColor: cursor.color }}
             >
               {cursor.name} (Live)

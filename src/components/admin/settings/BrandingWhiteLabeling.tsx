@@ -230,7 +230,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('theme')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
             activeTab === 'theme'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -243,7 +243,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('auth')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
             activeTab === 'auth'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -256,7 +256,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('preloader')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
             activeTab === 'preloader'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -269,7 +269,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('fields')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
             activeTab === 'fields'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -282,7 +282,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('css')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+          className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
             activeTab === 'css'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -301,7 +301,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
             <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
               <Layers className="w-6 h-6 text-emerald-600 shrink-0" />
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Brand Assets & Logos</h2>
+                <h2 className="text-lg font-semibold text-slate-900">Brand Assets & Logos</h2>
                 <p className="text-xs text-slate-500">Official icons and logos displayed across navigation headers, login cards, and student reports.</p>
               </div>
             </div>
@@ -370,7 +370,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
             <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
               <Palette className="w-6 h-6 text-purple-600 shrink-0" />
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Color Palette & Theme Tokens</h2>
+                <h2 className="text-lg font-semibold text-slate-900">Color Palette & Theme Tokens</h2>
                 <p className="text-xs text-slate-500">Pick signature accent colors applied to buttons, badges, links, and the administrative sidebar.</p>
               </div>
             </div>
@@ -382,7 +382,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
                   <label className="block text-sm font-semibold text-slate-800">
                     Primary Brand Accent Color
                   </label>
-                  <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+                  <span className="text-xs font-mono font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
                     {primaryColor}
                   </span>
                 </div>
@@ -407,7 +407,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
                         >
                           {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
                         </div>
-                        <span className="text-xs font-bold text-slate-700 truncate w-full">{color.name}</span>
+                        <span className="text-xs font-semibold text-slate-700 truncate w-full">{color.name}</span>
                       </button>
                     );
                   })}
@@ -457,7 +457,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
                         >
                           {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
                         </div>
-                        <span className="text-xs font-bold text-slate-800">{theme.label}</span>
+                        <span className="text-xs font-semibold text-slate-800">{theme.label}</span>
                       </button>
                     );
                   })}
@@ -502,7 +502,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <Layout className="w-6 h-6 text-blue-600 shrink-0" />
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Login Layout & Experience</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Login Layout & Experience</h2>
               <p className="text-xs text-slate-500">Configure the authentication screen layout, hero typography, and branding photography.</p>
             </div>
           </div>
@@ -543,7 +543,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-slate-900 text-sm">{layout.title}</span>
+                      <span className="font-semibold text-slate-900 text-sm">{layout.title}</span>
                       {isSelected && <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />}
                     </div>
                     <p className="text-xs text-slate-500 leading-relaxed">{layout.desc}</p>
@@ -588,7 +588,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
             <div className="flex items-center gap-3">
               <Sparkles className="w-6 h-6 text-amber-600 shrink-0" />
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Preloader & Splash Screen</h2>
+                <h2 className="text-lg font-semibold text-slate-900">Preloader & Splash Screen</h2>
                 <p className="text-xs text-slate-500">Customize the loading screen animated spinner and welcome text shown during application boot.</p>
               </div>
             </div>
@@ -641,10 +641,10 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
           {isPreviewingPreloader && (
             <div className="fixed inset-0 z-50 bg-slate-950/90 flex items-center justify-center backdrop-blur-md">
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-600 mx-auto flex items-center justify-center text-white font-bold text-xl shadow-lg animate-pulse">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-600 mx-auto flex items-center justify-center text-white font-semibold text-xl shadow-lg animate-pulse">
                   {tenant.name?.slice(0, 2).toUpperCase() || 'AG'}
                 </div>
-                <p className="text-white font-bold text-lg">{preloaderText}</p>
+                <p className="text-white font-semibold text-lg">{preloaderText}</p>
                 <p className="text-emerald-400 font-arabic text-sm">{preloaderTextAr}</p>
                 <p className="text-xs text-slate-400">Preview will auto-dismiss in 2 seconds</p>
               </div>
@@ -659,7 +659,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <Layers className="w-6 h-6 text-emerald-600 shrink-0" />
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Custom Student Registration Fields</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Custom Student Registration Fields</h2>
               <p className="text-xs text-slate-500">Collect specific intake details during public student registration (Guardian Name, Prior Memorization, etc.).</p>
             </div>
           </div>
@@ -673,7 +673,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <Badge variant="neutral">{field.type.toUpperCase()}</Badge>
-                  <span className="font-bold text-sm text-slate-800">{field.label}</span>
+                  <span className="font-semibold text-sm text-slate-800">{field.label}</span>
                 </div>
                 <button
                   type="button"
@@ -717,7 +717,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
           <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <Code className="w-6 h-6 text-slate-700 shrink-0" />
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Custom CSS Overrides</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Custom CSS Overrides</h2>
               <p className="text-xs text-slate-500">Inject tailored CSS stylesheet rules to override colors, fonts, or component spacing.</p>
             </div>
           </div>
@@ -726,7 +726,7 @@ export const BrandingWhiteLabeling: React.FC<BrandingWhiteLabelingProps> = ({
             rows={8}
             value={customCss}
             onChange={(e) => setCustomCss(e.target.value)}
-            placeholder="/* Custom CSS Rules */&#10;.custom-hero-banner { border-radius: 1.5rem; }&#10;.student-badge { text-transform: uppercase; }"
+            placeholder="/* Custom CSS Rules */&#10;.custom-hero-banner { border-radius: 1.5rem; }&#10;.student-badge { text-transform: capitalize; }"
             className="w-full p-4 font-mono text-sm bg-slate-900 text-emerald-400 rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
           />
         </div>

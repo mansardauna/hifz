@@ -220,13 +220,13 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-400/30 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-400/30 rounded-full text-xs font-semibold capitalize tracking-wider flex items-center gap-1.5">
                 <GraduationCap className="w-3.5 h-3.5" />
                 Academic Term 2025–2026
               </span>
               <span className="text-xs text-slate-300 font-mono">5 Enrolled Courses • 18.0 Credits</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               Academic Courses & Interactive Syllabi
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
@@ -236,14 +236,14 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
 
           <div className="flex items-center gap-3 shrink-0">
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 text-center min-w-[110px]">
-              <span className="text-[10px] text-purple-200 uppercase font-bold tracking-wider block">Current Term GPA</span>
-              <span className="text-2xl font-black text-white font-mono">3.94</span>
-              <span className="text-[10px] text-emerald-300 font-bold block">4.0 Scale</span>
+              <span className="text-[10px] text-purple-200 capitalize font-semibold tracking-wider block">Current Term GPA</span>
+              <span className="text-2xl font-semibold text-white font-mono">3.94</span>
+              <span className="text-[10px] text-emerald-300 font-semibold block">4.0 Scale</span>
             </div>
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 text-center min-w-[110px]">
-              <span className="text-[10px] text-purple-200 uppercase font-bold tracking-wider block">Completed Units</span>
-              <span className="text-2xl font-black text-emerald-400 font-mono">16 / 24</span>
-              <span className="text-[10px] text-slate-300 font-bold block">67% Progress</span>
+              <span className="text-[10px] text-purple-200 capitalize font-semibold tracking-wider block">Completed Units</span>
+              <span className="text-2xl font-semibold text-emerald-400 font-mono">16 / 24</span>
+              <span className="text-[10px] text-slate-300 font-semibold block">67% Progress</span>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
             <button
               key={dept}
               onClick={() => setSelectedDept(dept)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
                 selectedDept === dept
                   ? 'bg-purple-700 text-white shadow-xs'
                   : 'text-slate-600 bg-slate-100 hover:bg-slate-200'
@@ -296,18 +296,18 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
+                      <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
                         {course.code}
                       </span>
                       <span className="text-[11px] text-slate-500">{course.department}</span>
                     </div>
-                    <h3 className="text-sm font-bold text-slate-900 leading-snug truncate">
+                    <h3 className="text-sm font-semibold text-slate-900 leading-snug truncate">
                       {course.title}
                     </h3>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+                    <span className="text-xs font-semibold font-mono px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
                       Grade: {course.gradeToDate} ({course.gradePercent}%)
                     </span>
                   </div>
@@ -328,7 +328,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                 <div className="mt-2.5">
                   <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1">
                     <span>{course.currentUnit}</span>
-                    <span className="font-bold">{course.progressPercent}%</span>
+                    <span className="font-semibold">{course.progressPercent}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
@@ -354,7 +354,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                     <Badge variant="outline">{selectedCourse.department}</Badge>
                     <span className="text-xs font-mono text-slate-500">{selectedCourse.credits} Credits</span>
                   </div>
-                  <h2 className="text-lg sm:text-xl font-black text-slate-900">
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-900">
                     {selectedCourse.title}
                   </h2>
                   <p className="text-xs text-slate-500 flex items-center gap-2">
@@ -367,20 +367,20 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                 </div>
 
                 <div className="p-3 bg-purple-50 rounded-2xl border border-purple-200 text-center shrink-0 min-w-[100px]">
-                  <span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider block">Course Grade</span>
-                  <span className="text-2xl font-black text-purple-900 font-mono">{selectedCourse.gradeToDate}</span>
-                  <span className="text-[11px] text-purple-700 font-bold block">{selectedCourse.gradePercent}%</span>
+                  <span className="text-[10px] capitalize font-semibold text-purple-800 tracking-wider block">Course Grade</span>
+                  <span className="text-2xl font-semibold text-purple-900 font-mono">{selectedCourse.gradeToDate}</span>
+                  <span className="text-[11px] text-purple-700 font-semibold block">{selectedCourse.gradePercent}%</span>
                 </div>
               </div>
 
               {/* Instructor Information Card */}
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-700 text-white font-bold text-sm flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-purple-700 text-white font-semibold text-sm flex items-center justify-center shrink-0">
                     {selectedCourse.instructor.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs sm:text-sm text-slate-900">{selectedCourse.instructor}</h4>
+                    <h4 className="font-semibold text-xs sm:text-sm text-slate-900">{selectedCourse.instructor}</h4>
                     <p className="text-xs text-slate-500">{selectedCourse.instructorRole}</p>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                 <div className="flex items-center gap-2">
                   <a
                     href={`mailto:${selectedCourse.instructorEmail}`}
-                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5"
+                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5"
                   >
                     <User className="w-3.5 h-3.5 text-slate-500" />
                     <span>Office Hours</span>
@@ -399,7 +399,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
               {/* Unit Syllabus Breakdown */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <h4 className="text-xs sm:text-sm font-semibold text-slate-900 flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-purple-600" />
                     Unit Syllabi & Curriculum Milestones
                   </h4>
@@ -423,7 +423,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                       </div>
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className={`text-xs font-bold ${unit.completed ? 'text-emerald-950 font-bold' : 'text-slate-900'}`}>
+                          <p className={`text-xs font-semibold ${unit.completed ? 'text-emerald-950 font-semibold' : 'text-slate-900'}`}>
                             {unit.unit}
                           </p>
                           {unit.completed && (
@@ -448,7 +448,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
 
               {/* Course Handouts & Downloadable Materials */}
               <div className="space-y-3 pt-2">
-                <h4 className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                <h4 className="text-xs sm:text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-purple-600" />
                   Lecture Slide Decks & Reference Worksheets
                 </h4>
@@ -460,11 +460,11 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
                       className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-between gap-3 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-semibold text-xs shrink-0">
                           {mat.type === 'PDF' ? 'PDF' : mat.type === 'Slides' ? 'PPT' : 'DOC'}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-slate-900 truncate">{mat.title}</p>
+                          <p className="text-xs font-semibold text-slate-900 truncate">{mat.title}</p>
                           <p className="text-[10px] text-slate-500">{mat.size} • Uploaded {mat.date}</p>
                         </div>
                       </div>
@@ -484,7 +484,7 @@ export const SchoolCoursesView: React.FC<SchoolCoursesViewProps> = ({ onSelectCo
           ) : (
             <Card className="p-12 text-center text-slate-400 space-y-2">
               <BookOpen className="w-10 h-10 mx-auto text-slate-300" />
-              <p className="text-sm font-bold text-slate-600">Select an academic course to view syllabus</p>
+              <p className="text-sm font-semibold text-slate-600">Select an academic course to view syllabus</p>
             </Card>
           )}
         </div>

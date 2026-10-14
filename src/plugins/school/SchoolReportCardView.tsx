@@ -115,13 +115,13 @@ export const SchoolReportCardView: React.FC = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-400/30 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-400/30 rounded-full text-xs font-semibold capitalize tracking-wider flex items-center gap-1.5">
                 <Star className="w-3.5 h-3.5 fill-amber-300" />
                 Principal's High Honor Roll
               </span>
               <span className="text-xs text-purple-200 font-mono">Academic Standing: Top 2%</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
               Official Gradebook & Academic Transcript
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
@@ -135,7 +135,7 @@ export const SchoolReportCardView: React.FC = () => {
               size="sm"
               onClick={handlePrintTranscript}
               leftIcon={<Printer className="w-4 h-4" />}
-              className="text-white border-purple-400/40 bg-white/10 hover:bg-white/20 font-bold"
+              className="text-white border-purple-400/40 bg-white/10 hover:bg-white/20 font-semibold"
             >
               Print / Save PDF
             </Button>
@@ -144,7 +144,7 @@ export const SchoolReportCardView: React.FC = () => {
               size="sm"
               onClick={() => alert('Downloading signed official transcript verification bundle...')}
               leftIcon={<Download className="w-4 h-4" />}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
             >
               Download Official PDF
             </Button>
@@ -155,41 +155,41 @@ export const SchoolReportCardView: React.FC = () => {
       {/* GPA & Credit Metrics Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4 sm:p-5 bg-white border-slate-200 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Weighted GPA</span>
+          <span className="text-[11px] font-semibold capitalize tracking-wider text-slate-500">Weighted GPA</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-purple-900 font-mono">{weightedGpa}</span>
-            <span className="text-xs font-bold text-slate-400">/ 5.0 scale</span>
+            <span className="text-2xl sm:text-3xl font-semibold text-purple-900 font-mono">{weightedGpa}</span>
+            <span className="text-xs font-semibold text-slate-400">/ 5.0 scale</span>
           </div>
-          <p className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+          <p className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
             <TrendingUp className="w-3 h-3" /> AP & Honors Weighted (+0.5)
           </p>
         </Card>
 
         <Card className="p-4 sm:p-5 bg-white border-slate-200 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Unweighted GPA</span>
+          <span className="text-[11px] font-semibold capitalize tracking-wider text-slate-500">Unweighted GPA</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">{unweightedGpa}</span>
-            <span className="text-xs font-bold text-slate-400">/ 4.0 scale</span>
+            <span className="text-2xl sm:text-3xl font-semibold text-slate-900 font-mono">{unweightedGpa}</span>
+            <span className="text-xs font-semibold text-slate-400">/ 4.0 scale</span>
           </div>
           <p className="text-[10px] text-slate-500 font-mono">Straight-A Cumulative Standard</p>
         </Card>
 
         <Card className="p-4 sm:p-5 bg-white border-slate-200 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Class Rank</span>
+          <span className="text-[11px] font-semibold capitalize tracking-wider text-slate-500">Class Rank</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">#4</span>
-            <span className="text-xs font-bold text-slate-400">of 185 Students</span>
+            <span className="text-2xl sm:text-3xl font-semibold text-slate-900 font-mono">#4</span>
+            <span className="text-xs font-semibold text-slate-400">of 185 Students</span>
           </div>
-          <p className="text-[10px] text-purple-700 font-bold">Top 2.1% Percentile</p>
+          <p className="text-[10px] text-purple-700 font-semibold">Top 2.1% Percentile</p>
         </Card>
 
         <Card className="p-4 sm:p-5 bg-white border-slate-200 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Credits Earned</span>
+          <span className="text-[11px] font-semibold capitalize tracking-wider text-slate-500">Total Credits Earned</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">18.0</span>
-            <span className="text-xs font-bold text-slate-400">/ 24.0 Required</span>
+            <span className="text-2xl sm:text-3xl font-semibold text-slate-900 font-mono">18.0</span>
+            <span className="text-xs font-semibold text-slate-400">/ 24.0 Required</span>
           </div>
-          <p className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+          <p className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" /> On Track for Honors Diploma
           </p>
         </Card>
@@ -199,7 +199,7 @@ export const SchoolReportCardView: React.FC = () => {
       <Card className="p-6 bg-white border-slate-200 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-purple-700" />
               Fall Term 2025–2026 Academic Records
             </h3>
@@ -211,7 +211,7 @@ export const SchoolReportCardView: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold">
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-semibold">
                 <th className="py-3 px-3">Course Code</th>
                 <th className="py-3 px-4">Subject & Course Title</th>
                 <th className="py-3 px-3 text-center">Credits</th>
@@ -225,10 +225,10 @@ export const SchoolReportCardView: React.FC = () => {
             <tbody className="divide-y divide-slate-100">
               {TERM_RECORDS.map((rec) => (
                 <tr key={rec.code} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-3 font-mono font-bold text-purple-900 whitespace-nowrap">
+                  <td className="py-3.5 px-3 font-mono font-semibold text-purple-900 whitespace-nowrap">
                     {rec.code}
                   </td>
-                  <td className="py-3.5 px-4 font-bold text-slate-900 max-w-xs">
+                  <td className="py-3.5 px-4 font-semibold text-slate-900 max-w-xs">
                     <div>{rec.name}</div>
                     <span className="text-[10px] text-slate-400 font-normal">{rec.department}</span>
                   </td>
@@ -241,11 +241,11 @@ export const SchoolReportCardView: React.FC = () => {
                   <td className="py-3.5 px-3 text-center font-mono text-slate-700">
                     {rec.finalExamGrade}%
                   </td>
-                  <td className="py-3.5 px-3 text-center font-mono font-bold text-slate-900">
+                  <td className="py-3.5 px-3 text-center font-mono font-semibold text-slate-900">
                     {rec.overallScore}%
                   </td>
                   <td className="py-3.5 px-3 text-center">
-                    <span className={`px-2.5 py-1 rounded-md font-black font-mono text-xs ${
+                    <span className={`px-2.5 py-1 rounded-md font-semibold font-mono text-xs ${
                       rec.letterGrade.startsWith('A')
                         ? 'bg-emerald-100 text-emerald-900'
                         : 'bg-blue-100 text-blue-900'

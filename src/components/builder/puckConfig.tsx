@@ -126,7 +126,7 @@ const FAQAccordionBlock: React.FC<{
     <section className="py-20 bg-white border-b border-slate-200">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-12 space-y-3">
-          <h2 className="text-3xl font-black text-slate-900">{heading}</h2>
+          <h2 className="text-3xl font-semibold text-slate-900">{heading}</h2>
           {subheading && <p className="text-slate-500 text-sm">{subheading}</p>}
         </div>
 
@@ -139,7 +139,7 @@ const FAQAccordionBlock: React.FC<{
                 className="border border-slate-200 rounded-2xl p-5 cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-colors"
                 onClick={() => setOpenIdx(isOpen ? null : idx)}
               >
-                <div className="flex items-center justify-between font-bold text-sm text-slate-900">
+                <div className="flex items-center justify-between font-semibold text-sm text-slate-900">
                   <span>{item.q}</span>
                   {isOpen ? <ChevronUp className="w-4 h-4 text-emerald-600" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                 </div>
@@ -231,12 +231,12 @@ export const createPuckConfig = (context: {
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className={`max-w-4xl space-y-6 ${align === 'center' ? 'mx-auto text-center' : 'text-left'}`}>
                   {badgeText && (
-                    <span className="inline-block px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
+                    <span className="inline-block px-4 py-1.5 text-xs font-semibold capitalize tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
                       {badgeText}
                     </span>
                   )}
 
-                  <h1 className="text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight">
+                  <h1 className="text-4xl sm:text-6xl font-semibold text-white leading-tight tracking-tight">
                     {headline}
                   </h1>
 
@@ -255,7 +255,7 @@ export const createPuckConfig = (context: {
                             onEnroll(tenant.pricingPlans[0]);
                           }
                         }}
-                        className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95"
+                        className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95"
                       >
                         <Sparkles className="w-4 h-4" />
                         <span>{ctaText}</span>
@@ -265,7 +265,7 @@ export const createPuckConfig = (context: {
                     {secondaryCtaText && (
                       <a
                         href={secondaryCtaLink || '#form'}
-                        className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm rounded-xl backdrop-blur-sm transition-all shadow-sm"
+                        className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-sm transition-all shadow-sm"
                       >
                         {secondaryCtaText}
                       </a>
@@ -319,7 +319,7 @@ export const createPuckConfig = (context: {
           <section className="py-20 bg-white border-b border-slate-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                <h2 className="text-3xl sm:text-4xl font-black text-slate-900">{heading}</h2>
+                <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900">{heading}</h2>
                 {subheading && <p className="text-slate-500 text-sm sm:text-base">{subheading}</p>}
               </div>
 
@@ -333,10 +333,10 @@ export const createPuckConfig = (context: {
                     key={i}
                     className="bg-slate-50 rounded-3xl p-8 border border-slate-200/80 shadow-2xs hover:shadow-md transition-all space-y-4"
                   >
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-semibold">
                       <Sparkles className="w-6 h-6 text-emerald-600" />
                     </div>
-                    <h3 className="font-extrabold text-lg text-slate-900">{feat.title}</h3>
+                    <h3 className="font-semibold text-lg text-slate-900">{feat.title}</h3>
                     <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
                   </div>
                 ))}
@@ -371,11 +371,11 @@ export const createPuckConfig = (context: {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
                 {badgeText && (
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-black uppercase tracking-wider">
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold capitalize tracking-wider">
                     {badgeText}
                   </span>
                 )}
-                <h2 className="text-3xl sm:text-4xl font-black text-slate-900">{heading}</h2>
+                <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900">{heading}</h2>
                 {subheading && <p className="text-slate-500 text-sm sm:text-base">{subheading}</p>}
               </div>
 
@@ -391,19 +391,19 @@ export const createPuckConfig = (context: {
                         alt={course.title}
                         className="w-full h-full object-cover opacity-85"
                       />
-                      <span className="absolute top-3 right-3 bg-white text-slate-900 font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                      <span className="absolute top-3 right-3 bg-white text-slate-900 font-semibold text-xs px-3 py-1 rounded-full shadow-sm">
                         {course.level}
                       </span>
                     </div>
 
                     <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
                       <div>
-                        <h3 className="text-xl font-black text-slate-900">{course.title}</h3>
+                        <h3 className="text-xl font-semibold text-slate-900">{course.title}</h3>
                         <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">{course.description}</p>
                       </div>
 
                       <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span className="font-black text-lg text-slate-900 font-mono">
+                        <span className="font-semibold text-lg text-slate-900 font-mono">
                           ${course.price} <span className="text-xs font-normal text-slate-500">/ track</span>
                         </span>
 
@@ -415,7 +415,7 @@ export const createPuckConfig = (context: {
                                 onEnroll(tenant.pricingPlans[0]);
                               }
                             }}
-                            className="px-5 py-2.5 rounded-xl text-white text-xs font-bold bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
+                            className="px-5 py-2.5 rounded-xl text-white text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
                           >
                             Enroll in Track &rarr;
                           </button>
@@ -446,11 +446,11 @@ export const createPuckConfig = (context: {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
                 {highlightBadge && (
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-black uppercase tracking-wider">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold capitalize tracking-wider">
                     {highlightBadge}
                   </span>
                 )}
-                <h2 className="text-3xl sm:text-4xl font-black text-slate-900">{heading}</h2>
+                <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900">{heading}</h2>
                 {subheading && <p className="text-slate-500 text-sm sm:text-base">{subheading}</p>}
               </div>
 
@@ -467,17 +467,17 @@ export const createPuckConfig = (context: {
                       }`}
                     >
                       {isPopular && (
-                        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md tracking-wider">
+                        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-semibold capitalize px-3 py-1 rounded-full shadow-md tracking-wider">
                           Most Popular
                         </span>
                       )}
 
                       <div className="space-y-4">
-                        <h3 className="font-extrabold text-xl text-slate-900">{plan.name}</h3>
+                        <h3 className="font-semibold text-xl text-slate-900">{plan.name}</h3>
                         <p className="text-xs text-slate-500 leading-relaxed">{plan.description}</p>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-4xl font-black text-slate-900 font-mono">${price}</span>
-                          <span className="text-xs text-slate-500 font-bold">/mo</span>
+                          <span className="text-4xl font-semibold text-slate-900 font-mono">${price}</span>
+                          <span className="text-xs text-slate-500 font-semibold">/mo</span>
                         </div>
 
                         <ul className="space-y-3 pt-6 border-t border-slate-100 text-xs text-slate-700">
@@ -494,7 +494,7 @@ export const createPuckConfig = (context: {
                         <button
                           type="button"
                           onClick={() => onEnroll(plan)}
-                          className={`w-full py-3.5 rounded-xl font-bold text-xs transition-all cursor-pointer select-none active:scale-95 ${
+                          className={`w-full py-3.5 rounded-xl font-semibold text-xs transition-all cursor-pointer select-none active:scale-95 ${
                             isPopular
                               ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
                               : 'bg-slate-900 hover:bg-slate-800 text-white'
@@ -621,7 +621,7 @@ export const createPuckConfig = (context: {
           <section className="py-20 bg-slate-50 border-b border-slate-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                <h2 className="text-3xl sm:text-4xl font-black text-slate-900">{heading}</h2>
+                <h2 className="text-3xl sm:text-4xl font-semibold text-slate-900">{heading}</h2>
                 {subheading && <p className="text-slate-500 text-sm">{subheading}</p>}
               </div>
 
@@ -638,7 +638,7 @@ export const createPuckConfig = (context: {
                     </div>
                     <p className="text-xs sm:text-sm text-slate-700 italic leading-relaxed">"{item.quote}"</p>
                     <div className="pt-2 border-t border-slate-100">
-                      <div className="font-extrabold text-xs text-slate-900">{item.author}</div>
+                      <div className="font-semibold text-xs text-slate-900">{item.author}</div>
                       <div className="text-[11px] text-slate-400">{item.role}</div>
                     </div>
                   </div>
@@ -663,7 +663,7 @@ export const createPuckConfig = (context: {
         render: ({ arabicText, translation, reference }) => (
           <section className="py-14 bg-slate-950 text-white text-center border-b border-slate-800">
             <div className="max-w-4xl mx-auto px-4 space-y-2">
-              <p className="font-arabic text-3xl sm:text-4xl font-bold leading-relaxed text-amber-400">
+              <p className="font-arabic text-3xl sm:text-4xl font-semibold leading-relaxed text-amber-400">
                 {arabicText}
               </p>
               <p className="text-xs sm:text-sm text-slate-300 font-sans tracking-wide">
@@ -698,11 +698,11 @@ export const createPuckConfig = (context: {
           <section className="py-20 bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-950 text-white text-center">
             <div className="max-w-4xl mx-auto px-4 space-y-6">
               {badgeText && (
-                <span className="px-3.5 py-1 text-xs font-black uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="px-3.5 py-1 text-xs font-semibold capitalize tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   {badgeText}
                 </span>
               )}
-              <h2 className="text-3xl sm:text-5xl font-black">{headline}</h2>
+              <h2 className="text-3xl sm:text-5xl font-semibold">{headline}</h2>
               {subheadline && <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto">{subheadline}</p>}
               <div className="pt-2">
                 <button
@@ -712,7 +712,7 @@ export const createPuckConfig = (context: {
                       onEnroll(tenant.pricingPlans[0]);
                     }
                   }}
-                  className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer inline-flex items-center gap-2"
+                  className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer inline-flex items-center gap-2"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{ctaText}</span>

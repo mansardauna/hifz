@@ -438,12 +438,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                         <div className="text-center max-w-4xl mx-auto space-y-6">
                           {sec.props?.badgeText && (
-                            <span className="inline-block px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
+                            <span className="inline-block px-4 py-1.5 text-xs font-semibold capitalize tracking-wider rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
                               {sec.props.badgeText}
                             </span>
                           )}
 
-                          <h1 className={`text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight ${isAr ? 'font-arabic text-5xl sm:text-7xl' : ''}`}>
+                          <h1 className={`text-4xl sm:text-6xl font-semibold text-white leading-tight tracking-tight ${isAr ? 'font-arabic text-5xl sm:text-7xl' : ''}`}>
                             {sec.title}
                           </h1>
 
@@ -463,7 +463,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                     setIsEnrollModalOpen(true);
                                   }
                                 }}
-                                className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95"
+                                className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-sm rounded-xl shadow-xl shadow-emerald-500/20 transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95"
                               >
                                 <Sparkles className="w-4 h-4" />
                                 <span>{sec.props.ctaText}</span>
@@ -473,7 +473,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                             {sec.props?.secondaryCtaText && (
                               <a
                                 href={sec.props.secondaryCtaLink || '#form'}
-                                className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm rounded-xl backdrop-blur-sm transition-all shadow-sm"
+                                className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm rounded-xl backdrop-blur-sm transition-all shadow-sm"
                               >
                                 {sec.props.secondaryCtaText}
                               </a>
@@ -507,7 +507,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                     <section key={sec.id || index} className="py-20 bg-white border-b border-slate-200">
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                          <h2 className={`text-3xl sm:text-4xl font-black text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
+                          <h2 className={`text-3xl sm:text-4xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
                             {sec.title}
                           </h2>
                           {sec.subtitle && (
@@ -521,10 +521,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                               key={i}
                               className="bg-slate-50 rounded-3xl p-8 border border-slate-200/80 shadow-xs hover:shadow-md transition-all space-y-4"
                             >
-                              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-semibold">
                                 <Sparkles className="w-6 h-6 text-emerald-600" />
                               </div>
-                              <h3 className="font-extrabold text-lg text-slate-900">{item.title}</h3>
+                              <h3 className="font-semibold text-lg text-slate-900">{item.title}</h3>
                               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{item.desc}</p>
                             </div>
                           ))}
@@ -540,7 +540,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                     <section id="curriculum" key={sec.id || index} className="py-20 bg-slate-50 border-b border-slate-200">
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                          <h2 className={`text-3xl sm:text-4xl font-black text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
+                          <h2 className={`text-3xl sm:text-4xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
                             {sec.title}
                           </h2>
                           {sec.subtitle && (
@@ -560,14 +560,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                   alt={course.title}
                                   className="w-full h-full object-cover opacity-85"
                                 />
-                                <span className="absolute top-3 right-3 bg-white text-slate-900 font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                                <span className="absolute top-3 right-3 bg-white text-slate-900 font-semibold text-xs px-3 py-1 rounded-full shadow-sm">
                                   {course.level}
                                 </span>
                               </div>
 
                               <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
                                 <div>
-                                  <h3 className={`text-xl font-black text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
+                                  <h3 className={`text-xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
                                     {isAr ? course.titleAr || course.title : course.title}
                                   </h3>
                                   <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
@@ -576,7 +576,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                 </div>
 
                                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                                  <span className="font-black text-lg text-slate-900 font-mono">
+                                  <span className="font-semibold text-lg text-slate-900 font-mono">
                                     ${course.price} <span className="text-xs font-normal text-slate-500">/ track</span>
                                   </span>
 
@@ -588,7 +588,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                         setIsEnrollModalOpen(true);
                                       }
                                     }}
-                                    className="px-5 py-2.5 rounded-xl text-white text-xs font-bold bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
+                                    className="px-5 py-2.5 rounded-xl text-white text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer shadow-xs"
                                   >
                                     Enroll in Track &rarr;
                                   </button>
@@ -608,7 +608,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                     <section id="pricing" key={sec.id || index} className="py-20 bg-white border-b border-slate-200">
                       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                          <h2 className={`text-3xl sm:text-4xl font-black text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
+                          <h2 className={`text-3xl sm:text-4xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}>
                             {sec.title}
                           </h2>
                           {sec.subtitle && (
@@ -629,17 +629,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                 }`}
                               >
                                 {isPopular && (
-                                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md tracking-wider">
+                                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-semibold capitalize px-3 py-1 rounded-full shadow-md tracking-wider">
                                     Most Popular
                                   </span>
                                 )}
 
                                 <div className="space-y-4">
-                                  <h3 className="font-extrabold text-xl text-slate-900">{isAr ? plan.nameAr || plan.name : plan.name}</h3>
+                                  <h3 className="font-semibold text-xl text-slate-900">{isAr ? plan.nameAr || plan.name : plan.name}</h3>
                                   <p className="text-xs text-slate-500 leading-relaxed">{isAr ? plan.descriptionAr || plan.description : plan.description}</p>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-black text-slate-900 font-mono">${price}</span>
-                                    <span className="text-xs text-slate-500 font-bold">/mo</span>
+                                    <span className="text-4xl font-semibold text-slate-900 font-mono">${price}</span>
+                                    <span className="text-xs text-slate-500 font-semibold">/mo</span>
                                   </div>
 
                                   <ul className="space-y-3 pt-6 border-t border-slate-100 text-xs text-slate-700">
@@ -659,7 +659,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                       setSelectedPlanForEnroll(plan);
                                       setIsEnrollModalOpen(true);
                                     }}
-                                    className={`w-full py-3.5 rounded-xl font-bold text-xs transition-all cursor-pointer select-none active:scale-95 ${
+                                    className={`w-full py-3.5 rounded-xl font-semibold text-xs transition-all cursor-pointer select-none active:scale-95 ${
                                       isPopular
                                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
                                         : 'bg-slate-900 hover:bg-slate-800 text-white'
@@ -732,7 +732,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                     <section key={sec.id || index} className="py-20 bg-white border-b border-slate-200">
                       <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="text-center mb-12 space-y-3">
-                          <h2 className="text-3xl font-black text-slate-900">{sec.title}</h2>
+                          <h2 className="text-3xl font-semibold text-slate-900">{sec.title}</h2>
                           {sec.subtitle && <p className="text-slate-500 text-sm">{sec.subtitle}</p>}
                         </div>
 
@@ -745,7 +745,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                 className="border border-slate-200 rounded-2xl p-5 cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-colors"
                                 onClick={() => setOpenFaqIndex(isOpen ? null : fi)}
                               >
-                                <div className="flex items-center justify-between font-bold text-sm text-slate-900">
+                                <div className="flex items-center justify-between font-semibold text-sm text-slate-900">
                                   <span>{faqItem.q}</span>
                                   {isOpen ? <ChevronUp className="w-4 h-4 text-emerald-600" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                                 </div>
@@ -773,10 +773,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
               <Wand2 className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                 Portal In Setup
               </span>
-              <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+              <h1 className="text-3xl sm:text-5xl font-semibold text-slate-900 tracking-tight">
                 {tenant.name}
               </h1>
               <p className="text-slate-500 text-sm sm:text-base max-w-xl mx-auto">
@@ -787,14 +787,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
             <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
               <a
                 href={`/${tenant.subdomain}/admin`}
-                className="px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all"
+                className="px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-md flex items-center gap-2 transition-all"
               >
                 <Layers className="w-4 h-4" />
                 <span>Build Landing Page</span>
               </a>
               <a
                 href={`/${tenant.subdomain}/login`}
-                className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-bold text-sm shadow-xs flex items-center gap-2 transition-all"
+                className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold text-sm shadow-xs flex items-center gap-2 transition-all"
               >
                 <Users className="w-4 h-4" />
                 <span>Student / Staff Portal</span>
@@ -808,7 +808,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
             <section aria-labelledby="hero-heading" className="bg-white py-20 lg:py-28 border-b border-slate-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-4xl mx-auto space-y-6">
-                  <span className={`inline-block px-3.5 py-1 text-xs font-bold rounded-full ${
+                  <span className={`inline-block px-3.5 py-1 text-xs font-semibold rounded-full ${
                     isCodingNiche
                       ? 'text-blue-700 bg-blue-50 border border-blue-200'
                       : 'text-emerald-800 bg-emerald-50 border border-emerald-200'
@@ -818,7 +818,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
 
                   <h1
                     id="hero-heading"
-                    className={`text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight ${
+                    className={`text-4xl sm:text-6xl font-semibold text-slate-900 leading-tight tracking-tight ${
                       isAr ? 'font-arabic text-5xl sm:text-7xl' : ''
                     }`}
                   >
@@ -838,7 +838,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                           setIsEnrollModalOpen(true);
                         }
                       }}
-                      className={`px-8 py-3.5 text-white font-bold text-sm rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95 ${
+                      className={`px-8 py-3.5 text-white font-semibold text-sm rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-2 select-none active:scale-95 ${
                         isCodingNiche
                           ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-900/20'
                           : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-900/20'
@@ -850,7 +850,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
 
                     <a
                       href="#admissions"
-                      className="px-8 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-sm rounded-xl shadow-xs transition-all"
+                      className="px-8 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-sm rounded-xl shadow-xs transition-all"
                     >
                       {isAr ? 'استفسار القبول' : 'Admissions Inquiry'}
                     </a>
@@ -865,7 +865,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                 <div className="text-center max-w-2xl mx-auto mb-12">
                   <h2
                     id="courses-heading"
-                    className={`text-3xl sm:text-4xl font-extrabold text-slate-900 ${
+                    className={`text-3xl sm:text-4xl font-semibold text-slate-900 ${
                       isAr ? 'font-arabic text-4xl' : ''
                     }`}
                   >
@@ -892,14 +892,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                           alt={course.title}
                           className="w-full h-full object-cover opacity-80"
                         />
-                        <span className="absolute top-3 right-3 bg-white text-slate-900 font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                        <span className="absolute top-3 right-3 bg-white text-slate-900 font-semibold text-xs px-3 py-1 rounded-full shadow-sm">
                           {course.level}
                         </span>
                       </div>
 
                       <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                         <div>
-                          <h3 className={`text-xl font-bold text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
+                          <h3 className={`text-xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-2xl' : ''}`}>
                             {isAr ? course.titleAr || course.title : course.title}
                           </h3>
                           <p className="text-xs text-slate-600 mt-2 leading-relaxed">
@@ -908,7 +908,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                         </div>
 
                         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                          <span className="font-extrabold text-lg text-slate-900 font-mono">
+                          <span className="font-semibold text-lg text-slate-900 font-mono">
                             ${course.price} <span className="text-xs font-normal text-slate-500">/ track</span>
                           </span>
 
@@ -920,7 +920,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                                 setIsEnrollModalOpen(true);
                               }
                             }}
-                            className={`px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors cursor-pointer ${
+                            className={`px-4 py-2 rounded-xl text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer ${
                               isCodingNiche ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'
                             }`}
                           >
@@ -940,7 +940,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                 <div className="text-center max-w-2xl mx-auto mb-12">
                   <h2
                     id="pricing-heading"
-                    className={`text-3xl sm:text-4xl font-extrabold text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}
+                    className={`text-3xl sm:text-4xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-4xl' : ''}`}
                   >
                     {isAr ? 'باقات الاشتراك والرسوم الدراسية' : 'Tuition & Subscription Plans'}
                   </h2>
@@ -962,17 +962,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                         }`}
                       >
                         {isPopular && (
-                          <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-extrabold uppercase px-3 py-1 rounded-full shadow-md tracking-wider">
+                          <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-semibold capitalize px-3 py-1 rounded-full shadow-md tracking-wider">
                             Most Popular
                           </span>
                         )}
 
                         <div className="space-y-4">
-                          <h3 className="font-extrabold text-lg text-slate-900">{isAr ? plan.nameAr || plan.name : plan.name}</h3>
+                          <h3 className="font-semibold text-lg text-slate-900">{isAr ? plan.nameAr || plan.name : plan.name}</h3>
                           <p className="text-xs text-slate-500 leading-relaxed">{isAr ? plan.descriptionAr || plan.description : plan.description}</p>
                           <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-extrabold text-slate-900 font-mono">${price}</span>
-                            <span className="text-xs text-slate-500 font-bold">/mo</span>
+                            <span className="text-4xl font-semibold text-slate-900 font-mono">${price}</span>
+                            <span className="text-xs text-slate-500 font-semibold">/mo</span>
                           </div>
 
                           <ul className="space-y-2.5 pt-4 border-t border-slate-100 text-xs text-slate-700">
@@ -992,7 +992,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
                               setSelectedPlanForEnroll(plan);
                               setIsEnrollModalOpen(true);
                             }}
-                            className={`w-full py-3 rounded-xl font-bold text-xs transition-all cursor-pointer select-none active:scale-95 ${
+                            className={`w-full py-3 rounded-xl font-semibold text-xs transition-all cursor-pointer select-none active:scale-95 ${
                               isPopular
                                 ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
                                 : 'bg-slate-900 hover:bg-slate-800 text-white'
@@ -1015,7 +1015,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
       <footer role="contentinfo" className="bg-slate-950 text-white py-12 border-t border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center sm:text-left">
-            <p className="font-extrabold text-sm text-white">{tenant.name}</p>
+            <p className="font-semibold text-sm text-white">{tenant.name}</p>
             <p className="text-xs text-slate-400">{tenant.tagline}</p>
           </div>
 
@@ -1023,7 +1023,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
             <a href="#courses" className="hover:text-white transition-colors">Courses</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             <a href="#form" className="hover:text-white transition-colors">Admissions</a>
-            <a href={`/${tenant.subdomain}/login`} className="text-blue-400 font-bold hover:underline">Student Portal</a>
+            <a href={`/${tenant.subdomain}/login`} className="text-blue-400 font-semibold hover:underline">Student Portal</a>
           </div>
 
           <p className="text-[11px] text-slate-500">
@@ -1047,12 +1047,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-2xl z-50 flex items-center gap-2.5 sm:gap-3 font-sans text-xs animate-in slide-in-from-bottom duration-200">
           <div className="flex items-center gap-1.5 pr-2 border-r border-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-extrabold text-[11px] text-slate-300 hidden sm:inline">Owner Mode</span>
+            <span className="font-semibold text-[11px] text-slate-300 hidden sm:inline">Owner Mode</span>
           </div>
 
           <a
             href={`/${tenant.subdomain}/admin`}
-            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
+            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
           >
             <Layers className="w-3.5 h-3.5" />
             <span>Edit Page</span>
@@ -1060,7 +1060,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
 
           <a
             href={`/${tenant.subdomain}/admin`}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl flex items-center gap-1.5 transition-all border border-slate-700"
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl flex items-center gap-1.5 transition-all border border-slate-700"
           >
             <FileText className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Edit Forms</span>
@@ -1068,7 +1068,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
 
           <a
             href={`/${tenant.subdomain}/admin`}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl flex items-center gap-1.5 transition-all border border-slate-700"
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl flex items-center gap-1.5 transition-all border border-slate-700"
           >
             <Settings className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Dashboard</span>

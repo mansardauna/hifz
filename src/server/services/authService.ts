@@ -36,6 +36,9 @@ interface StoredUserRecord {
 const INITIAL_ADMIN_PASSWORD = process.env.INITIAL_ADMIN_PASSWORD || 'Admin12345!';
 const INITIAL_HASH = bcrypt.hashSync(INITIAL_ADMIN_PASSWORD, 10);
 
+const PLATFORM_TENANT_ID = 'cmukffmvd0000ttc9e3cj0apt';
+const HIFZ_TENANT_ID = 'cmukffmy70003ttc94dslvw5f';
+
 const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
   [
     'superadmin@ankabit.app',
@@ -45,7 +48,7 @@ const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
       name: 'Platform SuperAdmin',
       passwordHash: INITIAL_HASH,
       role: 'superadmin',
-      tenantId: 'platform',
+      tenantId: PLATFORM_TENANT_ID,
     },
   ],
   [
@@ -56,7 +59,7 @@ const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
       name: 'Hifz Academy Director',
       passwordHash: INITIAL_HASH,
       role: 'admin',
-      tenantId: 'tenant-hifz',
+      tenantId: HIFZ_TENANT_ID,
     },
   ],
   [
@@ -67,7 +70,7 @@ const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
       name: 'Sheikh Abdullah',
       passwordHash: INITIAL_HASH,
       role: 'teacher',
-      tenantId: 'tenant-hifz',
+      tenantId: HIFZ_TENANT_ID,
     },
   ],
   [
@@ -78,7 +81,7 @@ const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
       name: 'Zayd Al-Mansoor',
       passwordHash: INITIAL_HASH,
       role: 'student',
-      tenantId: 'tenant-hifz',
+      tenantId: HIFZ_TENANT_ID,
     },
   ],
 ]);
@@ -287,6 +290,7 @@ export class AuthService {
       const cleanSub = subdomain.replace(/^tenant-/, '').toLowerCase();
       const userTenant = memoryUser.tenantId.replace(/^tenant-/, '').toLowerCase();
       const isKnownMatch =
+        (memoryUser.tenantId === HIFZ_TENANT_ID && (cleanSub.includes('hifz') || cleanSub === 'demo' || cleanSub === 'sample-demo')) ||
         (userTenant === 'hifz' && (cleanSub.includes('hifz') || cleanSub === 'demo' || cleanSub === 'sample-demo')) ||
         (userTenant === 'code' && cleanSub.includes('code')) ||
         (userTenant === 'alfurqan' && (cleanSub.includes('furqan') || cleanSub.includes('alfurqan'))) ||
@@ -302,9 +306,9 @@ export class AuthService {
     const resolvedSub =
       subdomain && subdomain !== 'platform'
         ? subdomain
-        : memoryUser.tenantId === 'tenant-hifz'
+        : (memoryUser.tenantId === 'tenant-hifz' || memoryUser.tenantId === HIFZ_TENANT_ID)
         ? 'hifz-academy'
-        : memoryUser.tenantId === 'tenant-code'
+        : (memoryUser.tenantId === 'tenant-code')
         ? 'code-academy'
         : memoryUser.tenantId.replace(/^tenant-/, '');
 
@@ -331,13 +335,13 @@ export class AuthService {
         tenantSubdomain: user.tenantSubdomain,
       },
       getJwtSecret(),
-      { expiresIn: '7d' }
+      { algorithm: 'HS256', expiresIn: '7d' }
     );
   }
 
   static verifyToken(token: string): AuthUserPayload | null {
     try {
-      const decoded = jwt.verify(token, getJwtSecret()) as any;
+      const decoded = jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] }) as any;
       return {
         id: decoded.sub,
         email: decoded.email,

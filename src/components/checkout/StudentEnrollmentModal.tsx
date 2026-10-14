@@ -286,14 +286,14 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-slate-900">{plan.name}</span>
+                    <span className="font-semibold text-xs text-slate-900">{plan.name}</span>
                     {plan.popular && <Badge variant="success">Popular</Badge>}
                   </div>
                   <p className="text-slate-500 text-[11px] mt-0.5">{plan.description}</p>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-base font-bold font-mono text-slate-900">${plan.priceMonthly}</span>
+                  <span className="text-base font-semibold font-mono text-slate-900">${plan.priceMonthly}</span>
                   <span className="text-[11px] text-slate-500">/mo</span>
                 </div>
               </Card>
@@ -321,12 +321,12 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
         <form onSubmit={handleSubmitEnrollment} className="space-y-4">
           <Card className="flex items-center justify-between p-4 bg-slate-50">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400">Selected Plan</span>
-              <p className="font-bold text-xs text-slate-900">{activePlan.name}</p>
+              <span className="text-[10px] capitalize font-semibold text-slate-400">Selected Plan</span>
+              <p className="font-semibold text-xs text-slate-900">{activePlan.name}</p>
             </div>
             <div className="text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Monthly Tuition</span>
-              <p className="font-mono font-bold text-slate-900 text-sm">${activePlan.priceMonthly} USD</p>
+              <span className="text-[10px] capitalize font-semibold text-slate-400">Monthly Tuition</span>
+              <p className="font-mono font-semibold text-slate-900 text-sm">${activePlan.priceMonthly} USD</p>
             </div>
           </Card>
 
@@ -388,7 +388,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
             <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 text-xs flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold">Payment Gateway Not Connected</p>
+                <p className="font-semibold">Payment Gateway Not Connected</p>
                 <p className="text-amber-800 text-[11px] mt-0.5">
                   {studentData.paymentMethod === 'stripe'
                     ? 'Stripe API keys have not been configured for this academy yet. Live card payments cannot be processed through this gateway.'
@@ -425,7 +425,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
       {step === 4 && (
         <div className="text-center py-6 space-y-4">
           <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-          <h3 className="text-base font-bold text-slate-900">Enrollment Successful!</h3>
+          <h3 className="text-base font-semibold text-slate-900">Enrollment Successful!</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
             Your admission is confirmed. You can now access your student learning portal and join live sessions.
           </p>

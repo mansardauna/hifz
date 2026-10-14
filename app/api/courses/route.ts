@@ -83,7 +83,10 @@ export async function POST(request: NextRequest) {
       const isOwner =
         authUser.tenantId === effectiveTenantId ||
         effectiveTenantId === `tenant-${cleanSub}` ||
-        effectiveTenantId === cleanSub;
+        effectiveTenantId === cleanSub ||
+        (cleanSub.includes('hifz') && (effectiveTenantId === 'tenant-hifz' || effectiveTenantId === 'hifz')) ||
+        (cleanSub.includes('code') && (effectiveTenantId === 'tenant-code' || effectiveTenantId === 'code')) ||
+        (cleanSub.includes('furqan') && (effectiveTenantId === 'tenant-al-furqan' || effectiveTenantId === 'al-furqan'));
 
       if (!isOwner) {
         return NextResponse.json({ error: 'Forbidden: You can only publish courses for your assigned academy' }, { status: 403 });

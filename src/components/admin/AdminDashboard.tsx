@@ -240,7 +240,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onClick={() => setIsSearchOpen(false)}
                   />
                   <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl z-50 max-h-80 overflow-y-auto p-2 space-y-1 divide-y divide-slate-100 font-sans">
-                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                    <div className="px-3 py-1.5 text-[10px] font-semibold capitalize tracking-wider text-slate-400 flex items-center justify-between">
                       <span>Quick Navigation Results</span>
                       <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-slate-600">
                         <X className="w-3.5 h-3.5" />
@@ -260,7 +260,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 {item.icon}
                               </span>
                               <div>
-                                <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">
+                                <div className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700">
                                   {item.title}
                                 </div>
                                 <span className="text-[10px] text-slate-400 font-medium">Category: {item.category}</span>
@@ -286,7 +286,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <button
               type="button"
               onClick={toggleLanguage}
-              className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer text-slate-700 select-none min-h-[36px]"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer text-slate-700 select-none min-h-[36px]"
               title="Switch Language"
             >
               <Globe className="w-3.5 h-3.5 text-slate-500 shrink-0" />
@@ -303,7 +303,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setIsPlanUpgradeModalOpen(true)}
-                className="font-bold hidden sm:inline-flex"
+                className="font-semibold hidden sm:inline-flex"
               >
                 Upgrade
               </Button>

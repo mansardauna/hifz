@@ -24,7 +24,7 @@ export const QuranLMSWorkspace: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <BookOpen className="w-6 h-6 text-emerald-400 shrink-0" />
           <div>
-            <h4 className="font-extrabold text-xs text-white">Active Recitation Surah</h4>
+            <h4 className="font-semibold text-xs text-white">Active Recitation Surah</h4>
             <p className="text-[11px] text-slate-400">{selectedSurah.nameAr} • {selectedSurah.englishTranslation}</p>
           </div>
         </div>
@@ -37,7 +37,7 @@ export const QuranLMSWorkspace: React.FC = () => {
                 setSelectedSurah(s);
                 setSelectedAyah(s.ayahs[0] || null);
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 selectedSurah.number === s.number
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'bg-slate-800 text-slate-300 hover:text-white'

@@ -153,13 +153,13 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
         {/* Course Completion Metric */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs relative overflow-hidden space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
+            <span className="text-xs font-semibold capitalize tracking-wider text-emerald-600">
               {isCodingNiche ? 'Bootcamp Mastery' : isSchoolNiche ? 'Term Progress' : 'Curriculum Completion'}
             </span>
             <BookOpen className="w-5 h-5 text-emerald-600" />
           </div>
 
-          <h3 className="text-3xl font-black text-slate-900 font-display">{courseProgressPercent}%</h3>
+          <h3 className="text-3xl font-semibold text-slate-900 font-display">{courseProgressPercent}%</h3>
           <p className="text-xs text-slate-500 font-medium">
             {completedLessons} of {totalLessons} syllabus milestones verified
           </p>
@@ -175,13 +175,13 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
         {/* Oral Submissions & Graded Tests */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-teal-600">
+            <span className="text-xs font-semibold capitalize tracking-wider text-teal-600">
               {isCodingNiche ? 'Code Reviews & PRs' : 'Oral Submissions & Tests'}
             </span>
             <Award className="w-5 h-5 text-teal-600" />
           </div>
 
-          <h3 className="text-3xl font-black text-slate-900 font-display">
+          <h3 className="text-3xl font-semibold text-slate-900 font-display">
             {submissions.length > 0 ? `${submissions.length} Submissions` : '4 Evaluated'}
           </h3>
           <p className="text-xs text-slate-500 font-medium">
@@ -189,7 +189,7 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
           </p>
 
           <div className="pt-1">
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block">
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block">
               100% On-Track for Sanad
             </span>
           </div>
@@ -198,19 +198,19 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
         {/* Attendance & Halaqah Consistency */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+            <span className="text-xs font-semibold capitalize tracking-wider text-blue-600">
               Halaqah Attendance Rate
             </span>
             <Sparkles className="w-5 h-5 text-blue-600" />
           </div>
 
-          <h3 className="text-3xl font-black text-slate-900 font-display">98.5% Attended</h3>
+          <h3 className="text-3xl font-semibold text-slate-900 font-display">98.5% Attended</h3>
           <p className="text-xs text-slate-500 font-medium">
             24 of 24 Live WebRTC halaqat attended this term
           </p>
 
           <div className="pt-1">
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 inline-block">
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 inline-block">
               Mumtaz Attendance Standing
             </span>
           </div>
@@ -221,7 +221,7 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
       <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <h3 className="text-base font-black text-slate-900 font-display flex items-center gap-2">
+            <h3 className="text-base font-semibold text-slate-900 font-display flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" />
               {isCodingNiche
                 ? 'Developer Curriculum & Interactive Labs'
@@ -231,7 +231,7 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
               Check off completed lessons or oral exam checkpoints. Progress updates in real-time across your student portal.
             </p>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shrink-0 self-start sm:self-auto font-mono">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 text-white shrink-0 self-start sm:self-auto font-mono">
             {completedLessons} / {totalLessons} COMPLETED
           </span>
         </div>
@@ -245,7 +245,7 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
               <div key={module.id} className="border border-slate-200 rounded-2xl p-5 bg-slate-50/60 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900">
+                    <h4 className="font-semibold text-sm text-slate-900">
                       {isAr ? module.titleAr || module.title : module.title}
                     </h4>
                     <p className="text-xs text-slate-500 mt-0.5">
@@ -253,7 +253,7 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
                     </p>
                   </div>
 
-                  <span className="text-xs font-bold px-3 py-1 rounded-full shrink-0 self-start sm:self-auto bg-emerald-100 text-emerald-800 font-mono">
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full shrink-0 self-start sm:self-auto bg-emerald-100 text-emerald-800 font-mono">
                     {modPercent}% Completed
                   </span>
                 </div>
@@ -281,7 +281,7 @@ export const StudentProgress: React.FC<StudentProgressProps> = ({ onAddToast, su
                         </div>
 
                         <div className="min-w-0">
-                          <p className={`text-xs font-bold truncate ${lesson.completed ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                          <p className={`text-xs font-semibold truncate ${lesson.completed ? 'line-through text-slate-500' : 'text-slate-900'}`}>
                             {lesson.title}
                           </p>
                           {lesson.tajweedRule && (

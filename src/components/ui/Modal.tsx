@@ -65,14 +65,14 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || description) && (
-          <div className="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
+          <div className="px-7 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/60">
             <div>
-              {title && <h3 className="text-lg font-bold text-slate-900">{title}</h3>}
+              {title && <h3 className="text-lg font-semibold text-slate-900">{title}</h3>}
               {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer outline-none focus:outline-none"
             >
               <X className="w-5 h-5" />
             </button>
@@ -80,7 +80,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">{children}</div>
+        <div className="p-7 sm:p-9 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>
   );

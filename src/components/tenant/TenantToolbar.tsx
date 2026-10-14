@@ -13,7 +13,7 @@ export const TenantToolbar: React.FC = () => {
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
         {/* Left: Branding & Tenant Switcher */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-bold tracking-tight text-emerald-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
+          <div className="flex items-center gap-1.5 font-semibold tracking-tight text-emerald-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>ANKABIT LMS ARCHITECTURE</span>
           </div>

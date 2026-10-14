@@ -158,7 +158,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               <Sliders className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">Classroom & Curriculum Settings</h3>
+              <h3 className="text-base font-semibold text-slate-900">Classroom & Curriculum Settings</h3>
               <p className="text-xs text-slate-500">Configure pod levels, progression agenda milestones, grading rubrics, and discussion channels.</p>
             </div>
           </div>
@@ -175,7 +175,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('pods')}
-            className={`py-3 px-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
               activeTab === 'pods'
                 ? 'border-indigo-600 text-indigo-700'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -188,7 +188,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('agenda')}
-            className={`py-3 px-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
               activeTab === 'agenda'
                 ? 'border-amber-600 text-amber-700'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -201,7 +201,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('rubric')}
-            className={`py-3 px-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
               activeTab === 'rubric'
                 ? 'border-emerald-600 text-emerald-700'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -214,7 +214,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('channels')}
-            className={`py-3 px-3.5 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+            className={`py-3 px-3.5 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
               activeTab === 'channels'
                 ? 'border-blue-600 text-blue-700'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -232,17 +232,17 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
             <div className="space-y-5">
               <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Breakout Pods Header Title</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Breakout Pods Header Title</label>
                   <input
                     type="text"
                     value={formConfig.breakoutPodsTitle}
                     onChange={(e) => setFormConfig({ ...formConfig, breakoutPodsTitle: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
                     placeholder="e.g. Level-Based Study Pods"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Pods Subtitle / Description</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Pods Subtitle / Description</label>
                   <textarea
                     rows={2}
                     value={formConfig.breakoutPodsSubtitle}
@@ -255,13 +255,13 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
 
               {/* Individual Pod Editors */}
               <div className="space-y-4">
-                <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Level Pod Tiers</h4>
+                <h4 className="text-xs font-semibold capitalize text-slate-400 tracking-wider">Level Pod Tiers</h4>
                 {formConfig.pods.map((pod, idx) => {
                   const key = `pod-${idx}`;
                   return (
                     <div key={pod.id || idx} className="p-4 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-3">
                       <div className="flex items-center justify-between">
-                        <Badge variant="default" className="text-[10px] font-extrabold uppercase font-mono">
+                        <Badge variant="default" className="text-[10px] font-semibold capitalize font-mono">
                           Tier: {pod.tier.toUpperCase()}
                         </Badge>
                         <span className="text-[10px] text-slate-400 font-semibold">Pod #{idx + 1}</span>
@@ -269,7 +269,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-600 mb-1">Pod Title / Label</label>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">Pod Title / Label</label>
                           <input
                             type="text"
                             value={pod.label}
@@ -278,11 +278,11 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                               updated[idx] = { ...pod, label: e.target.value };
                               setFormConfig({ ...formConfig, pods: updated });
                             }}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
                           />
                         </div>
                         <div>
-                          <label className="block text-[11px] font-bold text-slate-600 mb-1">Pod Sublabel / Focus Description</label>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">Pod Sublabel / Focus Description</label>
                           <input
                             type="text"
                             value={pod.sublabel}
@@ -298,7 +298,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
 
                       {/* Focus Topics */}
                       <div className="space-y-2 pt-1 border-t border-slate-100">
-                        <label className="block text-[11px] font-bold text-slate-600">Focus Topics & Discussion Prompts</label>
+                        <label className="block text-[11px] font-semibold text-slate-600">Focus Topics & Discussion Prompts</label>
                         <div className="flex flex-wrap gap-1.5">
                           {pod.targetTopics.map((topic, tIdx) => (
                             <span
@@ -355,17 +355,17 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
             <div className="space-y-5">
               <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Agenda Header Title</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Agenda Header Title</label>
                   <input
                     type="text"
                     value={formConfig.agendaTitle}
                     onChange={(e) => setFormConfig({ ...formConfig, agendaTitle: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-600"
                     placeholder="e.g. Curriculum Milestones & Progression"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Agenda Subtitle / Objective</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Agenda Subtitle / Objective</label>
                   <textarea
                     rows={2}
                     value={formConfig.agendaSubtitle}
@@ -379,7 +379,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               {/* Milestones List */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Cohort Milestones ({formConfig.milestones.length})</h4>
+                  <h4 className="text-xs font-semibold capitalize text-slate-400 tracking-wider">Cohort Milestones ({formConfig.milestones.length})</h4>
                   <div className="flex items-center gap-1.5">
                     <Button
                       type="button"
@@ -387,7 +387,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                       variant="outline"
                       onClick={() => handleAddMilestone('beginner')}
                       leftIcon={<Plus className="w-3.5 h-3.5" />}
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold"
                     >
                       + Add Level 1
                     </Button>
@@ -397,7 +397,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                       variant="outline"
                       onClick={() => handleAddMilestone('intermediate')}
                       leftIcon={<Plus className="w-3.5 h-3.5" />}
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold"
                     >
                       + Add Level 2
                     </Button>
@@ -407,7 +407,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                       variant="outline"
                       onClick={() => handleAddMilestone('advanced')}
                       leftIcon={<Plus className="w-3.5 h-3.5" />}
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold"
                     >
                       + Add Level 3
                     </Button>
@@ -424,14 +424,14 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                           updated[idx] = { ...ms, tier: e.target.value };
                           setFormConfig({ ...formConfig, milestones: updated });
                         }}
-                        className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-bold bg-slate-50 text-slate-800 focus:outline-none"
+                        className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold bg-slate-50 text-slate-800 focus:outline-none"
                       >
                         <option value="beginner">Level 1 (Beginner)</option>
                         <option value="intermediate">Level 2 (Intermediate)</option>
                         <option value="advanced">Level 3 (Advanced)</option>
                       </select>
 
-                      <label className="flex items-center gap-1 text-[11px] font-bold text-slate-600 cursor-pointer">
+                      <label className="flex items-center gap-1 text-[11px] font-semibold text-slate-600 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={ms.done}
@@ -455,7 +455,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                           updated[idx] = { ...ms, title: e.target.value };
                           setFormConfig({ ...formConfig, milestones: updated });
                         }}
-                        className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                        className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-600"
                         placeholder="Milestone title..."
                       />
 
@@ -495,12 +495,12 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
             <div className="space-y-5">
               <div className="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Rubric Header Title</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Rubric Header Title</label>
                   <input
                     type="text"
                     value={formConfig.rubricTitle}
                     onChange={(e) => setFormConfig({ ...formConfig, rubricTitle: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
                     placeholder="e.g. Student Competency & Evaluation Rubric"
                   />
                 </div>
@@ -509,14 +509,14 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               {/* Rubric Criteria List */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Evaluation Criteria ({formConfig.rubricCriteria.length})</h4>
+                  <h4 className="text-xs font-semibold capitalize text-slate-400 tracking-wider">Evaluation Criteria ({formConfig.rubricCriteria.length})</h4>
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
                     onClick={handleAddCriteria}
                     leftIcon={<Plus className="w-3.5 h-3.5" />}
-                    className="text-xs font-bold"
+                    className="text-xs font-semibold"
                   >
                     Add Criterion
                   </Button>
@@ -533,12 +533,12 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                           updated[idx] = { ...crit, name: e.target.value };
                           setFormConfig({ ...formConfig, rubricCriteria: updated });
                         }}
-                        className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                        className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
                         placeholder="Criterion Name (e.g. Practical Execution & Technique)"
                       />
 
                       <div className="flex items-center gap-1 shrink-0">
-                        <span className="text-[11px] font-bold text-slate-500">Max:</span>
+                        <span className="text-[11px] font-semibold text-slate-500">Max:</span>
                         <input
                           type="number"
                           value={crit.maxScore || 5}
@@ -547,7 +547,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                             updated[idx] = { ...crit, maxScore: parseInt(e.target.value) || 5 };
                             setFormConfig({ ...formConfig, rubricCriteria: updated });
                           }}
-                          className="w-12 px-2 py-1 border border-slate-200 rounded-xl text-xs text-center font-bold text-emerald-800 bg-emerald-50 focus:outline-none"
+                          className="w-12 px-2 py-1 border border-slate-200 rounded-xl text-xs text-center font-semibold text-emerald-800 bg-emerald-50 focus:outline-none"
                           min={1}
                           max={100}
                         />
@@ -588,7 +588,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">
+                    <h4 className="text-xs font-semibold capitalize text-slate-500 tracking-wider">
                       Community Discussion Channels ({formConfig.forumChannels?.length || 0})
                     </h4>
                     <p className="text-xs text-slate-500">
@@ -604,7 +604,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                     placeholder="New Channel Name..."
                     value={newChanName}
                     onChange={(e) => setNewChanName(e.target.value)}
-                    className="w-full sm:w-56 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600"
+                    className="w-full sm:w-56 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
                   />
                   <input
                     type="text"
@@ -619,7 +619,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                     variant="outline"
                     onClick={handleAddChannel}
                     leftIcon={<Plus className="w-3.5 h-3.5" />}
-                    className="text-xs font-bold shrink-0 text-blue-700 border-blue-200 hover:bg-blue-50"
+                    className="text-xs font-semibold shrink-0 text-blue-700 border-blue-200 hover:bg-blue-50"
                   >
                     Add Channel
                   </Button>
@@ -634,7 +634,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                     className="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col sm:flex-row sm:items-center gap-3 justify-between"
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-mono font-bold text-slate-600 shrink-0">
+                      <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-mono font-semibold text-slate-600 shrink-0">
                         #{chan.id}
                       </span>
 
@@ -646,7 +646,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
                           updated[idx] = { ...chan, label: e.target.value };
                           setFormConfig({ ...formConfig, forumChannels: updated });
                         }}
-                        className="w-48 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600"
+                        className="w-48 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
                         placeholder="Channel Label"
                       />
 
@@ -687,7 +687,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               <button
                 type="button"
                 onClick={onResetDefaults}
-                className="text-xs font-bold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset to System Defaults</span>
@@ -701,7 +701,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="text-xs font-bold"
+              className="text-xs font-semibold"
             >
               Cancel
             </Button>
@@ -711,7 +711,7 @@ export const ClassroomConfigModal: React.FC<ClassroomConfigModalProps> = ({
               size="sm"
               onClick={handleSave}
               leftIcon={<Save className="w-3.5 h-3.5" />}
-              className="text-xs font-bold"
+              className="text-xs font-semibold"
             >
               Save Configuration
             </Button>

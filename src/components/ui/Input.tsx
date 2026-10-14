@@ -28,15 +28,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
-            className={`w-full h-11 px-4 py-2.5 text-sm font-medium bg-white text-slate-900 border rounded-xl transition-all placeholder:text-slate-400 focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/15 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed ${
-              leftIcon ? 'pl-11' : ''
-            } ${rightIcon ? 'pr-11' : ''} ${
+            className={`w-full h-12 px-5 py-3 text-sm font-medium bg-white text-slate-900 border rounded-xl transition-all placeholder:text-slate-400 outline-none focus:outline-none focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed ${
+              leftIcon ? 'pl-12' : ''
+            } ${rightIcon ? 'pr-12' : ''} ${
               error ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/15' : 'border-slate-200 hover:border-slate-300'
             } ${className}`}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
               {rightIcon}
             </div>
           )}
@@ -73,7 +73,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           id={selectId}
-          className={`w-full h-11 px-4 py-2.5 text-sm font-medium bg-white text-slate-900 border rounded-xl transition-all focus:outline-hidden focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/15 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer ${
+          className={`w-full h-12 px-5 py-3 text-sm font-medium bg-white text-slate-900 border rounded-xl transition-all outline-none focus:outline-none focus:border-[var(--color-primary,#047857)] focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer ${
             error ? 'border-rose-500 focus:border-rose-500' : 'border-slate-200 hover:border-slate-300'
           } ${className}`}
           {...props}

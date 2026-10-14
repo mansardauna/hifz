@@ -752,8 +752,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
       {/* 1. Fixed Teacher Left Sidebar (Dynamic Background & White Label) */}
       <aside
-        style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
-        className={`w-64 sm:w-72 max-w-[85vw] h-[100dvh] lg:h-full flex flex-col justify-between text-slate-200 border-r border-slate-800 shrink-0 select-none z-50 transition-transform duration-300 ${
+        style={{ backgroundColor: tenant?.brandColor || tenant?.theme?.primaryColor || 'var(--sidebar-bg, #047857)' }}
+        className={`w-64 sm:w-72 max-w-[85vw] h-[100dvh] lg:h-full flex flex-col justify-between text-white border-r border-white/15 shrink-0 select-none z-50 transition-transform duration-300 ${
           isMobileNavOpen
             ? 'fixed inset-y-0 left-0 shadow-2xl translate-x-0'
             : 'hidden lg:flex'
@@ -761,35 +761,34 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
       >
         <div className="flex flex-col h-full min-h-0">
           {/* Academy Brand Header */}
-          <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-black/20">
+          <div className="h-16 px-4 sm:px-5 border-b border-white/15 flex items-center justify-between shrink-0 bg-black/15">
             <div className="flex items-center gap-3 min-w-0">
               <div
-                style={{ backgroundColor: 'var(--color-primary, #047857)' }}
-                className="w-9 h-9 rounded-xl text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md"
+                className="w-8 h-8 rounded-xl bg-white/20 border border-white/20 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-xs"
               >
-                {isCodingNiche ? <Code2 className="w-4.5 h-4.5" /> : isSchoolNiche ? <GraduationCap className="w-4.5 h-4.5" /> : <BookOpen className="w-4.5 h-4.5" />}
+                {isCodingNiche ? <Code2 className="w-4 h-4 text-white" /> : isSchoolNiche ? <GraduationCap className="w-4 h-4 text-white" /> : <BookOpen className="w-4 h-4 text-white" />}
               </div>
               <div className="min-w-0">
-                <h2 className="font-bold text-xs sm:text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] sm:text-[11px] text-white/60 font-mono truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
+                <h2 className="font-semibold text-xs sm:text-sm text-white truncate">{tenant.name}</h2>
+                <p className="text-[10px] sm:text-[11px] text-white/70 font-mono truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
               </div>
             </div>
 
             {isMobileNavOpen && (
               <button
                 onClick={() => setIsMobileNavOpen(false)}
-                className="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className="lg:hidden p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer outline-none"
                 aria-label="Close navigation"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 text-white" />
               </button>
             )}
           </div>
 
           {/* Teacher Profile Snapshot in Sidebar */}
-          <div className="p-3.5 mx-3.5 my-3 bg-white/5 rounded-2xl border border-white/10 shrink-0">
+          <div className="p-3.5 mx-3.5 my-3 bg-white/10 rounded-2xl border border-white/15 shrink-0 text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 shrink-0 shadow-sm">
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-white/25 shrink-0 shadow-xs">
                 <img
                   src={user?.avatarUrl || '/images/muslim_teacher_woman.jpg'}
                   alt={user?.name || teacherPersona.defaultName}
@@ -797,16 +796,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 />
               </div>
               <div className="min-w-0">
-                <p className="font-extrabold text-xs sm:text-sm text-white truncate">{user?.name || teacherPersona.defaultName}</p>
+                <p className="font-semibold text-xs sm:text-sm text-white truncate">{user?.name || teacherPersona.defaultName}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider">{teacherPersona.badge}</span>
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  <span className="text-[10px] font-semibold text-white/90 capitalize tracking-wider">{teacherPersona.badge}</span>
                 </div>
               </div>
             </div>
-            <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="mt-2.5 pt-2 border-t border-white/15 flex items-center justify-between text-[11px] text-white/80">
               <span>{assignedStudents.length} {isCodingNiche ? 'Mentees' : 'Students'}</span>
-              <span className="font-bold text-emerald-400">
+              <span className="font-semibold text-white">
                 {submissions.filter((s) => s.status === 'Pending').length} To Review
               </span>
             </div>
@@ -814,10 +813,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
           {/* Nav Items */}
           <nav className="flex-1 overflow-y-auto px-3.5 space-y-1.5 min-h-0 py-1">
+            <div className="px-3 pt-2 pb-1 text-xs font-semibold capitalize tracking-wider text-white/70">
+              Instructor Navigation
+            </div>
             {[
               { id: 'students' as TeacherTab, label: isCodingNiche ? 'My Mentees & Repos' : 'Assigned Students', icon: Users, badge: assignedStudents.length },
-              { id: 'grading' as TeacherTab, label: isCodingNiche ? 'PR Review Studio' : isSchoolNiche ? 'Gradebook Studio' : 'Grading & Rating Studio', icon: isCodingNiche ? GitPullRequest : Award, badge: submissions.filter((s) => s.status === 'Pending').length, badgeColor: 'bg-amber-500 text-slate-950 font-bold' },
-              { id: 'classroom' as TeacherTab, label: teacherPersona.classroomName, icon: Radio, badge: 'Live', badgeColor: 'bg-rose-600 text-white' },
+              { id: 'grading' as TeacherTab, label: isCodingNiche ? 'PR Review Studio' : isSchoolNiche ? 'Gradebook Studio' : 'Grading & Rating Studio', icon: isCodingNiche ? GitPullRequest : Award, badge: submissions.filter((s) => s.status === 'Pending').length, badgeColor: 'bg-white/20 text-white font-semibold' },
+              { id: 'classroom' as TeacherTab, label: teacherPersona.classroomName, icon: Radio, badge: 'Live', badgeColor: 'bg-white text-slate-900' },
               { id: 'attendance' as TeacherTab, label: 'Daily Roll Call & Roster', icon: Calendar },
               { id: 'forum' as TeacherTab, label: teacherPersona.forumName, icon: MessageSquare },
               { id: 'curriculum' as TeacherTab, label: teacherPersona.curriculumName, icon: isCodingNiche ? Code2 : BookOpen },
@@ -833,19 +835,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                     setActiveTab(item.id);
                     setIsMobileNavOpen(false);
                   }}
-                  style={isActive ? { backgroundColor: 'var(--color-primary, #047857)' } : {}}
-                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none ${
+                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none outline-none ${
                     isActive
-                      ? 'text-white shadow-md font-bold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                      ? 'bg-white/20 text-white shadow-xs font-semibold backdrop-blur-xs'
+                      : 'text-white/85 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                    <span className="truncate">{item.label}</span>
+                    <Icon className="w-4.5 h-4.5 shrink-0 text-white" />
+                    <span className="truncate text-white">{item.label}</span>
                   </div>
                   {item.badge !== undefined && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${item.badgeColor || 'bg-slate-800 text-slate-300'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0 border border-white/20 ${item.badgeColor || 'bg-white/15 text-white'}`}>
                       {item.badge}
                     </span>
                   )}
@@ -855,7 +856,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           </nav>
 
           {/* Bottom Fixed Logout Bar */}
-          <div className="p-3.5 border-t border-slate-800 shrink-0 bg-black/20">
+          <div className="p-3.5 border-t border-white/15 shrink-0 bg-black/15">
             <button
               onClick={async () => {
                 const ok = await confirm({
@@ -867,10 +868,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 });
                 if (ok) logout();
               }}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-white/90 hover:text-white hover:bg-white/15 transition-colors cursor-pointer outline-none"
             >
-              <LogOut className="w-4 h-4" />
-              <span>Sign Out (Faculty Session)</span>
+              <LogOut className="w-4 h-4 text-white" />
+              <span className="text-white">Sign Out (Faculty Session)</span>
             </button>
           </div>
         </div>
@@ -888,13 +889,13 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
             >
               <Menu className="w-5 h-5" />
             </button>
-            <span className="font-bold text-sm text-slate-900">{tenant.name}</span>
+            <span className="font-semibold text-sm text-slate-900">{tenant.name}</span>
           </div>
           <Button
             variant="primary"
             size="sm"
             onClick={() => setActiveTab('classroom')}
-            className="font-bold text-xs"
+            className="font-semibold text-xs"
             leftIcon={<Radio className="w-3.5 h-3.5" />}
           >
             Live
@@ -921,7 +922,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   variant="primary"
                   size="sm"
                   onClick={() => setActiveTab('classroom')}
-                  className="font-bold text-xs"
+                  className="font-semibold text-xs"
                   leftIcon={<Radio className="w-3.5 h-3.5" />}
                 >
                   {isCodingNiche ? 'Start Pair Room' : isSchoolNiche ? 'Launch Classroom' : isMadrasatNiche ? 'Start Live Halaqah' : 'Launch Classroom'}
@@ -980,7 +981,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <button
                         key={cohort}
                         onClick={() => setSelectedCohort(cohort)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                           selectedCohort === cohort
                             ? 'bg-slate-900 text-white shadow-xs'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1001,7 +1002,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               {assignedStudents.length === 0 ? (
                 <div className="py-12 px-4 text-center rounded-2xl bg-white border border-dashed border-slate-300 space-y-3">
                   <Users className="w-10 h-10 text-slate-300 mx-auto" />
-                  <h3 className="text-sm font-bold text-slate-900">No Students Enrolled Yet</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">No Students Enrolled Yet</h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     When students enroll or are assigned to your class by academy administrators, they will appear here.
                   </p>
@@ -1017,11 +1018,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         <div className="space-y-3">
                           <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-semibold text-sm shadow-sm">
                                 {std.avatar}
                               </div>
                               <div>
-                                <h3 className="font-extrabold text-slate-900 text-sm">{std.name}</h3>
+                                <h3 className="font-semibold text-slate-900 text-sm">{std.name}</h3>
                                 <p className="text-[11px] text-slate-500">{std.cohort}</p>
                               </div>
                             </div>
@@ -1034,7 +1035,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                   ? 'warning'
                                   : 'primary'
                               }
-                              className="text-[10px] font-bold"
+                              className="text-[10px] font-semibold"
                             >
                               {std.lastEvaluationStatus}
                             </Badge>
@@ -1042,10 +1043,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
                           {/* Current Curriculum Target / Repo */}
                           <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-1">
-                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            <div className="text-[10px] font-semibold text-slate-400 capitalize tracking-wider">
                               {isCodingNiche ? 'Assigned Track / Branch' : isSchoolNiche ? 'Subject / Current Unit' : 'Current Target'}
                             </div>
-                            <div className="font-extrabold text-slate-900 text-xs truncate">{std.currentSurahOrTrack}</div>
+                            <div className="font-semibold text-slate-900 text-xs truncate">{std.currentSurahOrTrack}</div>
                             <div className="text-[11px] text-slate-600 truncate">{std.currentAyahOrLesson}</div>
                           </div>
 
@@ -1055,11 +1056,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                               <div className="text-[10px] text-emerald-800 font-semibold">
                                 {isCodingNiche ? 'Tests Passing' : isSchoolNiche ? 'Academic Score' : 'Mastery'}
                               </div>
-                              <div className="text-sm font-black text-emerald-700">{std.masteryPercent}%</div>
+                              <div className="text-sm font-semibold text-emerald-700">{std.masteryPercent}%</div>
                             </div>
                             <div className="p-2 rounded-lg bg-blue-50/60 border border-blue-100">
                               <div className="text-[10px] text-blue-800 font-semibold">Attendance</div>
-                              <div className="text-sm font-black text-blue-700">{std.attendancePercent}%</div>
+                              <div className="text-sm font-semibold text-blue-700">{std.attendancePercent}%</div>
                             </div>
                           </div>
                         </div>
@@ -1083,7 +1084,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                 });
                               }
                             }}
-                            className="flex-1 justify-center font-bold text-xs"
+                            className="flex-1 justify-center font-semibold text-xs"
                           >
                             {teacherPersona.evaluateAction}
                           </Button>
@@ -1097,7 +1098,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                 message: `Opening direct communication thread for ${std.name} (${std.parentPhone})`
                               });
                             }}
-                            className="text-slate-700 font-bold text-xs"
+                            className="text-slate-700 font-semibold text-xs"
                           >
                             Message
                           </Button>
@@ -1128,7 +1129,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-black text-slate-900 tracking-tight">
+                  <h2 className="text-xl font-semibold text-slate-900 tracking-tight">
                     {isCodingNiche ? 'Pull Request & Code Review Studio' : isSchoolNiche ? 'Standardized Exam & Assignment Gradebook' : 'Recitation & Homework Evaluations'}
                   </h2>
                   <p className="text-xs text-slate-500">
@@ -1145,7 +1146,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               {submissions.length === 0 ? (
                 <div className="py-12 px-4 text-center rounded-2xl bg-white border border-dashed border-slate-300 space-y-3">
                   <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
-                  <h3 className="text-sm font-bold text-slate-900">No Submissions Pending Review</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">No Submissions Pending Review</h3>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     Student recitation assignments, code repositories, and homework will appear here once submitted.
                   </p>
@@ -1154,7 +1155,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 <Card className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs font-sans">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-[10px]">
                         <tr>
                           <TableSortHeader
                             field="studentName"
@@ -1196,7 +1197,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <tbody className="divide-y divide-slate-100 text-slate-700">
                         {paginatedSubmissions.map((sub) => (
                           <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
-                            <td className="py-3.5 px-4 font-extrabold text-slate-900">
+                            <td className="py-3.5 px-4 font-semibold text-slate-900">
                               {sub.studentName}
                             </td>
                             <td className="py-3.5 px-4">
@@ -1218,7 +1219,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                   {sub.currentGrade || sub.status}
                                 </Badge>
                                 {sub.teacherAudioFeedbackUrl && (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">
                                     <Volume2 className="w-2.5 h-2.5" />
                                     Voice Note ({sub.teacherAudioFeedbackDuration || 15}s)
                                   </span>
@@ -1230,7 +1231,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleOpenGrading(sub)}
-                                className="font-bold text-xs"
+                                className="font-semibold text-xs"
                               >
                                 {sub.status === 'Graded' ? 'Review Grade' : 'Grade Submission'}
                               </Button>
@@ -1267,11 +1268,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 <Card className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm max-w-4xl mx-auto space-y-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center font-bold shadow-md shrink-0">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center font-semibold shadow-md shrink-0">
                         <Radio className="w-6 h-6 animate-pulse" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-black text-slate-900 tracking-tight">
+                        <h3 className="text-lg font-semibold text-slate-900 tracking-tight">
                           {isCodingNiche ? 'Launch Live Engineering Huddle / Pair Room' : isSchoolNiche ? 'Start Academic Virtual Lecture' : 'Start Live Quran Halaqah'}
                         </h3>
                         <p className="text-xs text-slate-500 mt-0.5">
@@ -1280,7 +1281,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       </div>
                     </div>
 
-                    <Badge variant="primary" className="font-bold text-xs shrink-0">
+                    <Badge variant="primary" className="font-semibold text-xs shrink-0">
                       Host: {user?.name || teacherPersona.defaultName}
                     </Badge>
                   </div>
@@ -1288,7 +1289,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Session Title */}
                     <div className="space-y-1.5 md:col-span-2">
-                      <label className="text-xs font-bold text-slate-800">Live Session Title / Topic</label>
+                      <label className="text-xs font-semibold text-slate-800">Live Session Title / Topic</label>
                       <input
                         type="text"
                         value={sessionTitleInput}
@@ -1306,7 +1307,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
                     {/* Level Classification Target */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-800">Target Student Level Tier</label>
+                      <label className="text-xs font-semibold text-slate-800">Target Student Level Tier</label>
                       <select
                         value={sessionLevelInput}
                         onChange={(e) => setSessionLevelInput(e.target.value as any)}
@@ -1327,7 +1328,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
                     {/* Cohort / Halaqah Filter */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-800">Target Cohort / Group</label>
+                      <label className="text-xs font-semibold text-slate-800">Target Cohort / Group</label>
                       <select
                         value={sessionCohortInput}
                         onChange={(e) => setSessionCohortInput(e.target.value)}
@@ -1366,7 +1367,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   {/* Specific Student Selection Option */}
                   <div className="space-y-2 pt-2 border-t border-slate-100">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-slate-800">
+                      <label className="text-xs font-semibold text-slate-800">
                         Assign Specific Students (Optional, leave empty for all in cohort):
                       </label>
                       <span className="text-[11px] text-slate-500 font-mono">
@@ -1382,7 +1383,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                             key={std.id}
                             className={`p-2 rounded-lg border text-xs flex items-center gap-2 cursor-pointer transition-all ${
                               isChecked
-                                ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold'
+                                ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
                                 : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                             }`}
                           >
@@ -1415,7 +1416,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       variant="primary"
                       onClick={handleLaunchSession}
                       leftIcon={<Play className="w-4 h-4" />}
-                      className="px-6 py-3 font-extrabold text-xs shadow-md"
+                      className="px-6 py-3 font-semibold text-xs shadow-md"
                     >
                       Launch & Broadcast Live Class
                     </Button>
@@ -1430,8 +1431,8 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-extrabold text-white text-sm truncate">{activeTeacherSession.title}</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className="font-semibold text-white text-sm truncate">{activeTeacherSession.title}</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                             Live Host Active
                           </span>
                         </div>
@@ -1447,7 +1448,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         variant="outline"
                         onClick={handleCopyInviteLink}
                         leftIcon={isCopiedInvite ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                        className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700 font-bold text-xs"
+                        className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700 font-semibold text-xs"
                       >
                         {isCopiedInvite ? 'Link Copied!' : 'Copy Student Invite Link'}
                       </Button>
@@ -1457,7 +1458,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         variant="danger"
                         onClick={handleEndSession}
                         leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
-                        className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                        className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
                       >
                         End Class Session
                       </Button>
@@ -1494,7 +1495,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               {/* Header & Subtabs */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Daily Roll Call & Attendance Control</h2>
+                  <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Daily Roll Call & Attendance Control</h2>
                   <p className="text-xs text-slate-500">
                     Showing active students in session by default to avoid clutter. Filter by halaqah, bulk-mark status, or review students needing attention.
                   </p>
@@ -1503,7 +1504,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 <div className="flex items-center gap-6 border-b border-slate-200">
                   <button
                     onClick={() => setAttendanceSubTab('roster')}
-                    className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+                    className={`pb-3 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
                       attendanceSubTab === 'roster'
                         ? 'border-emerald-600 text-emerald-700'
                         : 'border-transparent text-slate-500 hover:text-slate-700'
@@ -1517,7 +1518,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
                   <button
                     onClick={() => setAttendanceSubTab('attention')}
-                    className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+                    className={`pb-3 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
                       attendanceSubTab === 'attention'
                         ? 'border-rose-600 text-rose-700'
                         : 'border-transparent text-slate-500 hover:text-slate-700'
@@ -1546,7 +1547,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <select
                         value={attendanceEnrollmentFilter}
                         onChange={(e) => setAttendanceEnrollmentFilter(e.target.value as any)}
-                        className="bg-transparent text-slate-900 font-bold text-xs focus:outline-none cursor-pointer"
+                        className="bg-transparent text-slate-900 font-semibold text-xs focus:outline-none cursor-pointer"
                       >
                         <option value="active">Active (In-Session Only)</option>
                         <option value="all">All Enrolled</option>
@@ -1561,7 +1562,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <select
                         value={attendanceCohortFilter}
                         onChange={(e) => setAttendanceCohortFilter(e.target.value)}
-                        className="bg-transparent text-slate-900 font-bold text-xs focus:outline-none cursor-pointer max-w-[180px] truncate"
+                        className="bg-transparent text-slate-900 font-semibold text-xs focus:outline-none cursor-pointer max-w-[180px] truncate"
                       >
                         {cohorts.map((c) => (
                           <option key={c} value={c}>
@@ -1597,7 +1598,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       size="sm"
                       onClick={handleSaveAttendance}
                       leftIcon={<CheckCircle2 className="w-4 h-4" />}
-                      className="font-bold text-xs shadow-xs"
+                      className="font-semibold text-xs shadow-xs"
                     >
                       Save Roll Call
                     </Button>
@@ -1626,7 +1627,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                             message: `Marked all ${filteredAttendanceStudents.length} students in filter as Present.`,
                           });
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-bold border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer text-[11px]"
+                        className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer text-[11px]"
                       >
                         Mark All in Filter Present
                       </button>
@@ -1645,7 +1646,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                             message: `Marked all ${filteredAttendanceStudents.length} students in filter as Excused.`,
                           });
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 font-bold border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer text-[11px]"
+                        className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 font-semibold border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer text-[11px]"
                       >
                         Mark All Excused
                       </button>
@@ -1659,7 +1660,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 <Card className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-[10px]">
                         <tr>
                           <th className="py-3 px-4">Student</th>
                           <th className="py-3 px-4">Cohort / Halaqah</th>
@@ -1671,9 +1672,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <tbody className="divide-y divide-slate-100">
                         {filteredAttendanceStudents.map((std) => (
                           <tr key={std.id} className="hover:bg-slate-50">
-                            <td className="py-3.5 px-4 font-bold text-slate-900">
+                            <td className="py-3.5 px-4 font-semibold text-slate-900">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                <div className="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-semibold text-xs shrink-0">
                                   {std.avatar}
                                 </div>
                                 <div>
@@ -1697,7 +1698,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                 {std.enrollmentStatus || 'Active'}
                               </Badge>
                             </td>
-                            <td className="py-3.5 px-4 text-center font-mono font-bold text-slate-800">
+                            <td className="py-3.5 px-4 text-center font-mono font-semibold text-slate-800">
                               {std.attendancePercent}%
                             </td>
                             <td className="py-3.5 px-4">
@@ -1706,12 +1707,12 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                   <button
                                     key={status}
                                     onClick={() => setAttendance(std.id, status)}
-                                    className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
+                                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition-all cursor-pointer ${
                                       attendanceState[std.id] === status
                                         ? status === 'present'
                                           ? 'bg-emerald-600 text-white shadow-xs'
                                           : status === 'late'
-                                          ? 'bg-amber-500 text-slate-950 font-bold'
+                                          ? 'bg-amber-500 text-slate-950 font-semibold'
                                           : status === 'excused'
                                           ? 'bg-blue-600 text-white'
                                           : 'bg-rose-600 text-white'
@@ -1737,7 +1738,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-3">
                     <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                     <div className="space-y-1">
-                      <h4 className="text-xs sm:text-sm font-bold text-rose-950">
+                      <h4 className="text-xs sm:text-sm font-semibold text-rose-950">
                         Attendance Disruption & At-Risk Students Requiring Faculty Intervention
                       </h4>
                       <p className="text-xs text-rose-800 leading-relaxed">
@@ -1757,16 +1758,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                           <div className="space-y-3">
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-9 h-9 rounded-full bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                                <div className="w-9 h-9 rounded-full bg-rose-600 text-white font-semibold text-xs flex items-center justify-center shrink-0">
                                   {std.avatar}
                                 </div>
                                 <div className="min-w-0">
-                                  <h4 className="font-bold text-xs sm:text-sm text-slate-900 truncate">{std.name}</h4>
+                                  <h4 className="font-semibold text-xs sm:text-sm text-slate-900 truncate">{std.name}</h4>
                                   <p className="text-[11px] text-slate-500 truncate">{std.cohort}</p>
                                 </div>
                               </div>
 
-                              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
+                              <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
                                 {std.attendancePercent}%
                               </span>
                             </div>
@@ -1774,19 +1775,19 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                             {/* Attention Reason Pill */}
                             <div className="p-2.5 rounded-xl text-xs font-semibold space-y-1 border bg-slate-50">
                               {isMissedLatest && (
-                                <div className="text-rose-800 flex items-center gap-1.5 font-bold">
+                                <div className="text-rose-800 flex items-center gap-1.5 font-semibold">
                                   <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
                                   Missed Latest Concluded Class
                                 </div>
                               )}
                               {isMissedYesterday && (
-                                <div className="text-amber-800 flex items-center gap-1.5 font-bold">
+                                <div className="text-amber-800 flex items-center gap-1.5 font-semibold">
                                   <span className="w-2 h-2 rounded-full bg-amber-600" />
                                   Missed Yesterday ({std.consecutiveAbsences || 2} Consecutive Missed)
                                 </div>
                               )}
                               {isLeftEarly && (
-                                <div className="text-purple-800 flex items-center gap-1.5 font-bold">
+                                <div className="text-purple-800 flex items-center gap-1.5 font-semibold">
                                   <span className="w-2 h-2 rounded-full bg-purple-600" />
                                   Incomplete Class (Left 20m Early)
                                 </div>
@@ -1802,7 +1803,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                             <button
                               type="button"
                               onClick={() => handleSendParentWhatsApp(std)}
-                              className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                              className="flex-1 py-2.5 px-3 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer outline-none"
                               title="Send WhatsApp Parent Alert"
                             >
                               <Phone className="w-3.5 h-3.5" />
@@ -1812,7 +1813,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                             <button
                               type="button"
                               onClick={() => handleSendParentEmail(std)}
-                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
+                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200"
                               title="Send Email Notice"
                             >
                               <Mail className="w-3.5 h-3.5 text-slate-600" />
@@ -1828,7 +1829,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                   message: `${std.name} absence recorded as Excused.`,
                                 });
                               }}
-                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer border border-slate-200"
+                              className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-semibold transition-colors cursor-pointer border border-slate-200"
                               title="Excuse Absence"
                             >
                               Excuse
@@ -1858,21 +1859,21 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               </div>
             ) : isSchoolNiche ? (
               <Card className="p-6 bg-white border border-slate-200 rounded-2xl space-y-4">
-                <h3 className="font-extrabold text-base text-slate-900">Academic Curriculum & Syllabus Studio</h3>
+                <h3 className="font-semibold text-base text-slate-900">Academic Curriculum & Syllabus Studio</h3>
                 <p className="text-xs text-slate-500">Manage lesson plans, course syllabi, problem sets, and reading lists.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <div className="font-bold text-xs text-slate-900">AP Calculus AB</div>
+                    <div className="font-semibold text-xs text-slate-900">AP Calculus AB</div>
                     <div className="text-[11px] text-slate-500">8 Units • 34 Lecture Notes • 12 Problem Sets</div>
                     <Badge variant="success">Active Syllabus</Badge>
                   </div>
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <div className="font-bold text-xs text-slate-900">AP Chemistry</div>
+                    <div className="font-semibold text-xs text-slate-900">AP Chemistry</div>
                     <div className="text-[11px] text-slate-500">10 Units • 20 Lab Experiments</div>
                     <Badge variant="success">Active Syllabus</Badge>
                   </div>
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <div className="font-bold text-xs text-slate-900">World History Honors</div>
+                    <div className="font-semibold text-xs text-slate-900">World History Honors</div>
                     <div className="text-[11px] text-slate-500">6 Units • 18 Primary Source Readings</div>
                     <Badge variant="success">Active Syllabus</Badge>
                   </div>
@@ -1884,21 +1885,21 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               </div>
             ) : (
               <Card className="p-6 bg-white border border-slate-200 rounded-2xl space-y-4">
-                <h3 className="font-extrabold text-base text-slate-900">Curriculum & Coursework Studio</h3>
+                <h3 className="font-semibold text-base text-slate-900">Curriculum & Coursework Studio</h3>
                 <p className="text-xs text-slate-500">Manage lesson plans, course syllabi, assignments, and practical workshops.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <div className="font-bold text-xs text-slate-900">Applied Operations & Practicum</div>
+                    <div className="font-semibold text-xs text-slate-900">Applied Operations & Practicum</div>
                     <div className="text-[11px] text-slate-500">8 Modules • 24 Case Studies • 6 Projects</div>
                     <Badge variant="success">Active Syllabus</Badge>
                   </div>
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <div className="font-bold text-xs text-slate-900">Professional Leadership</div>
+                    <div className="font-semibold text-xs text-slate-900">Professional Leadership</div>
                     <div className="text-[11px] text-slate-500">6 Units • 12 Field Exercises</div>
                     <Badge variant="success">Active Syllabus</Badge>
                   </div>
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                    <div className="font-bold text-xs text-slate-900">Quantitative Benchmarks</div>
+                    <div className="font-semibold text-xs text-slate-900">Quantitative Benchmarks</div>
                     <div className="text-[11px] text-slate-500">10 Modules • 15 Analysis Reports</div>
                     <Badge variant="success">Active Syllabus</Badge>
                   </div>
@@ -1911,7 +1912,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
           {activeTab === 'settings' && (
             <Card className="p-6 bg-white border border-slate-200 rounded-2xl max-w-2xl space-y-6">
               <div className="space-y-1">
-                <h3 className="font-extrabold text-base text-slate-900">Instructor Profile Settings</h3>
+                <h3 className="font-semibold text-base text-slate-900">Instructor Profile Settings</h3>
                 <p className="text-xs text-slate-500">Manage your faculty credentials and availability schedule.</p>
               </div>
 
@@ -1926,7 +1927,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 variant="primary"
                 size="md"
                 onClick={() => onAddToast({ type: 'success', title: 'Settings Saved', message: 'Instructor profile updated.' })}
-                className="font-bold"
+                className="font-semibold"
               >
                 Save Changes
               </Button>
@@ -1944,14 +1945,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
             <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-amber-400 capitalize tracking-wider">
                     {isCodingNiche ? 'Pull Request Review' : isSchoolNiche ? 'Academic Evaluation' : 'Recitation Evaluation'}
                   </span>
                   <Badge variant="primary" className="bg-amber-950 text-amber-300 border-amber-500/30 text-[10px]">
                     {selectedSubmission.status}
                   </Badge>
                 </div>
-                <h2 className="text-lg font-black text-white mt-1">{selectedSubmission.studentName}</h2>
+                <h2 className="text-lg font-semibold text-white mt-1">{selectedSubmission.studentName}</h2>
                 <p className="text-xs text-slate-400 font-mono">{selectedSubmission.surahOrAssignment} • {selectedSubmission.ayahOrModule}</p>
               </div>
               <button
@@ -1971,7 +1972,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               {isCodingNiche ? (
                 /* Code Snippet & AST Review Player */
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                  <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
                     <span className="flex items-center gap-1.5">
                       <Terminal className="w-4 h-4 text-blue-600" />
                       Submitted Code Patch
@@ -1987,7 +1988,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               ) : isMadrasatNiche ? (
                 /* Quran Recitation Audio Player */
                 <div className="p-5 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between text-xs text-emerald-900 font-bold">
+                  <div className="flex items-center justify-between text-xs text-emerald-900 font-semibold">
                     <span>Student Recitation Audio</span>
                     <span className="font-mono text-[11px]">02:05 / 02:05</span>
                   </div>
@@ -1995,7 +1996,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                      className="w-12 h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-md cursor-pointer transition-all shrink-0"
+                      className="w-12 h-12 rounded-2xl bg-[var(--color-primary,#047857)] hover:brightness-95 text-white flex items-center justify-center shadow-md cursor-pointer transition-all shrink-0 outline-none"
                     >
                       {isPlayingAudio ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 translate-x-0.5" />}
                     </button>
@@ -2016,7 +2017,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               ) : (
                 /* School Essay / Problem Set Summary */
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
-                  <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <div className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                     <FileCheck2 className="w-4 h-4 text-purple-600" />
                     Assignment Submission Document
                   </div>
@@ -2029,7 +2030,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
               {/* Star Ratings Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                  <label className="text-xs font-bold text-slate-800 block">
+                  <label className="text-xs font-semibold text-slate-800 block">
                     {classroomConfig.rubricCriteria[0]?.name || (isCodingNiche ? 'Architecture & Clean Code' : isSchoolNiche ? 'Concept Mastery & Depth' : isMadrasatNiche ? 'Tajweed Precision & Makharij' : 'Core Evaluation Criteria')}
                   </label>
                   <div className="flex items-center gap-1.5">
@@ -2047,14 +2048,14 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         <Star className={`w-6 h-6 ${(isCodingNiche ? codeArchitectureRating : isSchoolNiche ? conceptMasteryRating : tajweedRating) >= star ? 'fill-amber-400 text-amber-500' : 'text-slate-300'}`} />
                       </button>
                     ))}
-                    <span className="ml-2 font-bold text-xs text-slate-700">
+                    <span className="ml-2 font-semibold text-xs text-slate-700">
                       {(isCodingNiche ? codeArchitectureRating : isSchoolNiche ? conceptMasteryRating : tajweedRating)} / 5
                     </span>
                   </div>
                 </div>
 
                 <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                  <label className="text-xs font-bold text-slate-800 block">
+                  <label className="text-xs font-semibold text-slate-800 block">
                     {classroomConfig.rubricCriteria[1]?.name || (isCodingNiche ? 'Algorithmic Efficiency' : isSchoolNiche ? 'Analytical Reasoning' : isMadrasatNiche ? 'Memorization Fluency (Hifz)' : 'Execution & Fluency')}
                   </label>
                   <div className="flex items-center gap-1.5">
@@ -2072,7 +2073,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         <Star className={`w-6 h-6 ${(isCodingNiche ? timeComplexityRating : isSchoolNiche ? analyticalRating : fluencyRating) >= star ? 'fill-amber-400 text-amber-500' : 'text-slate-300'}`} />
                       </button>
                     ))}
-                    <span className="ml-2 font-bold text-xs text-slate-700">
+                    <span className="ml-2 font-semibold text-xs text-slate-700">
                       {(isCodingNiche ? timeComplexityRating : isSchoolNiche ? analyticalRating : fluencyRating)} / 5
                     </span>
                   </div>
@@ -2081,7 +2082,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
               {/* Evaluation Verdict Selection */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-800 block">
+                <label className="text-xs font-semibold text-slate-800 block">
                   {isCodingNiche ? 'Pull Request Verdict' : isSchoolNiche ? 'Letter Grade Assessment' : isMadrasatNiche ? 'Formal Sheikh Verdict' : 'Faculty Grade Assessment'}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -2126,7 +2127,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                           : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
-                      <div className="font-extrabold text-xs text-slate-900">{verdict.label}</div>
+                      <div className="font-semibold text-xs text-slate-900">{verdict.label}</div>
                       <div className="text-[10px] text-slate-500 mt-0.5">{verdict.desc}</div>
                     </button>
                   ))}
@@ -2135,7 +2136,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
               {/* Specific Tags */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-800 block">
+                <label className="text-xs font-semibold text-slate-800 block">
                   {isCodingNiche ? 'Code Quality & Architecture Tags' : isSchoolNiche ? 'Rubric Criteria Tags' : isMadrasatNiche ? 'Specific Tajweed Correction Tags' : 'Rubric Evaluation Tags'}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -2151,7 +2152,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       key={tag}
                       type="button"
                       onClick={() => toggleMistakeTag(tag)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                         selectedMistakeTags.includes(tag)
                           ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -2165,7 +2166,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
 
               {/* Feedback Notes (Written) */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-800 block">
+                <label className="text-xs font-semibold text-slate-800 block">
                   {isCodingNiche ? 'Senior Mentor Code Review Comments' : isSchoolNiche ? 'Faculty Feedback & Rubric Notes' : 'Sheikh Remarks & Direct Feedback'}
                 </label>
                 <textarea
@@ -2191,7 +2192,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       <Mic className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-slate-900">
+                      <h4 className="text-xs font-semibold text-slate-900">
                         {isCodingNiche ? 'Mentor Voice Note' : isSchoolNiche ? 'Instructor Audio Remark' : 'Sheikh Spoken Voice Remark (Audio Note)'}
                       </h4>
                       <p className="text-[10px] text-slate-500">
@@ -2201,7 +2202,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   </div>
 
                   {voiceFeedbackUrl && (
-                    <span className="text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200">
+                    <span className="text-[11px] font-mono font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200">
                       {voiceFeedbackDuration}s recorded
                     </span>
                   )}
@@ -2218,10 +2219,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   {/* 1. Live Recording State */}
                   {isRecordingVoiceFeedback ? (
                     <div className="flex items-center gap-3 w-full bg-rose-50 border border-rose-200 p-2.5 rounded-xl">
-                      <div className="flex items-center gap-2 text-rose-600 text-xs font-bold animate-pulse">
+                      <div className="flex items-center gap-2 text-rose-600 text-xs font-semibold animate-pulse">
                         <span className="w-3 h-3 rounded-full bg-rose-500 inline-block animate-ping" />
                         <span>Recording Ustaz Audio Note...</span>
-                        <span className="font-mono bg-rose-200/80 px-2 py-0.5 rounded text-rose-900 font-black">
+                        <span className="font-mono bg-rose-200/80 px-2 py-0.5 rounded text-rose-900 font-semibold">
                           {String(Math.floor(voiceFeedbackDuration / 60)).padStart(2, '0')}:
                           {String(voiceFeedbackDuration % 60).padStart(2, '0')}
                         </span>
@@ -2245,7 +2246,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         size="sm"
                         onClick={stopVoiceFeedbackRecording}
                         leftIcon={<Square className="w-3.5 h-3.5 fill-current" />}
-                        className="text-xs font-bold"
+                        className="text-xs font-semibold"
                       >
                         Stop Recording
                       </Button>
@@ -2257,7 +2258,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         <button
                           type="button"
                           onClick={togglePlayVoiceFeedbackPreview}
-                          className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
+                          className="w-8 h-8 rounded-full bg-[var(--color-primary,#047857)] text-white flex items-center justify-center hover:brightness-95 transition-colors shadow-xs cursor-pointer outline-none"
                         >
                           {isPlayingVoiceFeedback ? (
                             <Square className="w-3.5 h-3.5 fill-current" />
@@ -2266,9 +2267,9 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                           )}
                         </button>
                         <div>
-                          <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                          <div className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                             <span>Voice Remark Attached</span>
-                            <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-bold">
+                            <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded font-mono font-semibold">
                               Ready
                             </span>
                           </div>
@@ -2298,7 +2299,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         size="sm"
                         onClick={startVoiceFeedbackRecording}
                         leftIcon={<Mic className="w-3.5 h-3.5 text-emerald-600" />}
-                        className="font-bold text-xs bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-800"
+                        className="font-semibold text-xs bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-800"
                       >
                         Record Audio Feedback Note
                       </Button>
@@ -2320,7 +2321,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   setSelectedSubmission(null);
                   setIsPlayingAudio(false);
                 }}
-                className="text-slate-600 font-bold"
+                className="text-slate-600 font-semibold"
               >
                 Cancel
               </Button>
@@ -2329,7 +2330,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 variant="primary"
                 size="md"
                 onClick={handleSaveEvaluation}
-                className="font-bold shadow-md"
+                className="font-semibold shadow-md"
                 rightIcon={<CheckCircle2 className="w-4 h-4" />}
               >
                 Publish Grade & Notify Student

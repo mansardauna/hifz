@@ -68,7 +68,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Platform Architecture & Core Principles</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Platform Architecture & Core Principles</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Ankabit LMS is designed as an autonomous, enterprise-grade educational operating system powered by{' '}
               <strong className="text-slate-900">Next.js 14 App Router</strong>, <strong className="text-slate-900">Prisma ORM</strong>,{' '}
@@ -80,7 +80,7 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white">
               <div className="flex items-center gap-2 mb-2">
                 <Globe className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h3 className="font-bold text-slate-900">Strict Multi-Tenancy</h3>
+                <h3 className="font-semibold text-slate-900">Strict Multi-Tenancy</h3>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Complete data scoping, subdomain routing, and workspace partitioning across independent educational institutions.
@@ -90,7 +90,7 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white">
               <div className="flex items-center gap-2 mb-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h3 className="font-bold text-slate-900">Zero Data Bleed</h3>
+                <h3 className="font-semibold text-slate-900">Zero Data Bleed</h3>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Newly created academies initialize with authentic empty database records, completely immune to cross-tenant leakages.
@@ -100,7 +100,7 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white">
               <div className="flex items-center gap-2 mb-2">
                 <Video className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h3 className="font-bold text-slate-900">LiveKit Cloud SFU</h3>
+                <h3 className="font-semibold text-slate-900">LiveKit Cloud SFU</h3>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Carrier-grade WebRTC conferencing with live screen share, dual camera looper, and seamless local browser P2P mesh fallback.
@@ -110,7 +110,7 @@ export function DocsPortal() {
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-slate-950 text-slate-100">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-400">System Topology Diagram</span>
+              <span className="text-xs font-mono font-semibold capitalize tracking-wider text-emerald-400">System Topology Diagram</span>
               <button
                 onClick={() => copyToClipboard(`
 ┌─────────────────────────────────────────────────────────────┐
@@ -182,29 +182,29 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Multi-Tenant Isolation & Workspace Routing</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Multi-Tenant Isolation & Workspace Routing</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Every educational academy on Ankabit operates within its own dedicated namespace with isolated routing.
             </p>
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-bold text-slate-900 text-lg">Routing Hierarchy</h3>
+            <h3 className="font-semibold text-slate-900 text-lg">Routing Hierarchy</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">Production Subdomain</span>
+                <span className="text-xs font-semibold text-emerald-700 capitalize tracking-wider block mb-1">Production Subdomain</span>
                 <code className="text-sm font-mono text-slate-800 font-semibold block mb-2">https://{'{subdomain}'}.ankabit.app</code>
                 <p className="text-xs text-slate-500">Extracted automatically from HTTP host headers by Next.js middleware.</p>
               </div>
 
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">Custom Domain (CNAME)</span>
+                <span className="text-xs font-semibold text-emerald-700 capitalize tracking-wider block mb-1">Custom Domain (CNAME)</span>
                 <code className="text-sm font-mono text-slate-800 font-semibold block mb-2">https://portal.academy.edu</code>
                 <p className="text-xs text-slate-500">Proxied via CNAME to domains.ankabit.app with automatic SSL certification.</p>
               </div>
 
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">Local Development</span>
+                <span className="text-xs font-semibold text-emerald-700 capitalize tracking-wider block mb-1">Local Development</span>
                 <code className="text-sm font-mono text-slate-800 font-semibold block mb-2">http://localhost:3000/{'{subdomain}'}</code>
                 <p className="text-xs text-slate-500">Path-based simulation for testing multiple academies on a single port.</p>
               </div>
@@ -212,7 +212,7 @@ export function DocsPortal() {
           </div>
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-4">
-            <h3 className="font-bold text-slate-900 text-base">Resolution Workflow & Prevention of State Bleed</h3>
+            <h3 className="font-semibold text-slate-900 text-base">Resolution Workflow & Prevention of State Bleed</h3>
             <ol className="list-decimal list-inside space-y-2 text-sm text-slate-700">
               <li><strong className="text-slate-900">URL Resolution:</strong> In development, URL path prefixes (<code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">/al-bayaan</code>) resolve the tenant config from MySQL.</li>
               <li><strong className="text-slate-900">Edge Middleware Scoping:</strong> In production, host header subdomains (<code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">al-bayaan.ankabit.app</code>) are validated against registered tenants.</li>
@@ -233,7 +233,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Authentication & Role-Based Access Control (RBAC)</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Authentication & Role-Based Access Control (RBAC)</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Authentication is handled through JWT-secured endpoints combined with client-side session contexts.
             </p>
@@ -241,7 +241,7 @@ export function DocsPortal() {
 
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase font-bold text-slate-600">
+              <thead className="bg-slate-50 border-b border-slate-200 text-xs capitalize font-semibold text-slate-600">
                 <tr>
                   <th className="py-3 px-4">Role</th>
                   <th className="py-3 px-4">Access Scope</th>
@@ -251,25 +251,25 @@ export function DocsPortal() {
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white">
                 <tr>
-                  <td className="py-3.5 px-4 font-mono font-bold text-purple-700">superadmin</td>
+                  <td className="py-3.5 px-4 font-mono font-semibold text-purple-700">superadmin</td>
                   <td className="py-3.5 px-4 text-slate-700">Platform-wide oversight, tenant quotas, global billing</td>
                   <td className="py-3.5 px-4 font-mono text-xs">/super-admin</td>
                   <td className="py-3.5 px-4"><Badge variant="default" className="bg-purple-100 text-purple-800">Unrestricted</Badge></td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-4 font-mono font-bold text-emerald-700">admin</td>
+                  <td className="py-3.5 px-4 font-mono font-semibold text-emerald-700">admin</td>
                   <td className="py-3.5 px-4 text-slate-700">Director, curriculum manager, staff provisioning, finance</td>
                   <td className="py-3.5 px-4 font-mono text-xs">/{'{subdomain}'}/admin</td>
                   <td className="py-3.5 px-4"><Badge variant="default" className="bg-emerald-100 text-emerald-800">Tenant Admin</Badge></td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-4 font-mono font-bold text-blue-700">teacher</td>
+                  <td className="py-3.5 px-4 font-mono font-semibold text-blue-700">teacher</td>
                   <td className="py-3.5 px-4 text-slate-700">Cohort instruction, gradebook assessment, halaqah hosting</td>
                   <td className="py-3.5 px-4 font-mono text-xs">/{'{subdomain}'}/admin (scoped)</td>
                   <td className="py-3.5 px-4"><Badge variant="default" className="bg-blue-100 text-blue-800">Assigned Cohorts</Badge></td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-4 font-mono font-bold text-amber-700">student</td>
+                  <td className="py-3.5 px-4 font-mono font-semibold text-amber-700">student</td>
                   <td className="py-3.5 px-4 text-slate-700">Course syllabus, video classrooms, homework, tuition portal</td>
                   <td className="py-3.5 px-4 font-mono text-xs">/{'{subdomain}'}/lms</td>
                   <td className="py-3.5 px-4"><Badge variant="default" className="bg-amber-100 text-amber-800">Student Portal</Badge></td>
@@ -281,7 +281,7 @@ export function DocsPortal() {
           <Card className="p-6 sm:p-7 border border-amber-200/80 bg-amber-50/50 space-y-2">
             <div className="flex items-center gap-2">
               <Lock className="w-5 h-5 text-amber-700 shrink-0" />
-              <h4 className="font-bold text-amber-900">Workspace Authentication Boundary</h4>
+              <h4 className="font-semibold text-amber-900">Workspace Authentication Boundary</h4>
             </div>
             <p className="text-sm text-amber-800 leading-relaxed">
               Users cannot cross-login into academies they do not belong to. Attempting to sign into Academy B with an account registered under Academy A returns HTTP 400 Bad Request with a clear redirect notice.
@@ -289,15 +289,15 @@ export function DocsPortal() {
           </Card>
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
-            <h4 className="font-bold text-slate-900">Verified Platform SuperAdmin Credentials</h4>
+            <h4 className="font-semibold text-slate-900">Verified Platform SuperAdmin Credentials</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <span className="text-xs text-slate-500 block">SuperAdmin Email</span>
-                <span className="font-mono font-bold text-slate-800">superadmin@ankabit.app</span>
+                <span className="font-mono font-semibold text-slate-800">superadmin@ankabit.app</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <span className="text-xs text-slate-500 block">Default Password</span>
-                <span className="font-mono font-bold text-slate-800">Admin12345!</span>
+                <span className="font-mono font-semibold text-slate-800">Admin12345!</span>
               </div>
             </div>
           </Card>
@@ -314,7 +314,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Executive Admin Dashboard & LMS Workspaces</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Executive Admin Dashboard & LMS Workspaces</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Tailored high-performance workspaces configured with fluid <code className="font-mono text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded text-xs font-semibold">w-11/12 mx-auto</code> responsive layout.
             </p>
@@ -324,7 +324,7 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-4">
               <div className="flex items-center gap-2">
                 <LayoutDashboard className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h3 className="font-bold text-slate-900">Executive Admin Hub</h3>
+                <h3 className="font-semibold text-slate-900">Executive Admin Hub</h3>
               </div>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-center gap-2">
@@ -349,7 +349,7 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-4">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h3 className="font-bold text-slate-900">Student LMS Workspace</h3>
+                <h3 className="font-semibold text-slate-900">Student LMS Workspace</h3>
               </div>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-center gap-2">
@@ -384,7 +384,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Visual Page Builders & Admissions Form Studios</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Visual Page Builders & Admissions Form Studios</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Empower academy administrators to build bespoke landing pages and dynamic intake questionnaires with zero code.
             </p>
@@ -392,7 +392,7 @@ export function DocsPortal() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
-              <h3 className="font-bold text-slate-900 text-base">GrapesJS Landing Page Builder</h3>
+              <h3 className="font-semibold text-slate-900 text-base">GrapesJS Landing Page Builder</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Integrated visual canvas with pre-built academy blocks (Hero headers, Course Cards, Testimonials, Live Halaqah embeds).
               </p>
@@ -404,7 +404,7 @@ export function DocsPortal() {
             </Card>
 
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
-              <h3 className="font-bold text-slate-900 text-base">Admissions & Intake Form Studio</h3>
+              <h3 className="font-semibold text-slate-900 text-base">Admissions & Intake Form Studio</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Visual multi-step form builder for student admissions, course evaluations, and lead capture.
               </p>
@@ -428,14 +428,14 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Real-time WebRTC Classrooms & LiveKit SFU</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Real-time WebRTC Classrooms & LiveKit SFU</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Native in-browser video classrooms requiring zero external software downloads.
             </p>
           </div>
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-4">
-            <h3 className="font-bold text-slate-900 text-base">LiveKit Cloud Token Generation Endpoint</h3>
+            <h3 className="font-semibold text-slate-900 text-base">LiveKit Cloud Token Generation Endpoint</h3>
             <p className="text-sm text-slate-600">
               Generate time-limited participant tokens with scoped publish and subscribe grants:
             </p>
@@ -448,7 +448,7 @@ export function DocsPortal() {
             <div className="p-5 border border-slate-200 rounded-xl bg-white space-y-2">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h4 className="font-bold text-slate-900">Selective Forwarding Unit (SFU)</h4>
+                <h4 className="font-semibold text-slate-900">Selective Forwarding Unit (SFU)</h4>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
                 When LiveKit API keys (<code className="font-mono text-slate-800">LIVEKIT_API_KEY</code> & <code className="font-mono text-slate-800">LIVEKIT_API_SECRET</code>) are configured, participants stream to an ultra-low latency edge server, scaling smoothly up to 500 simultaneous participants per halaqah.
@@ -458,7 +458,7 @@ export function DocsPortal() {
             <div className="p-5 border border-slate-200 rounded-xl bg-white space-y-2">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
-                <h4 className="font-bold text-slate-900">Automatic P2P Mesh Fallback</h4>
+                <h4 className="font-semibold text-slate-900">Automatic P2P Mesh Fallback</h4>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
                 If LiveKit Cloud credentials are omitted or temporarily offline, the classroom seamlessly transitions to local browser WebRTC mesh mode with explicit notification in the UI.
@@ -478,7 +478,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Payment Gateways & Automated Tuition Billing</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Payment Gateways & Automated Tuition Billing</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Academies connect their own merchant gateways. 100% of student tuition deposits directly into the institution's account with 0% platform cut.
             </p>
@@ -486,25 +486,25 @@ export function DocsPortal() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-xl border border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-sm">Flutterwave</h4>
+              <h4 className="font-semibold text-slate-900 text-sm">Flutterwave</h4>
               <p className="text-xs text-slate-500 mt-1">Multi-currency pan-African processing (NGN, KES, GHS, USD, EUR).</p>
             </div>
             <div className="p-4 rounded-xl border border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-sm">Paystack</h4>
+              <h4 className="font-semibold text-slate-900 text-sm">Paystack</h4>
               <p className="text-xs text-slate-500 mt-1">Cards, Bank Transfers, USSD, and Mobile Money integration.</p>
             </div>
             <div className="p-4 rounded-xl border border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-sm">Stripe</h4>
+              <h4 className="font-semibold text-slate-900 text-sm">Stripe</h4>
               <p className="text-xs text-slate-500 mt-1">Global credit cards, Apple Pay, Google Pay, and recurring SEPA.</p>
             </div>
             <div className="p-4 rounded-xl border border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-sm">Moyasar</h4>
+              <h4 className="font-semibold text-slate-900 text-sm">Moyasar</h4>
               <p className="text-xs text-slate-500 mt-1">Direct Saudi Arabia payment rails (Mada, Visa, Mastercard, Apple Pay).</p>
             </div>
           </div>
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
-            <h3 className="font-bold text-slate-900 text-base">Payment Gateway Verification Rule</h3>
+            <h3 className="font-semibold text-slate-900 text-base">Payment Gateway Verification Rule</h3>
             <p className="text-sm text-slate-600 leading-relaxed">
               In accordance with platform UI standards, if an academy enables a gateway without supplying API keys, the checkout modal will warn the student and block payment submission rather than failing silently.
             </p>
@@ -522,29 +522,29 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">White-Labeling & Academy Branding</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">White-Labeling & Academy Branding</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Transform Ankabit into your institution's custom-branded platform in minutes.
             </p>
           </div>
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-4">
-            <h3 className="font-bold text-slate-900 text-base">White-Label Setting Tabs</h3>
+            <h3 className="font-semibold text-slate-900 text-base">White-Label Setting Tabs</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
               <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="font-bold text-slate-900 block mb-1">1. Brand & Palette</span>
+                <span className="font-semibold text-slate-900 block mb-1">1. Brand & Palette</span>
                 <p className="text-xs text-slate-500">Logo URL, Favicon, Primary, Secondary & Accent color swatches.</p>
               </div>
               <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="font-bold text-slate-900 block mb-1">2. Sign-In Portal</span>
+                <span className="font-semibold text-slate-900 block mb-1">2. Sign-In Portal</span>
                 <p className="text-xs text-slate-500">Custom login headlines, welcome banners, and support contact details.</p>
               </div>
               <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="font-bold text-slate-900 block mb-1">3. Preloader Screen</span>
+                <span className="font-semibold text-slate-900 block mb-1">3. Preloader Screen</span>
                 <p className="text-xs text-slate-500">Branded loading spinner, title text, and background animation.</p>
               </div>
               <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200">
-                <span className="font-bold text-slate-900 block mb-1">4. Custom CSS Injection</span>
+                <span className="font-semibold text-slate-900 block mb-1">4. Custom CSS Injection</span>
                 <p className="text-xs text-slate-500">Institutional font stylesheets and custom CSS overrides.</p>
               </div>
             </div>
@@ -562,9 +562,9 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">REST API Endpoints Reference</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">REST API Endpoints Reference</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
-              Base URL: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-bold text-emerald-800">http://localhost:3000/api</code> or <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-bold text-emerald-800">https://{'{subdomain}'}.ankabit.app/api</code>
+              Base URL: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-semibold text-emerald-800">http://localhost:3000/api</code> or <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-semibold text-emerald-800">https://{'{subdomain}'}.ankabit.app/api</code>
             </p>
           </div>
 
@@ -573,8 +573,8 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Badge variant="default" className="bg-emerald-100 text-emerald-800 font-mono font-bold">GET</Badge>
-                  <code className="text-sm font-mono font-bold text-slate-900">/api/tenant?subdomain={'{subdomain}'}</code>
+                  <Badge variant="default" className="bg-emerald-100 text-emerald-800 font-mono font-semibold">GET</Badge>
+                  <code className="text-sm font-mono font-semibold text-slate-900">/api/tenant?subdomain={'{subdomain}'}</code>
                 </div>
                 <button
                   onClick={() => copyToClipboard(`curl -X GET "http://localhost:3000/api/tenant?subdomain=al-bayaan"`, 'curl-tenant')}
@@ -602,8 +602,8 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Badge variant="default" className="bg-blue-100 text-blue-800 font-mono font-bold">POST</Badge>
-                  <code className="text-sm font-mono font-bold text-slate-900">/api/auth/register</code>
+                  <Badge variant="default" className="bg-blue-100 text-blue-800 font-mono font-semibold">POST</Badge>
+                  <code className="text-sm font-mono font-semibold text-slate-900">/api/auth/register</code>
                 </div>
                 <button
                   onClick={() => copyToClipboard(`curl -X POST "http://localhost:3000/api/auth/register" -H "Content-Type: application/json" -d '{"email":"student@test.com","password":"Password123!","name":"Zayd","role":"student","subdomain":"al-bayaan"}'`, 'curl-register')}
@@ -620,8 +620,8 @@ export function DocsPortal() {
             <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Badge variant="default" className="bg-emerald-100 text-emerald-800 font-mono font-bold">GET</Badge>
-                  <code className="text-sm font-mono font-bold text-slate-900">/api/admin/analytics</code>
+                  <Badge variant="default" className="bg-emerald-100 text-emerald-800 font-mono font-semibold">GET</Badge>
+                  <code className="text-sm font-mono font-semibold text-slate-900">/api/admin/analytics</code>
                 </div>
                 <button
                   onClick={() => copyToClipboard(`curl -X GET "http://localhost:3000/api/admin/analytics?subdomain=al-bayaan"`, 'curl-analytics')}
@@ -647,7 +647,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Database Schema & Persistence Layer</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Database Schema & Persistence Layer</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Persisted via MySQL 8.0 / MariaDB with high-performance indexes on tenant keys.
             </p>
@@ -655,7 +655,7 @@ export function DocsPortal() {
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-slate-950 text-slate-100 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-400">prisma/schema.prisma Snippet</span>
+              <span className="text-xs font-mono font-semibold capitalize tracking-wider text-emerald-400">prisma/schema.prisma Snippet</span>
               <button
                 onClick={() => copyToClipboard(`model Tenant {
   id              String         @id @default(cuid())
@@ -707,7 +707,7 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Docker, Caddy & Production Deployment</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Docker, Caddy & Production Deployment</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
               Standard production topology using Docker Compose with Caddy automatic TLS.
             </p>
@@ -715,7 +715,7 @@ export function DocsPortal() {
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-slate-950 text-slate-100 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-emerald-400">Quickstart Production Command</span>
+              <span className="text-xs font-mono font-semibold capitalize tracking-wider text-emerald-400">Quickstart Production Command</span>
               <button
                 onClick={() => copyToClipboard(`docker compose up -d --build`, 'docker-cmd')}
                 className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white"
@@ -741,14 +741,14 @@ export function DocsPortal() {
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">SuperAdmin Console & System Administration</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">SuperAdmin Console & System Administration</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
-              Global administration hub accessible at <code className="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded font-bold">/super-admin</code>.
+              Global administration hub accessible at <code className="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded font-semibold">/super-admin</code>.
             </p>
           </div>
 
           <Card className="p-6 sm:p-7 border border-slate-200/80 bg-white space-y-4">
-            <h3 className="font-bold text-slate-900 text-base">SuperAdmin Capabilities</h3>
+            <h3 className="font-semibold text-slate-900 text-base">SuperAdmin Capabilities</h3>
             <ul className="space-y-2 text-sm text-slate-600">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -771,7 +771,7 @@ export function DocsPortal() {
             <div className="pt-2">
               <Link
                 href="/super-admin"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs shadow-md transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-semibold text-xs shadow-md transition-colors"
               >
                 <Lock className="w-4 h-4 shrink-0" />
                 Open SuperAdmin Console
@@ -807,7 +807,7 @@ export function DocsPortal() {
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
               <AnkabitLogo size="md" />
             </Link>
-            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200 uppercase tracking-wide">
+            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 capitalize tracking-wide">
               Documentation
             </span>
           </div>
@@ -823,7 +823,7 @@ export function DocsPortal() {
 
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs"
+              className="px-4 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all shadow-xs"
             >
               Sign In
             </Link>
@@ -839,7 +839,7 @@ export function DocsPortal() {
               <Sparkles className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
               Ankabit v2.4 Technical Reference
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight">Ankabit LMS Documentation</h1>
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">Ankabit LMS Documentation</h1>
             <p className="text-emerald-100/80 text-sm leading-relaxed">
               Architecture blueprints, multi-tenant workspace routing, LiveKit WebRTC SFU, GrapesJS studios, and REST APIs.
             </p>
@@ -849,7 +849,7 @@ export function DocsPortal() {
             <a
               href="/doc.md"
               download="doc.md"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-sm transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 backdrop-blur-sm transition-all"
             >
               <Download className="w-4 h-4 shrink-0" />
               Download doc.md
@@ -889,7 +889,7 @@ export function DocsPortal() {
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all text-left ${
                       isActive
-                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200/80 font-bold'
+                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200/80 font-semibold'
                         : 'text-slate-600 hover:bg-stone-50 hover:text-slate-900'
                     }`}
                   >
@@ -911,12 +911,12 @@ export function DocsPortal() {
 
             {/* Quick Live System Health Pill */}
             <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 text-xs">
-              <span className="font-bold text-slate-900 block">System Services Status</span>
+              <span className="font-semibold text-slate-900 block">System Services Status</span>
               <div className="flex items-center justify-between text-slate-600">
                 <span className="flex items-center gap-1.5">
                   <Database className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> MySQL DB (3306)
                 </span>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   ONLINE
                 </span>
               </div>
@@ -924,7 +924,7 @@ export function DocsPortal() {
                 <span className="flex items-center gap-1.5">
                   <Video className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> LiveKit SFU
                 </span>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   READY
                 </span>
               </div>

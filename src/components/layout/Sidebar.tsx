@@ -199,8 +199,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container: Flex-Aligned on Desktop, Slide-over Drawer on Mobile */}
       <aside
-        style={{ backgroundColor: 'var(--sidebar-bg, #0f172a)' }}
-        className={`fixed inset-y-0 left-0 z-50 lg:static lg:inset-auto flex flex-col border-r border-slate-800 text-slate-300 transition-all duration-300 ease-in-out shrink-0 h-full shadow-xl overflow-hidden ${
+        style={{ backgroundColor: tenant?.brandColor || tenant?.theme?.primaryColor || 'var(--sidebar-bg, #047857)' }}
+        className={`fixed inset-y-0 left-0 z-50 lg:static lg:inset-auto flex flex-col border-r border-white/15 text-white transition-all duration-300 ease-in-out shrink-0 h-full shadow-xl overflow-hidden ${
           collapsed && !isOpenOnMobile ? 'w-20' : 'w-64 xl:w-72 max-w-[85vw]'
         } ${
           isOpenOnMobile
@@ -209,15 +209,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Top Header Logo */}
-        <div className="h-16 px-4 sm:px-5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-black/20">
+        <div className="h-16 px-4 sm:px-5 border-b border-white/15 flex items-center justify-between shrink-0 bg-black/15">
           {(!collapsed || isOpenOnMobile) && (
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-[var(--color-primary,#047857)] flex items-center justify-center font-bold text-white shadow-md shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center font-semibold text-white shadow-xs shrink-0">
                 {tenant.name.charAt(0)}
               </div>
               <div className="min-w-0">
-                <h2 className="font-extrabold text-sm text-white truncate">{tenant.name}</h2>
-                <p className="text-[10px] text-slate-400 truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
+                <h2 className="font-semibold text-sm text-white truncate">{tenant.name}</h2>
+                <p className="text-[10px] text-white/70 truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
               </div>
             </div>
           )}
@@ -225,19 +225,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Desktop Collapse Toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="hidden lg:flex p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer outline-none"
             aria-label={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {collapsed ? <ChevronRight className="w-4 h-4 text-white" /> : <ChevronLeft className="w-4 h-4 text-white" />}
           </button>
 
           {/* Mobile Close Button */}
           <button
             onClick={onCloseMobile}
-            className="lg:hidden p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="lg:hidden p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer outline-none"
             aria-label="Close sidebar"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 text-white" />
           </button>
         </div>
 
@@ -248,21 +248,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {(!collapsed || isOpenOnMobile) ? (
               <button
                 onClick={onViewLiveSite}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700/60 transition-colors cursor-pointer group"
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/15 transition-colors cursor-pointer group outline-none"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[var(--color-primary,#10b981)] animate-pulse"></span>
-                  <span>View Public Academy</span>
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                  <span className="text-white">View Public Academy</span>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white" />
+                <ExternalLink className="w-3.5 h-3.5 text-white/80 group-hover:text-white" />
               </button>
             ) : (
               <button
                 onClick={onViewLiveSite}
-                className="w-full flex justify-center py-2.5 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors cursor-pointer"
+                className="w-full flex justify-center py-2.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer outline-none"
                 title="View Live Site"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4 text-white" />
               </button>
             )}
           </div>
@@ -271,7 +271,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {filteredMenuSections.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1">
               {(!collapsed || isOpenOnMobile) && (
-                <div className="px-3 pt-2.5 pb-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <div className="px-3 pt-2.5 pb-1 text-xs font-semibold capitalize tracking-wider text-white/70">
                   {section.title}
                 </div>
               )}
@@ -286,25 +286,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <button
                       key={item.id}
                       onClick={() => handleItemClick(item)}
-                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none ${
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none outline-none ${
                         isActive
-                          ? 'bg-[var(--color-primary,#047857)] text-white shadow-sm font-bold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                          ? 'bg-white/20 text-white shadow-xs font-semibold backdrop-blur-xs'
+                          : 'text-white/85 hover:text-white hover:bg-white/10'
                       }`}
                       title={collapsed ? item.label : undefined}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                        <Icon className="w-5 h-5 shrink-0 text-white" />
                         {(!collapsed || isOpenOnMobile) && (
-                          <span className="truncate text-sm font-semibold">{item.label}</span>
+                          <span className="truncate text-sm font-semibold text-white">{item.label}</span>
                         )}
                       </div>
 
                       {/* Locked Badge if on lower plan */}
                       {(!collapsed || isOpenOnMobile) && !unlocked && (
-                        <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-xs font-bold tracking-tight shrink-0 flex items-center gap-1 border border-amber-500/30">
-                          <Lock className="w-3 h-3" />
-                          <span>{item.planLabel}</span>
+                        <span className="px-2 py-0.5 rounded-md bg-white/20 text-white text-xs font-semibold tracking-tight shrink-0 flex items-center gap-1 border border-white/25">
+                          <Lock className="w-3 h-3 text-white" />
+                          <span className="text-white">{item.planLabel}</span>
                         </span>
                       )}
                     </button>
@@ -316,14 +316,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Footer Tier Indicator & User Info */}
-        <div className="p-3.5 border-t border-slate-800 space-y-2.5 shrink-0 bg-slate-950/60">
+        <div className="p-3.5 border-t border-white/15 space-y-2.5 shrink-0 bg-black/15">
           {(!collapsed || isOpenOnMobile) && (
-            <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 space-y-1.5">
+            <div className="p-3 bg-white/10 rounded-xl border border-white/15 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs uppercase font-bold text-slate-400">Plan Tier</span>
-                <span className="text-xs font-black text-emerald-400 uppercase tracking-wide">{plan}</span>
+                <span className="text-xs capitalize font-semibold text-white/80">Plan Tier</span>
+                <span className="text-xs font-semibold text-white capitalize tracking-wide">{plan}</span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-white/70">
                 {plan === 'free'
                   ? 'Up to 15 Students'
                   : plan === 'qari'
@@ -335,10 +335,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {plan !== 'enterprise' && onOpenUpgrade && (
                 <button
                   onClick={onOpenUpgrade}
-                  className="w-full mt-1 py-1.5 px-3 bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                  className="w-full mt-1.5 py-2 px-3 bg-white hover:bg-white/90 text-slate-900 text-xs font-semibold rounded-lg inline-flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs outline-none"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Upgrade Plan</span>
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span className="text-slate-900">Upgrade Plan</span>
                 </button>
               )}
             </div>
@@ -347,15 +347,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {(!collapsed || isOpenOnMobile) && (
             <div
               onClick={onOpenProfile}
-              className="px-3 py-2 bg-slate-800/40 rounded-xl flex items-center justify-between cursor-pointer hover:bg-slate-800 transition-colors"
+              className="px-3 py-2 bg-white/10 border border-white/10 rounded-xl flex items-center justify-between cursor-pointer hover:bg-white/15 transition-colors"
             >
               <div className="flex items-center gap-2.5 overflow-hidden">
-                <div className="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                <div className="w-7 h-7 rounded-full bg-white/20 text-white flex items-center justify-center font-semibold text-xs shrink-0">
                   {user?.name?.charAt(0).toUpperCase() || 'A'}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-white truncate">{user?.name || 'Administrator'}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{user?.role?.toUpperCase() || 'ADMIN'}</p>
+                  <p className="text-xs font-semibold text-white truncate">{user?.name || 'Administrator'}</p>
+                  <p className="text-[10px] text-white/70 truncate capitalize">{user?.role || 'admin'}</p>
                 </div>
               </div>
             </div>
@@ -363,13 +363,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             onClick={handleSignOut}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer ${
+            className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/15 rounded-xl transition-colors cursor-pointer outline-none ${
               collapsed && !isOpenOnMobile ? 'justify-center' : ''
             }`}
             title={collapsed ? 'Sign Out' : undefined}
           >
-            <LogOut className="w-4 h-4 shrink-0" />
-            {(!collapsed || isOpenOnMobile) && <span>Sign Out</span>}
+            <LogOut className="w-4 h-4 shrink-0 text-white" />
+            {(!collapsed || isOpenOnMobile) && <span className="text-white">Sign Out</span>}
           </button>
         </div>
       </aside>

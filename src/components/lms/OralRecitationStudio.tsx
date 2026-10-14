@@ -199,7 +199,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
     <Card className="p-6 sm:p-7 space-y-6 bg-white border-slate-200 shadow-sm font-sans">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
         <div>
-          <h3 className="text-base font-black text-slate-900 flex items-center gap-2 font-display">
+          <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2 font-display">
             <Mic className="w-5 h-5 text-emerald-600" />
             {isQuran ? 'Oral Recitation & Homework Recording Studio' : 'Oral Assessment & Audio Lab Recorder'}
           </h3>
@@ -209,7 +209,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
               : 'Record your oral presentation and concept explanation for faculty evaluation.'}
           </p>
         </div>
-        <Badge variant="success" className="gap-1.5 self-start sm:self-auto py-1 px-3 text-xs font-bold">
+        <Badge variant="success" className="gap-1.5 self-start sm:self-auto py-1 px-3 text-xs font-semibold">
           <Sparkles className="w-4 h-4" /> Ready to Record
         </Badge>
       </div>
@@ -217,7 +217,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
       {/* Track & Ayah Range Selector */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+          <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700 mb-2">
             {isQuran ? 'Assigned Surah / Chapter' : 'Module / Assignment Topic'}
           </label>
           <select
@@ -248,7 +248,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+          <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700 mb-2">
             {isQuran ? 'Ayah Range / Section' : 'Deliverable Range / Section'}
           </label>
           <input
@@ -267,16 +267,16 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
         {/* State Animation Badge */}
         <div className="flex items-center gap-2">
           {isRecording ? (
-            <span className="inline-flex items-center gap-2 bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-full text-xs font-bold font-mono">
+            <span className="inline-flex items-center gap-2 bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-full text-xs font-semibold font-mono">
               <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
               RECORDING LIVE • {formatTime(recordingSeconds)}
             </span>
           ) : recordedAudioUrl ? (
-            <span className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-bold">
+            <span className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-semibold">
               <CheckCircle2 className="w-3.5 h-3.5" /> RECORDING READY ({formatTime(recordingSeconds)})
             </span>
           ) : (
-            <span className="inline-flex items-center gap-2 bg-slate-800 text-slate-400 px-3 py-1 rounded-full text-xs font-bold">
+            <span className="inline-flex items-center gap-2 bg-slate-800 text-slate-400 px-3 py-1 rounded-full text-xs font-semibold">
               READY TO RECORD
             </span>
           )}
@@ -343,7 +343,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
               <button
                 type="button"
                 onClick={handleDiscard}
-                className="h-11 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                className="h-11 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                 title="Discard & Re-record"
               >
                 <RotateCcw className="w-4 h-4" /> Re-record
@@ -365,7 +365,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
 
       {/* Optional Note to Ustadhah */}
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+        <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700 mb-2">
           Notes or Questions for Instructor (Optional)
         </label>
         <textarea
@@ -384,7 +384,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
           disabled={!recordedAudioUrl || isSubmitting}
           isLoading={isSubmitting}
           variant="primary"
-          className="h-11 px-6 rounded-xl text-sm font-bold gap-2"
+          className="h-11 px-6 rounded-xl text-sm font-semibold gap-2"
         >
           <UploadCloud className="w-4 h-4" />
           {isQuran ? 'Submit Recitation to Ustadhah' : 'Submit Oral Recording to Faculty'}

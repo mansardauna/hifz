@@ -37,9 +37,9 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
     <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 py-3.5 px-5 border-t border-slate-100 bg-slate-50 text-sm text-slate-500 font-sans ${className}`}>
       <div className="flex items-center gap-4 flex-wrap">
         <span>
-          Showing <span className="font-bold text-slate-800">{startIndex}</span> to{' '}
-          <span className="font-bold text-slate-800">{endIndex}</span> of{' '}
-          <span className="font-bold text-slate-800">{items}</span> results
+          Showing <span className="font-semibold text-slate-800">{startIndex}</span> to{' '}
+          <span className="font-semibold text-slate-800">{endIndex}</span> of{' '}
+          <span className="font-semibold text-slate-800">{items}</span> results
         </span>
         {onPageSizeChange && (
           <div className="flex items-center gap-2 border-l border-slate-200 pl-4">

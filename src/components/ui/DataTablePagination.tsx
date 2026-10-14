@@ -54,9 +54,9 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
       {/* Items Range & Page Size */}
       <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
         <span className="font-medium text-slate-500">
-          Showing <strong className="text-slate-900 font-bold">{startItem}</strong> to{' '}
-          <strong className="text-slate-900 font-bold">{endItem}</strong> of{' '}
-          <strong className="text-slate-900 font-bold">{totalItems}</strong> entries
+          Showing <strong className="text-slate-900 font-semibold">{startItem}</strong> to{' '}
+          <strong className="text-slate-900 font-semibold">{endItem}</strong> of{' '}
+          <strong className="text-slate-900 font-semibold">{totalItems}</strong> entries
         </span>
 
         {onPageSizeChange && (
@@ -65,7 +65,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-emerald-600 cursor-pointer shadow-2xs"
+              className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 focus:outline-none focus:border-emerald-600 cursor-pointer shadow-2xs"
             >
               {pageSizeOptions.map((opt) => (
                 <option key={opt} value={opt}>
@@ -110,7 +110,7 @@ export const DataTablePagination: React.FC<DataTablePaginationProps> = ({
               <button
                 key={idx}
                 onClick={() => onPageChange(page)}
-                className={`min-w-[28px] h-7 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`min-w-[28px] h-7 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   currentPage === page
                     ? 'bg-emerald-700 text-white shadow-2xs'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'

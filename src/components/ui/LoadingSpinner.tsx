@@ -34,11 +34,11 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       <div className="flex flex-col items-center justify-center p-6 space-y-3">
         <div className="relative flex items-center justify-center">
           <div className="w-10 h-10 rounded-full border-2 border-emerald-500/20 border-t-emerald-600 border-r-emerald-500 animate-spin" />
-          <div className="absolute w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black shadow-xs">
+          <div className="absolute w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-semibold shadow-xs">
             {tenantName.charAt(0) || 'A'}
           </div>
         </div>
-        <p className="text-xs font-bold text-slate-700">{label}</p>
+        <p className="text-xs font-semibold text-slate-700">{label}</p>
       </div>
     );
   }
@@ -64,20 +64,20 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         <div className="w-16 h-16 rounded-full border-3 border-transparent border-t-emerald-400 border-r-teal-300 border-b-emerald-500 animate-spin absolute" />
 
         {/* Inner Brand Emblem */}
-        <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 border border-emerald-400/50 flex items-center justify-center text-white font-black text-base shadow-xl shadow-emerald-950/40 relative z-10">
+        <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 border border-emerald-400/50 flex items-center justify-center text-white font-semibold text-base shadow-xl shadow-emerald-950/40 relative z-10">
           {tenantName.charAt(0) || 'A'}
         </div>
       </div>
 
       {/* Brand & Loading Status Text */}
       <div className="text-center space-y-1.5 max-w-sm px-4">
-        <div className="flex items-center justify-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-emerald-400">
+        <div className="flex items-center justify-center gap-1.5 text-xs font-semibold capitalize tracking-widest text-emerald-400">
           <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
           <span>{tenantName}</span>
         </div>
 
         <h3
-          className={`font-black tracking-tight ${
+          className={`font-semibold tracking-tight ${
             isFull ? 'text-white text-base' : 'text-slate-900 text-sm'
           }`}
         >

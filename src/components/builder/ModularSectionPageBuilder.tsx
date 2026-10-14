@@ -496,7 +496,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <Palette className="w-6 h-6 text-emerald-600" />
-            <h2 className="text-xl font-black text-slate-900">Modern Visual Section Builder</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Modern Visual Section Builder</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Build high-converting, mobile-responsive landing pages without writing HTML/CSS. Reorder, customize, and publish blocks instantly.
@@ -508,7 +508,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => setIsLivePreviewOpen(!isLivePreviewOpen)}
-            className="text-xs font-bold"
+            className="text-xs font-semibold"
           >
             <Eye className="w-3.5 h-3.5 mr-1 text-blue-600" />
             {isLivePreviewOpen ? 'Edit Sections' : 'Live Canvas'}
@@ -518,7 +518,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={handleSaveLayout}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/30"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-600/30"
           >
             <Save className="w-3.5 h-3.5 mr-1.5" /> Save & Publish Live
           </Button>
@@ -527,7 +527,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
 
       {/* Preset Template Selector */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+        <label className="text-xs font-semibold text-slate-700 capitalize tracking-wider block">
           One-Click Industry Templates (500+ Scalable Designs)
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -535,7 +535,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
             <button
               key={key}
               onClick={() => handleApplyTemplate(key)}
-              className={`p-3 rounded-xl border text-xs font-bold flex flex-col gap-1.5 transition-all cursor-pointer text-left ${
+              className={`p-3 rounded-xl border text-xs font-semibold flex flex-col gap-1.5 transition-all cursor-pointer text-left ${
                 activeTemplateKey === key
                   ? 'bg-emerald-50 border-emerald-500 text-emerald-950 shadow-xs'
                   : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
@@ -543,7 +543,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
             >
               <div className="flex items-center gap-2">
                 {getPresetIcon(tpl.icon, activeTemplateKey === key ? 'w-5 h-5 text-emerald-600' : 'w-5 h-5 text-slate-500')}
-                <span className="truncate font-extrabold">{tpl.name}</span>
+                <span className="truncate font-semibold">{tpl.name}</span>
               </div>
               <span className="text-[10px] text-slate-500 font-normal line-clamp-1">{tpl.colorScheme}</span>
             </button>
@@ -557,14 +557,14 @@ export const ModularSectionPageBuilder: React.FC = () => {
           {/* Left: Section Blocks Reordering & Visibility (5 cols) */}
           <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-sm h-fit">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-slate-800 capitalize tracking-wider flex items-center gap-1.5">
                 <Layout className="w-4 h-4 text-emerald-600" />
                 <span>Page Blocks ({sections.length})</span>
               </span>
 
               <button
                 onClick={() => setIsAddSectionModalOpen(true)}
-                className="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
+                className="px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg flex items-center gap-1 cursor-pointer transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Block</span>
@@ -580,7 +580,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                     onClick={() => setSelectedSectionId(section.id)}
                     className={`p-3 rounded-xl border text-xs flex items-center justify-between gap-3 transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-50/80 border-emerald-500 text-emerald-950 font-bold shadow-xs'
+                        ? 'bg-emerald-50/80 border-emerald-500 text-emerald-950 font-semibold shadow-xs'
                         : 'bg-slate-50/60 hover:bg-slate-100/80 border-slate-200 text-slate-800'
                     }`}
                   >
@@ -595,7 +595,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                         className="rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                       <div className="min-w-0">
-                        <div className="truncate font-extrabold capitalize flex items-center gap-1.5">
+                        <div className="truncate font-semibold capitalize flex items-center gap-1.5">
                           {section.type === 'hero' && <Sparkles className="w-3.5 h-3.5 text-amber-500" />}
                           {section.type === 'pricing' && <CreditCard className="w-3.5 h-3.5 text-blue-500" />}
                           {section.type === 'form' && <FileText className="w-3.5 h-3.5 text-purple-500" />}
@@ -643,15 +643,15 @@ export const ModularSectionPageBuilder: React.FC = () => {
               <div className="space-y-4">
                 <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="text-[10px] capitalize tracking-wider font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                       {activeSection.type} Block Settings
                     </span>
-                    <h3 className="font-extrabold text-base text-slate-900 mt-1">{activeSection.title}</h3>
+                    <h3 className="font-semibold text-base text-slate-900 mt-1">{activeSection.title}</h3>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Section Heading</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Section Heading</label>
                   <Input
                     value={activeSection.title}
                     onChange={(e) => {
@@ -666,7 +666,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Subtitle / Paragraph Description</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Subtitle / Paragraph Description</label>
                   <textarea
                     rows={3}
                     value={activeSection.subtitle || ''}
@@ -685,7 +685,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                 {activeSection.type === 'hero' && (
                   <div className="space-y-3 pt-2 border-t border-slate-100">
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">Top Highlight Badge</label>
+                      <label className="text-xs font-semibold text-slate-700 block mb-1">Top Highlight Badge</label>
                       <Input
                         value={activeSection.props.badgeText || ''}
                         onChange={(e) => {
@@ -703,7 +703,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs font-bold text-slate-700 block mb-1">CTA Button Text</label>
+                        <label className="text-xs font-semibold text-slate-700 block mb-1">CTA Button Text</label>
                         <Input
                           value={activeSection.props.ctaText || ''}
                           onChange={(e) => {
@@ -718,7 +718,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-700 block mb-1">Hero Image URL</label>
+                        <label className="text-xs font-semibold text-slate-700 block mb-1">Hero Image URL</label>
                         <Input
                           value={activeSection.props.imageUrl || ''}
                           onChange={(e) => {
@@ -738,7 +738,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
 
                 {activeSection.type === 'pricing' && (
                   <div className="p-4 bg-blue-50/60 rounded-xl border border-blue-200 space-y-2 text-xs text-blue-900">
-                    <div className="flex items-center gap-2 font-bold">
+                    <div className="flex items-center gap-2 font-semibold">
                       <CreditCard className="w-4 h-4 text-blue-600" />
                       <span>Live Synced Pricing Plans ({tenant.pricingPlans?.length || 0} active)</span>
                     </div>
@@ -750,7 +750,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
 
                 {activeSection.type === 'form' && (
                   <div className="space-y-3 pt-2 border-t border-slate-100">
-                    <label className="text-xs font-bold text-slate-700 block">Select Embedded Custom Form</label>
+                    <label className="text-xs font-semibold text-slate-700 block">Select Embedded Custom Form</label>
                     <select
                       value={activeSection.props.selectedFormId || tenant.forms?.[0]?.id || 'form-admissions'}
                       onChange={(e) => {
@@ -761,7 +761,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                         );
                         setSections(updated);
                       }}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 cursor-pointer focus:outline-none focus:border-emerald-600"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 cursor-pointer focus:outline-none focus:border-emerald-600"
                     >
                       {tenant.forms && tenant.forms.length > 0 ? (
                         tenant.forms.map((f) => (
@@ -787,7 +787,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
       ) : (
         /* Live Responsive Preview Canvas */
         <div className="space-y-4">
-          <div className="flex items-center justify-center gap-2 bg-slate-100 p-1.5 rounded-xl w-fit mx-auto border border-slate-200 text-xs font-bold">
+          <div className="flex items-center justify-center gap-2 bg-slate-100 p-1.5 rounded-xl w-fit mx-auto border border-slate-200 text-xs font-semibold">
             <button
               onClick={() => setPreviewDevice('desktop')}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
@@ -827,11 +827,11 @@ export const ModularSectionPageBuilder: React.FC = () => {
                   .map((sec) => (
                     <div key={sec.id} className="p-8 sm:p-12 text-center space-y-4 border-b border-slate-100">
                       {sec.props.badgeText && (
-                        <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-extrabold uppercase tracking-wider">
+                        <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-semibold capitalize tracking-wider">
                           {sec.props.badgeText}
                         </span>
                       )}
-                      <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight max-w-2xl mx-auto">
+                      <h2 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight leading-tight max-w-2xl mx-auto">
                         {sec.title}
                       </h2>
                       {sec.subtitle && (
@@ -841,7 +841,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
                       )}
                       {sec.props.ctaText && (
                         <div className="pt-2">
-                          <Button variant="primary" size="md" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-2.5 shadow-lg">
+                          <Button variant="primary" size="md">
                             {sec.props.ctaText} →
                           </Button>
                         </div>
@@ -886,7 +886,7 @@ export const ModularSectionPageBuilder: React.FC = () => {
               className="p-3.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left transition-all cursor-pointer group"
             >
               <item.icon className="w-5 h-5 text-emerald-600 mb-2 group-hover:scale-110 transition-transform" />
-              <div className="font-extrabold text-xs text-slate-900">{item.label}</div>
+              <div className="font-semibold text-xs text-slate-900">{item.label}</div>
               <p className="text-[11px] text-slate-500 mt-0.5">{item.desc}</p>
             </button>
           ))}

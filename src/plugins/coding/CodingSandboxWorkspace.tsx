@@ -176,12 +176,12 @@ console.log("Request 3:", limiter.consume(1));
 
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
     <div style="background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155;">
-      <span style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">API Latency</span>
-      <p style="font-size: 24px; font-weight: 800; color: #f8fafc; margin: 8px 0 0 0;">24ms <span style="font-size: 12px; color: #34d399;">↓ 12%</span></p>
+      <span style="font-size: 11px; color: #94a3b8; text-transform: capitalize; font-weight: 600;">API Latency</span>
+      <p style="font-size: 24px; font-weight: 600; color: #f8fafc; margin: 8px 0 0 0;">24ms <span style="font-size: 12px; color: #34d399;">↓ 12%</span></p>
     </div>
     <div style="background: #1e293b; padding: 16px; border-radius: 12px; border: 1px solid #334155;">
-      <span style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Test Pass Rate</span>
-      <p style="font-size: 24px; font-weight: 800; color: #38bdf8; margin: 8px 0 0 0;">99.8% <span style="font-size: 12px; color: #94a3b8;">(142 tests)</span></p>
+      <span style="font-size: 11px; color: #94a3b8; text-transform: capitalize; font-weight: 600;">Test Pass Rate</span>
+      <p style="font-size: 24px; font-weight: 600; color: #38bdf8; margin: 8px 0 0 0;">99.8% <span style="font-size: 12px; color: #94a3b8;">(142 tests)</span></p>
     </div>
   </div>
 </div>
@@ -269,9 +269,9 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Code2 className="w-5 h-5 text-blue-400" />
-              <h3 className="font-extrabold text-sm text-white">Coding Sandbox Labs</h3>
+              <h3 className="font-semibold text-sm text-white">Coding Sandbox Labs</h3>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
               Interactive
             </span>
           </div>
@@ -283,7 +283,7 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
                 onClick={() => handleSelectChallenge(idx)}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer ${
                   activeChallengeIndex === idx
-                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                    ? 'bg-blue-600 text-white font-semibold shadow-xs'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
@@ -291,7 +291,7 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
                   <p className="truncate text-xs font-semibold">{ch.title}</p>
                   <span className="text-[10px] opacity-75">{ch.category}</span>
                 </div>
-                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase shrink-0 ${
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-semibold capitalize shrink-0 ${
                   ch.difficulty === 'Beginner' ? 'bg-emerald-950 text-emerald-400' :
                   ch.difficulty === 'Intermediate' ? 'bg-amber-950 text-amber-400' : 'bg-red-950 text-red-400'
                 }`}>
@@ -305,16 +305,16 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
         {/* Challenge Description & Instructions */}
         <div className="p-4 overflow-y-auto space-y-4 flex-1 text-xs">
           <div>
-            <h4 className="font-bold text-sm text-white mb-1">{currentChallenge.title}</h4>
+            <h4 className="font-semibold text-sm text-white mb-1">{currentChallenge.title}</h4>
             <p className="text-slate-400 leading-relaxed">{currentChallenge.description}</p>
           </div>
 
           <div className="space-y-2">
-            <span className="font-bold text-slate-300 uppercase text-[10px] tracking-wider">Instructions:</span>
+            <span className="font-semibold text-slate-300 capitalize text-[10px] tracking-wider">Instructions:</span>
             <ul className="space-y-1.5 text-slate-300">
               {currentChallenge.instructions.map((inst, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="w-4 h-4 rounded-full bg-slate-800 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                  <span className="w-4 h-4 rounded-full bg-slate-800 text-blue-400 flex items-center justify-center font-semibold text-[10px] shrink-0 mt-0.5">
                     {i + 1}
                   </span>
                   <span>{inst}</span>
@@ -324,7 +324,7 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
           </div>
 
           <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/60 space-y-1">
-            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[11px]">
+            <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-[11px]">
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Solution Hint</span>
             </div>
@@ -335,13 +335,13 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
         {/* Bottom Status Card */}
         <div className="p-4 border-t border-slate-800 bg-slate-900/90">
           {testPassed === true && (
-            <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 flex items-center gap-2 text-xs font-bold">
+            <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 flex items-center gap-2 text-xs font-semibold">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>All Test Assertions Passed!</span>
             </div>
           )}
           {testPassed === false && (
-            <div className="p-2.5 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300 flex items-center gap-2 text-xs font-bold">
+            <div className="p-2.5 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300 flex items-center gap-2 text-xs font-semibold">
               <span>Tests Failed. Check terminal stack trace.</span>
             </div>
           )}
@@ -353,13 +353,13 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
         {/* Editor Controls Bar */}
         <div className="h-12 bg-slate-900/90 border-b border-slate-800 px-4 flex items-center justify-between font-sans">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-950 rounded-lg border border-slate-800 text-xs font-bold text-slate-300">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-950 rounded-lg border border-slate-800 text-xs font-semibold text-slate-300">
               <FileCode className="w-3.5 h-3.5 text-blue-400" />
               <span>solution.js</span>
             </div>
 
             {isHtml && (
-              <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs font-bold">
+              <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs font-semibold">
                 <button
                   onClick={() => setActiveView('editor')}
                   className={`px-2.5 py-0.5 rounded transition-all cursor-pointer ${activeView === 'editor' ? 'bg-slate-900 text-white' : 'text-slate-400'}`}
@@ -396,7 +396,7 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
             <button
               onClick={handleRunCode}
               disabled={isRunning}
-              className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/30 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
+              className="px-5 py-2 rounded-xl bg-[var(--color-primary,#047857)] hover:brightness-95 text-white text-xs font-semibold flex items-center gap-2 shadow-md transition-all cursor-pointer disabled:opacity-50 select-none active:scale-98 outline-none"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>{isRunning ? 'Running...' : 'Run Code'}</span>
@@ -432,7 +432,7 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
           <div className="px-4 py-2 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-slate-400">
             <div className="flex items-center gap-2">
               <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="font-bold text-[11px]">Output Terminal & Test Results</span>
+              <span className="font-semibold text-[11px]">Output Terminal & Test Results</span>
             </div>
             <button
               onClick={() => setTerminalLogs([])}
@@ -447,8 +447,8 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
               <div
                 key={idx}
                 className={`${
-                  log.includes('[ERROR]') ? 'text-red-400 font-bold' :
-                  log.includes('[OK]') ? 'text-emerald-400 font-bold' :
+                  log.includes('[ERROR]') ? 'text-red-400 font-semibold' :
+                  log.includes('[OK]') ? 'text-emerald-400 font-semibold' :
                   log.includes('[WARN]') ? 'text-amber-400' :
                   log.includes('>') ? 'text-blue-400 font-semibold' : 'text-slate-400'
                 } leading-relaxed whitespace-pre-wrap`}

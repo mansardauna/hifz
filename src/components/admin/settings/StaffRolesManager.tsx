@@ -356,7 +356,7 @@ export const StaffRolesManager: React.FC = () => {
           <div className="flex items-center gap-3">
             <UserCheck className="w-6 h-6 text-emerald-600 shrink-0" />
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Academy Staff & Direct Role Assignment</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Academy Staff & Direct Role Assignment</h2>
               <p className="text-sm text-slate-500">
                 Directly provision accounts or assign roles for teachers, registrars, and sub-administrators.
               </p>
@@ -385,7 +385,7 @@ export const StaffRolesManager: React.FC = () => {
               <Avatar size="xl" />
             </div>
             <div className="max-w-md mx-auto space-y-1">
-              <h3 className="text-base font-bold text-slate-800">No staff accounts provisioned yet</h3>
+              <h3 className="text-base font-semibold text-slate-800">No staff accounts provisioned yet</h3>
               <p className="text-sm text-slate-500">
                 Click "+ Provision Staff Member" to directly add instructors, teachers, or admissions registrars with credentials to access their academy portal.
               </p>
@@ -402,13 +402,13 @@ export const StaffRolesManager: React.FC = () => {
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-xs">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
                 <tr>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Staff Member</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Role</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Assigned Classes</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Status</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-right">Action</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Staff Member</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Role</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Assigned Classes</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Status</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -418,7 +418,7 @@ export const StaffRolesManager: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <Avatar name={staff.name} status={staff.status} size="md" />
                         <div>
-                          <div className="font-bold text-slate-900">{staff.name}</div>
+                          <div className="font-semibold text-slate-900">{staff.name}</div>
                           <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
                             <Mail className="w-3.5 h-3.5 text-slate-400" />
                             {staff.email}
@@ -472,7 +472,7 @@ export const StaffRolesManager: React.FC = () => {
             <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900">Public Signups & Role Access Approval Queue</h2>
+                <h2 className="text-lg font-semibold text-slate-900">Public Signups & Role Access Approval Queue</h2>
                 {applicantsList.length > 0 && (
                   <Badge variant="warning">{applicantsList.length} Pending</Badge>
                 )}
@@ -496,7 +496,7 @@ export const StaffRolesManager: React.FC = () => {
               <Avatar size="xl" />
             </div>
             <div className="max-w-md mx-auto space-y-1">
-              <h3 className="text-base font-bold text-slate-800">No pending applicant signups</h3>
+              <h3 className="text-base font-semibold text-slate-800">No pending applicant signups</h3>
               <p className="text-sm text-slate-500">
                 When prospective students or teachers submit public registration forms, their requests will appear here for administrative verification and approval.
               </p>
@@ -505,13 +505,13 @@ export const StaffRolesManager: React.FC = () => {
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-xs">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
                 <tr>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Applicant</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Requested Role</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Applied Track</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Submitted</th>
-                  <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-right">Review Action</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Applicant</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Requested Role</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Applied Track</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Submitted</th>
+                  <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider text-right">Review Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -521,7 +521,7 @@ export const StaffRolesManager: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <Avatar name={app.name} size="md" status="invited" />
                         <div>
-                          <div className="font-bold text-slate-900">{app.name}</div>
+                          <div className="font-semibold text-slate-900">{app.name}</div>
                           <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
                             <Mail className="w-3.5 h-3.5 text-slate-400" />
                             {app.email}
@@ -573,7 +573,7 @@ export const StaffRolesManager: React.FC = () => {
           <div className="flex items-center gap-3">
             <Lock className="w-6 h-6 text-purple-600 shrink-0" />
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Granular Role Permission Matrix</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Granular Role Permission Matrix</h2>
               <p className="text-sm text-slate-500">
                 Configure what actions each account role is permitted to perform across the academy portal.
               </p>
@@ -592,14 +592,14 @@ export const StaffRolesManager: React.FC = () => {
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-xs">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
+            <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold">
               <tr>
-                <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Permission Capability</th>
-                <th className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-center">Academy Admin</th>
-                <th className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-center">Instructor / Teacher</th>
-                <th className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-center">Registrar</th>
-                <th className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-center">Student</th>
-                <th className="px-4 py-3.5 text-xs font-bold uppercase tracking-wider text-center">Parent</th>
+                <th className="px-5 py-3.5 text-xs font-semibold capitalize tracking-wider">Permission Capability</th>
+                <th className="px-4 py-3.5 text-xs font-semibold capitalize tracking-wider text-center">Academy Admin</th>
+                <th className="px-4 py-3.5 text-xs font-semibold capitalize tracking-wider text-center">Instructor / Teacher</th>
+                <th className="px-4 py-3.5 text-xs font-semibold capitalize tracking-wider text-center">Registrar</th>
+                <th className="px-4 py-3.5 text-xs font-semibold capitalize tracking-wider text-center">Student</th>
+                <th className="px-4 py-3.5 text-xs font-semibold capitalize tracking-wider text-center">Parent</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
@@ -709,7 +709,7 @@ export const StaffRolesManager: React.FC = () => {
             <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-800 text-sm flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold">Account successfully created in database!</p>
+                <p className="font-semibold">Account successfully created in database!</p>
                 <p className="text-xs text-emerald-700 mt-0.5">
                   The user can sign in using this temporary password and will be prompted to update it on first login.
                 </p>
@@ -719,11 +719,11 @@ export const StaffRolesManager: React.FC = () => {
             <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div className="flex justify-between items-center text-sm py-1 border-b border-slate-200/60">
                 <span className="text-slate-500 font-medium">Name:</span>
-                <span className="font-bold text-slate-900">{provisionedCredentials.name}</span>
+                <span className="font-semibold text-slate-900">{provisionedCredentials.name}</span>
               </div>
               <div className="flex justify-between items-center text-sm py-1 border-b border-slate-200/60">
                 <span className="text-slate-500 font-medium">Email:</span>
-                <span className="font-bold text-slate-900 font-mono">{provisionedCredentials.email}</span>
+                <span className="font-semibold text-slate-900 font-mono">{provisionedCredentials.email}</span>
               </div>
               <div className="flex justify-between items-center text-sm py-1 border-b border-slate-200/60">
                 <span className="text-slate-500 font-medium">Role:</span>
@@ -731,7 +731,7 @@ export const StaffRolesManager: React.FC = () => {
               </div>
               <div className="flex justify-between items-center text-sm py-1">
                 <span className="text-slate-500 font-medium">Temporary Password:</span>
-                <span className="font-mono font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-md border border-slate-200">
+                <span className="font-mono font-semibold text-emerald-700 bg-white px-2.5 py-1 rounded-md border border-slate-200">
                   {provisionedCredentials.temporaryPassword}
                 </span>
               </div>

@@ -82,7 +82,7 @@ export const AppPreloader: React.FC<AppPreloaderProps> = ({ forceShow }) => {
 
           {/* Central Logo / Icon */}
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md relative z-10 overflow-hidden"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-md relative z-10 overflow-hidden"
             style={{ backgroundColor: isPlatform ? '#047857' : brandColor }}
           >
             {isPlatform ? (
@@ -104,7 +104,7 @@ export const AppPreloader: React.FC<AppPreloaderProps> = ({ forceShow }) => {
 
         {/* Brand Text & Status */}
         <div className="space-y-0.5 min-w-0 px-2">
-          <h4 className="text-xs font-black tracking-tight text-slate-900 dark:text-white truncate">
+          <h4 className="text-xs font-semibold tracking-tight text-slate-900 dark:text-white truncate">
             {isPlatform ? 'Ankabit LMS' : tenant?.name || 'Academy'}
           </h4>
           <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate">

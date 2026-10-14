@@ -54,7 +54,8 @@ export class LeadsService {
               { id: data.tenantId },
               { id: `tenant-${cleanSub}` },
               { subdomain: cleanSub },
-              { subdomain: data.tenantId }
+              { subdomain: data.tenantId },
+              ...(cleanSub.length >= 3 ? [{ subdomain: { contains: cleanSub } }] : []),
             ]
           }
         });

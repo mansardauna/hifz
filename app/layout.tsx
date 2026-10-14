@@ -1,36 +1,8 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Poppins, DM_Sans, Amiri } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-});
-
-const amiri = Amiri({
-  subsets: ['arabic'],
-  weight: ['400', '700'],
-  variable: '--font-amiri',
-  display: 'swap',
-});
 
 export const viewport: Viewport = {
   themeColor: '#047857',
@@ -70,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable} ${dmSans.variable} ${amiri.variable}`}>
+    <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className="bg-slate-50 text-slate-900 antialiased font-sans">
         <Providers>{children}</Providers>
       </body>

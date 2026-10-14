@@ -112,7 +112,7 @@ export const SanadCertificateBuilder: React.FC = () => {
           <Badge variant="success" className="mb-2">
             {isQuran ? "Sanad & Ijazah Certification Studio" : "Institutional Certification Studio"}
           </Badge>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
             {isQuran ? "Visual Sanad & Ijazah Certificate Generator" : "Visual Certificate Generator & Studio"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -129,7 +129,7 @@ export const SanadCertificateBuilder: React.FC = () => {
             size="sm"
             onClick={handleShareEmail}
             leftIcon={<Send className="w-3.5 h-3.5" />}
-            className="font-bold text-xs"
+            className="font-semibold text-xs"
           >
             Email Student
           </Button>
@@ -139,7 +139,7 @@ export const SanadCertificateBuilder: React.FC = () => {
             size="sm"
             onClick={handleShareWhatsApp}
             leftIcon={<Share2 className="w-3.5 h-3.5" />}
-            className="font-bold text-xs"
+            className="font-semibold text-xs"
           >
             WhatsApp
           </Button>
@@ -149,7 +149,7 @@ export const SanadCertificateBuilder: React.FC = () => {
             size="sm"
             onClick={handlePrint}
             leftIcon={<Printer className="w-3.5 h-3.5" />}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+            className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs"
           >
             Print / PDF Export
           </Button>
@@ -161,40 +161,40 @@ export const SanadCertificateBuilder: React.FC = () => {
         {/* Left Column: Certificate Configuration Controls (4 Cols) */}
         <div className="lg:col-span-4 space-y-5">
           <Card className="p-5 space-y-4">
-            <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <Sliders className="w-4 h-4 text-emerald-600" />
               <span>{isQuran ? "Student & Riwayah Details" : "Student & Program Details"}</span>
             </h3>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Student Name (English)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Student Name (English)</label>
               <input
                 type="text"
                 value={studentNameEn}
                 onChange={(e) => setStudentNameEn(e.target.value)}
-                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-slate-900"
+                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-900"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Student Name (Arabic)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Student Name (Arabic)</label>
               <input
                 type="text"
                 dir="rtl"
                 value={studentNameAr}
                 onChange={(e) => setStudentNameAr(e.target.value)}
-                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-arabic font-bold text-slate-900"
+                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-arabic font-semibold text-slate-900"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {isQuran ? "Certification Track" : "Certification Program"}
               </label>
               <select
                 value={trackType}
                 onChange={(e) => setTrackType(e.target.value as any)}
-                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold"
+                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold"
               >
                 {isQuran ? (
                   <>
@@ -215,7 +215,7 @@ export const SanadCertificateBuilder: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {isQuran ? "Riwayah / Transmission" : "Academic Focus / Specialization"}
               </label>
               <input
@@ -227,11 +227,11 @@ export const SanadCertificateBuilder: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Grade / Distinction</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Grade / Distinction</label>
               <select
                 value={grade}
                 onChange={(e) => setGrade(e.target.value as any)}
-                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold"
+                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold"
               >
                 <option value="Mumtaz (Distinction)">Mumtaz (Distinction / 95-100%)</option>
                 <option value="Jayyid Jiddan (Very Good)">Jayyid Jiddan (Very Good / 85-94%)</option>
@@ -240,20 +240,20 @@ export const SanadCertificateBuilder: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {isQuran ? "Supervising Sheikh / Muqri" : "Certifying Dean / Instructor"}
               </label>
               <input
                 type="text"
                 value={sheikhName}
                 onChange={(e) => setSheikhName(e.target.value)}
-                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-bold"
+                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Gregorian Date</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Gregorian Date</label>
                 <input
                   type="text"
                   value={completionDate}
@@ -263,7 +263,7 @@ export const SanadCertificateBuilder: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Hijri Date</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Hijri Date</label>
                 <input
                   type="text"
                   value={hijriDate}
@@ -276,13 +276,13 @@ export const SanadCertificateBuilder: React.FC = () => {
 
           {/* Theme & Decorative Options */}
           <Card className="p-5 space-y-3">
-            <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-600" />
               <span>Styling & Wax Seal Stamp</span>
             </h3>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Border & Color Palette</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Border & Color Palette</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { id: 'royal_gold', label: 'Royal Gold', bg: 'bg-amber-600' },
@@ -295,7 +295,7 @@ export const SanadCertificateBuilder: React.FC = () => {
                     onClick={() => setTheme(t.id as CertificateTheme)}
                     className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer ${
                       theme === t.id
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold ring-1 ring-emerald-600/30'
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-semibold ring-1 ring-emerald-600/30'
                         : 'border-slate-200 hover:bg-slate-50 text-slate-700'
                     }`}
                   >
@@ -307,7 +307,7 @@ export const SanadCertificateBuilder: React.FC = () => {
             </div>
 
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700">Display Sheikh Wax Seal Stamp</span>
+              <span className="text-xs font-semibold text-slate-700">Display Sheikh Wax Seal Stamp</span>
               <input
                 type="checkbox"
                 checked={showWaxSeal}
@@ -335,19 +335,19 @@ export const SanadCertificateBuilder: React.FC = () => {
 
               {/* Certificate Top Header */}
               <div className="text-center space-y-1">
-                <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                <div className="text-[11px] font-semibold capitalize tracking-widest text-slate-400">
                   {tenant.name || 'Hifz Islamic Academy'} • Faculty of Quranic Recitation
                 </div>
                 {/* Traditional Basmalah */}
-                <div className="font-arabic text-lg sm:text-2xl text-slate-800 font-bold py-1">
+                <div className="font-arabic text-lg sm:text-2xl text-slate-800 font-semibold py-1">
                   بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                 </div>
-                <h2 className={`font-arabic text-xl sm:text-3xl font-black ${currentTheme.textAccent}`}>
+                <h2 className={`font-arabic text-xl sm:text-3xl font-semibold ${currentTheme.textAccent}`}>
                   {trackType === 'hifz_full'
                     ? 'شَهَادَةُ حِفْظِ الْقُرْآنِ الْكَرِيمِ كَامِلاً'
                     : 'إِجَازَةٌ بِالسَّنَدِ الْمُتَّصِلِ فِي تِلَاوَةِ الْقُرْآنِ الْكَرِيمِ'}
                 </h2>
-                <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500">
+                <div className="text-[10px] capitalize font-semibold tracking-widest text-slate-500">
                   Official Sanad & Ijazah of Recitation & Memorization
                 </div>
               </div>
@@ -364,16 +364,16 @@ export const SanadCertificateBuilder: React.FC = () => {
 
                 {/* Student Name Calligraphy & English */}
                 <div className="py-2">
-                  <div className={`font-arabic text-2xl sm:text-3xl font-black ${currentTheme.textAccent}`}>
+                  <div className={`font-arabic text-2xl sm:text-3xl font-semibold ${currentTheme.textAccent}`}>
                     {studentNameAr}
                   </div>
-                  <div className={`text-lg sm:text-xl font-black tracking-wide ${currentTheme.textPrimary} mt-0.5`}>
+                  <div className={`text-lg sm:text-xl font-semibold tracking-wide ${currentTheme.textPrimary} mt-0.5`}>
                     {studentNameEn}
                   </div>
                 </div>
 
                 <p className="text-xs sm:text-sm text-slate-700 leading-relaxed max-w-xl mx-auto">
-                  has completed the recitation of the Holy Quran from Surah Al-Fatihah to Surah An-Nas with precision, Tajweed application, and mastery according to <strong className="font-bold">{riwayah}</strong> with the grade of <strong className={currentTheme.textAccent}>{grade}</strong>.
+                  has completed the recitation of the Holy Quran from Surah Al-Fatihah to Surah An-Nas with precision, Tajweed application, and mastery according to <strong className="font-semibold">{riwayah}</strong> with the grade of <strong className={currentTheme.textAccent}>{grade}</strong>.
                 </p>
 
                 {/* Sanad Chain Notation */}
@@ -386,10 +386,10 @@ export const SanadCertificateBuilder: React.FC = () => {
               <div className="pt-4 border-t border-black/10 flex items-end justify-between gap-4 text-left">
                 {/* Supervising Sheikh Signature */}
                 <div className="space-y-0.5 min-w-[140px]">
-                  <div className="h-9 flex items-end pb-1 font-arabic text-sm text-slate-800 font-bold border-b border-slate-400 border-dashed">
+                  <div className="h-9 flex items-end pb-1 font-arabic text-sm text-slate-800 font-semibold border-b border-slate-400 border-dashed">
                     {sheikhName}
                   </div>
-                  <div className="text-[10px] font-bold text-slate-900">{sheikhName}</div>
+                  <div className="text-[10px] font-semibold text-slate-900">{sheikhName}</div>
                   <div className="text-[9px] text-slate-500 leading-tight">{sheikhTitle}</div>
                 </div>
 
@@ -400,10 +400,10 @@ export const SanadCertificateBuilder: React.FC = () => {
                       className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full ${currentTheme.sealBg} ring-4 ${currentTheme.sealRing} shadow-xl flex flex-col items-center justify-center ${currentTheme.sealText} select-none transform hover:rotate-6 transition-transform`}
                     >
                       <Award className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow" />
-                      <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest mt-0.5">
+                      <span className="text-[8px] sm:text-[9px] font-semibold capitalize tracking-widest mt-0.5">
                         SANAD
                       </span>
-                      <span className="text-[7px] font-bold">VERIFIED</span>
+                      <span className="text-[7px] font-semibold">VERIFIED</span>
                     </div>
                   </div>
                 )}
@@ -411,14 +411,14 @@ export const SanadCertificateBuilder: React.FC = () => {
                 {/* QR Code & Certificate Hash Verification */}
                 <div className="flex items-center gap-2.5 text-right">
                   <div className="space-y-0.5">
-                    <div className="text-[10px] font-bold text-slate-900">Certificate #{certificateId}</div>
+                    <div className="text-[10px] font-semibold text-slate-900">Certificate #{certificateId}</div>
                     <div className="text-[9px] text-slate-500">{completionDate}</div>
                     <div className="text-[9px] text-slate-500 font-arabic">{hijriDate}</div>
                     <a
                       href={verificationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[9px] text-emerald-700 font-bold hover:underline block"
+                      className="text-[9px] text-emerald-700 font-semibold hover:underline block"
                     >
                       Scan to Verify
                     </a>

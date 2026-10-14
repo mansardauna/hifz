@@ -46,7 +46,7 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
           </Badge>
         </div>
 
-        <h4 className="text-base font-extrabold text-slate-900 max-w-sm">
+        <h4 className="text-base font-semibold text-slate-900 max-w-sm">
           {title}
         </h4>
 
@@ -59,7 +59,7 @@ export const LockedFeatureCard: React.FC<LockedFeatureCardProps> = ({
           size="sm"
           onClick={onUpgrade}
           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-          className="font-bold shadow-xs bg-emerald-700 hover:bg-emerald-800 text-white"
+          className="font-semibold shadow-xs bg-emerald-700 hover:bg-emerald-800 text-white"
         >
           Upgrade to {requiredPlan === 'enterprise' ? 'Enterprise' : requiredPlan === 'growth' ? 'Growth' : 'Qari'}
         </Button>

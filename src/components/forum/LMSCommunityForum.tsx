@@ -608,11 +608,11 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
       <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-semibold shadow-xs">
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
                 {isCodingNiche ? 'Community Developer Forum' : isQuranNiche ? 'Halaqah Community & Q&A Forum' : `${tenant.name || 'Academy'} Community Forum`}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500">
@@ -629,7 +629,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
         <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={() => setIsNewPostModalOpen(true)}
-            className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-900/10 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
+            className="w-full sm:w-auto px-5 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98 outline-none"
           >
             <Plus className="w-4 h-4" />
             <span>New Discussion</span>
@@ -655,10 +655,10 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
           {/* Channels List */}
           <div className="bg-white p-3 rounded-3xl border border-slate-200 shadow-xs space-y-1">
-            <div className="px-3 py-2 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+            <div className="px-3 py-2 text-[11px] font-semibold text-slate-400 capitalize tracking-wider flex items-center justify-between">
               <span>Discussion Channels</span>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-bold text-slate-600">
+                <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-semibold text-slate-600">
                   {categories.filter((c) => c.id !== 'all').length} Channels
                 </span>
                 <button
@@ -686,7 +686,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                       setSelectedCategory(cat.id);
                       setActivePostId(null);
                     }}
-                    className={`flex-1 px-3.5 py-2.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                    className={`flex-1 px-3.5 py-2.5 rounded-xl text-left text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-xs'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -721,7 +721,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-5 rounded-3xl shadow-sm space-y-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-300" />
-              <h3 className="font-extrabold text-xs">Community Etiquette</h3>
+              <h3 className="font-semibold text-xs">Community Etiquette</h3>
             </div>
             <p className="text-[11px] text-slate-300 leading-relaxed">
               {isQuranNiche
@@ -742,18 +742,18 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
                 <button
                   onClick={() => setActivePostId(null)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>Back to Discussions</span>
                 </button>
 
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-[10px] font-bold">
+                  <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-[10px] font-semibold">
                     {activePost.categoryName}
                   </span>
                   {activePost.isSolved && (
-                    <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md text-[10px] font-bold inline-flex items-center gap-1">
+                    <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md text-[10px] font-semibold inline-flex items-center gap-1">
                       <Check className="w-3 h-3 text-emerald-600" />
                       Solved
                     </span>
@@ -765,13 +765,13 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               <div className="p-6 space-y-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
-                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 leading-snug">
                       {activePost.title}
                     </h2>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <span className="font-bold text-slate-800">{activePost.authorName}</span>
+                      <span className="font-semibold text-slate-800">{activePost.authorName}</span>
                       {activePost.authorRole === 'instructor' && (
-                        <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-bold rounded-full">
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-semibold rounded-full">
                           Verified Instructor
                         </span>
                       )}
@@ -785,7 +785,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
                   <button
                     onClick={() => handleTogglePostUpvote(activePost.id)}
-                    className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
                       activePost.isUpvoted
                         ? 'bg-blue-600 text-white shadow-xs'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -816,7 +816,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               {/* Replies Section */}
               <div className="p-6 bg-slate-50/80 border-t border-slate-200 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                  <h3 className="font-semibold text-sm text-slate-900 flex items-center gap-2">
                     <MessageCircle className="w-4 h-4 text-blue-600" />
                     <span>Replies & Answers ({activePost.replies.length})</span>
                   </h3>
@@ -839,11 +839,11 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                       >
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-xs text-slate-900">
+                            <span className="font-semibold text-xs text-slate-900">
                               {reply.authorName}
                             </span>
                             {reply.authorRole === 'instructor' && (
-                              <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-[9px] font-bold rounded-md flex items-center gap-1">
+                              <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-[9px] font-semibold rounded-md flex items-center gap-1">
                                 <Award className="w-3 h-3" />
                                 Teacher
                               </span>
@@ -853,14 +853,14 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
                           <div className="flex items-center gap-2">
                             {reply.isAcceptedAnswer && (
-                              <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-md flex items-center gap-1">
+                              <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-semibold rounded-md flex items-center gap-1">
                                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                                 Verified Solution
                               </span>
                             )}
                             <button
                               onClick={() => handleToggleReplyUpvote(reply.id)}
-                              className={`px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                                 reply.isUpvoted
                                   ? 'bg-blue-600 text-white'
                                   : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
@@ -882,7 +882,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
                 {/* Reply Form Input */}
                 <form onSubmit={handleAddReply} className="pt-3 space-y-2.5">
-                  <label className="block text-xs font-bold text-slate-800">
+                  <label className="block text-xs font-semibold text-slate-800">
                     Write Your Answer / Contribution
                   </label>
                   <textarea
@@ -896,7 +896,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                     <button
                       type="submit"
                       disabled={!replyText.trim()}
-                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                      className="px-5 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 disabled:opacity-50 text-white font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-all cursor-pointer outline-none"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>Post Reply</span>
@@ -910,18 +910,18 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
             <div className="space-y-3">
               {filteredPosts.length === 0 ? (
                 <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto font-bold shadow-xs">
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary,#047857)]/10 text-[var(--color-primary,#047857)] flex items-center justify-center mx-auto font-semibold shadow-xs">
                     <MessageSquare className="w-7 h-7" />
                   </div>
                   <div>
-                    <h3 className="font-black text-base text-slate-900">No discussions yet</h3>
+                    <h3 className="font-semibold text-base text-slate-900">No discussions yet</h3>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
                       Be the first to start a conversation, ask a question, or post an announcement in this academy channel.
                     </p>
                   </div>
                   <button
                     onClick={() => setIsNewPostModalOpen(true)}
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer inline-flex items-center gap-2 outline-none"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Start First Discussion</span>
@@ -937,17 +937,17 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                     {/* Top Row: Category + Author + Solved Badge */}
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-[10px] font-bold">
+                        <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-[10px] font-semibold">
                           {post.categoryName}
                         </span>
                         {post.isPinned && (
-                          <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-md text-[10px] font-bold flex items-center gap-1">
+                          <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-md text-[10px] font-semibold flex items-center gap-1">
                             <Pin className="w-3 h-3 fill-amber-500 text-amber-500" />
                             Pinned
                           </span>
                         )}
                         {post.isSolved && (
-                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md text-[10px] font-bold flex items-center gap-1">
+                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md text-[10px] font-semibold flex items-center gap-1">
                             <Check className="w-3 h-3 text-emerald-600" />
                             Solved
                           </span>
@@ -962,7 +962,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
                     {/* Title & Preview */}
                     <div>
-                      <h3 className="text-base font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug">
+                      <h3 className="text-base font-semibold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug">
                         {post.title}
                       </h3>
                       <p className="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">
@@ -987,7 +987,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                         <button
                           type="button"
                           onClick={(e) => handleTogglePostUpvote(post.id, e)}
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold transition-colors ${
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold transition-colors ${
                             post.isUpvoted ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-100 text-slate-600'
                           }`}
                         >
@@ -995,7 +995,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                           <span>{post.upvotes}</span>
                         </button>
 
-                        <span className="inline-flex items-center gap-1 font-bold text-slate-600">
+                        <span className="inline-flex items-center gap-1 font-semibold text-slate-600">
                           <MessageCircle className="w-3.5 h-3.5 text-slate-400" />
                           <span>{post.repliesCount}</span>
                         </span>
@@ -1015,15 +1015,15 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-semibold">
                   <Plus className="w-4 h-4" />
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Start New Community Discussion</h3>
+                <h3 className="font-semibold text-sm text-slate-900">Start New Community Discussion</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsNewPostModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-semibold text-xs"
               >
                 &times;
               </button>
@@ -1031,7 +1031,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
             <form onSubmit={handleCreatePost} className="space-y-3 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Discussion Channel</label>
+                <label className="font-semibold text-slate-800">Discussion Channel</label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
@@ -1046,7 +1046,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Topic Title / Question</label>
+                <label className="font-semibold text-slate-800">Topic Title / Question</label>
                 <input
                   type="text"
                   placeholder={isQuranNiche ? "e.g. Question on Madd Arid Li-Sukoon rules in Surah Al-Kahf" : isCodingNiche ? "e.g. Next.js 15 Server Actions error handling" : "e.g. Question on Module 2 practical exercises"}
@@ -1057,7 +1057,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Description & Context</label>
+                <label className="font-semibold text-slate-800">Description & Context</label>
                 <textarea
                   rows={4}
                   placeholder={isQuranNiche ? "Explain your question with specific Ayahs, notes, or background..." : "Explain your question or discussion context..."}
@@ -1068,7 +1068,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Tags (Comma separated)</label>
+                <label className="font-semibold text-slate-800">Tags (Comma separated)</label>
                 <input
                   type="text"
                   placeholder={isQuranNiche ? "e.g. tajweed, surah-kahf, recitation" : isCodingNiche ? "e.g. react, nextjs, api" : "e.g. module1, coursework, practical"}
@@ -1082,13 +1082,13 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                 <button
                   type="button"
                   onClick={() => setIsNewPostModalOpen(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                  className="px-6 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold rounded-xl shadow-md transition-all cursor-pointer outline-none"
                 >
                   Publish Topic
                 </button>
@@ -1104,15 +1104,15 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[var(--color-primary,#047857)]/10 text-[var(--color-primary,#047857)] flex items-center justify-center font-semibold">
                   <Plus className="w-4 h-4" />
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Create Discussion Channel</h3>
+                <h3 className="font-semibold text-sm text-slate-900">Create Discussion Channel</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddChannelModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-semibold text-xs outline-none"
               >
                 &times;
               </button>
@@ -1120,33 +1120,33 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
 
             <div className="space-y-3 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Channel Name / Label</label>
+                <label className="font-semibold text-slate-800">Channel Name / Label</label>
                 <input
                   type="text"
                   placeholder="e.g. Study Groups & Peer Help"
                   value={newChannelLabel}
                   onChange={(e) => setNewChannelLabel(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Channel Purpose / Description</label>
+                <label className="font-semibold text-slate-800">Channel Purpose / Description</label>
                 <textarea
                   rows={2}
                   placeholder="Brief description of discussions suited for this channel..."
                   value={newChannelDesc}
                   onChange={(e) => setNewChannelDesc(e.target.value)}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Channel Icon</label>
+                <label className="font-semibold text-slate-800">Channel Icon</label>
                 <select
                   value={newChannelIcon}
                   onChange={(e) => setNewChannelIcon(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:outline-none"
                 >
                   <option value="MessageSquare">MessageSquare (Discussion)</option>
                   <option value="BookOpen">BookOpen (Academics / Curriculum)</option>
@@ -1161,14 +1161,14 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                 <button
                   type="button"
                   onClick={() => setIsAddChannelModalOpen(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold transition-colors cursor-pointer outline-none"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleAddChannel}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all cursor-pointer"
+                  className="px-6 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold rounded-xl shadow-md transition-all cursor-pointer outline-none"
                 >
                   Create Channel
                 </button>

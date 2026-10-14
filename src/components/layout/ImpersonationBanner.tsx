@@ -35,7 +35,7 @@ export const ImpersonationBanner: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white px-4 py-2 text-xs font-bold flex items-center justify-between shadow-md sticky top-0 z-[9999] border-b border-amber-900 font-sans select-none">
+    <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between shadow-md sticky top-0 z-[9999] border-b border-amber-900 font-sans select-none">
       <div className="flex items-center gap-2">
         <span className="p-1 rounded bg-amber-900/50">
           <UserCheck className="w-3.5 h-3.5 text-amber-200" />
@@ -48,7 +48,7 @@ export const ImpersonationBanner: React.FC = () => {
       <div className="flex items-center gap-2">
         <button
           onClick={handleExit}
-          className="px-3 py-1 bg-white text-amber-900 hover:bg-amber-50 rounded-lg text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+          className="px-3 py-1 bg-white text-amber-900 hover:bg-amber-50 rounded-lg text-[11px] font-semibold capitalize tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
         >
           <LogOut className="w-3 h-3 text-amber-900" />
           <span>Exit Impersonation</span>

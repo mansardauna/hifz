@@ -179,6 +179,7 @@ export interface TenantConfig {
   isDemo?: boolean;
   logoUrl: string;
   faviconUrl: string;
+  brandColor?: string;
   theme: TenantTheme;
   defaultDirection: Direction;
   heroBadgeText: string;

@@ -62,7 +62,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
               setViewMode('student_learn');
               setActiveAssessment(null);
             }}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
               viewMode === 'student_learn'
                 ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -74,7 +74,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
 
           <button
             onClick={() => setViewMode('teacher_syllabus')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
               viewMode === 'teacher_syllabus'
                 ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -86,7 +86,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
 
           <button
             onClick={() => setViewMode('teacher_assessments')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
               viewMode === 'teacher_assessments'
                 ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -97,7 +97,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
           </button>
         </div>
 
-        <div className="text-xs font-bold text-slate-500">
+        <div className="text-xs font-semibold text-slate-500">
           Instructor: <strong className="text-slate-900">{currentCourse?.instructorName}</strong>
         </div>
       </div>
@@ -108,16 +108,16 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
           {/* Left Syllabus Navigation (4 cols) */}
           <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-5 space-y-4 shadow-sm h-fit">
             <div className="space-y-1">
-              <span className="text-[11px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="text-[11px] capitalize tracking-wider font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                 {currentCourse?.category.replace('_', ' ')}
               </span>
-              <h3 className="font-extrabold text-sm text-slate-900 pt-1">{currentCourse?.title}</h3>
+              <h3 className="font-semibold text-sm text-slate-900 pt-1">{currentCourse?.title}</h3>
             </div>
 
             <div className="space-y-3 pt-2">
               {currentCourse?.modules.map((module) => (
                 <div key={module.id} className="space-y-2">
-                  <div className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                  <div className="text-xs font-semibold text-slate-800 capitalize tracking-wider">
                     {module.title}
                   </div>
                   <div className="space-y-1.5 pl-1">
@@ -129,7 +129,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                           onClick={() => handleSelectLesson(lesson)}
                           className={`w-full text-left p-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
                             isActive
-                              ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30 font-bold'
+                              ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30 font-semibold'
                               : 'bg-slate-50 hover:bg-slate-100 text-slate-700'
                           }`}
                         >
@@ -175,7 +175,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                     </Badge>
                     <span className="text-xs text-slate-400">Duration: {activeLesson.durationMinutes} mins</span>
                   </div>
-                  <h2 className="text-xl font-black text-slate-900">{activeLesson.title}</h2>
+                  <h2 className="text-xl font-semibold text-slate-900">{activeLesson.title}</h2>
                 </div>
 
                 {/* Lesson Theory & Text Content */}
@@ -184,7 +184,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                     className="whitespace-pre-wrap leading-relaxed space-y-2"
                     dangerouslySetInnerHTML={{
                       __html: (activeLesson.content || '')
-                        .replace(/### (.*)/g, '<h3 class="text-sm font-black text-slate-900 mt-2 mb-1">$1</h3>')
+                        .replace(/### (.*)/g, '<h3 class="text-sm font-semibold text-slate-900 mt-2 mb-1">$1</h3>')
                         .replace(/1\. (.*)/g, '<li class="ml-4 list-decimal text-slate-700 font-medium">$1</li>'),
                     }}
                   />
@@ -193,7 +193,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                 {/* Practical Workshop Step Checklist */}
                 {activeLesson.practicalChecklist && activeLesson.practicalChecklist.length > 0 && (
                   <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <h4 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <h4 className="font-semibold text-xs text-slate-900 capitalize tracking-wider flex items-center gap-1.5">
                       <Hammer className="w-4 h-4 text-emerald-600" />
                       <span>Workshop Practical Steps ({activeLesson.practicalChecklist.length})</span>
                     </h4>
@@ -201,11 +201,11 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                     <div className="space-y-2">
                       {activeLesson.practicalChecklist.map((step) => (
                         <div key={step.id} className="p-3 bg-white rounded-xl border border-slate-200 flex items-start gap-3 text-xs">
-                          <span className="w-5 h-5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="w-5 h-5 rounded-md bg-emerald-100 text-emerald-800 font-semibold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                             {step.stepNumber}
                           </span>
                           <div className="min-w-0">
-                            <h5 className="font-bold text-slate-900">{step.title}</h5>
+                            <h5 className="font-semibold text-slate-900">{step.title}</h5>
                             <p className="text-[11px] text-slate-500 mt-0.5">{step.description}</p>
                           </div>
                         </div>
@@ -218,8 +218,8 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                 {activeLesson.assessmentId && (
                   <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between shadow-md">
                     <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider opacity-80">Module Assessment Ready</span>
-                      <h4 className="font-extrabold text-sm">Take Assessment to Complete Lesson</h4>
+                      <span className="text-[11px] font-semibold capitalize tracking-wider opacity-80">Module Assessment Ready</span>
+                      <h4 className="font-semibold text-sm">Take Assessment to Complete Lesson</h4>
                     </div>
                     <Button
                       variant="outline"
@@ -228,7 +228,7 @@ export const SchoolLMSContainer: React.FC<SchoolLMSContainerProps> = ({
                         const found = currentCourse.assessments.find((a) => a.id === activeLesson.assessmentId);
                         if (found) setActiveAssessment(found);
                       }}
-                      className="bg-white text-blue-900 hover:bg-slate-100 font-bold border-0 text-xs"
+                      className="bg-white text-blue-900 hover:bg-slate-100 font-semibold border-0 text-xs"
                     >
                       Start Assessment →
                     </Button>

@@ -136,25 +136,25 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <GraduationCap className="w-7 h-7 text-emerald-600" />
-            <h2 className="text-xl font-black text-slate-900">Syllabus & Lesson Creator</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Syllabus & Lesson Creator</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Build custom lesson plans, practical workshop steps, and assign assessments for your academy.
           </p>
         </div>
 
-        <Button variant="primary" onClick={handleOpenAddLesson} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
-          <Plus className="w-4 h-4 mr-1.5" /> Add Lesson / Workshop
+        <Button variant="primary" onClick={handleOpenAddLesson} leftIcon={<Plus className="w-4 h-4" />}>
+          Add Lesson / Workshop
         </Button>
       </div>
 
       {/* Module Selector */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
-        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Select Module</label>
+        <label className="text-xs font-semibold text-slate-700 capitalize tracking-wider">Select Module</label>
         <select
           value={selectedModuleId}
           onChange={(e) => setSelectedModuleId(e.target.value)}
-          className="w-full text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-emerald-500"
+          className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-emerald-500"
         >
           {courseData.modules.map((m) => (
             <option key={m.id} value={m.id}>
@@ -167,7 +167,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
       {/* Lessons List Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="flex items-center gap-2 font-bold text-xs text-slate-800 uppercase tracking-wider">
+          <div className="flex items-center gap-2 font-semibold text-xs text-slate-800 capitalize tracking-wider">
             <BookOpen className="w-4 h-4 text-emerald-600" />
             <span>{activeModule?.lessons.length || 0} Lessons in this Module</span>
           </div>
@@ -180,12 +180,12 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
               className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-800 font-semibold text-xs flex items-center justify-center shrink-0">
                   {idx + 1}
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-sm text-slate-900 truncate">{lesson.title}</h4>
+                    <h4 className="font-semibold text-sm text-slate-900 truncate">{lesson.title}</h4>
                     <Badge variant={lesson.type === 'practical_workshop' ? 'primary' : 'default'} size="sm">
                       {lesson.type === 'practical_workshop' ? 'Workshop Guide' : 'Lecture'}
                     </Badge>
@@ -242,7 +242,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
         <div className="space-y-4 max-h-[75vh] overflow-y-auto p-1 font-sans">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="text-xs font-bold text-slate-700 block mb-1">Lesson Title</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Lesson Title</label>
               <Input
                 value={editingLesson.title || ''}
                 onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
@@ -251,11 +251,11 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Lesson Type</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Lesson Type</label>
               <select
                 value={editingLesson.type || 'practical_workshop'}
                 onChange={(e) => setEditingLesson({ ...editingLesson, type: e.target.value as any })}
-                className="w-full text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900"
+                className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900"
               >
                 <option value="practical_workshop">Practical Workshop</option>
                 <option value="lecture">Theory / Lecture</option>
@@ -265,7 +265,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-1">Lesson Content & Instructions (Markdown)</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">Lesson Content & Instructions (Markdown)</label>
             <textarea
               rows={5}
               value={editingLesson.content || ''}
@@ -278,7 +278,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
           {/* Practical Workshop Steps Checklist */}
           <div className="border-t border-slate-200 pt-4 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-slate-800 capitalize tracking-wider flex items-center gap-1.5">
                 <Hammer className="w-4 h-4 text-emerald-600" />
                 <span>Practical Workshop Steps & Proof Requirements</span>
               </label>
@@ -291,7 +291,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
               {editingLesson.practicalChecklist?.map((step, idx) => (
                 <div key={step.id || idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
+                    <span className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 font-semibold text-xs flex items-center justify-center shrink-0">
                       {idx + 1}
                     </span>
                     <Input
@@ -311,7 +311,7 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
                         updated[idx].requiredProof = e.target.value as any;
                         setEditingLesson({ ...editingLesson, practicalChecklist: updated });
                       }}
-                      className="text-xs font-bold bg-white border border-slate-200 rounded-lg p-1.5"
+                      className="text-xs font-semibold bg-white border border-slate-200 rounded-lg p-1.5"
                     >
                       <option value="photo">Photo Proof</option>
                       <option value="video">Video Proof</option>
@@ -333,8 +333,8 @@ export const SchoolSyllabusManager: React.FC<SchoolSyllabusManagerProps> = ({
             <Button variant="outline" onClick={() => setIsLessonModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSaveLesson} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
-              <Save className="w-4 h-4 mr-1.5" /> Save Lesson
+            <Button variant="primary" onClick={handleSaveLesson} leftIcon={<Save className="w-4 h-4" />}>
+              Save Lesson
             </Button>
           </div>
         </div>

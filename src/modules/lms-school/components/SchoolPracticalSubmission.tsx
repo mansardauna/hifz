@@ -94,12 +94,12 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">
+            <span className="text-xs capitalize tracking-wider font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">
               Practical Vocational Project
             </span>
             <span className="text-xs text-slate-500">Passing Grade: {assessment.passingScorePercent}%</span>
           </div>
-          <h2 className="text-lg font-black text-slate-900 mt-1">{assessment.title}</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mt-1">{assessment.title}</h2>
         </div>
 
         <div>
@@ -118,12 +118,12 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
 
       {/* Practical Prompt & Guidelines */}
       <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-2">
-        <h3 className="font-black text-slate-900 text-sm">Assignment Instructions & Workshop Requirements</h3>
+        <h3 className="font-semibold text-slate-900 text-sm">Assignment Instructions & Workshop Requirements</h3>
         <div
           className="whitespace-pre-wrap leading-relaxed prose prose-sm"
           dangerouslySetInnerHTML={{
             __html: (assessment.practicalPrompt || assessment.description)
-              .replace(/### (.*)/g, '<h4 class="font-extrabold text-slate-900 mt-2 mb-1">$1</h4>')
+              .replace(/### (.*)/g, '<h4 class="font-semibold text-slate-900 mt-2 mb-1">$1</h4>')
               .replace(/1\. (.*)/g, '<li class="ml-4 list-decimal text-slate-700">$1</li>'),
           }}
         />
@@ -132,13 +132,13 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
       {/* Grading Rubric Breakdown */}
       {assessment.rubric && assessment.rubric.length > 0 && (
         <div className="space-y-3">
-          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+          <h4 className="text-xs font-semibold text-slate-700 capitalize tracking-wider">
             Evaluation Rubric (Teacher Criteria)
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {assessment.rubric.map((item) => (
               <div key={item.id} className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-1">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
                   <span>{item.name}</span>
                   <span className="text-emerald-700">{item.weightPercent}% weight</span>
                 </div>
@@ -153,7 +153,7 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
       {submissionStatus === 'pending' ? (
         <div className="space-y-4 pt-2">
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-1">
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
               Student Project Notes / Summary
             </label>
             <textarea
@@ -167,14 +167,14 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
 
           {/* File Upload Dropzone */}
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-2">
+            <label className="text-xs font-semibold text-slate-700 block mb-2">
               Attach Proof of Work (Photos, Video Demo, PDF Report)
             </label>
 
             <label className="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 hover:bg-emerald-50/30 transition-all">
               <UploadCloud className="w-8 h-8 text-slate-400" />
               <div className="text-center">
-                <span className="text-xs font-bold text-emerald-700 hover:underline">
+                <span className="text-xs font-semibold text-emerald-700 hover:underline">
                   Click to select files
                 </span>
                 <span className="text-xs text-slate-500"> or drag and drop</span>
@@ -196,7 +196,7 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
           {/* Attached Files List */}
           {uploadedFiles.length > 0 && (
             <div className="space-y-2">
-              <span className="text-xs font-bold text-slate-700">Attached Files ({uploadedFiles.length}):</span>
+              <span className="text-xs font-semibold text-slate-700">Attached Files ({uploadedFiles.length}):</span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {uploadedFiles.map((file, idx) => (
                   <div key={idx} className="p-3 bg-slate-100 rounded-xl flex items-center justify-between gap-2 text-xs">
@@ -228,7 +228,7 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
               size="md"
               onClick={handleSubmitAssignment}
               disabled={isUploading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/30"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-600/30"
             >
               Submit Practical Project For Grading
             </Button>
@@ -238,7 +238,7 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
         /* Submitted Confirmation */
         <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
           <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-          <h3 className="text-base font-extrabold text-emerald-950">
+          <h3 className="text-base font-semibold text-emerald-950">
             Project Successfully Submitted!
           </h3>
           <p className="text-xs text-emerald-800 max-w-md mx-auto leading-relaxed">

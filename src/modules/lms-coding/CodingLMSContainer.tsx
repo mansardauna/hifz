@@ -50,7 +50,7 @@ export const CodingLMSContainer: React.FC<CodingLMSContainerProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('learn')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
               viewMode === 'learn'
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -62,7 +62,7 @@ export const CodingLMSContainer: React.FC<CodingLMSContainerProps> = ({
 
           <button
             onClick={() => setViewMode('manage')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-all cursor-pointer ${
               viewMode === 'manage'
                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/30'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -73,7 +73,7 @@ export const CodingLMSContainer: React.FC<CodingLMSContainerProps> = ({
           </button>
         </div>
 
-        <div className="text-xs font-bold text-slate-500 hidden sm:block">
+        <div className="text-xs font-semibold text-slate-500 hidden sm:block">
           Track: <strong className="text-slate-900">{tracks[0]?.title}</strong>
         </div>
       </div>

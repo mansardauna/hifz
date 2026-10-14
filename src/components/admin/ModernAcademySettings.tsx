@@ -583,7 +583,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('general')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'general'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -595,7 +595,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('branding')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'branding'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -607,7 +607,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('roles_permissions')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'roles_permissions'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -618,7 +618,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           <span
             className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
               activeTab === 'roles_permissions'
-                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold'
+                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-semibold'
                 : 'bg-slate-100 text-slate-500'
             }`}
           >
@@ -628,7 +628,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('auth_layout')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'auth_layout'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -640,7 +640,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('security')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'security'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -652,7 +652,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
         <button
           onClick={() => setActiveTab('classroom_community')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'classroom_community'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -667,24 +667,24 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       {activeTab === 'general' && (
         <div className="space-y-6">
           <Card className="p-6 space-y-5">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-emerald-600" />
               <span>Institutional Identity</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Academy Legal Name</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Academy Legal Name</label>
                 <input
                   type="text"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Academy Registration ID</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Academy Registration ID</label>
                 <input
                   type="text"
                   disabled
@@ -694,7 +694,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Admissions Phone / WhatsApp</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Admissions Phone / WhatsApp</label>
                 <input
                   type="text"
                   value={phoneNumber}
@@ -704,7 +704,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Official Contact Email</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Official Contact Email</label>
                 <input
                   type="email"
                   value={contactEmail}
@@ -717,7 +717,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
           {/* Subdomain & Custom Domain */}
           <Card className="p-6 space-y-5">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
               <Globe className="w-5 h-5 text-emerald-600" />
               <span>Domain & URL Routing</span>
             </h3>
@@ -725,11 +725,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             <div className="space-y-4">
               {/* Default Subdomain */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Default Platform Subdomain (Free & Always Active)
                 </label>
                 <div className="flex items-center">
-                  <span className="px-3 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-xl text-xs font-mono text-slate-600 font-bold select-none">
+                  <span className="px-3 py-2 bg-slate-100 border border-r-0 border-slate-300 rounded-l-xl text-xs font-mono text-slate-600 font-semibold select-none">
                     https://
                   </span>
                   <input
@@ -740,9 +740,9 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       setSubdomain(cleanVal);
                     }}
                     placeholder="academy-subdomain"
-                    className="w-56 px-3 py-2 border-y border-slate-300 text-xs font-mono font-bold bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-56 px-3 py-2 border-y border-slate-300 text-xs font-mono font-semibold bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
-                  <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 rounded-r-xl text-xs font-mono text-slate-600 font-bold select-none">
+                  <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 rounded-r-xl text-xs font-mono text-slate-600 font-semibold select-none">
                     .ankabit.app
                   </span>
                 </div>
@@ -757,11 +757,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               {/* Custom Domain (Feature Gated) */}
               <div className="pt-3 border-t border-slate-100">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-bold text-slate-700">
+                  <label className="block text-xs font-semibold text-slate-700">
                     Connect Custom Apex/Subdomain (e.g. quranacademy.org)
                   </label>
                   {!isCustomDomainUnlocked && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
                       Growth & Enterprise Tier
                     </span>
                   )}
@@ -786,7 +786,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     size="sm"
                     onClick={handleVerifyCustomDomain}
                     isLoading={isVerifyingDomain}
-                    className="font-bold text-xs"
+                    className="font-semibold text-xs"
                   >
                     {isCustomDomainUnlocked ? 'Verify DNS' : 'Unlock Custom Domain'}
                   </Button>
@@ -801,7 +801,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             </div>
 
             <div className="flex justify-end pt-4 border-t border-slate-100">
-              <Button variant="primary" size="sm" onClick={handleSaveGeneral} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+              <Button variant="primary" size="sm" onClick={handleSaveGeneral}>
                 Save General Settings
               </Button>
             </div>
@@ -816,7 +816,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           <Card className="p-6 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                   <Globe className="w-5 h-5 text-emerald-600" />
                   <span>Logos & Subdomain Favicon</span>
                 </h3>
@@ -827,7 +827,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Academy Logo Image URL
                   </label>
                   <input
@@ -841,7 +841,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Subdomain Favicon URL (Browser Tab Icon)
                   </label>
                   <input
@@ -857,7 +857,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
               {/* Live Browser Tab Preview */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Live Browser Tab Preview</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-2">Live Browser Tab Preview</label>
                 <div className="bg-slate-900 rounded-xl p-3 shadow-inner border border-slate-800">
                   {/* Fake browser top bar */}
                   <div className="flex items-center gap-2 pb-2.5 border-b border-slate-800">
@@ -881,7 +881,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                         }}
                       />
                     ) : (
-                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[9px] font-bold">
+                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[9px] font-semibold">
                         {companyName.charAt(0) || 'A'}
                       </div>
                     )}
@@ -898,7 +898,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           {/* Theme Tokens Card */}
           <Card className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                 <Palette className="w-5 h-5 text-emerald-600" />
                 <span>Theme Tokens & Brand Colors</span>
               </h3>
@@ -908,7 +908,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             <div className="space-y-4">
               {/* Primary Color Section */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">Preset Brand Primary Palette</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-2">Preset Brand Primary Palette</label>
                 <div className="flex flex-wrap items-center gap-3">
                   {PRESET_BRAND_COLORS.map((c) => (
                     <button
@@ -931,7 +931,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               {/* Sidebar Background Color Section */}
               <div className="pt-3 border-t border-slate-100">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-slate-700">
+                  <label className="block text-xs font-semibold text-slate-700">
                     Dashboard Sidebar Background Color
                   </label>
                   <button
@@ -939,7 +939,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       setSidebarBgColor(primaryColor);
                       info('Sidebar Matched', 'Sidebar background matched to brand primary color.');
                     }}
-                    className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800 cursor-pointer"
+                    className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-800 cursor-pointer"
                   >
                     Match Brand Primary Color
                   </button>
@@ -968,7 +968,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                           <Check className="w-3.5 h-3.5 text-emerald-600" />
                         )}
                       </div>
-                      <span className="text-[11px] font-bold text-slate-700 truncate">{preset.label}</span>
+                      <span className="text-[11px] font-semibold text-slate-700 truncate">{preset.label}</span>
                     </button>
                   ))}
                 </div>
@@ -986,7 +986,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       value={sidebarBgColor}
                       onChange={(e) => setSidebarBgColor(e.target.value)}
                       placeholder="#0f172a"
-                      className="w-32 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-bold"
+                      className="w-32 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-semibold"
                     />
                   </div>
                   <span className="text-xs text-slate-500">Custom Hex Code for Sidebar background</span>
@@ -996,7 +996,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               {/* Font Family & Sizing */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Primary Brand Hex</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Primary Brand Hex</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -1008,17 +1008,17 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       type="text"
                       value={primaryColor}
                       onChange={(e) => setPrimaryColor(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-bold"
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono font-semibold"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Font Family</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Font Family</label>
                   <select
                     value={fontFamily}
                     onChange={(e) => setFontFamily(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:outline-none focus:border-emerald-600"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-600"
                   >
                     <option value="Poppins">Poppins (Modern Clean)</option>
                     <option value="Inter">Inter (SaaS Standard)</option>
@@ -1031,10 +1031,10 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               {/* Real-time Interactive Live Mockup Preview */}
               <div className="pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-slate-700">
+                  <label className="block text-xs font-semibold text-slate-700">
                     Live Component & Sidebar Preview
                   </label>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Instant Live Render
                   </span>
                 </div>
@@ -1050,12 +1050,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       <div className="flex items-center gap-2.5 pb-3 border-b border-white/10">
                         <div
                           style={{ backgroundColor: primaryColor }}
-                          className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs text-white shadow-xs shrink-0"
+                          className="w-7 h-7 rounded-lg flex items-center justify-center font-semibold text-xs text-white shadow-xs shrink-0"
                         >
                           {companyName.charAt(0) || 'A'}
                         </div>
                         <div className="min-w-0">
-                          <div className="font-bold text-xs text-white truncate">{companyName}</div>
+                          <div className="font-semibold text-xs text-white truncate">{companyName}</div>
                           <div className="text-[9px] text-white/50 truncate font-mono">{subdomain}.ankabit.app</div>
                         </div>
                       </div>
@@ -1064,7 +1064,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       <div className="space-y-1 text-xs">
                         <div
                           style={{ backgroundColor: primaryColor }}
-                          className="px-3 py-1.5 rounded-lg text-white font-bold flex items-center justify-between shadow-xs"
+                          className="px-3 py-1.5 rounded-lg text-white font-semibold flex items-center justify-between shadow-xs"
                         >
                           <span>Dashboard</span>
                           <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
@@ -1088,12 +1088,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="text-xs font-bold text-slate-900">Welcome Back, Administrator</div>
+                          <div className="text-xs font-semibold text-slate-900">Welcome Back, Administrator</div>
                           <div className="text-[11px] text-slate-500">Live Academy KPI Summary</div>
                         </div>
                         <button
                           style={{ backgroundColor: primaryColor }}
-                          className="px-3 py-1.5 rounded-lg text-white text-xs font-bold shadow-xs hover:opacity-95 transition-opacity"
+                          className="px-3 py-1.5 rounded-lg text-white text-xs font-semibold shadow-xs hover:opacity-95 transition-opacity"
                         >
                           + New Student
                         </button>
@@ -1102,26 +1102,26 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       {/* Mock Metrics Row */}
                       <div className="grid grid-cols-2 gap-3">
                         <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs">
-                          <div className="text-[10px] font-bold text-slate-500 uppercase">Active Students</div>
-                          <div className="text-base font-extrabold text-slate-900 mt-0.5">148</div>
+                          <div className="text-[10px] font-semibold text-slate-500 capitalize">Active Students</div>
+                          <div className="text-base font-semibold text-slate-900 mt-0.5">148</div>
                           <div
                             style={{ color: primaryColor }}
-                            className="text-[10px] font-bold mt-1"
+                            className="text-[10px] font-semibold mt-1"
                           >
                             ↑ 12% this month
                           </div>
                         </div>
 
                         <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs">
-                          <div className="text-[10px] font-bold text-slate-500 uppercase">Classrooms</div>
-                          <div className="text-base font-extrabold text-slate-900 mt-0.5">6 Active</div>
-                          <div className="text-[10px] text-emerald-600 font-bold mt-1">WebRTC Online</div>
+                          <div className="text-[10px] font-semibold text-slate-500 capitalize">Classrooms</div>
+                          <div className="text-base font-semibold text-slate-900 mt-0.5">6 Active</div>
+                          <div className="text-[10px] text-emerald-600 font-semibold mt-1">WebRTC Online</div>
                         </div>
                       </div>
                     </div>
 
                     <div className="text-[10px] text-slate-400 text-right">
-                      Primary Brand Color: <span className="font-mono font-bold text-slate-600">{primaryColor}</span>
+                      Primary Brand Color: <span className="font-mono font-semibold text-slate-600">{primaryColor}</span>
                     </div>
                   </div>
                 </div>
@@ -1131,7 +1131,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <div className="pt-4 border-t border-slate-200 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-emerald-600" />
                       <span>Branded Preloader & Page Loading Transition</span>
                     </h4>
@@ -1146,7 +1146,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                       setIsPreviewingPreloader(true);
                       setTimeout(() => setIsPreviewingPreloader(false), 2000);
                     }}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1.5"
                   >
                     <span>Test Preview (2s)</span>
                   </button>
@@ -1183,7 +1183,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               </div>
 
               <div className="pt-3">
-                <label className="block text-xs font-bold text-slate-700 mb-1">Custom CSS Overrides</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Custom CSS Overrides</label>
                 <textarea
                   rows={3}
                   value={customCss}
@@ -1195,7 +1195,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             </div>
 
             <div className="flex justify-end pt-4 border-t border-slate-100">
-              <Button variant="primary" size="sm" onClick={handleSaveBranding} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+              <Button variant="primary" size="sm" onClick={handleSaveBranding}>
                 Save & Apply Brand Theme
               </Button>
             </div>
@@ -1210,10 +1210,10 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           <Card className="p-6 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                   <Users className="w-5 h-5 text-emerald-600" />
                   <span>Academy Staff & Direct Role Assignment</span>
-                  <span className="text-xs font-bold text-slate-500 font-mono">({staffList.length})</span>
+                  <span className="text-xs font-semibold text-slate-500 font-mono">({staffList.length})</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Directly provision accounts or assign roles for teachers, registrars, and sub-administrators.
@@ -1226,7 +1226,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   size="sm"
                   onClick={fetchStaff}
                   leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingStaff ? 'animate-spin' : ''}`} />}
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                 >
                   Refresh
                 </Button>
@@ -1235,7 +1235,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   size="sm"
                   onClick={() => setIsInviteModalOpen(true)}
                   leftIcon={<UserPlus className="w-4 h-4" />}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs"
                 >
                   Provision / Invite Staff
                 </Button>
@@ -1245,7 +1245,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             {/* Staff Table */}
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
                     <th className="py-3 px-4">Staff Member</th>
                     <th className="py-3 px-4">Role</th>
@@ -1266,7 +1266,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-slate-500">
                         <Users className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-                        <p className="font-bold text-xs text-slate-700">No staff members found in database</p>
+                        <p className="font-semibold text-xs text-slate-700">No staff members found in database</p>
                         <p className="text-[11px] text-slate-400 mt-0.5">Click "Provision / Invite Staff" above to add instructors and administrators.</p>
                       </td>
                     </tr>
@@ -1274,12 +1274,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     staffList.map((staff) => (
                       <tr key={staff.id} className="hover:bg-slate-50/60">
                         <td className="py-3.5 px-4">
-                          <div className="font-extrabold text-slate-900">{staff.name}</div>
+                          <div className="font-semibold text-slate-900">{staff.name}</div>
                           <div className="text-slate-500 text-[11px] font-mono">{staff.email}</div>
                           {staff.phone && <div className="text-slate-400 text-[10px]">{staff.phone}</div>}
                         </td>
-                        <td className="py-3.5 px-4 font-bold capitalize">
-                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-extrabold ${
+                        <td className="py-3.5 px-4 font-semibold capitalize">
+                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${
                             staff.role === 'admin'
                               ? 'bg-purple-100 text-purple-800'
                               : staff.role === 'teacher'
@@ -1320,7 +1320,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           <Card className="p-6 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                   <UserCheck className="w-5 h-5 text-indigo-600" />
                   <span>Public Signups & Role Access Approval Queue</span>
                 </h3>
@@ -1335,11 +1335,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   size="sm"
                   onClick={fetchApplicants}
                   leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingApplicants ? 'animate-spin' : ''}`} />}
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                 >
                   Refresh Queue
                 </Button>
-                <span className="text-xs font-bold px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">
+                <span className="text-xs font-semibold px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl">
                   {applicantsList.length} Pending Review
                 </span>
               </div>
@@ -1347,7 +1347,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
                     <th className="py-3 px-4">Applicant</th>
                     <th className="py-3 px-4">Requested Role</th>
@@ -1368,7 +1368,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     <tr>
                       <td colSpan={5} className="py-8 text-center text-slate-500">
                         <UserCheck className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-                        <p className="font-bold text-xs text-slate-700">No pending applications awaiting review</p>
+                        <p className="font-semibold text-xs text-slate-700">No pending applications awaiting review</p>
                         <p className="text-[11px] text-slate-400 mt-0.5">When students or educators submit registration forms, they will appear here instantly for approval.</p>
                       </td>
                     </tr>
@@ -1376,12 +1376,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     applicantsList.map((app) => (
                       <tr key={app.id} className="hover:bg-slate-50/60">
                         <td className="py-3.5 px-4">
-                          <div className="font-extrabold text-slate-900">{app.name}</div>
+                          <div className="font-semibold text-slate-900">{app.name}</div>
                           <div className="text-slate-500 text-[11px] font-mono">{app.email}</div>
                           {app.phone && <div className="text-slate-400 text-[10px]">{app.phone}</div>}
                         </td>
-                        <td className="py-3.5 px-4 font-bold capitalize">
-                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-extrabold ${
+                        <td className="py-3.5 px-4 font-semibold capitalize">
+                          <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${
                             app.role === 'teacher' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
                           }`}>
                             {app.role}
@@ -1395,7 +1395,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             size="sm"
                             disabled={processingApplicantId === app.id}
                             onClick={() => handleAcceptApplicant(app)}
-                            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] py-1 px-2.5"
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-[11px] py-1 px-2.5"
                           >
                             {processingApplicantId === app.id ? 'Processing...' : 'Accept & Activate'}
                           </Button>
@@ -1404,7 +1404,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             size="sm"
                             disabled={processingApplicantId === app.id}
                             onClick={() => handleDeclineApplicant(app)}
-                            className="text-rose-600 hover:bg-rose-50 text-[11px] py-1 px-2 border-rose-200 font-bold"
+                            className="text-rose-600 hover:bg-rose-50 text-[11px] py-1 px-2 border-rose-200 font-semibold"
                           >
                             Decline
                           </Button>
@@ -1421,7 +1421,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           <Card className="p-6 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5 text-emerald-600" />
                   <span>Granular Role Permission Matrix</span>
                 </h3>
@@ -1436,7 +1436,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 onClick={handleSaveRolePermissions}
                 disabled={isSavingPermissions}
                 leftIcon={<Save className="w-4 h-4" />}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs"
               >
                 {isSavingPermissions ? 'Saving...' : 'Save Role Permissions Matrix'}
               </Button>
@@ -1444,7 +1444,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
             <div className="overflow-x-auto border border-slate-200 rounded-xl">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
                     <th className="py-3 px-4">Permission Capability</th>
                     <th className="py-3 px-3 text-center">Academy Admin</th>
@@ -1503,7 +1503,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         <Card className="p-6 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                 <Layout className="w-5 h-5 text-emerald-600" />
                 <span>Login Layout & Student Registration Setup</span>
               </h3>
@@ -1516,7 +1516,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               href={`/${tenant.subdomain}/login`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition-colors"
             >
               <span>Preview Live Login</span>
               <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -1525,7 +1525,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
           {/* Visual Layout Style Cards */}
           <div className="space-y-3">
-            <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 capitalize tracking-wider">
               Select Academy Login Layout
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1568,13 +1568,13 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   >
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="font-extrabold text-xs text-slate-900">{style.title}</span>
+                        <span className="font-semibold text-xs text-slate-900">{style.title}</span>
                         {isSelected && <Check className="w-4 h-4 text-emerald-600" />}
                       </div>
                       <p className="text-[11px] text-slate-500 leading-snug">{style.desc}</p>
                     </div>
                     <div className="mt-3">
-                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
+                      <span className="text-[9px] font-semibold capitalize px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
                         {style.badge}
                       </span>
                     </div>
@@ -1586,18 +1586,18 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Welcome Header Text</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Welcome Header Text</label>
               <input
                 type="text"
                 value={welcomeHeading}
                 onChange={(e) => setWelcomeHeading(e.target.value)}
                 placeholder="e.g. Welcome to Your Academy Workspace"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Welcome Subtitle Instructions</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Welcome Subtitle Instructions</label>
               <input
                 type="text"
                 value={welcomeSubtitle}
@@ -1608,7 +1608,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Auth Hero Background Image URL</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Auth Hero Background Image URL</label>
               <input
                 type="url"
                 value={backgroundImageUrl}
@@ -1619,19 +1619,19 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Calligraphy Verse Quote / Tagline</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Calligraphy Verse Quote / Tagline</label>
               <input
                 type="text"
                 value={calligraphyText}
                 onChange={(e) => setCalligraphyText(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-arabic font-bold"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-arabic font-semibold"
               />
             </div>
           </div>
 
           {/* Custom Student Fields */}
           <div className="pt-4 border-t border-slate-100 space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+            <h4 className="text-xs font-semibold capitalize tracking-wider text-slate-700">
               Custom Student Registration Form Fields
             </h4>
 
@@ -1639,7 +1639,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               {customFields.map((field) => (
                 <div key={field.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
                   <div>
-                    <span className="font-bold text-slate-900">{field.label}</span>
+                    <span className="font-semibold text-slate-900">{field.label}</span>
                     <span className="text-slate-500 ml-2 font-mono text-[11px]">({field.type})</span>
                   </div>
                   <button
@@ -1664,20 +1664,20 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <select
                 value={newFieldType}
                 onChange={(e) => setNewFieldType(e.target.value as any)}
-                className="px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold"
+                className="px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold"
               >
                 <option value="text">Text Input</option>
                 <option value="select">Dropdown Select</option>
                 <option value="phone">Phone Number</option>
               </select>
-              <Button type="button" variant="secondary" size="sm" onClick={handleAddField} className="font-bold text-xs">
+              <Button type="button" variant="secondary" size="sm" onClick={handleAddField} className="font-semibold text-xs">
                 Add Field
               </Button>
             </div>
           </div>
 
           <div className="flex justify-end pt-4 border-t border-slate-100">
-            <Button variant="primary" size="sm" onClick={handleSaveAuthLayout} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+            <Button variant="primary" size="sm" onClick={handleSaveAuthLayout}>
               Save Login & Form Settings
             </Button>
           </div>
@@ -1687,26 +1687,26 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       {/* TAB 5: SECURITY & SESSIONS */}
       {activeTab === 'security' && (
         <Card className="p-6 space-y-6">
-          <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
             <Shield className="w-5 h-5 text-emerald-600" />
             <span>Security Credentials & Two-Factor Authentication</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">New Administrator Password</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">New Administrator Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter at least 8 characters..."
-                  className="w-full px-3 py-2 pr-10 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                  className="w-full px-4 py-2.5 pr-10 border border-slate-300 rounded-xl text-xs outline-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#047857)]/20 focus:border-[var(--color-primary,#047857)]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer outline-none"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -1714,7 +1714,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             </div>
 
             <div className="flex items-end">
-              <Button variant="primary" size="sm" onClick={handleUpdatePassword} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+              <Button variant="primary" size="sm" onClick={handleUpdatePassword}>
                 Update Password
               </Button>
             </div>
@@ -1722,14 +1722,14 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
           {/* 2FA */}
           <div className="pt-4 border-t border-slate-100 space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+            <h4 className="text-xs font-semibold capitalize tracking-wider text-slate-700">
               Two-Factor Authentication (2FA)
             </h4>
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
               <div className="flex items-center gap-3">
                 <Smartphone className="w-5 h-5 text-emerald-600" />
                 <div>
-                  <div className="text-xs font-bold text-slate-900">Email Verification OTP Codes</div>
+                  <div className="text-xs font-semibold text-slate-900">Email Verification OTP Codes</div>
                   <div className="text-[11px] text-slate-500">Require 6-digit confirmation code on new device logins</div>
                 </div>
               </div>
@@ -1745,7 +1745,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
           <Card className="p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                   <Sliders className="w-5 h-5 text-indigo-600" />
                   <span>Classroom Pods, Agenda & Discussion Channels</span>
                 </h3>
@@ -1760,7 +1760,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   size="sm"
                   onClick={handleSaveClassroomCommunity}
                   leftIcon={<Save className="w-4 h-4" />}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs"
                 >
                   Save Classroom Settings
                 </Button>
@@ -1772,7 +1772,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveClassroomSubTab('pods')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                   activeClassroomSubTab === 'pods'
                     ? 'bg-indigo-600 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1785,7 +1785,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveClassroomSubTab('agenda')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                   activeClassroomSubTab === 'agenda'
                     ? 'bg-amber-600 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1798,7 +1798,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveClassroomSubTab('rubric')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                   activeClassroomSubTab === 'rubric'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1811,7 +1811,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveClassroomSubTab('forum')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                   activeClassroomSubTab === 'forum'
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1827,16 +1827,16 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <div className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Section Title in Live Classroom</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Section Title in Live Classroom</label>
                     <input
                       type="text"
                       value={classroomConfig.breakoutPodsTitle}
                       onChange={(e) => setClassroomConfig({ ...classroomConfig, breakoutPodsTitle: e.target.value })}
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Section Description</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Section Description</label>
                     <input
                       type="text"
                       value={classroomConfig.breakoutPodsSubtitle}
@@ -1852,7 +1852,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     return (
                       <div key={pod.id || pIdx} className="p-4 rounded-2xl border border-slate-200 bg-white space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${pod.badgeColor || 'bg-slate-100 text-slate-700'}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${pod.badgeColor || 'bg-slate-100 text-slate-700'}`}>
                             {pod.tier.toUpperCase()} TIER
                           </span>
                           <span className="text-[10px] text-slate-400 font-mono">Pod #{pIdx + 1}</span>
@@ -1860,7 +1860,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-[11px] font-bold text-slate-600 mb-1">Pod Name / Level Title</label>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Pod Name / Level Title</label>
                             <input
                               type="text"
                               value={pod.label}
@@ -1869,11 +1869,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                                 updated[pIdx] = { ...pod, label: e.target.value };
                                 setClassroomConfig({ ...classroomConfig, pods: updated });
                               }}
-                              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-indigo-600"
+                              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
                             />
                           </div>
                           <div>
-                            <label className="block text-[11px] font-bold text-slate-600 mb-1">Level Description / Focus</label>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Level Description / Focus</label>
                             <input
                               type="text"
                               value={pod.sublabel}
@@ -1889,7 +1889,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
                         {/* Focus Topics */}
                         <div className="space-y-2 pt-2 border-t border-slate-100">
-                          <label className="block text-[11px] font-bold text-slate-600">Focus Topics</label>
+                          <label className="block text-[11px] font-semibold text-slate-600">Focus Topics</label>
                           <div className="flex flex-wrap gap-1.5">
                             {pod.targetTopics.map((topic, tIdx) => (
                               <span
@@ -1965,16 +1965,16 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <div className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Agenda Header Title</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Agenda Header Title</label>
                     <input
                       type="text"
                       value={classroomConfig.agendaTitle}
                       onChange={(e) => setClassroomConfig({ ...classroomConfig, agendaTitle: e.target.value })}
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-600"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Agenda Subtitle</label>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Agenda Subtitle</label>
                     <input
                       type="text"
                       value={classroomConfig.agendaSubtitle}
@@ -1986,7 +1986,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Milestones List ({classroomConfig.milestones.length})</h4>
+                    <h4 className="text-xs font-semibold capitalize text-slate-400 tracking-wider">Milestones List ({classroomConfig.milestones.length})</h4>
                     <Button
                       type="button"
                       size="sm"
@@ -2002,7 +2002,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                         setClassroomConfig({ ...classroomConfig, milestones: [...classroomConfig.milestones, newMs] });
                       }}
                       leftIcon={<Plus className="w-3.5 h-3.5" />}
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold"
                     >
                       Add Milestone
                     </Button>
@@ -2018,14 +2018,14 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             updated[idx] = { ...ms, tier: e.target.value };
                             setClassroomConfig({ ...classroomConfig, milestones: updated });
                           }}
-                          className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-bold bg-slate-50 text-slate-800 focus:outline-none"
+                          className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold bg-slate-50 text-slate-800 focus:outline-none"
                         >
                           <option value="beginner">Level 1 (Beginner)</option>
                           <option value="intermediate">Level 2 (Intermediate)</option>
                           <option value="advanced">Level 3 (Advanced)</option>
                         </select>
 
-                        <label className="flex items-center gap-1 text-[11px] font-bold text-slate-600 cursor-pointer">
+                        <label className="flex items-center gap-1 text-[11px] font-semibold text-slate-600 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={ms.done}
@@ -2049,7 +2049,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             updated[idx] = { ...ms, title: e.target.value };
                             setClassroomConfig({ ...classroomConfig, milestones: updated });
                           }}
-                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600"
+                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-600"
                         />
 
                         <div className="flex items-center gap-1 shrink-0">
@@ -2091,18 +2091,18 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             {activeClassroomSubTab === 'rubric' && (
               <div className="space-y-5">
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Rubric Title</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Rubric Title</label>
                   <input
                     type="text"
                     value={classroomConfig.rubricTitle}
                     onChange={(e) => setClassroomConfig({ ...classroomConfig, rubricTitle: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
                   />
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Evaluation Criteria ({classroomConfig.rubricCriteria.length})</h4>
+                    <h4 className="text-xs font-semibold capitalize text-slate-400 tracking-wider">Evaluation Criteria ({classroomConfig.rubricCriteria.length})</h4>
                     <Button
                       type="button"
                       size="sm"
@@ -2117,7 +2117,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                         setClassroomConfig({ ...classroomConfig, rubricCriteria: [...classroomConfig.rubricCriteria, newCrit] });
                       }}
                       leftIcon={<Plus className="w-3.5 h-3.5" />}
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold"
                     >
                       Add Criterion
                     </Button>
@@ -2134,12 +2134,12 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             updated[idx] = { ...crit, name: e.target.value };
                             setClassroomConfig({ ...classroomConfig, rubricCriteria: updated });
                           }}
-                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                          className="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
                           placeholder="Criterion Name"
                         />
 
                         <div className="flex items-center gap-1 shrink-0">
-                          <span className="text-[11px] font-bold text-slate-500">Max:</span>
+                          <span className="text-[11px] font-semibold text-slate-500">Max:</span>
                           <input
                             type="number"
                             value={crit.maxScore || 5}
@@ -2148,7 +2148,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                               updated[idx] = { ...crit, maxScore: parseInt(e.target.value) || 5 };
                               setClassroomConfig({ ...classroomConfig, rubricCriteria: updated });
                             }}
-                            className="w-12 px-2 py-1 border border-slate-200 rounded-xl text-xs text-center font-bold text-emerald-800 bg-emerald-50 focus:outline-none"
+                            className="w-12 px-2 py-1 border border-slate-200 rounded-xl text-xs text-center font-semibold text-emerald-800 bg-emerald-50 focus:outline-none"
                             min={1}
                             max={100}
                           />
@@ -2191,7 +2191,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <div className="space-y-5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Community Discussion Channels ({classroomConfig.forumChannels.length})</h4>
+                    <h4 className="text-xs font-semibold capitalize text-slate-400 tracking-wider">Community Discussion Channels ({classroomConfig.forumChannels.length})</h4>
                     <p className="text-xs text-slate-500">Create, edit, or remove discussion channels displayed in the LMS community forum.</p>
                   </div>
                 </div>
@@ -2200,7 +2200,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   {classroomConfig.forumChannels.map((chan, idx) => (
                     <div key={chan.id || idx} className="p-3.5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-mono font-bold text-slate-600 shrink-0">
+                        <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-mono font-semibold text-slate-600 shrink-0">
                           #{chan.id}
                         </span>
 
@@ -2212,7 +2212,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             updated[idx] = { ...chan, label: e.target.value };
                             setClassroomConfig({ ...classroomConfig, forumChannels: updated });
                           }}
-                          className="w-48 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600"
+                          className="w-48 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
                           placeholder="Channel Label"
                         />
 
@@ -2250,14 +2250,14 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
                 {/* Inline Add Channel Row */}
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-                  <h5 className="text-xs font-bold text-slate-800">Add New Discussion Channel</h5>
+                  <h5 className="text-xs font-semibold text-slate-800">Add New Discussion Channel</h5>
                   <div className="flex flex-col sm:flex-row items-center gap-2">
                     <input
                       type="text"
                       placeholder="Channel Name (e.g. Study Circle Alpha)"
                       value={newChannelLabel}
                       onChange={(e) => setNewChannelLabel(e.target.value)}
-                      className="w-full sm:w-56 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600"
+                      className="w-full sm:w-56 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
                     />
                     <input
                       type="text"
@@ -2288,7 +2288,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                         setNewChannelDesc('');
                       }}
                       leftIcon={<Plus className="w-4 h-4" />}
-                      className="text-xs font-bold whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                      className="text-xs font-semibold whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white shrink-0"
                     >
                       Add Channel
                     </Button>
@@ -2303,7 +2303,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 size="sm"
                 onClick={handleSaveClassroomCommunity}
                 leftIcon={<Save className="w-4 h-4" />}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
               >
                 Save Classroom & Community Settings
               </Button>
@@ -2317,7 +2317,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs font-sans">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full border border-slate-200 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-emerald-600" />
                 <span>Invite New Staff Member</span>
               </h3>
@@ -2328,7 +2328,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Sheikh Abdullah"
@@ -2339,7 +2339,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
                 <input
                   type="email"
                   placeholder="staff@academy.com"
@@ -2350,11 +2350,11 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Assigned Role</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Assigned Role</label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as any)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:outline-none focus:border-emerald-600"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-600"
                 >
                   <option value="teacher">Instructor / Teacher (Live Class, Grading)</option>
                   <option value="registrar">Admissions Registrar (Leads CRM, Invoices)</option>
@@ -2367,7 +2367,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
               <Button variant="outline" size="sm" onClick={() => setIsInviteModalOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="primary" size="sm" onClick={handleInviteStaff} disabled={isProvisioning} className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+              <Button variant="primary" size="sm" onClick={handleInviteStaff} disabled={isProvisioning}>
                 {isProvisioning ? 'Provisioning...' : 'Provision Account'}
               </Button>
             </div>
@@ -2384,7 +2384,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">Account Provisioned in Database</h3>
+                <h3 className="text-base font-semibold text-slate-900">Account Provisioned in Database</h3>
                 <p className="text-xs text-slate-500">Live credentials stored securely in MySQL</p>
               </div>
             </div>
@@ -2392,19 +2392,19 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
             <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5 text-xs">
               <div>
                 <span className="text-slate-400 font-medium">Name:</span>{' '}
-                <span className="font-bold text-slate-800">{provisionedCredentials.name}</span>
+                <span className="font-semibold text-slate-800">{provisionedCredentials.name}</span>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">Login Email:</span>{' '}
-                <span className="font-mono font-bold text-emerald-800">{provisionedCredentials.email}</span>
+                <span className="font-mono font-semibold text-emerald-800">{provisionedCredentials.email}</span>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">Assigned Role:</span>{' '}
-                <span className="font-bold text-slate-800 capitalize">{provisionedCredentials.role}</span>
+                <span className="font-semibold text-slate-800 capitalize">{provisionedCredentials.role}</span>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">Temporary Password:</span>{' '}
-                <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                <span className="font-mono font-semibold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
                   {provisionedCredentials.temporaryPassword || 'Password123!'}
                 </span>
               </div>
@@ -2428,7 +2428,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 variant="primary"
                 size="sm"
                 onClick={() => setProvisionedCredentials(null)}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
               >
                 Done
               </Button>

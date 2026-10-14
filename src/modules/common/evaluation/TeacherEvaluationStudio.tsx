@@ -113,7 +113,7 @@ export const TeacherEvaluationStudio: React.FC<TeacherEvaluationStudioProps> = (
       <div className="lg:col-span-4 space-y-4">
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-white flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-400" /> Evaluation Queue
             </h4>
             <Badge variant="default">
@@ -172,11 +172,11 @@ export const TeacherEvaluationStudio: React.FC<TeacherEvaluationStudioProps> = (
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-slate-200">
+                      <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-semibold text-xs text-slate-200">
                         {sub.studentName.slice(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <h5 className="text-xs font-bold text-white line-clamp-1">
+                        <h5 className="text-xs font-semibold text-white line-clamp-1">
                           {sub.studentName}
                         </h5>
                         <p className="text-[11px] text-slate-400 line-clamp-1">{sub.title}</p>
@@ -202,7 +202,7 @@ export const TeacherEvaluationStudio: React.FC<TeacherEvaluationStudioProps> = (
                       {sub.submittedAt}
                     </span>
                     {sub.overallScore && (
-                      <span className="font-mono font-bold text-emerald-400">
+                      <span className="font-mono font-semibold text-emerald-400">
                         {sub.overallScore}% ({sub.overallGrade})
                       </span>
                     )}
@@ -221,12 +221,12 @@ export const TeacherEvaluationStudio: React.FC<TeacherEvaluationStudioProps> = (
             {/* Header Card */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white font-extrabold text-sm shadow-md">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white font-semibold text-sm shadow-md">
                   {selectedSubmission.studentName.slice(0, 2).toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-white">
+                    <h3 className="text-base font-semibold text-white">
                       {selectedSubmission.studentName}
                     </h3>
                     <Badge variant="outline">
@@ -266,7 +266,7 @@ export const TeacherEvaluationStudio: React.FC<TeacherEvaluationStudioProps> = (
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Volume2 className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-bold text-slate-200">Student Voice Submission</span>
+                  <span className="text-xs font-semibold text-slate-200">Student Voice Submission</span>
                 </div>
                 <audio controls src={selectedSubmission.audioUrl} className="w-full" />
               </div>
@@ -301,7 +301,7 @@ export const TeacherEvaluationStudio: React.FC<TeacherEvaluationStudioProps> = (
 
             {/* Written Remarks */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2">
-              <label className="block text-xs font-bold text-slate-200">
+              <label className="block text-xs font-semibold text-slate-200">
                 Instructor Written Remarks & Pedagogical Notes
               </label>
               <textarea

@@ -38,7 +38,7 @@ export const QuranReviewAdapter: React.FC<ReviewAdapterProps> = ({
             <BookOpen className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white">Recitation Audio & Tajweed Inspection</h4>
+            <h4 className="text-xs font-semibold text-white">Recitation Audio & Tajweed Inspection</h4>
             <p className="text-[11px] text-slate-400">
               Surah {submission.surahName || 'Al-Fatihah'} • Ayah {submission.ayahStart || 1} to {submission.ayahEnd || 7}
             </p>
@@ -65,7 +65,7 @@ export const QuranReviewAdapter: React.FC<ReviewAdapterProps> = ({
 
       {/* Tajweed Mistake & Focus Tags */}
       <div className="space-y-2">
-        <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+        <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Tajweed Focus Areas & Noted Mistakes
         </label>
         <p className="text-[11px] text-slate-400">

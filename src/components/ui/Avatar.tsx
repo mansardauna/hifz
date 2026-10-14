@@ -65,7 +65,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   return (
     <div className={`relative inline-flex shrink-0 ${className}`}>
       <div
-        className={`${sizeClasses[size]} rounded-full border flex items-center justify-center font-bold tracking-tight overflow-hidden select-none shadow-xs ${colorScheme}`}
+        className={`${sizeClasses[size]} rounded-full border flex items-center justify-center font-semibold tracking-tight overflow-hidden select-none shadow-xs ${colorScheme}`}
       >
         {src && !imageFailed ? (
           <img

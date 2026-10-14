@@ -136,10 +136,10 @@ export const AnkabitLogo: React.FC<AnkabitLogoProps> = ({
       {showText && (
         <div className="leading-tight">
           <div className="flex items-center gap-1.5">
-            <span className={`font-black tracking-tight ${textColor} ${config.text}`}>
+            <span className={`font-semibold tracking-tight ${textColor} ${config.text}`}>
               Ankabit
             </span>
-            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 font-bold uppercase tracking-wider text-[10px]">
+            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 font-semibold capitalize tracking-wider text-[10px]">
               LMS
             </span>
           </div>

@@ -431,7 +431,7 @@ export const StaffAndStudentManager: React.FC = () => {
             setActiveTab('staff');
             setCurrentPage(1);
           }}
-          className={`py-3 px-5 font-bold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'staff'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -442,7 +442,7 @@ export const StaffAndStudentManager: React.FC = () => {
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
               activeTab === 'staff'
-                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold'
+                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-semibold'
                 : 'bg-slate-100 text-slate-500'
             }`}
           >
@@ -455,7 +455,7 @@ export const StaffAndStudentManager: React.FC = () => {
             setActiveTab('students');
             setCurrentPage(1);
           }}
-          className={`py-3 px-5 font-bold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'students'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -466,7 +466,7 @@ export const StaffAndStudentManager: React.FC = () => {
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
               activeTab === 'students'
-                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold'
+                ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-semibold'
                 : 'bg-slate-100 text-slate-500'
             }`}
           >
@@ -518,7 +518,7 @@ export const StaffAndStudentManager: React.FC = () => {
           {activeTab === 'staff' ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm font-sans">
-                <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-xs">
+                <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-xs">
                   <tr>
                     <TableSortHeader
                       field="name"
@@ -540,18 +540,18 @@ export const StaffAndStudentManager: React.FC = () => {
                     <tr>
                       <td colSpan={6} className="py-14 text-center text-slate-400">
                         <Avatar size="xl" className="mx-auto mb-3" />
-                        <p className="font-bold text-base text-slate-800">No staff members found</p>
+                        <p className="font-semibold text-base text-slate-800">No staff members found</p>
                         <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Click "+ Add Staff" to assign teachers and administrators.</p>
                       </td>
                     </tr>
                   ) : (
                     paginatedStaff.map((staff) => (
                       <tr key={staff.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-4 px-5 font-bold text-slate-900">
+                        <td className="py-4 px-5 font-semibold text-slate-900">
                           <div className="flex items-center gap-3">
                             <Avatar name={staff.name} size="md" />
                             <div>
-                              <span className="block font-bold text-slate-900">{staff.name}</span>
+                              <span className="block font-semibold text-slate-900">{staff.name}</span>
                               <span className="text-xs text-slate-500 font-normal block">{staff.email}</span>
                             </div>
                           </div>
@@ -609,7 +609,7 @@ export const StaffAndStudentManager: React.FC = () => {
                               })
                             }
                             leftIcon={<KeyRound className="w-3.5 h-3.5 text-amber-600" />}
-                            className="text-xs font-bold"
+                            className="text-xs font-semibold"
                           >
                             Credentials
                           </Button>
@@ -632,7 +632,7 @@ export const StaffAndStudentManager: React.FC = () => {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm font-sans">
-                <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-xs">
+                <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-xs">
                   <tr>
                     <TableSortHeader
                       field="name"
@@ -654,18 +654,18 @@ export const StaffAndStudentManager: React.FC = () => {
                     <tr>
                       <td colSpan={6} className="py-14 text-center text-slate-400">
                         <Avatar size="xl" className="mx-auto mb-3" />
-                        <p className="font-bold text-base text-slate-800">No students enrolled</p>
+                        <p className="font-semibold text-base text-slate-800">No students enrolled</p>
                         <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Click "+ Admit Student" to register your first student.</p>
                       </td>
                     </tr>
                   ) : (
                     paginatedStudents.map((student) => (
                       <tr key={student.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-4 px-5 font-bold text-slate-900">
+                        <td className="py-4 px-5 font-semibold text-slate-900">
                           <div className="flex items-center gap-3">
                             <Avatar name={student.name} size="md" />
                             <div>
-                              <span className="block font-bold text-slate-900">{student.name}</span>
+                              <span className="block font-semibold text-slate-900">{student.name}</span>
                               <span className="text-xs text-slate-500 font-normal block">{student.email}</span>
                             </div>
                           </div>
@@ -677,13 +677,13 @@ export const StaffAndStudentManager: React.FC = () => {
                           </div>
                         </td>
                         <td className="py-4 px-5">
-                          <span className="font-bold text-slate-900">{student.planName}</span>
+                          <span className="font-semibold text-slate-900">{student.planName}</span>
                           <Badge variant="success" className="ml-2 text-xs font-semibold">
                             {student.paymentStatus}
                           </Badge>
                         </td>
                         <td className="py-4 px-5 text-center">
-                          <Badge variant="default" className="text-xs font-bold">
+                          <Badge variant="default" className="text-xs font-semibold">
                             {student.status}
                           </Badge>
                         </td>
@@ -700,7 +700,7 @@ export const StaffAndStudentManager: React.FC = () => {
                               })
                             }
                             leftIcon={<KeyRound className="w-3.5 h-3.5 text-amber-600" />}
-                            className="text-xs font-bold"
+                            className="text-xs font-semibold"
                           >
                             Credentials
                           </Button>
@@ -745,7 +745,7 @@ export const StaffAndStudentManager: React.FC = () => {
         >
           <form onSubmit={handleCreateStaff} className="space-y-4 font-sans text-xs">
             <div className="space-y-1">
-              <label className="font-bold text-slate-700">Full Name *</label>
+              <label className="font-semibold text-slate-700">Full Name *</label>
               <Input
                 placeholder={isQuran ? "e.g. Ustadhah Fatima Al-Hashemi" : "e.g. Dr. Sarah Jenkins"}
                 value={staffForm.name}
@@ -756,7 +756,7 @@ export const StaffAndStudentManager: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Email Address (Login) *</label>
+                <label className="font-semibold text-slate-700">Email Address (Login) *</label>
                 <Input
                   type="email"
                   placeholder="teacher@academy.ankabit.app"
@@ -767,11 +767,11 @@ export const StaffAndStudentManager: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Assign Role *</label>
+                <label className="font-semibold text-slate-700">Assign Role *</label>
                 <select
                   value={staffForm.role}
                   onChange={(e) => setStaffForm({ ...staffForm, role: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-hidden"
                 >
                   <option value="teacher">
                     {isQuran ? "Teacher / Ustadhah (Live Classes & Grading)" : "Teacher / Instructor (Live Classes & Grading)"}
@@ -786,7 +786,7 @@ export const StaffAndStudentManager: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-slate-700">Initial Password (Optional: Auto-generated if blank)</label>
+              <label className="font-semibold text-slate-700">Initial Password (Optional: Auto-generated if blank)</label>
               <Input
                 type="text"
                 placeholder="Leave blank to auto-generate secure password"
@@ -797,7 +797,7 @@ export const StaffAndStudentManager: React.FC = () => {
 
             {/* Class / Course Assignment */}
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-700">
+              <label className="font-semibold text-slate-700">
                 {isQuran ? "Assign Courses / Halaqahs" : "Assign Courses / Tracks"}
               </label>
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 max-h-36 overflow-y-auto">
@@ -833,7 +833,7 @@ export const StaffAndStudentManager: React.FC = () => {
 
             {/* Task Assignments */}
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-700">Assign Staff Responsibilities & Tasks</label>
+              <label className="font-semibold text-slate-700">Assign Staff Responsibilities & Tasks</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {availableTasks.map((task) => {
                   const isChecked = staffForm.selectedTasks.includes(task);
@@ -865,7 +865,7 @@ export const StaffAndStudentManager: React.FC = () => {
               <Button variant="ghost" onClick={() => setIsAddStaffOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="primary" type="submit" className="font-bold">
+              <Button variant="primary" type="submit" className="font-semibold">
                 Save & Generate Credentials
               </Button>
             </div>
@@ -882,7 +882,7 @@ export const StaffAndStudentManager: React.FC = () => {
         >
           <form onSubmit={handleCreateStudent} className="space-y-4 font-sans text-xs">
             <div className="space-y-1">
-              <label className="font-bold text-slate-700">Student Full Name *</label>
+              <label className="font-semibold text-slate-700">Student Full Name *</label>
               <Input
                 placeholder={isQuran ? "e.g. Maryam Al-Khatib" : "e.g. Alex Morgan"}
                 value={studentForm.name}
@@ -893,7 +893,7 @@ export const StaffAndStudentManager: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Email Address (Login) *</label>
+                <label className="font-semibold text-slate-700">Email Address (Login) *</label>
                 <Input
                   type="email"
                   placeholder="student@example.com"
@@ -904,7 +904,7 @@ export const StaffAndStudentManager: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Phone Number (Parent / Guardian)</label>
+                <label className="font-semibold text-slate-700">Phone Number (Parent / Guardian)</label>
                 <Input
                   placeholder="+1 (555) 000-0000"
                   value={studentForm.phone}
@@ -914,7 +914,7 @@ export const StaffAndStudentManager: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-slate-700">Initial Password (Optional)</label>
+              <label className="font-semibold text-slate-700">Initial Password (Optional)</label>
               <Input
                 type="text"
                 placeholder="Leave blank to auto-generate password"
@@ -925,11 +925,11 @@ export const StaffAndStudentManager: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Enroll in Course Track</label>
+                <label className="font-semibold text-slate-700">Enroll in Course Track</label>
                 <select
                   value={studentForm.enrolledCourse}
                   onChange={(e) => setStudentForm({ ...studentForm, enrolledCourse: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-hidden"
                 >
                   <option value="">Select a Course Track</option>
                   {courses.map((c) => (
@@ -951,11 +951,11 @@ export const StaffAndStudentManager: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Tuition Plan</label>
+                <label className="font-semibold text-slate-700">Tuition Plan</label>
                 <select
                   value={studentForm.planName}
                   onChange={(e) => setStudentForm({ ...studentForm, planName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-hidden"
                 >
                   <option value="Foundational">Foundational ($65/mo)</option>
                   <option value="Intensive">Intensive ($120/mo)</option>
@@ -970,7 +970,7 @@ export const StaffAndStudentManager: React.FC = () => {
               <Button variant="ghost" onClick={() => setIsAddStudentOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="primary" type="submit" className="font-bold">
+              <Button variant="primary" type="submit" className="font-semibold">
                 Admit Student & Issue Credentials
               </Button>
             </div>
@@ -988,8 +988,8 @@ export const StaffAndStudentManager: React.FC = () => {
           <div className="space-y-4 font-sans text-xs">
             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-emerald-950 text-sm">{selectedCredentials.name}</span>
-                <Badge variant="success" className="capitalize font-bold">
+                <span className="font-semibold text-emerald-950 text-sm">{selectedCredentials.name}</span>
+                <Badge variant="success" className="capitalize font-semibold">
                   {selectedCredentials.role}
                 </Badge>
               </div>
@@ -1001,15 +1001,15 @@ export const StaffAndStudentManager: React.FC = () => {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5 font-mono">
               <div className="flex justify-between items-center py-1 border-b border-slate-200/80">
                 <span className="text-slate-500 font-sans">Login Portal:</span>
-                <span className="font-bold text-slate-900 select-all">https://{tenant.subdomain}.ankabit.app/login</span>
+                <span className="font-semibold text-slate-900 select-all">https://{tenant.subdomain}.ankabit.app/login</span>
               </div>
               <div className="flex justify-between items-center py-1 border-b border-slate-200/80">
                 <span className="text-slate-500 font-sans">Username / Email:</span>
-                <span className="font-bold text-slate-900 select-all">{selectedCredentials.email}</span>
+                <span className="font-semibold text-slate-900 select-all">{selectedCredentials.email}</span>
               </div>
               <div className="flex justify-between items-center py-1">
                 <span className="text-slate-500 font-sans">Password:</span>
-                <span className="font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded select-all">
+                <span className="font-semibold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded select-all">
                   {selectedCredentials.password || '••••••••'}
                 </span>
               </div>
@@ -1021,12 +1021,12 @@ export const StaffAndStudentManager: React.FC = () => {
                 size="sm"
                 onClick={handleCopyCredentials}
                 leftIcon={hasCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                className="font-bold"
+                className="font-semibold"
               >
                 {hasCopied ? 'Copied to Clipboard' : 'Copy Credentials'}
               </Button>
 
-              <Button variant="primary" size="sm" onClick={() => setSelectedCredentials(null)} className="font-bold">
+              <Button variant="primary" size="sm" onClick={() => setSelectedCredentials(null)} className="font-semibold">
                 Done
               </Button>
             </div>

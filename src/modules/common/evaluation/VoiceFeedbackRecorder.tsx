@@ -89,7 +89,7 @@ export const VoiceFeedbackRecorder: React.FC<VoiceFeedbackRecorderProps> = ({
             <Volume2 className="w-4 h-4" />
           </div>
           <div>
-            <h5 className="text-xs font-bold text-slate-200">Instructor Voice Feedback</h5>
+            <h5 className="text-xs font-semibold text-slate-200">Instructor Voice Feedback</h5>
             <p className="text-[11px] text-slate-400">Record a personalized voice critique for the student</p>
           </div>
         </div>
@@ -117,7 +117,7 @@ export const VoiceFeedbackRecorder: React.FC<VoiceFeedbackRecorderProps> = ({
         <div className="flex items-center justify-between bg-rose-500/10 border border-rose-500/30 p-3 rounded-xl animate-pulse">
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
-            <span className="text-xs font-mono font-bold text-rose-300">
+            <span className="text-xs font-mono font-semibold text-rose-300">
               Recording... {formatTime(recordingDuration)}
             </span>
           </div>

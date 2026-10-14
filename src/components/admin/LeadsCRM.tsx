@@ -194,7 +194,7 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
                 setStatusFilter(status);
                 setCurrentPage(1);
               }}
-              className={`py-3 px-5 font-bold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`py-3 px-5 font-semibold text-xs transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                 isActive
                   ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -204,7 +204,7 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
                   isActive
-                    ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold'
+                    ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-semibold'
                     : 'bg-slate-100 text-slate-500'
                 }`}
               >
@@ -252,7 +252,7 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm font-sans">
-              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-xs">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-xs">
                 <tr>
                   <TableSortHeader
                     field="name"
@@ -302,7 +302,7 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
                   <tr>
                     <td colSpan={6} className="py-14 text-center text-slate-400">
                       <Avatar size="xl" className="mx-auto mb-3" />
-                      <p className="font-bold text-base text-slate-800">No applications match criteria</p>
+                      <p className="font-semibold text-base text-slate-800">No applications match criteria</p>
                       <p className="text-sm text-slate-500 mt-1">Adjust your search query or status filter.</p>
                     </td>
                   </tr>
@@ -313,11 +313,11 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
                       onClick={() => setSelectedLead(lead)}
                       className="hover:bg-slate-50/80 transition-colors cursor-pointer"
                     >
-                      <td className="py-4 px-5 font-bold text-slate-900">
+                      <td className="py-4 px-5 font-semibold text-slate-900">
                         <div className="flex items-center gap-3">
                           <Avatar name={lead.studentName || lead.name} size="md" />
                           <div>
-                            <span className="block font-bold text-slate-900">{lead.studentName || lead.name}</span>
+                            <span className="block font-semibold text-slate-900">{lead.studentName || lead.name}</span>
                             <span className="text-xs text-slate-500 font-normal block">
                               {lead.email} {lead.phone ? `• ${lead.phone}` : ''}
                             </span>
@@ -330,7 +330,7 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
                       </td>
 
                       <td className="py-4 px-5">
-                        <span className="font-bold text-slate-900 block">
+                        <span className="font-semibold text-slate-900 block">
                           {lead.planName || lead.selectedPlanName || 'Foundational'}
                         </span>
                         <span className="text-xs text-slate-500 font-normal block">
@@ -347,7 +347,7 @@ export const LeadsCRM: React.FC<LeadsCRMProps> = ({ onAddToast }) => {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedLead(lead)}
-                          className="font-bold text-xs"
+                          className="font-semibold text-xs"
                         >
                           View Details
                         </Button>

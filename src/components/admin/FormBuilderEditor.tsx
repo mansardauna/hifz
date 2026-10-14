@@ -64,7 +64,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h2 className={`text-2xl font-bold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+          <h2 className={`text-2xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
             {isAr ? 'منشئ نماذج التواصل والقبول' : 'Admissions & Contact Form Builder'}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
@@ -74,7 +74,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
 
         <button
           onClick={handleAddField}
-          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>{isAr ? 'إضافة حقل استبيان' : 'Add Custom Field'}</span>
@@ -83,7 +83,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
 
       {/* Fields List */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-slate-400 capitalize tracking-wider">
           {isAr ? 'الحقول المخصصة الحالية' : 'Active Form Questionnaire Fields'}
         </h3>
 
@@ -102,10 +102,10 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
                   <GripVertical className="w-4 h-4 text-slate-400 cursor-grab" />
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-xs text-slate-900">{field.label}</p>
+                      <p className="font-semibold text-xs text-slate-900">{field.label}</p>
                       <span className="text-[10px] text-slate-500">({field.labelAr})</span>
                       {field.required && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">
                           Required
                         </span>
                       )}
@@ -119,7 +119,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setEditingField(field)}
-                    className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1"
                   >
                     <Edit3 className="w-3.5 h-3.5" /> Edit
                   </button>
@@ -141,15 +141,15 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <h3 className="font-bold text-base text-slate-900">
+              <h3 className="font-semibold text-base text-slate-900">
                 {isAr ? 'تخصيص الحقل' : 'Configure Form Field'}
               </h3>
-              <button onClick={() => setEditingField(null)} className="text-slate-400 hover:text-slate-600 font-bold"><X className="w-4 h-4" /></button>
+              <button onClick={() => setEditingField(null)} className="text-slate-400 hover:text-slate-600 font-semibold"><X className="w-4 h-4" /></button>
             </div>
 
             <form onSubmit={handleSaveField} className="py-4 space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Field Label (English)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Field Label (English)</label>
                 <input
                   type="text"
                   value={editingField.label}
@@ -159,7 +159,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">عنوان الحقل (بالعربية)</label>
+                <label className="block font-semibold text-slate-700 mb-1">عنوان الحقل (بالعربية)</label>
                 <input
                   type="text"
                   value={editingField.labelAr}
@@ -171,7 +171,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Input Type</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Input Type</label>
                   <select
                     value={editingField.type}
                     onChange={(e) => setEditingField({ ...editingField, type: e.target.value as any })}
@@ -186,7 +186,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
                 </div>
 
                 <div className="flex items-center pt-6">
-                  <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-700">
+                  <label className="flex items-center gap-2 cursor-pointer font-semibold text-slate-700">
                     <input
                       type="checkbox"
                       checked={editingField.required}
@@ -200,7 +200,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
 
               {editingField.type === 'select' && (
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Dropdown Options (Comma Separated)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Dropdown Options (Comma Separated)</label>
                   <textarea
                     rows={2}
                     value={editingField.options ? editingField.options.join(', ') : ''}
@@ -219,7 +219,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-md"
+                  className="w-full py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-md"
                 >
                   Save Field Configurations
                 </button>

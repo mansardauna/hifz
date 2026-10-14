@@ -127,7 +127,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-amber-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Flutterwave</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Flutterwave</h3>
                   <p className="text-xs text-slate-500">African & Global Multi-Currency</p>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
               <div className="flex items-center gap-3">
                 <ShieldCheck className="w-5 h-5 text-cyan-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Paystack</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Paystack</h3>
                   <p className="text-xs text-slate-500">Cards, Apple Pay & Bank Transfers</p>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
               <div className="flex items-center gap-3">
                 <CreditCard className="w-5 h-5 text-indigo-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Stripe</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Stripe</h3>
                   <p className="text-xs text-slate-500">Global Credit / Debit Cards & Wallets</p>
                 </div>
               </div>
@@ -305,7 +305,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
               <div className="flex items-center gap-3">
                 <Building2 className="w-5 h-5 text-emerald-600 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Moyasar (GCC / Saudi)</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Moyasar (GCC / Saudi)</h3>
                   <p className="text-xs text-slate-500">Mada Cards & Apple Pay (SAR)</p>
                 </div>
               </div>
@@ -354,7 +354,7 @@ export const PaymentGatewaySetup: React.FC<PaymentGatewaySetupProps> = ({ onAddT
               <div className="flex items-center gap-3">
                 <Landmark className="w-5 h-5 text-slate-700 shrink-0" />
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Direct Bank Wire / IBAN</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Direct Bank Wire / IBAN</h3>
                   <p className="text-xs text-slate-500">Provide bank account details for manual tuition transfers</p>
                 </div>
               </div>

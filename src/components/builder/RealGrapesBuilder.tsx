@@ -75,39 +75,39 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       const generatedHtml = `
         <header class="bg-white border-b border-slate-200 py-4 px-6 sm:px-12 flex items-center justify-between font-sans">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
+            <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-semibold text-xs">
               ${academyTitle.slice(0, 2).toUpperCase()}
             </div>
-            <span class="font-extrabold text-slate-900 text-base">${academyTitle}</span>
+            <span class="font-semibold text-slate-900 text-base">${academyTitle}</span>
           </div>
-          <nav class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
+          <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
             <a href="#about" class="hover:text-slate-900">About</a>
             <a href="#curriculum" class="hover:text-slate-900">Curriculum</a>
             <a href="#faculty" class="hover:text-slate-900">Faculty</a>
             <a href="#pricing" class="hover:text-slate-900">Tuition</a>
             <a href="#admissions" class="hover:text-slate-900">Admissions</a>
           </nav>
-          <a href="#admissions" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all">
+          <a href="#admissions" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-all">
             Apply Now &rarr;
           </a>
         </header>
 
         <section class="py-20 lg:py-28 px-6 sm:px-12 bg-white font-sans text-center border-b border-slate-200">
           <div class="max-w-4xl mx-auto space-y-6">
-            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">
+            <span class="inline-block px-3.5 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-800 border border-blue-200 capitalize tracking-wider">
               AI-Generated Architecture
             </span>
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
+            <h1 class="text-4xl sm:text-6xl font-semibold text-slate-900 leading-tight">
               ${headline}
             </h1>
             <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
               ${description}
             </p>
             <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
-              <a href="#admissions" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-md transition-all">
+              <a href="#admissions" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-xl shadow-md transition-all">
                 Enroll Today
               </a>
-              <a href="#curriculum" class="px-7 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm rounded-xl border border-slate-200 transition-all">
+              <a href="#curriculum" class="px-7 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm rounded-xl border border-slate-200 transition-all">
                 Explore Curriculum
               </a>
             </div>
@@ -117,19 +117,19 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <section class="py-12 px-6 sm:px-12 bg-slate-50 border-b border-slate-200 font-sans">
           <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
-              <div class="text-3xl font-black text-slate-900 font-mono">1,400+</div>
+              <div class="text-3xl font-semibold text-slate-900 font-mono">1,400+</div>
               <div class="text-xs text-slate-500 font-medium mt-1">Graduated Students</div>
             </div>
             <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
-              <div class="text-3xl font-black text-slate-900 font-mono">100%</div>
+              <div class="text-3xl font-semibold text-slate-900 font-mono">100%</div>
               <div class="text-xs text-slate-500 font-medium mt-1">Live SFU Halaqahs</div>
             </div>
             <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
-              <div class="text-3xl font-black text-slate-900 font-mono">1-on-1</div>
+              <div class="text-3xl font-semibold text-slate-900 font-mono">1-on-1</div>
               <div class="text-xs text-slate-500 font-medium mt-1">Certified Mentors</div>
             </div>
             <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs">
-              <div class="text-3xl font-black text-slate-900 font-mono">4.9/5</div>
+              <div class="text-3xl font-semibold text-slate-900 font-mono">4.9/5</div>
               <div class="text-xs text-slate-500 font-medium mt-1">Parent & Student Rating</div>
             </div>
           </div>
@@ -138,29 +138,29 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <section id="curriculum" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
           <div class="max-w-4xl mx-auto space-y-8">
             <div class="text-center">
-              <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">Course Syllabus</span>
-              <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Structured Learning Roadmap</h2>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 capitalize tracking-wider">Course Syllabus</span>
+              <h2 class="text-3xl font-semibold text-slate-900 mt-2">Structured Learning Roadmap</h2>
               <p class="text-xs sm:text-sm text-slate-500 mt-1">Built for ${aiAudience.toLowerCase()} with progressive evaluation milestones.</p>
             </div>
             <div class="space-y-3">
               <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                 <div class="flex items-center justify-between">
-                  <h3 class="font-extrabold text-sm text-slate-900">Module 1: Foundations & Diagnostic Assessment</h3>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Weeks 1 - 4</span>
+                  <h3 class="font-semibold text-sm text-slate-900">Module 1: Foundations & Diagnostic Assessment</h3>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Weeks 1 - 4</span>
                 </div>
                 <p class="text-xs text-slate-600 mt-1.5">Core principles, oral recitation rules, and baseline proficiency benchmarks.</p>
               </div>
               <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                 <div class="flex items-center justify-between">
-                  <h3 class="font-extrabold text-sm text-slate-900">Module 2: Intensive Mastery & Practicum</h3>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Weeks 5 - 10</span>
+                  <h3 class="font-semibold text-sm text-slate-900">Module 2: Intensive Mastery & Practicum</h3>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Weeks 5 - 10</span>
                 </div>
                 <p class="text-xs text-slate-600 mt-1.5">Interactive live video halaqahs, daily revision logs, and personalized feedback.</p>
               </div>
               <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                 <div class="flex items-center justify-between">
-                  <h3 class="font-extrabold text-sm text-slate-900">Module 3: Khatmah Examination & Sanad Ijazah</h3>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Weeks 11 - 16</span>
+                  <h3 class="font-semibold text-sm text-slate-900">Module 3: Khatmah Examination & Sanad Ijazah</h3>
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Weeks 11 - 16</span>
                 </div>
                 <p class="text-xs text-slate-600 mt-1.5">Oral examination, formal certification, and graduation credential verification.</p>
               </div>
@@ -170,25 +170,25 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
         <section id="admissions" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
           <div class="max-w-2xl mx-auto text-center mb-8">
-            <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">Admissions Open</span>
-            <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Apply for Immediate Enrollment</h2>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 capitalize tracking-wider">Admissions Open</span>
+            <h2 class="text-3xl font-semibold text-slate-900 mt-2">Apply for Immediate Enrollment</h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">Submit your details below and our admissions team will schedule your evaluation.</p>
           </div>
           <div class="max-w-xl mx-auto bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
             <form data-hifz-lead-form="true" class="space-y-4">
               <div>
-                <label class="block text-xs font-bold text-slate-800 mb-1">Student / Applicant Full Name</label>
+                <label class="block text-xs font-semibold text-slate-800 mb-1">Student / Applicant Full Name</label>
                 <input type="text" name="name" required placeholder="e.g. Zaid Al-Mansoor" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-800 mb-1">Email Address</label>
+                <label class="block text-xs font-semibold text-slate-800 mb-1">Email Address</label>
                 <input type="email" name="email" required placeholder="name@example.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-800 mb-1">Phone / WhatsApp Number</label>
+                <label class="block text-xs font-semibold text-slate-800 mb-1">Phone / WhatsApp Number</label>
                 <input type="tel" name="phone" required placeholder="+1 (555) 000-0000" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
               </div>
-              <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer">
+              <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer">
                 Submit Admissions Application &rarr;
               </button>
             </form>
@@ -197,7 +197,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
         <footer class="py-12 px-6 sm:px-12 bg-slate-900 text-white font-sans text-center">
           <div class="max-w-6xl mx-auto space-y-4">
-            <div class="font-bold text-base text-white">${academyTitle}</div>
+            <div class="font-semibold text-base text-white">${academyTitle}</div>
             <p class="text-xs text-slate-400">© 2026 ${academyTitle}. Powered by Ankabit LMS.</p>
           </div>
         </footer>
@@ -299,7 +299,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
         return `
           <div class="${widthClass} px-2 mb-4">
-            <label for="${field.id}" class="block text-xs font-bold text-slate-700 mb-1">
+            <label for="${field.id}" class="block text-xs font-semibold text-slate-700 mb-1">
               ${field.label} ${field.required ? '<span class="text-rose-500" aria-hidden="true">*</span>' : ''}
             </label>
             ${inputElement}
@@ -312,10 +312,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       <section id="admissions" aria-labelledby="admissions-title" class="py-20 px-4 sm:px-8 bg-slate-50 font-sans border-t border-slate-200" data-form-id="${form.id}" data-form-title="${form.title}">
         <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
           <div class="text-center mb-8">
-            <span class="text-blue-600 font-extrabold text-xs uppercase tracking-widest block mb-1">
+            <span class="text-blue-600 font-semibold text-xs capitalize tracking-widest block mb-1">
               ONLINE ADMISSIONS
             </span>
-            <h2 id="admissions-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-sans">
+            <h2 id="admissions-title" class="text-2xl sm:text-3xl font-semibold text-slate-900 font-sans">
               ${form.title}
             </h2>
             <p class="text-xs sm:text-sm text-slate-500 mt-2 max-w-xl mx-auto">
@@ -329,7 +329,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             </div>
 
             <div class="pt-4 border-t border-slate-100">
-              <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer uppercase tracking-wider">
+              <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer capitalize tracking-wider">
                 Submit Application
               </button>
             </div>
@@ -351,7 +351,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <!-- Top Announcement Bar -->
         <header role="banner" class="bg-emerald-700 text-white py-2.5 px-6 flex justify-between items-center text-xs font-semibold font-sans">
           <div class="flex items-center gap-3">
-            <span class="bg-emerald-900 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">New Cohort</span>
+            <span class="bg-emerald-900 px-2.5 py-0.5 rounded-full text-[10px] font-semibold capitalize tracking-wider">New Cohort</span>
             <span class="font-mono">FALL ENROLLMENT NOW OPEN • LIMITED SEATS</span>
           </div>
           <div class="hidden sm:flex items-center gap-4 text-emerald-100">
@@ -364,14 +364,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <!-- Sacred Calligraphy Hero (Light Theme with Crisp Black Headings) -->
         <section aria-labelledby="hero-title" class="relative py-20 px-8 bg-slate-50 text-slate-900 text-center font-sans border-b border-slate-200">
           <div class="relative max-w-4xl mx-auto space-y-6">
-            <p class="text-3xl sm:text-5xl text-emerald-700 font-bold" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-            <h1 id="hero-title" class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            <p class="text-3xl sm:text-5xl text-emerald-700 font-semibold" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1 id="hero-title" class="text-4xl sm:text-6xl font-semibold text-slate-900 tracking-tight leading-tight">
               Master Quranic Recitation & Tajweed with Verified Sanad
             </h1>
             <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">${tenant.tagline}</p>
             <div class="flex justify-center gap-4 pt-4">
-              <a href="#courses" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Explore Curriculums</a>
-              <a href="#admissions" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Apply for Admissions</a>
+              <a href="#courses" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-lg transition-all">Explore Curriculums</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-xl shadow-lg transition-all">Apply for Admissions</a>
             </div>
           </div>
         </section>
@@ -380,18 +380,18 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <section aria-label="Key Highlights" class="py-16 px-8 bg-white font-sans border-b border-slate-200">
           <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div class="text-emerald-600 font-bold text-base">Course Material</div>
-              <h3 class="font-bold text-base text-slate-900">Medina Mushaf Reader</h3>
+              <div class="text-emerald-600 font-semibold text-base">Course Material</div>
+              <h3 class="font-semibold text-base text-slate-900">Medina Mushaf Reader</h3>
               <p class="text-xs text-slate-600 leading-relaxed">Interactive digital Mushaf with ayah audio looping and rule highlighting.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div class="text-emerald-600 font-bold text-base">Live Audio</div>
-              <h3 class="font-bold text-base text-slate-900">Oral Homework Looper</h3>
+              <div class="text-emerald-600 font-semibold text-base">Live Audio</div>
+              <h3 class="font-semibold text-base text-slate-900">Oral Homework Looper</h3>
               <p class="text-xs text-slate-600 leading-relaxed">Submit recorded recitations for personalized tajweed audio corrections from certified Qaris.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-              <div class="text-emerald-600 font-bold text-base">Sanad Ijazah</div>
-              <h3 class="font-bold text-base text-slate-900">Verified Sanad Ijazah</h3>
+              <div class="text-emerald-600 font-semibold text-base">Sanad Ijazah</div>
+              <h3 class="font-semibold text-base text-slate-900">Verified Sanad Ijazah</h3>
               <p class="text-xs text-slate-600 leading-relaxed">Continuous chains of transmission connecting students directly to scholarly lineage.</p>
             </div>
           </div>
@@ -409,18 +409,18 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <section aria-labelledby="tech-hero" class="py-20 px-8 bg-white text-slate-900 font-sans border-b border-slate-200">
           <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div class="lg:col-span-7 space-y-6">
-              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold font-mono">
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold font-mono">
                 <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> FULL-STACK ENGINEERING COHORT
               </div>
-              <h1 id="tech-hero" class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight">
+              <h1 id="tech-hero" class="text-4xl sm:text-6xl font-semibold text-slate-900 leading-tight tracking-tight">
                 Master Modern <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Software Architecture</span>
               </h1>
               <p class="text-base text-slate-600 leading-relaxed max-w-xl">
                 Build real-world full-stack web applications, solve algorithm problem sets, and master React 19, TypeScript, and microservices with 1-on-1 lead mentor code reviews.
               </p>
               <div class="flex flex-wrap gap-4 pt-2">
-                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Enroll in Cohort</a>
-                <a href="#courses" class="px-8 py-3.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-bold text-sm rounded-xl transition-all">View Curriculum</a>
+                <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-lg transition-all">Enroll in Cohort</a>
+                <a href="#courses" class="px-8 py-3.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 font-semibold text-sm rounded-xl transition-all">View Curriculum</a>
               </div>
             </div>
 
@@ -455,17 +455,17 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       html: `
         <section aria-labelledby="arabic-hero" class="py-20 px-8 bg-slate-50 text-slate-900 text-center font-sans border-b border-slate-200">
           <div class="max-w-4xl mx-auto space-y-6">
-            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            <span class="inline-block px-3.5 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
               Classical Arabic & Linguistics Track
             </span>
-            <h1 id="arabic-hero" class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
+            <h1 id="arabic-hero" class="text-4xl sm:text-6xl font-semibold text-slate-900 leading-tight">
               Master Classical Arabic Grammar & Rhetoric
             </h1>
             <p class="text-base text-slate-600 max-w-2xl mx-auto">
               ${tenant.tagline}
             </p>
             <div class="flex justify-center gap-4 pt-4">
-              <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all">Apply for Cohort</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-lg transition-all">Apply for Cohort</a>
             </div>
           </div>
         </section>
@@ -480,18 +480,18 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
       html: `
         <section aria-labelledby="saas-hero" class="py-24 px-8 bg-white text-slate-900 text-center font-sans border-b border-slate-200">
           <div class="max-w-4xl mx-auto space-y-6">
-            <span class="inline-block px-3.5 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-800 border border-slate-300">
+            <span class="inline-block px-3.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-800 border border-slate-300">
               Transformative Education Platform
             </span>
-            <h1 id="saas-hero" class="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight">
+            <h1 id="saas-hero" class="text-4xl sm:text-6xl font-semibold text-slate-900 leading-tight">
               ${tenant.name}
             </h1>
             <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
               ${tenant.tagline}
             </p>
             <div class="flex justify-center gap-4 pt-4">
-              <a href="#pricing" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-lg transition-all">View Pricing Plans</a>
-              <a href="#admissions" class="px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-sm rounded-xl transition-all">Contact Admissions</a>
+              <a href="#pricing" class="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-xl shadow-lg transition-all">View Pricing Plans</a>
+              <a href="#admissions" class="px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold text-sm rounded-xl transition-all">Contact Admissions</a>
             </div>
           </div>
         </section>
@@ -555,10 +555,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <div class="bg-blue-600 text-white py-2.5 px-6 flex justify-between items-center text-xs font-semibold font-sans">
             <div class="flex items-center gap-2">
-              <span class="bg-blue-800 px-2 py-0.5 rounded-full text-[10px] font-bold">LIMITED TIME</span>
+              <span class="bg-blue-800 px-2 py-0.5 rounded-full text-[10px] font-semibold">LIMITED TIME</span>
               <span>Enrollment for the upcoming cohort closes Friday!</span>
             </div>
-            <a href="#admissions" class="underline font-bold text-[11px] hover:text-blue-100">Apply Now &rarr;</a>
+            <a href="#admissions" class="underline font-semibold text-[11px] hover:text-blue-100">Apply Now &rarr;</a>
           </div>
         `,
       },
@@ -573,16 +573,16 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <header role="banner" class="bg-white border-b border-slate-200 sticky top-0 z-30 py-3 px-6 font-sans">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs">LMS</span>
-                <span class="font-extrabold text-sm sm:text-base text-slate-900">${tenant.name}</span>
+                <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-semibold text-xs">LMS</span>
+                <span class="font-semibold text-sm sm:text-base text-slate-900">${tenant.name}</span>
               </div>
-              <nav aria-label="Primary" class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
+              <nav aria-label="Primary" class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
                 <a href="#courses" class="hover:text-slate-900">Curriculums</a>
                 <a href="#pricing" class="hover:text-slate-900">Tuition</a>
                 <a href="#features" class="hover:text-slate-900">Experience</a>
                 <a href="#faq" class="hover:text-slate-900">FAQ</a>
               </nav>
-              <a href="#admissions" class="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all">
+              <a href="#admissions" class="px-5 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 transition-all">
                 Enroll Now
               </a>
             </div>
@@ -602,18 +602,18 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section aria-labelledby="hero-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div class="space-y-6">
-                <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 inline-block">
+                <span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 inline-block">
                   Transformative Learning Experience
                 </span>
-                <h1 id="hero-title" class="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight">
+                <h1 id="hero-title" class="text-4xl sm:text-5xl font-semibold text-slate-900 leading-tight">
                   Unlock Your Potential with Master Mentorship
                 </h1>
                 <p class="text-base text-slate-600 leading-relaxed">
                   Join our cohort-based academy with daily interactive sessions, live classrooms, and verified milestone certifications.
                 </p>
                 <div class="flex flex-wrap gap-4 pt-2">
-                  <a href="#admissions" class="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all">Get Started</a>
-                  <a href="#courses" class="px-7 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm rounded-xl transition-all">Explore Tracks</a>
+                  <a href="#admissions" class="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-lg transition-all">Get Started</a>
+                  <a href="#courses" class="px-7 py-3.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-xs sm:text-sm rounded-xl transition-all">Explore Tracks</a>
                 </div>
               </div>
               <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 aspect-video bg-slate-900">
@@ -635,42 +635,42 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <section id="courses" aria-labelledby="courses-title" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto text-center mb-12">
-              <h2 id="courses-title" class="text-3xl font-extrabold text-slate-900">Featured Academy Programs</h2>
+              <h2 id="courses-title" class="text-3xl font-semibold text-slate-900">Featured Academy Programs</h2>
               <p class="text-xs sm:text-sm text-slate-500 mt-2">Engineered for progressive milestone mastery and real-world certification.</p>
             </div>
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
               <article class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex flex-col justify-between space-y-4">
                 <div class="space-y-2">
-                  <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">Beginner Track</span>
-                  <h3 class="font-extrabold text-base text-slate-900">Foundations Immersion</h3>
+                  <span class="text-[10px] font-semibold capitalize px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">Beginner Track</span>
+                  <h3 class="font-semibold text-base text-slate-900">Foundations Immersion</h3>
                   <p class="text-xs text-slate-600 leading-relaxed">Master the essential core concepts, grammar, and fundamental building blocks.</p>
                 </div>
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <span class="font-bold text-slate-900 font-mono text-sm">$65/mo</span>
-                  <a href="#admissions" class="text-blue-600 font-bold text-xs hover:underline">Enroll &rarr;</a>
+                  <span class="font-semibold text-slate-900 font-mono text-sm">$65/mo</span>
+                  <a href="#admissions" class="text-blue-600 font-semibold text-xs hover:underline">Enroll &rarr;</a>
                 </div>
               </article>
               <article class="bg-white p-6 rounded-3xl border-2 border-blue-600 shadow-xl flex flex-col justify-between space-y-4 relative">
-                <span class="absolute -top-3 left-6 bg-blue-600 text-white text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full">Recommended</span>
+                <span class="absolute -top-3 left-6 bg-blue-600 text-white text-[9px] font-semibold capitalize px-2.5 py-0.5 rounded-full">Recommended</span>
                 <div class="space-y-2">
-                  <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Intermediate</span>
-                  <h3 class="font-extrabold text-base text-slate-900">Accelerated Mastery</h3>
+                  <span class="text-[10px] font-semibold capitalize px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Intermediate</span>
+                  <h3 class="font-semibold text-base text-slate-900">Accelerated Mastery</h3>
                   <p class="text-xs text-slate-600 leading-relaxed">Daily intensive practice, live pair exercises, and 1-on-1 evaluation audits.</p>
                 </div>
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <span class="font-bold text-slate-900 font-mono text-sm">$129/mo</span>
-                  <a href="#admissions" class="text-blue-600 font-bold text-xs hover:underline">Enroll &rarr;</a>
+                  <span class="font-semibold text-slate-900 font-mono text-sm">$129/mo</span>
+                  <a href="#admissions" class="text-blue-600 font-semibold text-xs hover:underline">Enroll &rarr;</a>
                 </div>
               </article>
               <article class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex flex-col justify-between space-y-4">
                 <div class="space-y-2">
-                  <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700">Advanced</span>
-                  <h3 class="font-extrabold text-base text-slate-900">Specialization & Sanad</h3>
+                  <span class="text-[10px] font-semibold capitalize px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700">Advanced</span>
+                  <h3 class="font-semibold text-base text-slate-900">Specialization & Sanad</h3>
                   <p class="text-xs text-slate-600 leading-relaxed">Comprehensive capstone projects, advanced parsing, and verified certification.</p>
                 </div>
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <span class="font-bold text-slate-900 font-mono text-sm">$199/mo</span>
-                  <a href="#admissions" class="text-blue-600 font-bold text-xs hover:underline">Enroll &rarr;</a>
+                  <span class="font-semibold text-slate-900 font-mono text-sm">$199/mo</span>
+                  <a href="#admissions" class="text-blue-600 font-semibold text-xs hover:underline">Enroll &rarr;</a>
                 </div>
               </article>
             </div>
@@ -689,28 +689,28 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <section id="pricing" aria-labelledby="pricing-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto text-center mb-12">
-              <h2 id="pricing-title" class="text-3xl font-extrabold text-slate-900">Transparent Tuition Plans</h2>
+              <h2 id="pricing-title" class="text-3xl font-semibold text-slate-900">Transparent Tuition Plans</h2>
               <p class="text-xs sm:text-sm text-slate-500 mt-2">All tuition payments processed securely with zero hidden fees.</p>
             </div>
             <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
               <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
-                <h3 class="font-bold text-base text-slate-900">Standard Tier</h3>
-                <div class="text-3xl font-extrabold text-slate-900 font-mono">$65 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
+                <h3 class="font-semibold text-base text-slate-900">Standard Tier</h3>
+                <div class="text-3xl font-semibold text-slate-900 font-mono">$65 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
                 <p class="text-xs text-slate-600">2 live classes per week with access to course recordings.</p>
-                <a href="#admissions" class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs text-center rounded-xl transition-all">Select Plan</a>
+                <a href="#admissions" class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs text-center rounded-xl transition-all">Select Plan</a>
               </div>
               <div class="bg-white p-6 rounded-3xl border-2 border-blue-600 shadow-xl space-y-4 relative">
-                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-extrabold uppercase px-3 py-1 rounded-full">Most Popular</span>
-                <h3 class="font-bold text-base text-slate-900">Intensive Tier</h3>
-                <div class="text-3xl font-extrabold text-blue-600 font-mono">$129 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
+                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-semibold capitalize px-3 py-1 rounded-full">Most Popular</span>
+                <h3 class="font-semibold text-base text-slate-900">Intensive Tier</h3>
+                <div class="text-3xl font-semibold text-blue-600 font-mono">$129 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
                 <p class="text-xs text-slate-600">4 live classes per week, 1-on-1 evaluations, and audio looper feedback.</p>
-                <a href="#admissions" class="block w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs text-center rounded-xl transition-all">Select Plan</a>
+                <a href="#admissions" class="block w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs text-center rounded-xl transition-all">Select Plan</a>
               </div>
               <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
-                <h3 class="font-bold text-base text-slate-900">Ijazah & Mentorship</h3>
-                <div class="text-3xl font-extrabold text-slate-900 font-mono">$220 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
+                <h3 class="font-semibold text-base text-slate-900">Ijazah & Mentorship</h3>
+                <div class="text-3xl font-semibold text-slate-900 font-mono">$220 <span class="text-xs font-normal text-slate-500">/ mo</span></div>
                 <p class="text-xs text-slate-600">Daily 1-on-1 instruction, unbroken chain Sanad verification, and priority mentoring.</p>
-                <a href="#admissions" class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs text-center rounded-xl transition-all">Select Plan</a>
+                <a href="#admissions" class="block w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs text-center rounded-xl transition-all">Select Plan</a>
               </div>
             </div>
           </section>
@@ -730,10 +730,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section aria-labelledby="classroom-title" class="py-20 px-6 sm:px-12 bg-slate-50 text-slate-900 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div class="space-y-6">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block font-mono">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block font-mono">
                   ● REAL-TIME WEBRTC SFU ENGINE
                 </span>
-                <h2 id="classroom-title" class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                <h2 id="classroom-title" class="text-3xl sm:text-4xl font-semibold text-slate-900 leading-tight">
                   Experience Low-Latency Live Virtual Classrooms
                 </h2>
                 <p class="text-sm text-slate-600 leading-relaxed">
@@ -764,31 +764,31 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <section aria-labelledby="reviews-title" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto text-center mb-12">
-              <h2 id="reviews-title" class="text-3xl font-extrabold text-slate-900">Student & Parent Success Stories</h2>
+              <h2 id="reviews-title" class="text-3xl font-semibold text-slate-900">Student & Parent Success Stories</h2>
               <p class="text-xs sm:text-sm text-slate-500 mt-2">Hear directly from graduates who transformed their knowledge with us.</p>
             </div>
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                <div class="text-amber-400 font-bold text-sm">5.0 Rating</div>
+                <div class="text-amber-400 font-semibold text-sm">5.0 Rating</div>
                 <p class="text-xs text-slate-600 leading-relaxed">"The live feedback and structured curriculum made memorization effortless. The teacher is exceptionally thorough."</p>
                 <div class="pt-2 border-t border-slate-100">
-                  <p class="font-bold text-xs text-slate-900">Ibrahim K.</p>
+                  <p class="font-semibold text-xs text-slate-900">Ibrahim K.</p>
                   <span class="text-[10px] text-slate-400">Graduate • Juz 30 Complete</span>
                 </div>
               </div>
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                <div class="text-amber-400 font-bold text-sm">5.0 Rating</div>
+                <div class="text-amber-400 font-semibold text-sm">5.0 Rating</div>
                 <p class="text-xs text-slate-600 leading-relaxed">"The coding sandbox and 1-on-1 code reviews helped me land my first software engineering job in 4 months."</p>
                 <div class="pt-2 border-t border-slate-100">
-                  <p class="font-bold text-xs text-slate-900">Rachel G.</p>
+                  <p class="font-semibold text-xs text-slate-900">Rachel G.</p>
                   <span class="text-[10px] text-slate-400">Full-Stack Bootcamp Graduate</span>
                 </div>
               </div>
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-3">
-                <div class="text-amber-400 font-bold text-sm">5.0 Rating</div>
+                <div class="text-amber-400 font-semibold text-sm">5.0 Rating</div>
                 <p class="text-xs text-slate-600 leading-relaxed">"The best online academy I've attended. The audio looper and feedback system makes daily review seamless."</p>
                 <div class="pt-2 border-t border-slate-100">
-                  <p class="font-bold text-xs text-slate-900">Tariq M.</p>
+                  <p class="font-semibold text-xs text-slate-900">Tariq M.</p>
                   <span class="text-[10px] text-slate-400">Sanad Recitation Student</span>
                 </div>
               </div>
@@ -809,20 +809,20 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section aria-label="Academy Statistics" class="py-16 px-6 sm:px-12 bg-slate-50 text-slate-900 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 font-mono">1,200+</div>
-                <p class="text-xs font-bold text-slate-700">Active Students</p>
+                <div class="text-3xl sm:text-4xl font-semibold text-blue-600 font-mono">1,200+</div>
+                <p class="text-xs font-semibold text-slate-700">Active Students</p>
               </div>
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-emerald-600 font-mono">99.4%</div>
-                <p class="text-xs font-bold text-slate-700">Graduation Pass Rate</p>
+                <div class="text-3xl sm:text-4xl font-semibold text-emerald-600 font-mono">99.4%</div>
+                <p class="text-xs font-semibold text-slate-700">Graduation Pass Rate</p>
               </div>
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-amber-600 font-mono">15 : 1</div>
-                <p class="text-xs font-bold text-slate-700">Student-Mentor Ratio</p>
+                <div class="text-3xl sm:text-4xl font-semibold text-amber-600 font-mono">15 : 1</div>
+                <p class="text-xs font-semibold text-slate-700">Student-Mentor Ratio</p>
               </div>
               <div class="space-y-1">
-                <div class="text-3xl sm:text-4xl font-extrabold text-purple-600 font-mono">100%</div>
-                <p class="text-xs font-bold text-slate-700">Live Virtual Interactive</p>
+                <div class="text-3xl sm:text-4xl font-semibold text-purple-600 font-mono">100%</div>
+                <p class="text-xs font-semibold text-slate-700">Live Virtual Interactive</p>
               </div>
             </div>
           </section>
@@ -841,20 +841,20 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section id="faq" aria-labelledby="faq-title" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
             <div class="max-w-4xl mx-auto space-y-8">
               <div class="text-center">
-                <h2 id="faq-title" class="text-3xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
+                <h2 id="faq-title" class="text-3xl font-semibold text-slate-900">Frequently Asked Questions</h2>
                 <p class="text-xs sm:text-sm text-slate-500 mt-2">Everything you need to know about enrollment, schedules, and tuition.</p>
               </div>
               <div class="space-y-3">
                 <details class="p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
-                  <summary class="font-bold text-xs sm:text-sm text-slate-900">What are the class schedules?</summary>
+                  <summary class="font-semibold text-xs sm:text-sm text-slate-900">What are the class schedules?</summary>
                   <p class="text-xs text-slate-600 mt-2 leading-relaxed">We offer flexible evening and weekend tracks. All live sessions are also recorded and accessible in your student portal.</p>
                 </details>
                 <details class="p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
-                  <summary class="font-bold text-xs sm:text-sm text-slate-900">Can I request a refund if my schedule changes?</summary>
+                  <summary class="font-semibold text-xs sm:text-sm text-slate-900">Can I request a refund if my schedule changes?</summary>
                   <p class="text-xs text-slate-600 mt-2 leading-relaxed">Yes! We provide a 14-day 100% money-back satisfaction guarantee on all enrollment tuition plans.</p>
                 </details>
                 <details class="p-4 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
-                  <summary class="font-bold text-xs sm:text-sm text-slate-900">How do I access the live classroom?</summary>
+                  <summary class="font-semibold text-xs sm:text-sm text-slate-900">How do I access the live classroom?</summary>
                   <p class="text-xs text-slate-600 mt-2 leading-relaxed">Upon registration, sign in to your student dashboard and click 'Join Live Class' to join the low-latency SFU classroom.</p>
                 </details>
               </div>
@@ -874,10 +874,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <section aria-label="Admissions Deadline" class="py-20 px-6 sm:px-12 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 text-white text-center font-sans">
             <div class="max-w-3xl mx-auto space-y-6">
-              <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to Elevate Your Knowledge?</h2>
+              <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight">Ready to Elevate Your Knowledge?</h2>
               <p class="text-sm sm:text-base text-blue-100 max-w-xl mx-auto">Seats for the upcoming batch are strictly limited to maintain small cohort sizes and 1-on-1 mentorship.</p>
               <div class="pt-2">
-                <a href="#admissions" class="inline-block px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm rounded-xl shadow-xl transition-all">
+                <a href="#admissions" class="inline-block px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-semibold text-sm rounded-xl shadow-xl transition-all">
                   Submit Admissions Inquiry Now &rarr;
                 </a>
               </div>
@@ -898,11 +898,11 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <footer role="contentinfo" class="bg-slate-50 text-slate-900 py-16 px-6 sm:px-12 font-sans border-t border-slate-200">
             <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
               <div class="space-y-3">
-                <h3 class="font-extrabold text-base text-slate-900">${tenant.name}</h3>
+                <h3 class="font-semibold text-base text-slate-900">${tenant.name}</h3>
                 <p class="text-xs text-slate-600 leading-relaxed">${tenant.tagline}</p>
               </div>
               <div class="space-y-2">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800">Quick Links</h4>
+                <h4 class="font-semibold text-xs capitalize tracking-wider text-slate-800">Quick Links</h4>
                 <ul class="space-y-1 text-xs text-slate-600">
                   <li><a href="#courses" class="hover:text-slate-900">Curriculums</a></li>
                   <li><a href="#pricing" class="hover:text-slate-900">Tuition Plans</a></li>
@@ -910,14 +910,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 </ul>
               </div>
               <div class="space-y-2">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800">Portals</h4>
+                <h4 class="font-semibold text-xs capitalize tracking-wider text-slate-800">Portals</h4>
                 <ul class="space-y-1 text-xs text-slate-600">
                   <li><a href="/${tenant.subdomain}/login" class="text-blue-600 font-semibold hover:underline">Student LMS Login</a></li>
                   <li><a href="/${tenant.subdomain}/admin" class="hover:text-slate-900">Admin Dashboard</a></li>
                 </ul>
               </div>
               <div class="space-y-2">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-800">Contact</h4>
+                <h4 class="font-semibold text-xs capitalize tracking-wider text-slate-800">Contact</h4>
                 <p class="text-xs text-slate-600">support@${tenant.subdomain}.ankabit.app</p>
                 <p class="text-xs text-slate-500">© ${new Date().getFullYear()} ${tenant.name}. All rights reserved.</p>
               </div>
@@ -937,11 +937,11 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <div class="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 font-sans">
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-              <h3 class="font-bold text-base text-slate-900 mb-2">Column 1 Content</h3>
+              <h3 class="font-semibold text-base text-slate-900 mb-2">Column 1 Content</h3>
               <p class="text-xs text-slate-600">Add your custom text, images, or CTA buttons inside this grid box.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-              <h3 class="font-bold text-base text-slate-900 mb-2">Column 2 Content</h3>
+              <h3 class="font-semibold text-base text-slate-900 mb-2">Column 2 Content</h3>
               <p class="text-xs text-slate-600">Add your custom text, images, or CTA buttons inside this grid box.</p>
             </div>
           </div>
@@ -957,15 +957,15 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <div class="py-12 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 font-sans">
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-              <h3 class="font-bold text-sm text-slate-900 mb-1">Feature Box 1</h3>
+              <h3 class="font-semibold text-sm text-slate-900 mb-1">Feature Box 1</h3>
               <p class="text-xs text-slate-500">Custom description text goes here.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-              <h3 class="font-bold text-sm text-slate-900 mb-1">Feature Box 2</h3>
+              <h3 class="font-semibold text-sm text-slate-900 mb-1">Feature Box 2</h3>
               <p class="text-xs text-slate-500">Custom description text goes here.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-              <h3 class="font-bold text-sm text-slate-900 mb-1">Feature Box 3</h3>
+              <h3 class="font-semibold text-sm text-slate-900 mb-1">Feature Box 3</h3>
               <p class="text-xs text-slate-500">Custom description text goes here.</p>
             </div>
           </div>
@@ -978,7 +978,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           `<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/>`
         ),
         category: 'Basic Elements',
-        content: `<h2 class="text-3xl font-extrabold text-slate-900 font-sans my-4">Section Headline Title</h2>`,
+        content: `<h2 class="text-3xl font-semibold text-slate-900 font-sans my-4">Section Headline Title</h2>`,
       },
       {
         id: 'basic-paragraph',
@@ -996,7 +996,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           `<path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/>`
         ),
         category: 'Basic Elements',
-        content: `<a href="#admissions" class="inline-block px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all">Click Here &rarr;</a>`,
+        content: `<a href="#admissions" class="inline-block px-7 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition-all">Click Here &rarr;</a>`,
       },
 
       // 12. Course Curriculum Accordion
@@ -1011,29 +1011,29 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section id="curriculum" class="py-20 px-6 sm:px-12 bg-white font-sans border-b border-slate-200">
             <div class="max-w-4xl mx-auto space-y-8">
               <div class="text-center">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 uppercase tracking-wider">Course Syllabus</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Comprehensive Learning Curriculum</h2>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200 capitalize tracking-wider">Course Syllabus</span>
+                <h2 class="text-3xl font-semibold text-slate-900 mt-2">Comprehensive Learning Curriculum</h2>
                 <p class="text-xs sm:text-sm text-slate-500 mt-1">Structured step-by-step tracks designed for beginners to advanced graduates.</p>
               </div>
               <div class="space-y-3">
                 <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                   <div class="flex items-center justify-between">
-                    <h3 class="font-extrabold text-sm text-slate-900">Module 1: Foundations & Fundamentals</h3>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Weeks 1 - 4</span>
+                    <h3 class="font-semibold text-sm text-slate-900">Module 1: Foundations & Fundamentals</h3>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Weeks 1 - 4</span>
                   </div>
                   <p class="text-xs text-slate-600 mt-1.5">Core principles, oral articulation, and initial prerequisite benchmarks.</p>
                 </div>
                 <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                   <div class="flex items-center justify-between">
-                    <h3 class="font-extrabold text-sm text-slate-900">Module 2: Intermediate Mastery & Live Practicum</h3>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Weeks 5 - 10</span>
+                    <h3 class="font-semibold text-sm text-slate-900">Module 2: Intermediate Mastery & Live Practicum</h3>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Weeks 5 - 10</span>
                   </div>
                   <p class="text-xs text-slate-600 mt-1.5">Interactive halaqah sessions, live feedback loops, and individual revision logs.</p>
                 </div>
                 <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                   <div class="flex items-center justify-between">
-                    <h3 class="font-extrabold text-sm text-slate-900">Module 3: Advanced Khatmah & Final Sanad Exam</h3>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Weeks 11 - 16</span>
+                    <h3 class="font-semibold text-sm text-slate-900">Module 3: Advanced Khatmah & Final Sanad Exam</h3>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-100 text-purple-800">Weeks 11 - 16</span>
                   </div>
                   <p class="text-xs text-slate-600 mt-1.5">Complete oral recitation examination, Sanad certification, and graduation honors.</p>
                 </div>
@@ -1054,27 +1054,27 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         content: `
           <section id="faculty" class="py-20 px-6 sm:px-12 bg-slate-50 font-sans border-b border-slate-200">
             <div class="max-w-6xl mx-auto text-center mb-12">
-              <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">Expert Mentors</span>
-              <h2 class="text-3xl font-extrabold text-slate-900 mt-2">Learn Directly from Certified Instructors</h2>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 capitalize tracking-wider">Expert Mentors</span>
+              <h2 class="text-3xl font-semibold text-slate-900 mt-2">Learn Directly from Certified Instructors</h2>
               <p class="text-xs sm:text-sm text-slate-500 mt-1">Our faculty are certified with verified chains of transmission (Sanad) and industry experience.</p>
             </div>
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
-                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-emerald-400 font-bold text-2xl flex items-center justify-center ring-4 ring-slate-100">AR</div>
-                <h3 class="font-extrabold text-base text-slate-900">Shaykh Dr. Abdul Rahman</h3>
-                <p class="text-[11px] font-bold text-emerald-700">Senior Sanad Reciter • Al-Azhar Graduate</p>
+                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-emerald-400 font-semibold text-2xl flex items-center justify-center ring-4 ring-slate-100">AR</div>
+                <h3 class="font-semibold text-base text-slate-900">Shaykh Dr. Abdul Rahman</h3>
+                <p class="text-[11px] font-semibold text-emerald-700">Senior Sanad Reciter • Al-Azhar Graduate</p>
                 <p class="text-xs text-slate-600 leading-relaxed">Over 18 years teaching the 10 Qira'at with connected oral transmission to Prophet Muhammad (ﷺ).</p>
               </div>
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
-                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-blue-400 font-bold text-2xl flex items-center justify-center ring-4 ring-slate-100">SJ</div>
-                <h3 class="font-extrabold text-base text-slate-900">Sarah Jenkins</h3>
-                <p class="text-[11px] font-bold text-blue-700">Lead Curriculum Architect • Ex-Google Staff</p>
+                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-blue-400 font-semibold text-2xl flex items-center justify-center ring-4 ring-slate-100">SJ</div>
+                <h3 class="font-semibold text-base text-slate-900">Sarah Jenkins</h3>
+                <p class="text-[11px] font-semibold text-blue-700">Lead Curriculum Architect • Ex-Google Staff</p>
                 <p class="text-xs text-slate-600 leading-relaxed">Full-stack software architect specializing in distributed systems, modern React, and cloud architectures.</p>
               </div>
               <div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm text-center space-y-3">
-                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-purple-400 font-bold text-2xl flex items-center justify-center ring-4 ring-slate-100">TM</div>
-                <h3 class="font-extrabold text-base text-slate-900">Ustadh Tariq Mansoor</h3>
-                <p class="text-[11px] font-bold text-purple-700">Head of Memorization & Muraja'ah Track</p>
+                <div class="w-20 h-20 mx-auto rounded-full bg-slate-800 text-purple-400 font-semibold text-2xl flex items-center justify-center ring-4 ring-slate-100">TM</div>
+                <h3 class="font-semibold text-base text-slate-900">Ustadh Tariq Mansoor</h3>
+                <p class="text-[11px] font-semibold text-purple-700">Head of Memorization & Muraja'ah Track</p>
                 <p class="text-xs text-slate-600 leading-relaxed">Trained over 400 complete Quran Huffaz across Europe and North America.</p>
               </div>
             </div>
@@ -1094,19 +1094,19 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <section class="py-10 px-6 sm:px-12 bg-white border-b border-slate-200 font-sans">
             <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center items-center">
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">100% Secure Checkout</div>
+                <div class="font-semibold text-slate-900 text-sm">100% Secure Checkout</div>
                 <p class="text-[10px] text-slate-500">Stripe & 256-bit SSL Encrypted</p>
               </div>
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">Verified Certifications</div>
+                <div class="font-semibold text-slate-900 text-sm">Verified Certifications</div>
                 <p class="text-[10px] text-slate-500">Accredited Sanad Transmissions</p>
               </div>
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">Low-Latency WebRTC</div>
+                <div class="font-semibold text-slate-900 text-sm">Low-Latency WebRTC</div>
                 <p class="text-[10px] text-slate-500">Real-Time SFU Video Halaqahs</p>
               </div>
               <div class="space-y-1">
-                <div class="font-extrabold text-slate-900 text-sm">14-Day Guarantee</div>
+                <div class="font-semibold text-slate-900 text-sm">14-Day Guarantee</div>
                 <p class="text-[10px] text-slate-500">100% Tuition Satisfaction</p>
               </div>
             </div>
@@ -1480,13 +1480,13 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         }
         .gjs-block-label {
           color: #ffffff !important;
-          font-weight: 700 !important;
+          font-weight: 600 !important;
         }
         .gjs-block-category .gjs-title {
-          font-weight: 800 !important;
+          font-weight: 600 !important;
           font-size: 11px !important;
-          text-transform: uppercase !important;
-          letter-spacing: 0.05em !important;
+          text-transform: capitalize !important;
+          letter-spacing: 0.02em !important;
           color: #1e293b !important;
           background: #f1f5f9 !important;
           border: 1px solid #e2e8f0 !important;
@@ -1499,10 +1499,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           background: #e2e8f0 !important;
         }
         .gjs-sm-sector .gjs-sm-sector-title {
-          font-weight: 800 !important;
+          font-weight: 600 !important;
           font-size: 11px !important;
-          text-transform: uppercase !important;
-          letter-spacing: 0.05em !important;
+          text-transform: capitalize !important;
+          letter-spacing: 0.02em !important;
           color: #1e293b !important;
           background: #f8fafc !important;
           border-bottom: 1px solid #e2e8f0 !important;
@@ -1538,10 +1538,10 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <LayoutTemplate className="w-5 h-5 text-blue-600" />
-            <span className="font-extrabold text-sm text-slate-900 hidden sm:inline">Page Builder</span>
+            <span className="font-semibold text-sm text-slate-900 hidden sm:inline">Page Builder</span>
           </div>
           {hasUnsavedChanges && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
               Unsaved Edits
             </span>
           )}
@@ -1604,7 +1604,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setIsAiPageModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer select-none active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer select-none active:scale-95"
             title="Build Academy Landing Page with AI"
           >
             <Wand2 className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
@@ -1614,7 +1614,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setIsTemplateBankOpen(true)}
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span className="hidden sm:inline">Templates</span>
@@ -1629,7 +1629,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 setIsExportModalOpen(true);
               }
             }}
-            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 border border-slate-200 transition-all cursor-pointer"
             title="Export Clean HTML/CSS"
           >
             <Download className="w-3.5 h-3.5 text-slate-600" />
@@ -1640,7 +1640,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-900/10 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
+            className="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-blue-900/10 transition-all cursor-pointer disabled:opacity-50 select-none active:scale-95"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{isSaving ? 'Publishing...' : 'Save & Publish'}</span>
@@ -1657,7 +1657,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             <button
               type="button"
               onClick={() => setActiveSideTab('blocks')}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeSideTab === 'blocks'
                   ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
@@ -1669,7 +1669,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             <button
               type="button"
               onClick={() => setActiveSideTab('styles')}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeSideTab === 'styles'
                   ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
@@ -1681,7 +1681,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             <button
               type="button"
               onClick={() => setActiveSideTab('layers')}
-              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeSideTab === 'layers'
                   ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
@@ -1742,13 +1742,13 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
             <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Pre-Built Designs</span>
-                <h3 className="text-base font-extrabold text-slate-900">Choose Academy Landing Page Template</h3>
+                <span className="text-[10px] font-semibold capitalize tracking-wider text-blue-600">Pre-Built Designs</span>
+                <h3 className="text-base font-semibold text-slate-900">Choose Academy Landing Page Template</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsTemplateBankOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 flex items-center justify-center font-semibold text-sm transition-colors cursor-pointer"
               >
                 &times;
               </button>
@@ -1763,12 +1763,12 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   <div className="space-y-3">
                     <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
                       <img src={tmpl.previewImg} alt={tmpl.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <span className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-md">
+                      <span className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-semibold capitalize px-2.5 py-0.5 rounded-full shadow-md">
                         {tmpl.badge}
                       </span>
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-slate-900">{tmpl.name}</h4>
+                      <h4 className="font-semibold text-sm text-slate-900">{tmpl.name}</h4>
                       <p className="text-xs text-slate-500 mt-1 leading-relaxed">{tmpl.description}</p>
                     </div>
                   </div>
@@ -1776,7 +1776,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   <button
                     type="button"
                     onClick={() => handleApplyTemplate(tmpl.html)}
-                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer"
                   >
                     Apply Template to Canvas
                   </button>
@@ -1793,14 +1793,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150 font-sans">
             <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Export & Integration</span>
-                <h3 className="text-base font-extrabold text-slate-900">Export Clean HTML & CSS</h3>
+                <span className="text-[10px] font-semibold capitalize tracking-wider text-emerald-600">Export & Integration</span>
+                <h3 className="text-base font-semibold text-slate-900">Export Clean HTML & CSS</h3>
                 <p className="text-xs text-slate-500">Standalone, semantic, high-accessibility code ready for hosting or static export.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsExportModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-300/60 text-slate-700 flex items-center justify-center font-semibold text-sm transition-colors cursor-pointer"
               >
                 &times;
               </button>
@@ -1810,7 +1810,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               {/* Shareable Link Banner */}
               <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
-                  <div className="font-bold text-blue-900 text-xs">Direct Shareable Academy URL:</div>
+                  <div className="font-semibold text-blue-900 text-xs">Direct Shareable Academy URL:</div>
                   <div className="font-mono text-blue-700 text-[11px]">https://{tenant.subdomain}.ankabit.app</div>
                 </div>
                 <button
@@ -1819,7 +1819,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                     navigator.clipboard.writeText(`https://${tenant.subdomain}.ankabit.app`);
                     onAddToast({ type: 'success', title: 'Link Copied', message: 'Shareable academy URL copied to clipboard!' });
                   }}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
                   <Copy className="w-3.5 h-3.5" /> Copy Public URL
                 </button>
@@ -1828,14 +1828,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               {/* Code Previews */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800 uppercase text-[10px]">Compiled HTML ({Math.round(exportedHtml.length / 1024)} KB)</span>
+                  <span className="font-semibold text-slate-800 capitalize text-[10px]">Compiled HTML ({Math.round(exportedHtml.length / 1024)} KB)</span>
                   <button
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(exportedHtml);
                       onAddToast({ type: 'success', title: 'HTML Copied', message: 'Complete page HTML copied to clipboard.' });
                     }}
-                    className="text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-blue-600 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <Copy className="w-3 h-3" /> Copy HTML
                   </button>
@@ -1850,14 +1850,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800 uppercase text-[10px]">Canvas CSS</span>
+                  <span className="font-semibold text-slate-800 capitalize text-[10px]">Canvas CSS</span>
                   <button
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(exportedCss);
                       onAddToast({ type: 'success', title: 'CSS Copied', message: 'CSS stylesheet copied to clipboard.' });
                     }}
-                    className="text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-blue-600 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <Copy className="w-3 h-3" /> Copy CSS
                   </button>
@@ -1886,14 +1886,14 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   URL.revokeObjectURL(url);
                   onAddToast({ type: 'success', title: 'HTML File Downloaded', message: 'Downloaded landing page HTML file.' });
                 }}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" /> Download .html File
               </button>
               <button
                 type="button"
                 onClick={() => setIsExportModalOpen(false)}
-                className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -1909,18 +1909,18 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-semibold">
                   <Wand2 className="w-4 h-4 text-amber-300" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-sm text-slate-900">Build Academy Landing Page with AI</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Build Academy Landing Page with AI</h3>
                   <p className="text-[11px] text-slate-500">Describe your academy or choose a preset to auto-generate a high-converting layout.</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAiPageModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-semibold text-xs"
               >
                 &times;
               </button>
@@ -1928,7 +1928,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
             {/* Presets Grid */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Quick Presets:</label>
+              <label className="text-[11px] font-semibold text-slate-700 capitalize tracking-wider">Quick Presets:</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -1939,7 +1939,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">Quran & Sanad Academy</div>
+                  <div className="font-semibold text-slate-900">Quran & Sanad Academy</div>
                   <div className="text-[10px] text-slate-500">Tajweed, Hifz, and verified chain</div>
                 </button>
 
@@ -1952,7 +1952,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">Software Bootcamp</div>
+                  <div className="font-semibold text-slate-900">Software Bootcamp</div>
                   <div className="text-[10px] text-slate-500">Next.js, TypeScript & Cloud</div>
                 </button>
 
@@ -1965,7 +1965,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">Weekend Islamic School</div>
+                  <div className="font-semibold text-slate-900">Weekend Islamic School</div>
                   <div className="text-[10px] text-slate-500">Youth character & Quran fluency</div>
                 </button>
 
@@ -1978,7 +1978,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   }}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 text-left transition-all text-xs cursor-pointer"
                 >
-                  <div className="font-bold text-slate-900">Accelerated Camp</div>
+                  <div className="font-semibold text-slate-900">Accelerated Camp</div>
                   <div className="text-[10px] text-slate-500">Summer intensive immersion</div>
                 </button>
               </div>
@@ -1987,7 +1987,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
             {/* Custom Inputs */}
             <div className="space-y-3 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Academy Focus & Headline Goal</label>
+                <label className="font-semibold text-slate-800">Academy Focus & Headline Goal</label>
                 <input
                   type="text"
                   placeholder="e.g. Master Authentic Quran Memorization with Verified Sanad"
@@ -1999,7 +1999,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-800">Target Students</label>
+                  <label className="font-semibold text-slate-800">Target Students</label>
                   <input
                     type="text"
                     placeholder="e.g. Beginners & Advanced Youth"
@@ -2009,7 +2009,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-800">Key Feature Highlight</label>
+                  <label className="font-semibold text-slate-800">Key Feature Highlight</label>
                   <input
                     type="text"
                     placeholder="e.g. 1-on-1 Daily Live Recitation"
@@ -2026,7 +2026,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               <button
                 type="button"
                 onClick={() => setIsAiPageModalOpen(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer text-xs"
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold transition-colors cursor-pointer text-xs"
               >
                 Cancel
               </button>
@@ -2034,7 +2034,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
                 type="button"
                 onClick={handleGeneratePageWithAi}
                 disabled={isGeneratingWithAi}
-                className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 disabled:opacity-50 select-none active:scale-95"
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 disabled:opacity-50 select-none active:scale-95"
               >
                 <Wand2 className="w-4 h-4 text-amber-300" />
                 <span>{isGeneratingWithAi ? 'Compiling AI Layout...' : 'Generate Page with AI'}</span>

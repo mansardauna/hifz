@@ -193,10 +193,10 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
       <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-semibold">
               <Sparkles className="w-4 h-4" />
             </div>
-            <h2 className="text-lg font-extrabold text-slate-900">Chat Intelligence & Student Insights</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Chat Intelligence & Student Insights</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Aggregated question collection, sentiment tracking, and AI-generated summary reports from live classes and helpdesks.
@@ -205,7 +205,7 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
 
         <button
           onClick={handleExportTranscripts}
-          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <Download className="w-3.5 h-3.5" /> Export Transcripts
         </button>
@@ -214,24 +214,24 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Messages Analyzed</span>
-          <div className="text-2xl font-black text-slate-900">{chatRecords.length * 28 + 140}</div>
-          <p className="text-[10px] text-blue-600 font-bold">Across 3 channels</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Messages Analyzed</span>
+          <div className="text-2xl font-semibold text-slate-900">{chatRecords.length * 28 + 140}</div>
+          <p className="text-[10px] text-blue-600 font-semibold">Across 3 channels</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Positive Sentiment</span>
-          <div className="text-2xl font-black text-slate-900">96.2%</div>
-          <p className="text-[10px] text-emerald-600 font-bold">High student engagement</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Positive Sentiment</span>
+          <div className="text-2xl font-semibold text-slate-900">96.2%</div>
+          <p className="text-[10px] text-emerald-600 font-semibold">High student engagement</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Question Resolution</span>
-          <div className="text-2xl font-black text-slate-900">98.4%</div>
-          <p className="text-[10px] text-emerald-600 font-bold">Avg answer: 2.1 mins</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Question Resolution</span>
+          <div className="text-2xl font-semibold text-slate-900">98.4%</div>
+          <p className="text-[10px] text-emerald-600 font-semibold">Avg answer: 2.1 mins</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Open Student Inquiries</span>
-          <div className="text-2xl font-black text-slate-900">{chatRecords.filter((c) => !c.resolved).length}</div>
-          <p className="text-[10px] text-amber-600 font-bold">Requires instructor reply</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Open Student Inquiries</span>
+          <div className="text-2xl font-semibold text-slate-900">{chatRecords.filter((c) => !c.resolved).length}</div>
+          <p className="text-[10px] text-amber-600 font-semibold">Requires instructor reply</p>
         </div>
       </div>
 
@@ -240,16 +240,16 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
         {/* Card 1: Key Topic Breakdown & Roadblocks */}
         <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-semibold">
               <TrendingUp className="w-4 h-4" />
             </div>
-            <h3 className="font-extrabold text-sm text-slate-900">AI Topic & Roadblock Breakdown</h3>
+            <h3 className="font-semibold text-sm text-slate-900">AI Topic & Roadblock Breakdown</h3>
           </div>
 
           <div className="space-y-3 text-xs">
             <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
-              <div className="flex items-center justify-between font-bold">
-                <span className="text-slate-900 font-bold">
+              <div className="flex items-center justify-between font-semibold">
+                <span className="text-slate-900 font-semibold">
                   {isCoding
                     ? 'React 19 Server Actions & Mutation State'
                     : isQuran
@@ -272,8 +272,8 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
             </div>
 
             <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
-              <div className="flex items-center justify-between font-bold">
-                <span className="text-slate-900 font-bold">
+              <div className="flex items-center justify-between font-semibold">
+                <span className="text-slate-900 font-semibold">
                   {isCoding
                     ? 'TypeScript Generic Constraints'
                     : isQuran
@@ -300,17 +300,17 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
         {/* Card 2: Generated Instructor Action Items */}
         <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-semibold">
               <Lightbulb className="w-4 h-4" />
             </div>
-            <h3 className="font-extrabold text-sm text-slate-900">Recommended Teacher Action Items</h3>
+            <h3 className="font-semibold text-sm text-slate-900">Recommended Teacher Action Items</h3>
           </div>
 
           <div className="space-y-2.5 text-xs">
             <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-emerald-950">
+                <p className="font-semibold text-emerald-950">
                   {isCoding
                     ? 'Dedicate 10 minutes in next live session to Server Action error handling.'
                     : isQuran
@@ -326,7 +326,7 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
             <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-blue-950">
+                <p className="font-semibold text-blue-950">
                   {isCoding
                     ? 'Upload TypeScript sandbox starter template to student repository downloads.'
                     : isQuran
@@ -342,7 +342,7 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
             <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-amber-950">Follow up with 2 pending admissions inquiries via WhatsApp.</p>
+                <p className="font-semibold text-amber-950">Follow up with 2 pending admissions inquiries via WhatsApp.</p>
                 <span className="text-[10px] text-amber-700">Prospective families ready to finalize enrollment</span>
               </div>
             </div>
@@ -381,7 +381,7 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold capitalize text-[10px] tracking-wider">
                 <th className="py-3.5 px-4">Channel & Time</th>
                 <th className="py-3.5 px-4">Student / Sender</th>
                 <th className="py-3.5 px-4">Message Content</th>
@@ -393,12 +393,12 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
               {filteredMessages.map((msg) => (
                 <tr key={msg.id} className="hover:bg-slate-50/60 transition-colors">
                   <td className="py-3.5 px-4 whitespace-nowrap">
-                    <span className="font-bold text-slate-900 block">{msg.channel}</span>
+                    <span className="font-semibold text-slate-900 block">{msg.channel}</span>
                     <span className="text-[10px] text-slate-400">{msg.timestamp}</span>
                   </td>
                   <td className="py-3.5 px-4 whitespace-nowrap">
-                    <div className="font-bold text-slate-900">{msg.senderName}</div>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                    <div className="font-semibold text-slate-900">{msg.senderName}</div>
+                    <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded capitalize ${
                       msg.senderRole === 'teacher' ? 'bg-purple-100 text-purple-800' : msg.senderRole === 'student' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'
                     }`}>
                       {msg.senderRole}
@@ -418,11 +418,11 @@ export const ChatAnalyticsSummary: React.FC<ChatAnalyticsSummaryProps> = ({ onAd
                       className="cursor-pointer"
                     >
                       {msg.resolved ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
                           <Check className="w-2.5 h-2.5" /> Answered
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 inline-flex items-center gap-1">
                           <HelpCircle className="w-2.5 h-2.5" /> Needs Reply
                         </span>
                       )}

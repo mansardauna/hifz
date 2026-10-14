@@ -3,28 +3,28 @@ import { storageService } from '../../../src/lib/storage';
 import { requireAuth } from '../../../src/server/lib/serverAuth';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const ALLOWED_MIME_TYPES = new Set([
+const MIME_TO_EXT: Record<string, string> = {
   // Audio
-  'audio/mpeg',
-  'audio/mp3',
-  'audio/wav',
-  'audio/x-wav',
-  'audio/m4a',
-  'audio/x-m4a',
-  'audio/ogg',
-  'audio/webm',
-  // Images
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/svg+xml',
+  'audio/mpeg': '.mp3',
+  'audio/mp3': '.mp3',
+  'audio/wav': '.wav',
+  'audio/x-wav': '.wav',
+  'audio/m4a': '.m4a',
+  'audio/x-m4a': '.m4a',
+  'audio/ogg': '.ogg',
+  'audio/webm': '.webm',
+  // Images (excluding SVG to eliminate stored XSS)
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
   // Documents
-  'application/pdf',
-]);
+  'application/pdf': '.pdf',
+};
 
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
 
@@ -36,14 +36,24 @@ export async function GET(request: NextRequest) {
   try {
     const authUser = requireAuth(request);
     const { searchParams } = new URL(request.url);
-    const fileName = searchParams.get('fileName') || `upload-${Date.now()}.bin`;
-    const contentType = searchParams.get('contentType') || 'application/octet-stream';
-    const tenantId = searchParams.get('tenantId') || authUser.tenantId || 'general';
-    const category = (searchParams.get('category') as any) || 'general';
+    const contentType = searchParams.get('contentType') || '';
+    const rawTenantId = searchParams.get('tenantId') || authUser.tenantId || 'general';
+    const rawCategory = searchParams.get('category') || 'general';
 
-    if (contentType !== 'application/octet-stream' && !ALLOWED_MIME_TYPES.has(contentType)) {
+    const ext = MIME_TO_EXT[contentType];
+    if (!ext) {
       return NextResponse.json({ error: `File type "${contentType}" is not allowed` }, { status: 400 });
     }
+
+    const VALID_CATEGORIES = ['general', 'recitations', 'assignments', 'avatars', 'certificates'] as const;
+    type UploadCategory = typeof VALID_CATEGORIES[number];
+    const category: UploadCategory = (VALID_CATEGORIES as readonly string[]).includes(rawCategory)
+      ? (rawCategory as UploadCategory)
+      : 'general';
+
+    const tenantId = rawTenantId.replace(/[^a-zA-Z0-9_-]/g, '') || 'general';
+    const fileUuid = crypto.randomBytes(16).toString('hex');
+    const fileName = `${Date.now()}-${fileUuid}${ext}`;
 
     const presignedData = storageService.generatePresignedUploadUrl({
       fileName,
@@ -74,15 +84,16 @@ export async function POST(request: NextRequest) {
     const authUser = requireAuth(request);
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
-    const category = (formData.get('category') as string) || 'general';
-    const tenantId = (formData.get('tenantId') as string) || authUser.tenantId || 'general';
+    const rawCategory = (formData.get('category') as string) || 'general';
+    const rawTenantId = (formData.get('tenantId') as string) || authUser.tenantId || 'general';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided in form data' }, { status: 400 });
     }
 
-    const mimeType = file.type || 'application/octet-stream';
-    if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+    const mimeType = file.type || '';
+    const ext = MIME_TO_EXT[mimeType];
+    if (!ext) {
       return NextResponse.json(
         { error: `File type "${mimeType}" is not allowed for security reasons.` },
         { status: 400 }
@@ -99,8 +110,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const sanitizedBase = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const fileName = `${Date.now()}-${sanitizedBase}`;
+    const VALID_CATEGORIES = ['general', 'recitations', 'assignments', 'avatars', 'certificates'] as const;
+    type UploadCategory = typeof VALID_CATEGORIES[number];
+    const category: UploadCategory = (VALID_CATEGORIES as readonly string[]).includes(rawCategory)
+      ? (rawCategory as UploadCategory)
+      : 'general';
+
+    const tenantId = rawTenantId.replace(/[^a-zA-Z0-9_-]/g, '') || 'general';
+    const fileUuid = crypto.randomBytes(16).toString('hex');
+    const fileName = `${Date.now()}-${fileUuid}${ext}`;
 
     // Cloudflare R2 / AWS S3 direct upload
     if (process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY) {
@@ -116,7 +134,14 @@ export async function POST(request: NextRequest) {
 
     // Local Disk persistence in public/uploads for high-fidelity media serving
     try {
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads', tenantId, category);
+      const baseUploadDir = path.resolve(process.cwd(), 'public', 'uploads');
+      const uploadDir = path.resolve(baseUploadDir, tenantId, category);
+
+      // Path traversal check
+      if (!uploadDir.startsWith(baseUploadDir)) {
+        return NextResponse.json({ error: 'Invalid upload directory path' }, { status: 400 });
+      }
+
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
@@ -153,3 +178,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

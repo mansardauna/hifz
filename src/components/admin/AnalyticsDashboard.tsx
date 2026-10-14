@@ -510,19 +510,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         {/* Stat 1: Total Revenue */}
         <Card className="p-6 sm:p-7 space-y-3 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <span className="text-xs font-semibold capitalize tracking-wider text-slate-500">
               Total Tuition Revenue
             </span>
             <DollarSign className="w-5 h-5 text-emerald-600 shrink-0" />
           </div>
           <div>
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-950 font-display tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-semibold text-slate-950 font-display tracking-tight">
               ${Number(revenueCalculated).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </h3>
             {isDemo ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-emerald-700 font-bold flex items-center gap-0.5">
+                  <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
                     <TrendingUp className="w-3.5 h-3.5" /> +18.4%
                   </span>
                   <span className="text-slate-400 font-medium">vs last term</span>
@@ -534,7 +534,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             ) : revenueCalculated > 0 ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-emerald-700 font-bold flex items-center gap-0.5">
+                  <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
                     <TrendingUp className="w-3.5 h-3.5" /> Settled
                   </span>
                   <span className="text-slate-400 font-medium">active billing cycle</span>
@@ -559,19 +559,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         {/* Stat 2: Enrolled Students */}
         <Card className="p-6 sm:p-7 space-y-3 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <span className="text-xs font-semibold capitalize tracking-wider text-slate-500">
               Enrolled Students
             </span>
             <GraduationCap className="w-5 h-5 text-blue-600 shrink-0" />
           </div>
           <div>
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-950 font-display tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-semibold text-slate-950 font-display tracking-tight">
               {studentsCount}
             </h3>
             {isDemo ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-blue-700 font-bold flex items-center gap-0.5">
+                  <span className="text-blue-700 font-semibold flex items-center gap-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" /> +12
                   </span>
                   <span className="text-slate-400 font-medium">admissions this week</span>
@@ -583,7 +583,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             ) : studentsCount > 0 ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-blue-700 font-bold flex items-center gap-0.5">
+                  <span className="text-blue-700 font-semibold flex items-center gap-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" /> Active
                   </span>
                   <span className="text-slate-400 font-medium">enrolled learners</span>
@@ -608,19 +608,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         {/* Stat 3: Faculty & Teachers */}
         <Card className="p-6 sm:p-7 space-y-3 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <span className="text-xs font-semibold capitalize tracking-wider text-slate-500">
               Faculty & Instructors
             </span>
             <Users className="w-5 h-5 text-purple-600 shrink-0" />
           </div>
           <div>
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-950 font-display tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-semibold text-slate-950 font-display tracking-tight">
               {teachersCount}
             </h3>
             {isDemo ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-purple-700 font-bold flex items-center gap-0.5">
+                  <span className="text-purple-700 font-semibold flex items-center gap-0.5">
                     <Video className="w-3.5 h-3.5" /> 2 Live
                   </span>
                   <span className="text-slate-400 font-medium">in live sessions now</span>
@@ -632,7 +632,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             ) : teachersCount > 0 ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-purple-700 font-bold flex items-center gap-0.5">
+                  <span className="text-purple-700 font-semibold flex items-center gap-0.5">
                     <Users className="w-3.5 h-3.5" /> Active
                   </span>
                   <span className="text-slate-400 font-medium">faculty assigned</span>
@@ -657,19 +657,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         {/* Stat 4: Active Courses & Completion */}
         <Card className="p-6 sm:p-7 space-y-3 hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <span className="text-xs font-semibold capitalize tracking-wider text-slate-500">
               Active Courses & Tracks
             </span>
             <BookOpen className="w-5 h-5 text-amber-600 shrink-0" />
           </div>
           <div>
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-950 font-display tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-semibold text-slate-950 font-display tracking-tight">
               {publishedCoursesCount}
             </h3>
             {isDemo ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-emerald-700 font-bold flex items-center gap-0.5">
+                  <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5" /> 94%
                   </span>
                   <span className="text-slate-400 font-medium">completion rate</span>
@@ -681,7 +681,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             ) : publishedCoursesCount > 0 ? (
               <>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
-                  <span className="text-emerald-700 font-bold flex items-center gap-0.5">
+                  <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Active
                   </span>
                   <span className="text-slate-400 font-medium">published tracks</span>
@@ -714,7 +714,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-emerald-600 shrink-0" />
-                <h3 className="text-base font-bold text-slate-900">Tuition Revenue Trajectory</h3>
+                <h3 className="text-base font-semibold text-slate-900">Tuition Revenue Trajectory</h3>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 Monthly revenue volume collected through payment processors
@@ -799,7 +799,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-blue-600 shrink-0" />
-                <h3 className="text-base font-bold text-slate-900">Student Intake Volume</h3>
+                <h3 className="text-base font-semibold text-slate-900">Student Intake Volume</h3>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 New learner enrollments by calendar month
@@ -849,12 +849,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           <div className="flex items-center gap-2.5">
             <CalendarIcon className="w-5 h-5 text-indigo-600 shrink-0" />
             <div>
-              <h3 className="text-base font-bold text-slate-900">Academic Calendar & Upcoming Halaqahs</h3>
+              <h3 className="text-base font-semibold text-slate-900">Academic Calendar & Upcoming Halaqahs</h3>
               <p className="text-xs text-slate-500">Live sessions, assessments, and faculty milestones scheduled for this month</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg">
+            <span className="text-xs font-semibold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-lg">
               October 2026
             </span>
           </div>
@@ -867,7 +867,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               key={day}
               type="button"
               onClick={() => setSelectedCalendarDate(day)}
-              className={`p-2 rounded-xl text-center text-xs font-bold transition-all cursor-pointer ${
+              className={`p-2 rounded-xl text-center text-xs font-semibold transition-all cursor-pointer ${
                 selectedCalendarDate === day
                   ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
@@ -895,7 +895,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-slate-900">{session.title}</span>
+                    <span className="font-semibold text-xs text-slate-900">{session.title}</span>
                     {session.isLive ? (
                       <Badge variant="success" className="animate-pulse">Live Now</Badge>
                     ) : (
@@ -946,7 +946,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
             <div>
-              <h3 className="text-base font-bold text-slate-900">Administrative Tasks & Action Queue</h3>
+              <h3 className="text-base font-semibold text-slate-900">Administrative Tasks & Action Queue</h3>
               <p className="text-xs text-slate-500">Track admissions reviews, certificate approvals, and operational milestones</p>
             </div>
           </div>
@@ -996,7 +996,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         {/* Task Table */}
         <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider">
               <tr>
                 <th className="px-4 py-3 w-10 text-center">Done</th>
                 <th className="px-4 py-3">Task Description</th>
@@ -1070,7 +1070,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div className="flex items-center gap-2.5">
               <FileText className="w-5 h-5 text-teal-600 shrink-0" />
               <div>
-                <h3 className="text-base font-bold text-slate-900">Institutional Reports & Audits</h3>
+                <h3 className="text-base font-semibold text-slate-900">Institutional Reports & Audits</h3>
                 <p className="text-xs text-slate-500">Official exportable summaries of tuition, attendance, and assessments</p>
               </div>
             </div>
@@ -1079,7 +1079,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider">
                 <tr>
                   <th className="px-4 py-3">Report Name</th>
                   <th className="px-4 py-3">Period</th>
@@ -1109,7 +1109,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                       </td>
                       <td className="px-4 py-3 text-slate-600">{report.period}</td>
                       <td className="px-4 py-3">
-                        <span className="bg-slate-100 text-slate-700 font-mono px-2 py-0.5 rounded text-[11px] font-bold">
+                        <span className="bg-slate-100 text-slate-700 font-mono px-2 py-0.5 rounded text-[11px] font-semibold">
                           {report.format}
                         </span>
                       </td>
@@ -1137,11 +1137,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             <div className="flex items-center gap-2.5">
               <Bell className="w-5 h-5 text-amber-600 shrink-0" />
               <div>
-                <h3 className="text-base font-bold text-slate-900">Live Activity Feed</h3>
+                <h3 className="text-base font-semibold text-slate-900">Live Activity Feed</h3>
                 <p className="text-xs text-slate-500">Real-time alerts, admissions, and tuition receipts</p>
               </div>
             </div>
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live
             </span>
           </div>
@@ -1161,7 +1161,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs text-slate-900">{item.title}</span>
+                      <span className="font-semibold text-xs text-slate-900">{item.title}</span>
                       <span className="text-[10px] text-slate-400 font-mono">{item.time}</span>
                     </div>
                     <p className="text-xs text-slate-600 leading-snug">{item.description}</p>
@@ -1177,7 +1177,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       {isAddTaskModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
           <Card className="w-full max-w-md p-6 sm:p-7 space-y-4 bg-white shadow-2xl">
-            <h3 className="text-base font-bold text-slate-900">Create New Administrative Task</h3>
+            <h3 className="text-base font-semibold text-slate-900">Create New Administrative Task</h3>
             <form onSubmit={handleAddNewTask} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Task Description</label>

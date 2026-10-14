@@ -148,7 +148,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
         <div>
           <div className="flex items-center gap-2">
             <FileText className="w-7 h-7 text-indigo-600" />
-            <h2 className="text-xl font-black text-slate-900">Assessment & Exam Studio</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Assessment & Exam Studio</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Create automated knowledge quizzes or practical vocational project submissions with rubrics.
@@ -159,14 +159,14 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
           <Button
             variant="outline"
             onClick={() => handleOpenAdd('quiz')}
-            className="text-blue-700 border-blue-200 hover:bg-blue-50 font-bold"
+            className="text-blue-700 border-blue-200 hover:bg-blue-50 font-semibold"
           >
             <Plus className="w-4 h-4 mr-1.5" /> New Quiz Exam
           </Button>
           <Button
             variant="primary"
             onClick={() => handleOpenAdd('practical_project')}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
           >
             <Plus className="w-4 h-4 mr-1.5" /> New Practical Project
           </Button>
@@ -185,15 +185,15 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
                 <Badge variant={assessment.type === 'quiz' ? 'info' : 'success'} size="sm">
                   {assessment.type === 'quiz' ? 'Auto-Graded Quiz' : 'Practical Project'}
                 </Badge>
-                <span className="text-xs font-bold text-slate-500">Passing: {assessment.passingScorePercent}%</span>
+                <span className="text-xs font-semibold text-slate-500">Passing: {assessment.passingScorePercent}%</span>
               </div>
 
-              <h3 className="font-extrabold text-base text-slate-900">{assessment.title}</h3>
+              <h3 className="font-semibold text-base text-slate-900">{assessment.title}</h3>
               <p className="text-xs text-slate-500 line-clamp-2">{assessment.description}</p>
             </div>
 
             <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500">
+              <span className="text-[11px] font-semibold text-slate-500">
                 {assessment.type === 'quiz'
                   ? `${assessment.questions?.length || 0} Questions (${assessment.timeLimitMinutes || 15}m)`
                   : `${assessment.rubric?.length || 0} Rubric Criteria`}
@@ -227,7 +227,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
         <div className="space-y-4 max-h-[75vh] overflow-y-auto p-1 font-sans">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="text-xs font-bold text-slate-700 block mb-1">Assessment Title</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Assessment Title</label>
               <Input
                 value={editingAssessment.title || ''}
                 onChange={(e) => setEditingAssessment({ ...editingAssessment, title: e.target.value })}
@@ -236,7 +236,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Passing Score (%)</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Passing Score (%)</label>
               <Input
                 type="number"
                 value={editingAssessment.passingScorePercent || 75}
@@ -246,7 +246,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-1">Description / Brief</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">Description / Brief</label>
             <textarea
               rows={2}
               value={editingAssessment.description || ''}
@@ -259,7 +259,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
           {editingAssessment.type === 'quiz' && (
             <div className="border-t border-slate-200 pt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-slate-800 capitalize tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-blue-600" />
                   <span>Quiz Questions ({editingAssessment.questions?.length || 0})</span>
                 </label>
@@ -272,7 +272,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
                 {editingAssessment.questions?.map((q, qIdx) => (
                   <div key={q.id || qIdx} className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-blue-700">Q{qIdx + 1}</span>
+                      <span className="text-xs font-semibold text-blue-700">Q{qIdx + 1}</span>
                       <Input
                         value={q.question}
                         onChange={(e) => {
@@ -320,7 +320,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
           {editingAssessment.type === 'practical_project' && (
             <div className="border-t border-slate-200 pt-4 space-y-3">
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Practical Prompt / Workshop Instructions</label>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Practical Prompt / Workshop Instructions</label>
                 <textarea
                   rows={4}
                   value={editingAssessment.practicalPrompt || ''}
@@ -330,7 +330,7 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-slate-800 capitalize tracking-wider flex items-center gap-1.5">
                   <Award className="w-4 h-4 text-emerald-600" />
                   <span>Evaluation Rubric Criteria</span>
                 </label>
@@ -373,8 +373,8 @@ export const SchoolAssessmentBuilder: React.FC<SchoolAssessmentBuilderProps> = (
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSave} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
-              <Save className="w-4 h-4 mr-1.5" /> Save Assessment
+            <Button variant="primary" onClick={handleSave} leftIcon={<Save className="w-4 h-4" />}>
+              Save Assessment
             </Button>
           </div>
         </div>

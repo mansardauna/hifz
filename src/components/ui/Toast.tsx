@@ -101,7 +101,7 @@ export const ToastContainer: React.FC<ToastProps> = ({ toasts, onDismiss }) => {
 
             {/* Content Body */}
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-xs leading-tight tracking-wide uppercase text-slate-200">
+              <h4 className="font-semibold text-xs leading-tight tracking-wide capitalize text-slate-200">
                 {toast.title}
               </h4>
               <p className="text-xs text-slate-100 mt-1 leading-relaxed">{toast.message}</p>
@@ -112,7 +112,7 @@ export const ToastContainer: React.FC<ToastProps> = ({ toasts, onDismiss }) => {
                     toast.action?.onClick();
                     onDismiss(toast.id);
                   }}
-                  className="mt-2 text-xs font-bold underline hover:opacity-80 text-white inline-flex items-center gap-1 cursor-pointer"
+                  className="mt-2 text-xs font-semibold underline hover:opacity-80 text-white inline-flex items-center gap-1 cursor-pointer"
                 >
                   <span>{toast.action.label}</span>
                   <ExternalLink className="w-3 h-3" />

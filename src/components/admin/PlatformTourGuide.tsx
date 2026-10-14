@@ -176,10 +176,10 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
               <StepIcon className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+              <span className="text-[10px] font-semibold capitalize tracking-wider text-emerald-400">
                 Step {currentStep.badge}
               </span>
-              <h4 className="text-sm font-bold text-white leading-snug">
+              <h4 className="text-sm font-semibold text-white leading-snug">
                 {currentStep.title}
               </h4>
             </div>
@@ -241,7 +241,7 @@ export const PlatformTourGuide: React.FC<PlatformTourGuideProps> = ({
 
             <button
               onClick={handleNext}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
             >
               <span>{isLastStep ? 'Finish' : 'Next'}</span>
               {isLastStep ? <Check className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}

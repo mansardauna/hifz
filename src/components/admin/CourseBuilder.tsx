@@ -178,7 +178,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
             <BookOpen className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-900">No Courses or Tracks Created Yet</h3>
+            <h3 className="text-lg font-semibold text-slate-900">No Courses or Tracks Created Yet</h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
               Start building your academy curriculum. You can add tracks, modules, lessons, audio recitation materials, or coding sandbox exercises.
             </p>
@@ -200,7 +200,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
                 <button
                   key={course.id}
                   onClick={() => setActiveCourseId(course.id)}
-                  className={`py-3 px-5 font-bold text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+                  className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                     activeCourse?.id === course.id
                       ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
                       : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -219,13 +219,13 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
           <div key={module.id} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white ${
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-semibold text-xs text-white ${
                   isCodingNiche ? 'bg-blue-600' : 'bg-teal-600'
                 }`}>
                   {modIdx + 1}
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-sm text-slate-900">
+                  <h3 className="font-semibold text-sm text-slate-900">
                     {isAr ? module.titleAr || module.title : module.title}
                   </h3>
                   <span className="text-[10px] text-slate-400 font-mono">
@@ -236,7 +236,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
 
               <button
                 onClick={() => handleAddLesson(module.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
                   isCodingNiche
                     ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200'
                     : 'bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200'
@@ -255,12 +255,12 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
                   className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-3 text-xs"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-slate-400 font-mono font-bold text-[11px]">{modIdx + 1}.{lesIdx + 1}</span>
-                    <span className="font-bold text-slate-900 truncate">
+                    <span className="text-slate-400 font-mono font-semibold text-[11px]">{modIdx + 1}.{lesIdx + 1}</span>
+                    <span className="font-semibold text-slate-900 truncate">
                       {isAr ? lesson.titleAr || lesson.title : lesson.title}
                     </span>
                     {lesson.tajweedRule && !isCodingNiche && (
-                      <span className="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-bold shrink-0">
+                      <span className="text-[10px] bg-teal-100 text-teal-800 px-2 py-0.5 rounded font-semibold shrink-0">
                         {lesson.tajweedRule}
                       </span>
                     )}
@@ -278,7 +278,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
         {/* Add Module CTA */}
         <button
           onClick={handleAddModule}
-          className={`w-full py-4 border-2 border-dashed rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+          className={`w-full py-4 border-2 border-dashed rounded-2xl font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
             isCodingNiche
               ? 'border-blue-300 text-blue-600 hover:bg-blue-50/50'
               : 'border-teal-300 text-teal-600 hover:bg-teal-50/50'

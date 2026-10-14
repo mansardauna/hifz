@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
           { id: requestedTenant },
           { id: `tenant-${cleanSubdomain}` },
           { subdomain: cleanSubdomain },
-          { subdomain: requestedTenant }
+          { subdomain: requestedTenant },
+          ...(cleanSubdomain.length >= 3 ? [{ subdomain: { contains: cleanSubdomain } }] : []),
         ]
       }
     });
@@ -181,7 +182,8 @@ export async function POST(request: NextRequest) {
           { id: tenantId },
           { id: `tenant-${cleanSubdomain}` },
           { subdomain: cleanSubdomain },
-          { subdomain: tenantId }
+          { subdomain: tenantId },
+          ...(cleanSubdomain.length >= 3 ? [{ subdomain: { contains: cleanSubdomain } }] : []),
         ]
       }
     });

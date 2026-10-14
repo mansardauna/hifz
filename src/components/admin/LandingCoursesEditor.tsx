@@ -68,7 +68,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 sm:p-8 rounded-md border border-slate-200 shadow-md">
         <div>
-          <h2 className={`text-xl sm:text-2xl font-bold font-display text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+          <h2 className={`text-xl sm:text-2xl font-semibold font-display text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
             {isAr ? 'إدارة دورات ومناهج الصفحة الرئيسية' : 'Landing Page Featured Programs'}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -78,7 +78,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
 
         <button
           onClick={handleCreateCourse}
-          className="px-5 py-2.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white font-bold font-display text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
+          className="px-5 py-2.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white font-semibold font-display text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>{isAr ? 'إضافة دورة جديدة' : 'Add New Program'}</span>
@@ -91,13 +91,13 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
           <div key={course.id} className="bg-white rounded-md border border-slate-200 shadow-md overflow-hidden flex flex-col justify-between">
             <div className="relative h-44 bg-slate-900">
               <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover opacity-80" />
-              <span className="absolute top-3 right-3 bg-amber-500 text-slate-950 font-bold text-xs px-2.5 py-1 rounded-md">
+              <span className="absolute top-3 right-3 bg-amber-500 text-slate-950 font-semibold text-xs px-2.5 py-1 rounded-md">
                 {course.level}
               </span>
             </div>
 
             <div className="p-5 sm:p-6 flex-1 space-y-3">
-              <h3 className={`font-bold text-slate-900 text-base sm:text-lg font-display ${isAr ? 'font-arabic text-xl' : ''}`}>
+              <h3 className={`font-semibold text-slate-900 text-base sm:text-lg font-display ${isAr ? 'font-arabic text-xl' : ''}`}>
                 {isAr ? course.titleAr : course.title}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">{isAr ? course.descriptionAr : course.description}</p>
@@ -109,11 +109,11 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-700">{course.instructorName}</span>
+              <span className="text-xs font-semibold text-slate-700">{course.instructorName}</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setEditingCourse(course)}
-                  className="px-3 py-1.5 rounded-md bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-3 py-1.5 rounded-md bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" /> Edit
                 </button>
@@ -134,16 +134,16 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-md max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-              <h3 className="font-bold text-base font-display text-slate-900">
+              <h3 className="font-semibold text-base font-display text-slate-900">
                 {isAr ? 'تعديل بيانات الدورة' : 'Edit Program Showcase Details'}
               </h3>
-              <button onClick={() => setEditingCourse(null)} className="text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer"><X className="w-4 h-4" /></button>
+              <button onClick={() => setEditingCourse(null)} className="text-slate-400 hover:text-slate-600 font-semibold p-1 cursor-pointer"><X className="w-4 h-4" /></button>
             </div>
 
             <form onSubmit={handleSaveCourse} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Title (English)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Title (English)</label>
                   <input
                     type="text"
                     value={editingCourse.title}
@@ -152,7 +152,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">عنوان الدورة (بالعربية)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">عنوان الدورة (بالعربية)</label>
                   <input
                     type="text"
                     value={editingCourse.titleAr}
@@ -164,7 +164,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Description (English)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Description (English)</label>
                 <textarea
                   rows={2}
                   value={editingCourse.description}
@@ -174,7 +174,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">وصف الدورة (بالعربية)</label>
+                <label className="block font-semibold text-slate-700 mb-1">وصف الدورة (بالعربية)</label>
                 <textarea
                   rows={2}
                   value={editingCourse.descriptionAr}
@@ -186,7 +186,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Instructor Name</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Instructor Name</label>
                   <input
                     type="text"
                     value={editingCourse.instructorName}
@@ -195,7 +195,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Duration (Weeks)</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Duration (Weeks)</label>
                   <input
                     type="number"
                     value={editingCourse.durationWeeks}
@@ -206,7 +206,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Thumbnail / Cover Image URL</label>
+                <label className="block font-semibold text-slate-700 mb-1">Thumbnail / Cover Image URL</label>
                 <input
                   type="text"
                   value={editingCourse.imageUrl}
@@ -218,7 +218,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-md bg-emerald-700 text-white font-bold font-display hover:bg-emerald-800 shadow-md cursor-pointer"
+                  className="w-full py-3 rounded-md bg-emerald-700 text-white font-semibold font-display hover:bg-emerald-800 shadow-md cursor-pointer"
                 >
                   Save Changes
                 </button>

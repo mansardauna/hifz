@@ -48,7 +48,7 @@ export const DemoRoleSwitcher: React.FC<DemoRoleSwitcherProps> = ({ onRoleSwitch
     <div className="bg-slate-900/95 backdrop-blur-md text-white px-4 py-2 rounded-2xl border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-3 text-xs mb-4">
       <div className="flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
-        <span className="font-bold text-slate-200">Demo Role Switcher:</span>
+        <span className="font-semibold text-slate-200">Demo Role Switcher:</span>
         <span className="text-xs text-slate-400 hidden sm:inline">
           Test interactive features as different roles in this sandbox (hidden in live portals)
         </span>
@@ -63,7 +63,7 @@ export const DemoRoleSwitcher: React.FC<DemoRoleSwitcherProps> = ({ onRoleSwitch
               key={r.id}
               type="button"
               onClick={() => handleSelectRole(r.id)}
-              className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
                 isActive
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'text-slate-300 hover:text-white hover:bg-slate-700/60'

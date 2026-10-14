@@ -122,7 +122,7 @@ export const PWAInstallToast: React.FC = () => {
         <div className="flex items-start gap-3.5 relative z-10">
           {/* App Logo / Icon Preview */}
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg border border-white/15 shrink-0 overflow-hidden"
+            className="w-12 h-12 rounded-xl flex items-center justify-center font-semibold text-lg shadow-lg border border-white/15 shrink-0 overflow-hidden"
             style={{ backgroundColor: brandColor }}
           >
             {isPlatform ? (
@@ -137,16 +137,16 @@ export const PWAInstallToast: React.FC = () => {
                 }}
               />
             ) : (
-              <span className="text-white font-extrabold">{tenant?.name?.charAt(0) || 'A'}</span>
+              <span className="text-white font-semibold">{tenant?.name?.charAt(0) || 'A'}</span>
             )}
           </div>
 
           <div className="space-y-1 pr-4 min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-extrabold uppercase tracking-widest">
+            <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-semibold capitalize tracking-widest">
               <Sparkles className="w-3 h-3" />
               <span className="truncate">{appBadge}</span>
             </div>
-            <h4 className="font-extrabold text-sm sm:text-base text-white leading-tight">
+            <h4 className="font-semibold text-sm sm:text-base text-white leading-tight">
               Add {appName} to Home Screen
             </h4>
             <p className="text-xs text-slate-300 leading-normal line-clamp-2">
@@ -160,25 +160,25 @@ export const PWAInstallToast: React.FC = () => {
         {/* iOS Manual Instructions Modal / Drawer */}
         {showIOSInstructions ? (
           <div className="mt-3 pt-3 border-t border-slate-800 text-xs space-y-2.5 text-slate-200 animate-in fade-in">
-            <p className="font-bold text-emerald-400 flex items-center gap-1.5">
+            <p className="font-semibold text-emerald-400 flex items-center gap-1.5">
               <Share className="w-4 h-4" /> iOS Installation Steps:
             </p>
             <ol className="list-decimal list-inside space-y-1.5 text-[11px] text-slate-300">
               <li>
-                Tap the <span className="font-bold text-white">Share button</span>{' '}
+                Tap the <span className="font-semibold text-white">Share button</span>{' '}
                 <Share className="w-3.5 h-3.5 inline text-emerald-400" /> in Safari's bottom toolbar.
               </li>
               <li>
-                Scroll down and select <span className="font-bold text-white">Add to Home Screen</span>{' '}
+                Scroll down and select <span className="font-semibold text-white">Add to Home Screen</span>{' '}
                 <PlusSquare className="w-3.5 h-3.5 inline text-emerald-400" />.
               </li>
               <li>
-                Tap <span className="font-bold text-emerald-400">Add</span> in the top-right corner.
+                Tap <span className="font-semibold text-emerald-400">Add</span> in the top-right corner.
               </li>
             </ol>
             <button
               onClick={handleDismiss}
-              className="w-full mt-2 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer border border-slate-700 flex items-center justify-center gap-1.5"
+              className="w-full mt-2 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl shadow-sm cursor-pointer border border-slate-700 flex items-center justify-center gap-1.5"
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>Got It!</span>
@@ -195,7 +195,7 @@ export const PWAInstallToast: React.FC = () => {
             <button
               onClick={handleInstallClick}
               style={{ backgroundColor: brandColor }}
-              className="px-4 py-2 rounded-xl text-white font-bold text-xs shadow-lg hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer border border-white/20 uppercase tracking-wider active:scale-95"
+              className="px-4 py-2 rounded-xl text-white font-semibold text-xs shadow-lg hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer border border-white/20 capitalize tracking-wider active:scale-95"
             >
               <Download className="w-3.5 h-3.5 text-white" />
               <span>{isIOS ? 'Instructions' : 'Install App'}</span>

@@ -108,16 +108,16 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
       <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            <span className="text-xs capitalize tracking-wider font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
               Exam & Knowledge Assessment
             </span>
             <span className="text-xs text-slate-400">Passing: {assessment.passingScorePercent}%</span>
           </div>
-          <h2 className="text-base font-extrabold text-white mt-1">{assessment.title}</h2>
+          <h2 className="text-base font-semibold text-white mt-1">{assessment.title}</h2>
         </div>
 
         {!isSubmitted && assessment.timeLimitMinutes && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-mono font-bold">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-mono font-semibold">
             <Clock className="w-4 h-4 text-amber-400" />
             <span className={timeLeftSeconds < 120 ? 'text-rose-400 animate-pulse' : 'text-slate-200'}>
               {formatTime(timeLeftSeconds)}
@@ -138,7 +138,7 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
                 <button
                   key={q.id}
                   onClick={() => setCurrentQuestionIndex(idx)}
-                  className={`w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
+                  className={`w-8 h-8 rounded-xl font-semibold text-xs flex items-center justify-center transition-all cursor-pointer ${
                     isCurrent
                       ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
                       : isAnswered
@@ -156,12 +156,12 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
           {currentQuestion && (
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-4">
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-blue-600 capitalize tracking-wider">
                   Question {currentQuestionIndex + 1} of {questions.length} ({currentQuestion.points} pts)
                 </span>
               </div>
 
-              <h3 className="text-base font-extrabold text-slate-900 leading-snug">
+              <h3 className="text-base font-semibold text-slate-900 leading-snug">
                 {currentQuestion.question}
               </h3>
 
@@ -175,13 +175,13 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
                       onClick={() => handleSelectOption(currentQuestion.id, optIdx)}
                       className={`w-full text-left p-4 rounded-xl border text-xs font-medium transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-blue-50/80 border-blue-500 text-blue-900 font-bold shadow-xs'
+                          ? 'bg-blue-50/80 border-blue-500 text-blue-900 font-semibold shadow-xs'
                           : 'bg-slate-50/50 hover:bg-slate-100/80 border-slate-200 text-slate-800'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <span
-                          className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center ${
+                          className={`w-6 h-6 rounded-lg text-xs font-semibold flex items-center justify-center ${
                             isSelected ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700'
                           }`}
                         >
@@ -204,7 +204,7 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
               size="md"
               disabled={currentQuestionIndex === 0}
               onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
-              className="text-xs font-bold"
+              className="text-xs font-semibold"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" /> Previous Question
             </Button>
@@ -214,7 +214,7 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
                 variant="primary"
                 size="md"
                 onClick={() => setCurrentQuestionIndex((prev) => prev + 1)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs"
               >
                 Next Question <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
@@ -223,7 +223,7 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
                 variant="primary"
                 size="md"
                 onClick={handleSubmitQuiz}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/30"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-600/30"
               >
                 Submit Exam For Grading <CheckCircle2 className="w-4 h-4 ml-1.5" />
               </Button>
@@ -245,20 +245,20 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
             </div>
 
             <div>
-              <h3 className="text-xl font-black text-slate-900">
+              <h3 className="text-xl font-semibold text-slate-900">
                 {isPassed ? 'Assessment Completed Successfully!' : 'Passing Score Not Met'}
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                You achieved a score of <strong className="text-slate-900 font-extrabold text-base">{scorePercent}%</strong> (Passing requirement: {assessment.passingScorePercent}%)
+                You achieved a score of <strong className="text-slate-900 font-semibold text-base">{scorePercent}%</strong> (Passing requirement: {assessment.passingScorePercent}%)
               </p>
             </div>
 
             <div className="flex items-center justify-center gap-3 pt-2">
-              <Button variant="outline" size="sm" onClick={handleRetake} className="text-xs font-bold">
+              <Button variant="outline" size="sm" onClick={handleRetake} className="text-xs font-semibold">
                 <RotateCcw className="w-3.5 h-3.5 mr-1" /> Retake Exam
               </Button>
               {onClose && (
-                <Button variant="primary" size="sm" onClick={onClose} className="bg-slate-900 text-white text-xs font-bold">
+                <Button variant="primary" size="sm" onClick={onClose} className="bg-slate-900 text-white text-xs font-semibold">
                   Continue to Next Module →
                 </Button>
               )}
@@ -267,7 +267,7 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
 
           {/* Question Explanations List */}
           <div className="space-y-4 pt-2">
-            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <h4 className="text-xs font-semibold text-slate-700 capitalize tracking-wider">
               Detailed Question Review & Explanations
             </h4>
 
@@ -290,14 +290,14 @@ export const SchoolQuizRunner: React.FC<SchoolQuizRunnerProps> = ({
                       <XCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                     )}
                     <div className="min-w-0">
-                      <p className="font-extrabold text-slate-900">
+                      <p className="font-semibold text-slate-900">
                         {idx + 1}. {q.question}
                       </p>
                       <p className="text-[11px] text-slate-600 mt-1">
-                        Your answer: <span className="font-bold text-slate-800">{q.options[selectedIdx] || 'Unanswered'}</span>
+                        Your answer: <span className="font-semibold text-slate-800">{q.options[selectedIdx] || 'Unanswered'}</span>
                       </p>
                       {!isCorrect && (
-                        <p className="text-[11px] text-emerald-700 font-bold mt-0.5">
+                        <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">
                           Correct answer: {q.options[q.correctAnswerIndex]}
                         </p>
                       )}

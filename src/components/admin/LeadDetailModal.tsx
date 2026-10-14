@@ -63,17 +63,17 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-start justify-between pb-4 border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-sm bg-teal-50 border border-teal-200 text-teal-800 font-bold text-xl flex items-center justify-center">
+            <div className="w-12 h-12 rounded-sm bg-teal-50 border border-teal-200 text-teal-800 font-semibold text-xl flex items-center justify-center">
               {lead.studentName.charAt(0)}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-lg text-slate-900">{lead.studentName}</h3>
-                <span className="px-2 py-0.5 rounded-sm text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                <h3 className="font-semibold text-lg text-slate-900">{lead.studentName}</h3>
+                <span className="px-2 py-0.5 rounded-sm text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                   {lead.status}
                 </span>
                 <span
-                  className={`px-2 py-0.5 rounded-sm text-[11px] font-bold ${
+                  className={`px-2 py-0.5 rounded-sm text-[11px] font-semibold ${
                     paymentStatus === 'Paid'
                       ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                       : paymentStatus === 'Pending'
@@ -98,16 +98,16 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
           {/* Quick Contact Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-sm border border-slate-200">
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase">Email</p>
-              <p className="font-bold text-slate-900 truncate mt-0.5">{lead.email}</p>
+              <p className="text-[10px] text-slate-400 font-semibold capitalize">Email</p>
+              <p className="font-semibold text-slate-900 truncate mt-0.5">{lead.email}</p>
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase">WhatsApp Phone</p>
-              <p className="font-bold text-slate-900 truncate mt-0.5">{lead.phone}</p>
+              <p className="text-[10px] text-slate-400 font-semibold capitalize">WhatsApp Phone</p>
+              <p className="font-semibold text-slate-900 truncate mt-0.5">{lead.phone}</p>
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase">{isQuran ? "Arabic Level" : "Experience Level"}</p>
-              <p className="font-bold text-slate-900 truncate mt-0.5">{lead.arabicLevel || (isQuran ? 'Beginner' : 'Introductory')}</p>
+              <p className="text-[10px] text-slate-400 font-semibold capitalize">{isQuran ? "Arabic Level" : "Experience Level"}</p>
+              <p className="font-semibold text-slate-900 truncate mt-0.5">{lead.arabicLevel || (isQuran ? 'Beginner' : 'Introductory')}</p>
             </div>
           </div>
 
@@ -116,7 +116,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <div className="flex items-center justify-between pb-2 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-teal-700" />
-                <span className="font-bold text-slate-900 text-xs">Tuition & Subscription Plan</span>
+                <span className="font-semibold text-slate-900 text-xs">Tuition & Subscription Plan</span>
               </div>
               <span className="text-[11px] font-semibold text-slate-500">Gateway: {lead.paymentGateway || 'Stripe Connect'}</span>
             </div>
@@ -124,21 +124,21 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
               <div>
                 <span className="text-slate-400 block">Enrolled Plan:</span>
-                <span className="font-bold text-slate-900">{lead.planName || (isQuran ? 'Foundational Tajweed' : 'Foundational Track')}</span>
+                <span className="font-semibold text-slate-900">{lead.planName || (isQuran ? 'Foundational Tajweed' : 'Foundational Track')}</span>
               </div>
               <div>
                 <span className="text-slate-400 block">Plan Fee:</span>
-                <span className="font-bold text-slate-900">${lead.planPrice || 65} / {lead.billingCycle || 'Month'}</span>
+                <span className="font-semibold text-slate-900">${lead.planPrice || 65} / {lead.billingCycle || 'Month'}</span>
               </div>
               <div>
                 <span className="text-slate-400 block">Last Payment:</span>
-                <span className="font-bold text-slate-900">
+                <span className="font-semibold text-slate-900">
                   {lead.invoices?.[0]?.paymentDate || lead.invoices?.[0]?.paidAt || '2026-08-26'}
                 </span>
               </div>
               <div>
                 <span className="text-slate-400 block">Next Renewal:</span>
-                <span className="font-bold text-slate-900">2026-09-26</span>
+                <span className="font-semibold text-slate-900">2026-09-26</span>
               </div>
             </div>
 
@@ -148,7 +148,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => handlePaymentStatusToggle('Paid')}
-                  className={`px-2.5 py-1 rounded-sm text-[10px] font-bold border transition-colors ${
+                  className={`px-2.5 py-1 rounded-sm text-[10px] font-semibold border transition-colors ${
                     paymentStatus === 'Paid' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-200'
                   }`}
                 >
@@ -156,7 +156,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
                 </button>
                 <button
                   onClick={() => handlePaymentStatusToggle('Pending')}
-                  className={`px-2.5 py-1 rounded-sm text-[10px] font-bold border transition-colors ${
+                  className={`px-2.5 py-1 rounded-sm text-[10px] font-semibold border transition-colors ${
                     paymentStatus === 'Pending' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white text-slate-700 border-slate-200'
                   }`}
                 >
@@ -164,7 +164,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
                 </button>
                 <button
                   onClick={() => handlePaymentStatusToggle('Past Due')}
-                  className={`px-2.5 py-1 rounded-sm text-[10px] font-bold border transition-colors ${
+                  className={`px-2.5 py-1 rounded-sm text-[10px] font-semibold border transition-colors ${
                     paymentStatus === 'Past Due' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-700 border-slate-200'
                   }`}
                 >
@@ -178,7 +178,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
           {/* Custom Form Answers from Notes field */}
           {lead.notes && (
             <div className="space-y-2">
-              <h4 className="font-bold text-xs text-slate-400 uppercase tracking-wider">Admissions Notes & Questionnaire</h4>
+              <h4 className="font-semibold text-xs text-slate-400 capitalize tracking-wider">Admissions Notes & Questionnaire</h4>
               <div className="p-2.5 bg-slate-50 rounded-sm border border-slate-200">
                 <p className="text-xs text-slate-700 leading-relaxed">{lead.notes}</p>
               </div>
@@ -188,7 +188,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
 
           {/* Internal Notes */}
           <div>
-            <label className="block font-bold text-slate-700 mb-1">Admissions Board Notes:</label>
+            <label className="block font-semibold text-slate-700 mb-1">Admissions Board Notes:</label>
             <textarea
               rows={2}
               value={notes}
@@ -205,14 +205,14 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <button
               onClick={() => handleStatusChange('Under Review')}
               disabled={isSaving}
-              className="px-3 py-2 rounded-sm bg-amber-50 text-amber-900 font-bold border border-amber-200 hover:bg-amber-100 text-xs"
+              className="px-3 py-2 rounded-sm bg-amber-50 text-amber-900 font-semibold border border-amber-200 hover:bg-amber-100 text-xs"
             >
               Set Under Review
             </button>
             <button
               onClick={() => handleStatusChange('Interview')}
               disabled={isSaving}
-              className="px-3 py-2 rounded-sm bg-purple-50 text-purple-900 font-bold border border-purple-200 hover:bg-purple-100 text-xs"
+              className="px-3 py-2 rounded-sm bg-purple-50 text-purple-900 font-semibold border border-purple-200 hover:bg-purple-100 text-xs"
             >
               Schedule Interview
             </button>
@@ -221,7 +221,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
           <button
             onClick={() => handleStatusChange('Admitted')}
             disabled={isSaving}
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-sm shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-sm shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <UserCheck className="w-4 h-4" />
             <span>Approve & Admit</span>

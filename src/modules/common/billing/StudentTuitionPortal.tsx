@@ -183,26 +183,26 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
       {/* Overview Metric Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Account Standing</span>
+          <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">Account Standing</span>
           <div className="flex items-center gap-2 pt-1">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <h4 className="text-xl font-black text-slate-900 font-display">Paid in Full</h4>
+            <h4 className="text-xl font-semibold text-slate-900 font-display">Paid in Full</h4>
           </div>
           <p className="text-xs text-slate-500">Zero outstanding balance for current term</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Next Billing Renewal</span>
-          <h4 className="text-xl font-black text-slate-900 font-display pt-1">01 Nov 2026</h4>
+          <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">Next Billing Renewal</span>
+          <h4 className="text-xl font-semibold text-slate-900 font-display pt-1">01 Nov 2026</h4>
           <p className="text-xs text-slate-500">Auto-renews via primary payment method</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1 flex flex-col justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Online Quick Pay</span>
+          <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">Online Quick Pay</span>
           <Button
             onClick={() => setIsPayModalOpen(true)}
             variant="primary"
-            className="w-full h-10 rounded-xl text-xs font-bold gap-2 mt-2"
+            className="w-full h-10 rounded-xl text-xs font-semibold gap-2 mt-2"
           >
             <CreditCard className="w-4 h-4" /> Make Tuition Payment
           </Button>
@@ -213,7 +213,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
       <Card className="p-6 sm:p-7 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
           <div>
-            <h3 className="text-base font-black text-slate-900 flex items-center gap-2 font-display">
+            <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2 font-display">
               <Receipt className="w-5 h-5 text-emerald-600" />
               {isSchoolNiche
                 ? 'Academic Tuition & Fee Statements'
@@ -225,7 +225,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
               Encrypted, verified tuition statements issued by {tenant.name}. Download PDF receipts anytime.
             </p>
           </div>
-          <Badge variant="success" className="gap-1.5 self-start sm:self-auto py-1 px-3 text-xs font-bold">
+          <Badge variant="success" className="gap-1.5 self-start sm:self-auto py-1 px-3 text-xs font-semibold">
             <ShieldCheck className="w-4 h-4" /> 256-Bit SSL Secure
           </Badge>
         </div>
@@ -238,8 +238,8 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-900">{inv.description}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800">
+                  <span className="font-semibold text-slate-900">{inv.description}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-100 text-emerald-800">
                     PAID
                   </span>
                 </div>
@@ -253,14 +253,14 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
               </div>
 
               <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                <span className="font-extrabold font-mono text-base text-emerald-700">
+                <span className="font-semibold font-mono text-base text-emerald-700">
                   ${inv.amount.toFixed(2)}
                 </span>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => handleDownloadReceipt(inv)}
-                  className="h-9 px-3 rounded-xl gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-950"
+                  className="h-9 px-3 rounded-xl gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-950"
                 >
                   <Download className="w-3.5 h-3.5" /> Download Receipt
                 </Button>
@@ -280,7 +280,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
       >
         <div className="space-y-5 py-2">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700 mb-2">
               Select Payment Amount
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -289,7 +289,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
                   key={amt}
                   type="button"
                   onClick={() => setPayAmount(amt)}
-                  className={`p-3 rounded-xl border text-center font-bold text-sm transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl border text-center font-semibold text-sm transition-all cursor-pointer ${
                     payAmount === amt
                       ? 'border-emerald-600 bg-emerald-50 text-emerald-800 ring-2 ring-emerald-500/20'
                       : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
@@ -302,7 +302,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700 mb-2">
               Payment Gateway
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -316,7 +316,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold">Stripe Gateway</span>
+                  <span className="text-xs font-semibold">Stripe Gateway</span>
                   <CreditCard className="w-4 h-4 text-emerald-600" />
                 </div>
                 <p className="text-[11px] text-slate-500">Visa, Mastercard, Apple Pay</p>
@@ -332,8 +332,8 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold">Moyasar Gateway</span>
-                  <span className="text-[10px] font-black uppercase text-teal-600 font-mono">MADA</span>
+                  <span className="text-xs font-semibold">Moyasar Gateway</span>
+                  <span className="text-[10px] font-semibold capitalize text-teal-600 font-mono">MADA</span>
                 </div>
                 <p className="text-[11px] text-slate-500">Saudi Mada, GCC & Apple Pay</p>
               </button>
@@ -341,7 +341,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
           </div>
 
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-slate-800">
+            <div className="flex items-center gap-1.5 font-semibold text-slate-800">
               <Lock className="w-3.5 h-3.5 text-emerald-600" />
               <span>Direct Bank-Grade Encryption</span>
             </div>
@@ -363,7 +363,7 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
               variant="primary"
               onClick={handleProcessPayment}
               isLoading={isProcessingPayment}
-              className="h-11 rounded-xl text-sm font-bold gap-2"
+              className="h-11 rounded-xl text-sm font-semibold gap-2"
             >
               <Lock className="w-4 h-4" /> Pay ${payAmount}.00 USD
             </Button>

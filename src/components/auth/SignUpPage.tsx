@@ -158,7 +158,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
               <AnkabitLogo size="sm" showText={false} />
             </div>
             <div>
-              <span className="text-lg font-extrabold tracking-tight text-slate-900 block leading-tight">
+              <span className="text-lg font-semibold tracking-tight text-slate-900 block leading-tight">
                 {academyTitle}
               </span>
               <span className="text-[11px] font-medium text-slate-500">
@@ -187,7 +187,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
         <div className="flex justify-end items-center mb-8">
           <Link
             href={isPlatformSignup ? '/login' : `/${targetSubdomain}/login`}
-            className="px-5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 transition-all shadow-sm"
+            className="px-5 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 transition-all shadow-sm"
           >
             Sign In
           </Link>
@@ -196,7 +196,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
         {/* Form Container */}
         <div className="w-full max-w-md mx-auto my-auto space-y-8">
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
               Create Student Account
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
@@ -318,7 +318,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-md shadow-emerald-600/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-md shadow-emerald-600/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (
                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

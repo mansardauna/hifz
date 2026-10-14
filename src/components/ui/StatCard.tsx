@@ -95,7 +95,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2 min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
+            <p className="text-xs font-semibold text-slate-500 capitalize tracking-wider truncate">
               {title}
             </p>
             <div className="flex items-baseline gap-2 flex-wrap">

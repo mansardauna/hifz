@@ -38,7 +38,7 @@ export function TableSortHeader<K extends string = string>({
 
   return (
     <th
-      className={`px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors select-none text-[10px] text-slate-500 uppercase tracking-wider font-semibold ${className}`}
+      className={`px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors select-none text-[10px] text-slate-500 capitalize tracking-wider font-semibold ${className}`}
       onClick={() => onSort(targetKey)}
     >
       <div

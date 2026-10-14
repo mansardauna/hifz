@@ -186,33 +186,42 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
 
       {/* LEFT SIDEBAR */}
       <aside
-        className={`w-64 sm:w-72 max-w-[85vw] h-[100dvh] lg:h-full flex flex-col justify-between bg-white text-slate-900 border-r border-slate-200 shrink-0 select-none z-50 transition-transform duration-300 p-4 sm:p-5 ${
+        style={{ backgroundColor: tenant?.brandColor || tenant?.theme?.primaryColor || 'var(--sidebar-bg, #047857)' }}
+        className={`w-64 sm:w-72 max-w-[85vw] h-[100dvh] lg:h-full flex flex-col justify-between text-white border-r border-white/15 shrink-0 select-none z-50 transition-transform duration-300 ${
           isMobileMenuOpen
             ? 'fixed inset-y-0 left-0 shadow-2xl translate-x-0'
             : 'hidden lg:flex'
         }`}
       >
-        <div className="space-y-6">
+        <div className="flex flex-col h-full min-h-0">
           {/* Brand Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h2 className="text-xl font-black tracking-tight text-slate-950 font-display">
-                {tenant.name ? tenant.name.split(' ')[0].toUpperCase() : 'ANKABIT'}
-              </h2>
-              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 block">
-                Student Portal
-              </span>
+          <div className="h-16 px-4 sm:px-5 border-b border-white/15 flex items-center justify-between shrink-0 bg-black/15">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center font-semibold text-white shadow-xs shrink-0">
+                {tenant.name ? tenant.name.charAt(0) : 'A'}
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-semibold text-sm text-white truncate">
+                  {tenant.name || 'Academy'}
+                </h2>
+                <span className="text-[10px] text-white/70 block capitalize">
+                  Student Portal
+                </span>
+              </div>
             </div>
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-500 hover:text-slate-900 cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="lg:hidden p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer outline-none"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 text-white" />
             </button>
           </div>
 
           {/* Navigation Items */}
-          <nav className="space-y-1">
+          <nav className="flex-1 overflow-y-auto p-3.5 space-y-1">
+            <div className="px-3 pt-2 pb-1 text-xs font-semibold capitalize tracking-wider text-white/70">
+              Student Navigation
+            </div>
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -223,61 +232,60 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     setActiveTab(item.id);
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer outline-none select-none ${
                     isActive
-                      ? 'bg-slate-900 text-white shadow-xs font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'bg-white/20 text-white shadow-xs font-semibold backdrop-blur-xs'
+                      : 'text-white/85 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                  <span>{item.label}</span>
+                  <Icon className="w-5 h-5 shrink-0 text-white" />
+                  <span className="truncate text-white">{item.label}</span>
                 </button>
               );
             })}
           </nav>
-        </div>
 
-        {/* User Profile Pill at Bottom */}
-        <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-          <div
-            onClick={() => setActiveTab('profile')}
-            className="flex items-center gap-2.5 cursor-pointer group min-w-0"
-          >
-            <Avatar
-              src={user?.avatarUrl || (isDemo && isQuran ? '/images/muslim_girl_student.jpg' : null)}
-              name={user?.name || 'Enrolled Student'}
-              size="sm"
-              status="active"
-            />
-            <div className="min-w-0">
-              <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 truncate">
-                {user?.name || 'Enrolled Student'}
-              </div>
-              <div className="text-xs text-slate-400 font-semibold uppercase">
-                {user?.role || 'STUDENT'}
+          {/* User Profile Pill at Bottom */}
+          <div className="p-3.5 border-t border-white/15 space-y-2.5 shrink-0 bg-black/15">
+            <div
+              onClick={() => setActiveTab('profile')}
+              className="px-3 py-2 bg-white/10 border border-white/10 rounded-xl flex items-center justify-between cursor-pointer hover:bg-white/15 transition-colors"
+            >
+              <div className="flex items-center gap-2.5 overflow-hidden">
+                <Avatar
+                  src={user?.avatarUrl || (isDemo && isQuran ? '/images/muslim_girl_student.jpg' : null)}
+                  name={user?.name || 'Enrolled Student'}
+                  size="sm"
+                  status="active"
+                />
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-white truncate">{user?.name || 'Enrolled Student'}</p>
+                  <p className="text-[10px] text-white/70 truncate capitalize">{user?.role || 'student'}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <button
-            onClick={async () => {
-              const ok = await confirm({
-                title: 'Sign Out',
-                message: 'Are you sure you want to log out of your student portal?',
-                confirmText: 'Sign Out',
-                cancelText: 'Stay Here',
-                variant: 'danger',
-              });
-              if (ok) {
-                logout();
-                router.push(`/${tenant.subdomain}/login`);
-              }
-            }}
-            className="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-rose-600 cursor-pointer ml-2 p-1"
-            title="Sign Out"
-          >
-            LOG OUT
-          </button>
+            <button
+              onClick={async () => {
+                const ok = await confirm({
+                  title: 'Sign Out',
+                  message: 'Are you sure you want to log out of your student portal?',
+                  confirmText: 'Sign Out',
+                  cancelText: 'Stay Here',
+                  variant: 'danger',
+                });
+                if (ok) {
+                  logout();
+                  router.push(`/${tenant.subdomain}/login`);
+                }
+              }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-white/90 hover:text-white hover:bg-white/15 rounded-xl transition-colors cursor-pointer outline-none"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4 shrink-0 text-white" />
+              <span className="text-white">Sign Out</span>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -293,9 +301,9 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <span className="font-bold text-sm text-slate-900">{tenant.name}</span>
+            <span className="font-semibold text-sm text-slate-900">{tenant.name}</span>
           </div>
-          <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
             Student
           </span>
         </div>
@@ -323,9 +331,9 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                       <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-rose-500"></span>
                     </span>
                     <div>
-                      <h4 className="text-sm font-bold flex items-center gap-2">
+                      <h4 className="text-sm font-semibold flex items-center gap-2">
                         <span>{activeLiveSession.teacherName || 'Ustadhah'} is LIVE Now</span>
-                        <span className="text-xs bg-rose-500/20 text-rose-200 border border-rose-400/30 px-2.5 py-0.5 rounded-full font-mono font-bold uppercase">
+                        <span className="text-xs bg-rose-500/20 text-rose-200 border border-rose-400/30 px-2.5 py-0.5 rounded-full font-mono font-semibold capitalize">
                           Halaqah Active
                         </span>
                       </h4>
@@ -337,7 +345,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('videos')}
-                    className="h-9 px-4 rounded-xl bg-white text-emerald-950 font-bold text-xs sm:text-sm shadow-sm hover:bg-emerald-50 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+                    className="h-9 px-4 rounded-xl bg-white text-emerald-950 font-semibold text-xs sm:text-sm shadow-sm hover:bg-emerald-50 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" /> Join Live Halaqah
                   </button>
@@ -353,11 +361,11 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   {/* Card 1A: Progress Metric Card */}
                   <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-6">
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">
                         {isQuran ? 'MY MEMORIZATION' : 'CURRICULUM PROGRESS'}
                       </span>
                       <div className="flex items-baseline justify-between mt-1">
-                        <h2 className="text-3xl sm:text-4xl font-black text-slate-950 font-display tracking-tight">
+                        <h2 className="text-3xl sm:text-4xl font-semibold text-slate-950 font-display tracking-tight">
                           {isQuran ? (
                             isDemo
                               ? '24 / 30 Juz'
@@ -372,18 +380,18 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                               : '0 Modules'
                           )}
                         </h2>
-                        <span className="text-xs font-mono text-slate-400 font-bold">...</span>
+                        <span className="text-xs font-mono text-slate-400 font-semibold">...</span>
                       </div>
                     </div>
 
                     {/* Status Pill Card */}
                     <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wider">
+                        <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-2.5 py-1 rounded-md text-xs font-mono font-semibold tracking-wider">
                           <span>{courses[0]?.title?.slice(0, 14)?.toUpperCase() || (isQuran ? 'SANAD TRACK' : 'CORE PROGRAM')}</span>
                           <span>•••• {isDemo ? '4820' : 'ENROLLED'}</span>
                         </div>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wider bg-emerald-500 text-white uppercase">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wider bg-emerald-500 text-white capitalize">
                           AUTHORIZED
                         </span>
                       </div>
@@ -400,50 +408,50 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
 
                     {/* Specs Table */}
                     <div className="space-y-3 pt-2 border-t border-slate-100">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">
                         {isQuran ? 'TRACK SPECIFICATIONS' : 'ENROLLMENT SPECIFICATIONS'}
                       </span>
                       
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">{isQuran ? 'Current Track' : 'Current Program'}</span>
-                          <span className="font-bold text-slate-900">
+                          <span className="font-semibold text-slate-900">
                             {isDemo ? (isQuran ? 'Surah An-Nur' : isCoding ? 'Full-Stack Next.js 14' : 'Applied Management & Practicum') : courses[0]?.title || 'General Curriculum'}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">Current Status</span>
-                          <span className="font-bold text-slate-900 font-mono">
+                          <span className="font-semibold text-slate-900 font-mono">
                             {isDemo ? (isQuran ? 'Ayah 35 (Noor)' : isCoding ? 'Module 8: Microservices' : 'Module 4: Applied Practicum') : 'Active Enrollment'}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">{isQuran ? 'Retention Mastery' : 'Academic Mastery'}</span>
-                          <span className="font-bold text-slate-900 font-mono">
+                          <span className="font-semibold text-slate-900 font-mono">
                             {isDemo ? (isQuran ? '98.4% Mumtaz' : '96.5% High Honors') : studentSubmissions.length > 0 ? 'Evaluating' : 'New Enrollment'}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">{isQuran ? 'Tajweed Level' : 'Academic Tier'}</span>
-                          <span className="font-bold text-slate-900">
+                          <span className="font-semibold text-slate-900">
                             {isDemo ? (isQuran ? 'Advanced Phonetics' : 'Advanced Track') : 'Level 1 Foundations'}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">Attendance Record</span>
-                          <span className="font-bold text-slate-900">
+                          <span className="font-semibold text-slate-900">
                             {isDemo ? '100% (24 Sessions)' : '100% On Track'}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">{isQuran ? 'Assigned Ustadhah' : 'Faculty Mentor'}</span>
-                          <span className="font-bold text-slate-900">
+                          <span className="font-semibold text-slate-900">
                             {isDemo ? (isQuran ? 'Ustadhah Zainab' : 'Senior Faculty') : courses[0]?.instructorName || 'Academy Mentor'}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-slate-50 text-slate-600">
                           <span className="text-slate-400 font-medium">{isQuran ? 'Live Halaqah Room' : 'Live Classroom'}</span>
-                          <span className="font-bold text-slate-900">{isQuran ? 'WebRTC SFU Live' : 'Interactive SFU Hall'}</span>
+                          <span className="font-semibold text-slate-900">{isQuran ? 'WebRTC SFU Live' : 'Interactive SFU Hall'}</span>
                         </div>
                         <div className="flex justify-between py-1 text-slate-600">
                           <span className="text-slate-400 font-medium">Student ID</span>
@@ -462,14 +470,14 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                           setActiveTab('assessments');
                           setAssessmentSubTab('record');
                         }}
-                        className="w-full h-11 bg-slate-950 hover:bg-slate-800 text-white px-4 rounded-xl text-sm font-bold transition-all shadow-sm cursor-pointer text-center active:scale-[0.98]"
+                        className="w-full h-11 bg-slate-950 hover:bg-slate-800 text-white px-4 rounded-xl text-sm font-semibold transition-all shadow-sm cursor-pointer text-center active:scale-[0.98]"
                       >
                         {isQuran ? 'Record Recitation Homework' : 'Submit Practical Assignment'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setActiveTab('courses')}
-                        className="w-full h-11 bg-white hover:bg-slate-50 text-slate-900 px-4 rounded-xl text-sm font-bold border border-slate-200 transition-all cursor-pointer text-center active:scale-[0.98]"
+                        className="w-full h-11 bg-white hover:bg-slate-50 text-slate-900 px-4 rounded-xl text-sm font-semibold border border-slate-200 transition-all cursor-pointer text-center active:scale-[0.98]"
                       >
                         {isQuran ? 'Open 604-Page Medina Mushaf' : 'Open Course Syllabus & Library'}
                       </button>
@@ -480,7 +488,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="text-lg font-black text-slate-900 font-display">
+                        <h3 className="text-lg font-semibold text-slate-900 font-display">
                           {user?.name || 'Enrolled Student'}
                         </h3>
                         <p className="text-xs text-slate-400 font-medium">
@@ -501,13 +509,13 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                         <span className="text-xs text-slate-400 block font-medium">
                           {isQuran ? 'Recitation Retention' : 'Academic Retention'}
                         </span>
-                        <span className="text-sm font-bold text-slate-900 font-mono">
+                        <span className="text-sm font-semibold text-slate-900 font-mono">
                           {isDemo ? (isQuran ? '98.4% Mumtaz' : '96.5% Honors') : '100% Active'}
                         </span>
                       </div>
                       <div>
                         <span className="text-xs text-slate-400 block font-medium">Cohort Joined</span>
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-xs font-semibold text-slate-700">
                           {isDemo ? '21 Dec 2024' : 'Term 1 • 2026'}
                         </span>
                       </div>
@@ -519,10 +527,10 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 <div className="lg:col-span-4">
                   <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                      <h3 className="text-base font-black text-slate-900 font-display">
+                      <h3 className="text-base font-semibold text-slate-900 font-display">
                         {isQuran ? 'Enrolled Modules & Halaqahs' : 'Enrolled Modules & Courses'}
                       </h3>
-                      <span className="text-xs font-bold text-emerald-600">
+                      <span className="text-xs font-semibold text-emerald-600">
                         {isDemo ? '6 Tracks' : `${courses.length} Tracks`}
                       </span>
                     </div>
@@ -536,7 +544,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <BookOpen className="w-4 h-4 text-emerald-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   Hifz Al-Baqarah & Ali 'Imran
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -544,7 +552,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-emerald-700 font-mono shrink-0">Mumtaz (98%)</span>
+                            <span className="text-xs font-semibold text-emerald-700 font-mono shrink-0">Mumtaz (98%)</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -553,7 +561,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <Award className="w-4 h-4 text-teal-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   Tajweed Phonetics (Tuhfah)
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -561,7 +569,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">Completed</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">Completed</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -570,7 +578,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <GraduationCap className="w-4 h-4 text-blue-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   Classical Arabic Syntax (Nahw)
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -578,7 +586,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">In Progress</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">In Progress</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -587,7 +595,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <Sparkles className="w-4 h-4 text-amber-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   Daily Muraja'ah Revision Circle
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -595,7 +603,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">100% Attended</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">100% Attended</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -604,7 +612,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   Sanad Graduation Exam
                                 </h4>
                                 <p className="text-xs text-emerald-600 font-medium">
@@ -612,7 +620,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-emerald-600 font-mono shrink-0">Eligible</span>
+                            <span className="text-xs font-semibold text-emerald-600 font-mono shrink-0">Eligible</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -625,7 +633,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   1-on-1 Mentorship Office Hours
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -633,7 +641,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">Booked</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">Booked</span>
                           </div>
                         </div>
                       ) : (
@@ -644,7 +652,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <BookOpen className="w-4 h-4 text-emerald-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   {isCoding ? 'Full-Stack Architecture & APIs' : 'Core Applied Practicum & Case Studies'}
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -652,7 +660,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-emerald-700 font-mono shrink-0">Distinction (98%)</span>
+                            <span className="text-xs font-semibold text-emerald-700 font-mono shrink-0">Distinction (98%)</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -661,7 +669,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <Award className="w-4 h-4 text-teal-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   {isCoding ? 'Data Structures & Algorithms' : 'Strategic Operations & Analysis'}
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -669,7 +677,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">Completed</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">Completed</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -678,7 +686,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <GraduationCap className="w-4 h-4 text-blue-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   {isCoding ? 'Cloud Systems & Microservices' : 'Organizational Leadership & Ethics'}
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -686,7 +694,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">In Progress</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">In Progress</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -695,7 +703,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   Senior Capstone Project
                                 </h4>
                                 <p className="text-xs text-emerald-600 font-medium">
@@ -703,7 +711,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-emerald-600 font-mono shrink-0">Eligible</span>
+                            <span className="text-xs font-semibold text-emerald-600 font-mono shrink-0">Eligible</span>
                           </div>
 
                           <div className="pt-3 flex items-start justify-between gap-3 group">
@@ -712,7 +720,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <Users className="w-4 h-4 text-slate-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   1-on-1 Faculty Mentorship Hours
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -720,7 +728,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-slate-900 font-mono shrink-0">Booked</span>
+                            <span className="text-xs font-semibold text-slate-900 font-mono shrink-0">Booked</span>
                           </div>
                         </div>
                       )
@@ -733,7 +741,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 <BookOpen className="w-4 h-4 text-emerald-600" />
                               </div>
                               <div>
-                                <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                <h4 className="text-xs font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                                   {course.title}
                                 </h4>
                                 <p className="text-xs text-slate-400 font-medium">
@@ -741,14 +749,14 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs font-bold text-emerald-700 font-mono shrink-0">Enrolled</span>
+                            <span className="text-xs font-semibold text-emerald-700 font-mono shrink-0">Enrolled</span>
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="py-8 px-4 text-center rounded-2xl bg-slate-50 border border-dashed border-slate-200 space-y-2">
                         <BookOpen className="w-8 h-8 text-slate-300 mx-auto" />
-                        <p className="text-xs font-bold text-slate-800">No Enrolled Courses</p>
+                        <p className="text-xs font-semibold text-slate-800">No Enrolled Courses</p>
                         <p className="text-xs text-slate-400">You are not enrolled in any active courses yet.</p>
                       </div>
                     )}
@@ -770,17 +778,17 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                           <GraduationCap className="w-12 h-12 text-slate-600" />
                         </div>
                       )}
-                      <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-white/10">
+                      <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-white/10">
                         <MapPin className="w-3.5 h-3.5 text-emerald-400" />
                         <span>{isQuran ? 'Room 1 • Live Halaqah' : 'Room 1 • Live Classroom'}</span>
                       </div>
-                      <div className="absolute bottom-3 right-3 bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider shadow-sm">
+                      <div className="absolute bottom-3 right-3 bg-emerald-600 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize tracking-wider shadow-sm">
                         ONLINE
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className="text-lg font-black text-slate-950 font-display">
+                      <h3 className="text-lg font-semibold text-slate-950 font-display">
                         {tenant.name || 'Academy Central Campus'}
                       </h3>
                       <p className="text-xs text-slate-400 font-medium">
@@ -791,7 +799,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-100 text-xs">
                       <div>
                         <span className="text-xs text-slate-400 block font-medium">Weekly Study Hours</span>
-                        <span className="text-sm font-bold text-slate-900 font-mono">
+                        <span className="text-sm font-semibold text-slate-900 font-mono">
                           {isDemo ? '14.5 Hours' : (studentSubmissions.length > 0 ? `${studentSubmissions.length * 2} Hours` : '0 Hours')}
                         </span>
                       </div>
@@ -799,14 +807,14 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                         <span className="text-xs text-slate-400 block font-medium">
                           {isQuran ? 'Completed Recitations' : 'Completed Assignments'}
                         </span>
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-xs font-semibold text-slate-700">
                           {isDemo ? '48 Graded' : (studentSubmissions.length > 0 ? `${studentSubmissions.length} Recorded` : '0 Recorded')}
                         </span>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <span className="text-xs font-black uppercase tracking-wider text-slate-400">
+                      <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">
                         RATING
                       </span>
                       
@@ -821,7 +829,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                         </div>
 
                         <div className="text-right">
-                          <span className="text-4xl sm:text-5xl font-black text-slate-950 font-display">
+                          <span className="text-4xl sm:text-5xl font-semibold text-slate-950 font-display">
                             {isDemo ? '4.9' : (studentSubmissions.length > 0 ? '5.0' : '—')}
                           </span>
                           <div className="flex items-center justify-end gap-0.5 text-amber-400 mt-1">
@@ -842,36 +850,36 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               {/* BOTTOM FULL-WIDTH CARD: Structured Table */}
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-black text-slate-950 font-display">
+                  <h3 className="text-lg font-semibold text-slate-950 font-display">
                     {isQuran ? 'Recent Recitation Submissions & Ustadhah Evaluations' : 'Recent Project Submissions & Faculty Evaluations'}
                   </h3>
-                  <span className="text-xs font-bold text-slate-400">Active Term</span>
+                  <span className="text-xs font-semibold text-slate-400">Active Term</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                    <span className="text-xs font-semibold capitalize tracking-wider text-slate-400 block">
                       {isQuran ? 'MEMORIZED AYAT' : 'COMPLETED LESSONS'}
                     </span>
-                    <span className="text-2xl font-black text-slate-950 font-display mt-1 block">
+                    <span className="text-2xl font-semibold text-slate-950 font-display mt-1 block">
                       {isDemo ? (isQuran ? '4,820 Ayat' : '48 Lessons') : (isQuran ? `${studentSubmissions.length * 15} Ayat` : `${studentSubmissions.length} Lessons`)}
                     </span>
                   </div>
 
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                    <span className="text-xs font-semibold capitalize tracking-wider text-slate-400 block">
                       SUBMISSIONS GRADED
                     </span>
-                    <span className="text-2xl font-black text-slate-950 font-display mt-1 block">
+                    <span className="text-2xl font-semibold text-slate-950 font-display mt-1 block">
                       {isDemo ? '48 Evaluated' : `${studentSubmissions.filter((s) => s.status === 'graded').length} Evaluated`}
                     </span>
                   </div>
 
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                    <span className="text-xs font-semibold capitalize tracking-wider text-slate-400 block">
                       {isQuran ? 'MUMTAZ HONORS' : 'DISTINCTION SCORE'}
                     </span>
-                    <span className="text-2xl font-black text-emerald-700 font-display mt-1 block">
+                    <span className="text-2xl font-semibold text-emerald-700 font-display mt-1 block">
                       {isDemo ? '96% Accuracy' : (studentSubmissions.length > 0 ? '100% On Track' : 'New Student')}
                     </span>
                   </div>
@@ -880,7 +888,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider text-xs">
+                      <tr className="border-b border-slate-200 text-slate-400 font-semibold capitalize tracking-wider text-xs">
                         <th className="py-3 px-3">{isQuran ? 'Surah & Ayah Range' : 'Module & Assignment Topic'}</th>
                         <th className="py-3 px-3">{isQuran ? 'Evaluating Ustadhah' : 'Evaluating Faculty'}</th>
                         <th className="py-3 px-3">Date & Submission ID</th>
@@ -899,11 +907,11 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                             className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
                             title="Click to view evaluation and listen to teacher feedback"
                           >
-                            <td className="py-3.5 px-3 font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                            <td className="py-3.5 px-3 font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
                               <div className="flex items-center gap-2">
                                 <span>{sub.surahName || sub.title || (isQuran ? 'Recitation Homework' : 'Coursework Submission')}</span>
                                 {sub.teacherAudioFeedbackUrl && (
-                                  <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">
+                                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-md">
                                     <Volume2 className="w-3.5 h-3.5" /> Voice Note
                                   </span>
                                 )}
@@ -911,7 +919,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                             </td>
                             <td className="py-3.5 px-3">
                               <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center font-bold">
+                                <div className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center font-semibold">
                                   {isQuran ? 'U' : 'F'}
                                 </div>
                                 <span className="text-xs font-semibold">{isQuran ? 'Academy Ustadhah' : 'Academy Faculty'}</span>
@@ -921,7 +929,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                               {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : 'Recent'}
                             </td>
                             <td className="py-3.5 px-3 text-right">
-                              <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${sub.status === 'graded' || sub.status === 'Mastered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${sub.status === 'graded' || sub.status === 'Mastered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
                                 {sub.status === 'graded' || sub.status === 'Mastered' ? (isQuran ? `Mumtaz (${sub.score || 95}%)` : `Distinction (${sub.score || 95}%)`) : 'Pending Review'}
                               </span>
                             </td>
@@ -941,7 +949,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                                 setActiveTab('assessments');
                                 setAssessmentSubTab('record');
                               }}
-                              className="mt-2 text-xs font-bold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
+                              className="mt-2 text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
                             >
                               Record your first recitation homework now →
                             </button>
@@ -972,7 +980,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 <div className="bg-white rounded-2xl p-8 border border-slate-200 text-center space-y-4 max-w-2xl mx-auto shadow-sm">
                   <Radio className="w-12 h-12 text-emerald-600 mx-auto animate-pulse" />
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">
+                    <h3 className="text-lg font-semibold text-slate-900">
                       {isQuran ? 'Live Halaqah Portal' : 'Live Interactive Classroom'}
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
@@ -1000,7 +1008,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                       classroomSessionService.startSession(mockSession);
                       setActiveLiveSession(mockSession);
                     }}
-                    className="px-6 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer active:scale-[0.98]"
+                    className="px-6 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-semibold text-xs shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer active:scale-[0.98]"
                   >
                     <Play className="w-4 h-4" /> {isQuran ? 'Enter Live Halaqah Room' : 'Enter Live Classroom'}
                   </button>
@@ -1028,7 +1036,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
           {activeTab === 'schedule' && (
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-semibold text-slate-900">
                   {isQuran ? 'Weekly Halaqah Schedule' : 'Weekly Class & Lecture Schedule'}
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -1041,7 +1049,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               {isDemo ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
-                    <div className="flex justify-between text-xs font-bold text-slate-900">
+                    <div className="flex justify-between text-xs font-semibold text-slate-900">
                       <span>{isQuran ? 'Morning Hifz Circle' : 'Morning Lecture & Discussion'}</span>
                       <span className="text-emerald-600 font-mono">07:00 AM - 08:30 AM</span>
                     </div>
@@ -1050,7 +1058,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     </p>
                   </div>
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
-                    <div className="flex justify-between text-xs font-bold text-slate-900">
+                    <div className="flex justify-between text-xs font-semibold text-slate-900">
                       <span>{isQuran ? 'Tajweed Phonetics Workshop' : 'Applied Skills & Lab Practicum'}</span>
                       <span className="text-emerald-600 font-mono">04:00 PM - 05:30 PM</span>
                     </div>
@@ -1062,7 +1070,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               ) : (
                 <div className="py-12 px-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
                   <CalendarIcon className="w-10 h-10 text-slate-300 mx-auto" />
-                  <p className="text-sm font-bold text-slate-800">No Live Sessions Scheduled Today</p>
+                  <p className="text-sm font-semibold text-slate-800">No Live Sessions Scheduled Today</p>
                   <p className="text-xs text-slate-400 max-w-md mx-auto">
                     Your academy instructors will publish live halaqah and classroom schedules here. Check back when your course session begins.
                   </p>
@@ -1079,7 +1087,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5 text-emerald-600 shrink-0" />
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">
+                    <h3 className="text-sm font-semibold text-slate-900">
                       {isQuran ? 'Oral Recitations & Assessment Hub' : 'Assessments & Project Submissions'}
                     </h3>
                     <p className="text-xs text-slate-400">
@@ -1092,7 +1100,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <button
                     type="button"
                     onClick={() => setAssessmentSubTab('record')}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                       assessmentSubTab === 'record'
                         ? 'bg-slate-900 text-white shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -1103,7 +1111,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <button
                     type="button"
                     onClick={() => setAssessmentSubTab('submissions')}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                       assessmentSubTab === 'submissions'
                         ? 'bg-slate-900 text-white shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -1114,7 +1122,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                   <button
                     type="button"
                     onClick={() => setAssessmentSubTab('rubrics')}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                       assessmentSubTab === 'rubrics'
                         ? 'bg-slate-900 text-white shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -1155,7 +1163,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
               {assessmentSubTab === 'rubrics' && (
                 <div className="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-6">
                   <div className="space-y-1 pb-3 border-b border-slate-100">
-                    <h4 className="text-base font-black text-slate-900 font-display">
+                    <h4 className="text-base font-semibold text-slate-900 font-display">
                       {isQuran ? 'Standardized Sanad Tajweed Evaluation Rubric' : 'Academic Evaluation & Competency Rubrics'}
                     </h4>
                     <p className="text-xs text-slate-500">
@@ -1167,7 +1175,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
                         <span>{isQuran ? '1. Makharij Al-Huroof (Articulation Points)' : '1. Architectural Design & Structure'}</span>
                         <span className="text-emerald-700 font-mono">35% Weight</span>
                       </div>
@@ -1179,7 +1187,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     </div>
 
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
                         <span>{isQuran ? '2. Sifat Al-Huroof (Letter Characteristics)' : '2. Algorithmic Efficiency & Cleanliness'}</span>
                         <span className="text-emerald-700 font-mono">25% Weight</span>
                       </div>
@@ -1191,7 +1199,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     </div>
 
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
                         <span>{isQuran ? '3. Ahkam Nun Sakinah & Madd Duration' : '3. Error Handling & Edge Cases'}</span>
                         <span className="text-emerald-700 font-mono">25% Weight</span>
                       </div>
@@ -1203,7 +1211,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     </div>
 
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-900">
                         <span>{isQuran ? '4. Waqf, Ibtida & Fluency' : '4. Oral Defense & Concept Mastery'}</span>
                         <span className="text-emerald-700 font-mono">15% Weight</span>
                       </div>

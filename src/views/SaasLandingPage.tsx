@@ -199,20 +199,20 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               <a href="#pricing" className="hover:text-emerald-700 transition-colors">Pricing</a>
               <a href="#tracks" className="hover:text-emerald-700 transition-colors">Tracks</a>
               <a href="#features" className="hover:text-emerald-700 transition-colors">Showcase</a>
-              <a href="/docs" className="hover:text-emerald-700 transition-colors text-emerald-800 font-bold">Docs</a>
+              <a href="/docs" className="hover:text-emerald-700 transition-colors text-emerald-800 font-semibold">Docs</a>
             </nav>
 
             {/* Right Action Button (From Image 1) */}
             <div className="hidden sm:flex items-center gap-3">
               <button
                 onClick={() => onNavigateToAuth('login')}
-                className="px-5 py-2 rounded-full bg-white hover:bg-stone-100 text-slate-800 text-sm font-bold border border-stone-200 transition-all cursor-pointer shadow-xs hover:border-stone-300"
+                className="px-5 py-2 rounded-full bg-white hover:bg-stone-100 text-slate-800 text-sm font-semibold border border-stone-200 transition-all cursor-pointer shadow-xs hover:border-stone-300"
               >
                 Sign In
               </button>
               <button
                 onClick={() => onNavigateToAuth('create-academy')}
-                className="px-6 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-700/20 transition-all cursor-pointer"
+                className="px-6 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-md shadow-emerald-700/20 transition-all cursor-pointer"
               >
                 Create Academy
               </button>
@@ -234,14 +234,14 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-slate-900 font-semibold">Pricing</a>
               <a href="#tracks" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-slate-900 font-semibold">Tracks</a>
               <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-slate-900 font-semibold">Features</a>
-              <a href="/docs" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-emerald-800 font-bold">Docs</a>
+              <a href="/docs" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-emerald-800 font-semibold">Docs</a>
               <div className="pt-2 space-y-2">
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     onNavigateToAuth('login');
                   }}
-                  className="w-full py-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-slate-800 font-bold text-sm border border-stone-200 transition-all"
+                  className="w-full py-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-slate-800 font-semibold text-sm border border-stone-200 transition-all"
                 >
                   Sign In
                 </button>
@@ -250,7 +250,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                     setIsMobileMenuOpen(false);
                     onNavigateToAuth('create-academy');
                   }}
-                  className="w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all"
+                  className="w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md transition-all"
                 >
                   Create Academy
                 </button>
@@ -260,7 +260,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
           {/* --- Hero Headline & Action Buttons (Milk Background with Black Text) --- */}
           <div className="text-center max-w-4xl mx-auto space-y-6 pt-4 pb-12 sm:pb-16" id="home">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-black leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-black leading-tight">
               The All-in-One Operating System<br />
               for Specialized Academies
             </h1>
@@ -272,13 +272,13 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <button
                 onClick={() => onNavigateToAuth('create-academy')}
-                className="px-8 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl shadow-emerald-800/20 transition-all cursor-pointer"
+                className="px-8 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xl shadow-emerald-800/20 transition-all cursor-pointer"
               >
                 Create Your Academy
               </button>
               <button
                 onClick={() => onNavigateToDemo('hifz-academy')}
-                className="px-8 py-3 rounded-full bg-white hover:bg-stone-50 text-slate-900 font-bold text-sm border border-stone-300 shadow-sm transition-all cursor-pointer"
+                className="px-8 py-3 rounded-full bg-white hover:bg-stone-50 text-slate-900 font-semibold text-sm border border-stone-300 shadow-sm transition-all cursor-pointer"
               >
                 Explore Live Demo
               </button>
@@ -298,11 +298,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <section className="pt-36 sm:pt-52 pb-16 bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center mb-6">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-semibold capitalize tracking-wider text-slate-400">
               Trusted by Leading Academies & Educational Institutes Worldwide
             </span>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-16 text-slate-500 font-bold text-lg sm:text-xl tracking-tight">
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-16 text-slate-500 font-semibold text-lg sm:text-xl tracking-tight">
             {partnerAcademies.map((logo, idx) => (
               <div key={idx} className="flex items-center gap-2 hover:text-emerald-700 transition-all opacity-80 hover:opacity-100">
                 <span className="tracking-tight">{logo}</span>
@@ -318,7 +318,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <section className="py-20 sm:py-28 bg-slate-50/60" id="tracks">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight">
               Integrated solutions designed
             </h2>
             <p className="text-sm sm:text-base text-slate-500">
@@ -344,7 +344,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                   {track.id === 'school' && <VocationalSisTrackIllustration isDark={track.featured} />}
                 </div>
 
-                <h3 className={`text-xl font-bold mb-1 ${track.featured ? 'text-white' : 'text-slate-900'}`}>
+                <h3 className={`text-xl font-semibold mb-1 ${track.featured ? 'text-white' : 'text-slate-900'}`}>
                   {track.title}
                 </h3>
                 <div className={`text-xs font-semibold mb-4 ${track.featured ? 'text-emerald-400' : 'text-emerald-600'}`}>
@@ -357,7 +357,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
                 <button
                   onClick={() => onNavigateToDemo(track.demoId)}
-                  className={`w-full py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                  className={`w-full py-3 rounded-full text-xs font-semibold capitalize tracking-wider transition-all ${
                     track.featured
                       ? 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-md'
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
@@ -377,7 +377,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <section className="py-20 sm:py-28 bg-white border-y border-slate-100" id="why-choose-us">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight">
               Why Choose Ankabit LMS Features
             </h2>
             <p className="text-sm sm:text-base text-slate-500">
@@ -402,7 +402,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                 <div className="py-6 space-y-4">
                   <div className="flex justify-between text-xs text-slate-400">
                     <span>Recitations & Assessments Completed</span>
-                    <span className="text-emerald-400 font-bold">+94% Completion</span>
+                    <span className="text-emerald-400 font-semibold">+94% Completion</span>
                   </div>
                   <div className="h-32 flex items-end justify-between gap-2 pt-2">
                     {[35, 55, 75, 45, 90, 65, 80, 100].map((h, i) => (
@@ -418,11 +418,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
                 {/* Floating Circular Donut Badge (From Image 1) */}
                 <div className="absolute -bottom-6 -right-4 sm:-right-8 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-xl border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-amber-400 border-r-teal-400 flex items-center justify-center font-bold text-xs text-emerald-600">
+                  <div className="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-amber-400 border-r-teal-400 flex items-center justify-center font-semibold text-xs text-emerald-600">
                     94%
                   </div>
                   <div>
-                    <div className="text-xs font-bold">Retention Rate</div>
+                    <div className="text-xs font-semibold">Retention Rate</div>
                     <div className="text-[10px] text-slate-500 dark:text-slate-400">Academy Excellence</div>
                   </div>
                 </div>
@@ -432,9 +432,9 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             {/* Right Column: Numbered Features (01, 02, 03) */}
             <div className="lg:col-span-6 space-y-8">
               <div className="flex gap-6 items-start">
-                <span className="text-2xl sm:text-3xl font-extrabold text-emerald-600 font-mono">01</span>
+                <span className="text-2xl sm:text-3xl font-semibold text-emerald-600 font-mono">01</span>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">Customize your workflow</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-1">Customize your workflow</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">
                     Personalize course modules, live recitation schedules, and grading rubrics that match your exact curriculum standards.
                   </p>
@@ -442,9 +442,9 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               </div>
 
               <div className="flex gap-6 items-start">
-                <span className="text-2xl sm:text-3xl font-extrabold text-emerald-600 font-mono">02</span>
+                <span className="text-2xl sm:text-3xl font-semibold text-emerald-600 font-mono">02</span>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">Easy onboarding, fast adoption</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-1">Easy onboarding, fast adoption</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">
                     Zero software installation required. Provision custom subdomain portals in 30 seconds for both students and instructors.
                   </p>
@@ -452,9 +452,9 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               </div>
 
               <div className="flex gap-6 items-start">
-                <span className="text-2xl sm:text-3xl font-extrabold text-emerald-600 font-mono">03</span>
+                <span className="text-2xl sm:text-3xl font-semibold text-emerald-600 font-mono">03</span>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">Improve student retention</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-1">Improve student retention</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">
                     Automated attendance alerts, Sanad Ijazah verification badges, and direct parent notifications foster long-term student dedication.
                   </p>
@@ -473,7 +473,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Column: Text & Checklist */}
             <div className="lg:col-span-6 space-y-6">
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
+              <h2 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight leading-snug">
                 Real-time reporting on your most important academy metrics.
               </h2>
               <p className="text-sm sm:text-base text-slate-500 leading-relaxed">
@@ -484,11 +484,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               <div className="grid grid-cols-2 gap-4 pt-4">
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
                   <Check className="w-5 h-5 text-emerald-600 shrink-0" />
-                  <span className="text-sm font-bold text-slate-800">Best Performance</span>
+                  <span className="text-sm font-semibold text-slate-800">Best Performance</span>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
                   <Check className="w-5 h-5 text-teal-600 shrink-0" />
-                  <span className="text-sm font-bold text-slate-800">Easy Settings</span>
+                  <span className="text-sm font-semibold text-slate-800">Easy Settings</span>
                 </div>
               </div>
             </div>
@@ -505,11 +505,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
               {/* Floating "Product Level" Badge (From Image 1) */}
               <div className="absolute -bottom-6 left-6 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full border-4 border-emerald-500 border-t-amber-400 border-r-teal-500 flex items-center justify-center font-bold text-[11px] text-slate-900">
+                <div className="w-10 h-10 rounded-full border-4 border-emerald-500 border-t-amber-400 border-r-teal-500 flex items-center justify-center font-semibold text-[11px] text-slate-900">
                   98%
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900">Product Level</div>
+                  <div className="text-xs font-semibold text-slate-900">Product Level</div>
                   <div className="text-[10px] text-slate-500">Verified Quality</div>
                 </div>
               </div>
@@ -524,7 +524,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <section className="py-20 sm:py-28 bg-white border-t border-slate-100" id="pricing">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-semibold text-slate-900 tracking-tight">
               Pricing for every academy, at any stage
             </h2>
             <p className="text-sm sm:text-base text-slate-500">
@@ -543,11 +543,11 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
                     : 'bg-white text-slate-900 border border-slate-200/80 shadow-sm'
                 }`}
               >
-                <div className={`text-xs font-bold uppercase tracking-wider mb-2 ${tier.popular ? 'text-emerald-400' : 'text-slate-500'}`}>
+                <div className={`text-xs font-semibold capitalize tracking-wider mb-2 ${tier.popular ? 'text-emerald-400' : 'text-slate-500'}`}>
                   {tier.name}
                 </div>
                 <div className="flex items-baseline justify-center gap-1 mb-1">
-                  <span className={`text-3xl sm:text-4xl font-extrabold ${tier.popular ? 'text-white' : 'text-slate-900'}`}>
+                  <span className={`text-3xl sm:text-4xl font-semibold ${tier.popular ? 'text-white' : 'text-slate-900'}`}>
                     {tier.price}
                   </span>
                 </div>
@@ -567,7 +567,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 
                 <button
                   onClick={() => onNavigateToAuth('create-academy')}
-                  className={`w-full py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all mb-3 ${
+                  className={`w-full py-3 rounded-full text-xs font-semibold capitalize tracking-wider transition-all mb-3 ${
                     tier.popular
                       ? 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-md'
                       : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
@@ -601,13 +601,13 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
               </div>
               <div className="absolute -bottom-4 right-4 bg-white p-3 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold text-slate-800">Ankabit Support Active</span>
+                <span className="text-xs font-semibold text-slate-800">Ankabit Support Active</span>
               </div>
             </div>
 
             {/* Right Column: FAQ Accordion */}
             <div className="lg:col-span-7 space-y-4">
-              <h3 className="text-2xl font-extrabold text-slate-900 mb-6">Frequently Asked Questions</h3>
+              <h3 className="text-2xl font-semibold text-slate-900 mb-6">Frequently Asked Questions</h3>
               {faqs.map((faq, index) => {
                 const isOpen = activeFaq === index;
                 return (

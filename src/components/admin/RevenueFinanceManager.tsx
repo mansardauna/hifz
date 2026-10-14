@@ -353,7 +353,7 @@ export const RevenueFinanceManager: React.FC = () => {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs font-sans">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-[10px]">
               <tr>
                 <TableSortHeader
                   label="Date"
@@ -379,7 +379,7 @@ export const RevenueFinanceManager: React.FC = () => {
                   currentSort={{ key: sortField, dir: sortDir }}
                   onSort={handleSort}
                 />
-                <th className="px-4 py-3 text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Method</th>
+                <th className="px-4 py-3 text-[10px] text-slate-500 capitalize tracking-wider font-semibold">Method</th>
                 <TableSortHeader
                   label="Amount ($)"
                   sortKey="amount"
@@ -394,7 +394,7 @@ export const RevenueFinanceManager: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-400">
                     <Receipt className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="font-bold text-slate-700">No transactions found</p>
+                    <p className="font-semibold text-slate-700">No transactions found</p>
                     <p className="text-xs text-slate-400 mt-0.5">Click "Record Transaction" to register income or expenses.</p>
                   </td>
                 </tr>
@@ -404,14 +404,14 @@ export const RevenueFinanceManager: React.FC = () => {
                     <td className="py-3.5 px-4 font-mono text-slate-600 font-medium">
                       {tx.date}
                     </td>
-                    <td className="py-3.5 px-4 font-bold text-slate-900">
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">
                       <span>{tx.description}</span>
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5">
                         <Badge
                           variant={tx.type === 'Income' ? 'success' : 'error'}
-                          className="text-[10px] font-bold uppercase tracking-wider"
+                          className="text-[10px] font-semibold capitalize tracking-wider"
                         >
                           {tx.type}
                         </Badge>
@@ -422,14 +422,14 @@ export const RevenueFinanceManager: React.FC = () => {
                       {tx.party}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono text-[10px] uppercase">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono text-[10px] capitalize">
                         {tx.gateway}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono font-bold text-xs sm:text-sm">
+                    <td className="py-3.5 px-4 text-right font-mono font-semibold text-xs sm:text-sm">
                       <span
                         className={
-                          tx.type === 'Income' ? 'text-emerald-700 font-black' : 'text-rose-600 font-black'
+                          tx.type === 'Income' ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'
                         }
                       >
                         {tx.type === 'Income' ? '+' : '-'}${tx.amount.toFixed(2)}
@@ -473,7 +473,7 @@ export const RevenueFinanceManager: React.FC = () => {
                     category: 'Tuition Payment',
                   })
                 }
-                className={`py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`py-2 rounded-lg font-semibold transition-all cursor-pointer ${
                   form.type === 'Income'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -491,7 +491,7 @@ export const RevenueFinanceManager: React.FC = () => {
                     category: 'Faculty Salary',
                   })
                 }
-                className={`py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`py-2 rounded-lg font-semibold transition-all cursor-pointer ${
                   form.type === 'Expense'
                     ? 'bg-rose-600 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -503,11 +503,11 @@ export const RevenueFinanceManager: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Category *</label>
+                <label className="font-semibold text-slate-700">Category *</label>
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-hidden"
                 >
                   {form.type === 'Income' ? (
                     <>
@@ -529,7 +529,7 @@ export const RevenueFinanceManager: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Amount ($ USD) *</label>
+                <label className="font-semibold text-slate-700">Amount ($ USD) *</label>
                 <Input
                   type="number"
                   step="0.01"
@@ -542,7 +542,7 @@ export const RevenueFinanceManager: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-slate-700">Description / Memo</label>
+              <label className="font-semibold text-slate-700">Description / Memo</label>
               <Input
                 placeholder="e.g. Monthly tuition payment or August faculty disbursement"
                 value={form.description}
@@ -552,7 +552,7 @@ export const RevenueFinanceManager: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">
+                <label className="font-semibold text-slate-700">
                   {form.type === 'Income' ? 'Payer (Student / Parent)' : 'Payee (Vendor / Teacher)'}
                 </label>
                 <Input
@@ -563,11 +563,11 @@ export const RevenueFinanceManager: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">Payment Method</label>
+                <label className="font-semibold text-slate-700">Payment Method</label>
                 <select
                   value={form.gateway}
                   onChange={(e) => setForm({ ...form, gateway: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-hidden"
                 >
                   <option value="Stripe">Stripe (Card / Apple Pay)</option>
                   <option value="Moyasar">Moyasar (Mada / STC Pay)</option>
@@ -578,7 +578,7 @@ export const RevenueFinanceManager: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-slate-700">Transaction Date</label>
+              <label className="font-semibold text-slate-700">Transaction Date</label>
               <Input
                 type="date"
                 value={form.date}
@@ -593,7 +593,7 @@ export const RevenueFinanceManager: React.FC = () => {
               <Button
                 variant={form.type === 'Income' ? 'primary' : 'danger'}
                 type="submit"
-                className="font-bold"
+                className="font-semibold"
               >
                 Record {form.type} Entry
               </Button>

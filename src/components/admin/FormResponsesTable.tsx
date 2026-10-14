@@ -626,7 +626,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
       <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar space-x-1">
         <button
           onClick={() => setSelectedFormId('all')}
-          className={`py-3 px-5 font-bold text-xs border-b-2 transition-all shrink-0 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+          className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all shrink-0 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             selectedFormId === 'all'
               ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -635,7 +635,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
           <Layers className="w-3.5 h-3.5" />
           <span>All Submissions</span>
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
-            selectedFormId === 'all' ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold' : 'bg-slate-100 text-slate-600'
+            selectedFormId === 'all' ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-semibold' : 'bg-slate-100 text-slate-600'
           }`}>
             {responses.length}
           </span>
@@ -649,7 +649,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             <button
               key={form.id}
               onClick={() => setSelectedFormId(form.id)}
-              className={`py-3 px-5 font-bold text-xs border-b-2 transition-all shrink-0 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`py-3 px-5 font-semibold text-xs border-b-2 transition-all shrink-0 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                 isSelected
                   ? 'border-[var(--color-primary,#047857)] text-[var(--color-primary,#047857)] bg-[var(--color-primary-50,#ecfdf5)]'
                   : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -658,7 +658,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               <FileText className="w-3.5 h-3.5" />
               <span className="truncate max-w-[180px]">{form.title}</span>
               <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${
-                isSelected ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-bold' : 'bg-slate-100 text-slate-600'
+                isSelected ? 'bg-[var(--color-primary,#047857)]/15 text-[var(--color-primary,#047857)] font-semibold' : 'bg-slate-100 text-slate-600'
               }`}>
                 {formCount}
               </span>
@@ -675,11 +675,11 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <PieChart className="w-4 h-4 text-emerald-600" />
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                <h3 className="text-xs font-semibold capitalize tracking-wider text-slate-700">
                   Admissions Pipeline Funnel
                 </h3>
               </div>
-              <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              <span className="text-xs font-mono font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                 {metrics.conversionRate}% Admitted
               </span>
             </div>
@@ -687,7 +687,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             {/* Visual Funnel Stack */}
             <div className="space-y-2.5 text-xs">
               <div>
-                <div className="flex justify-between font-bold text-slate-700 mb-1">
+                <div className="flex justify-between font-semibold text-slate-700 mb-1">
                   <span>New Inquiries</span>
                   <span>{metrics.newCount}</span>
                 </div>
@@ -700,7 +700,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               </div>
 
               <div>
-                <div className="flex justify-between font-bold text-slate-700 mb-1">
+                <div className="flex justify-between font-semibold text-slate-700 mb-1">
                   <span>Under Review / Scheduled</span>
                   <span>{metrics.underReview}</span>
                 </div>
@@ -713,7 +713,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               </div>
 
               <div>
-                <div className="flex justify-between font-bold text-slate-700 mb-1">
+                <div className="flex justify-between font-semibold text-slate-700 mb-1">
                   <span>Admitted / Enrolled</span>
                   <span>{metrics.admitted}</span>
                 </div>
@@ -732,7 +732,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-blue-600" />
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                <h3 className="text-xs font-semibold capitalize tracking-wider text-slate-700">
                   Question Answer Breakdown
                 </h3>
               </div>
@@ -745,7 +745,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               ) : (
                 Object.entries(answerDistributions).slice(0, 2).map(([question, answers]) => (
                   <div key={question} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
-                    <span className="font-extrabold text-[11px] text-slate-800 block truncate">{question}</span>
+                    <span className="font-semibold text-[11px] text-slate-800 block truncate">{question}</span>
                     <div className="space-y-1.5">
                       {Object.entries(answers).map(([ans, count]) => (
                         <div key={ans} className="flex items-center justify-between text-[11px]">
@@ -757,7 +757,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                                 style={{ width: `${(count / responsesForSelectedForm.length) * 100}%` }}
                               />
                             </div>
-                            <span className="font-mono font-bold text-slate-700 w-4 text-right">{count}</span>
+                            <span className="font-mono font-semibold text-slate-700 w-4 text-right">{count}</span>
                           </div>
                         </div>
                       ))}
@@ -790,7 +790,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
             <button
               key={st}
               onClick={() => setSelectedStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer text-xs ${
+              className={`px-3 py-1.5 rounded-xl font-semibold transition-all shrink-0 cursor-pointer text-xs ${
                 selectedStatusFilter === st
                   ? 'bg-emerald-600 text-white shadow-2xs'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
@@ -807,7 +807,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
         <div className="overflow-x-auto scrollbar-thin">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-extrabold uppercase tracking-wider text-[10px]">
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold capitalize tracking-wider text-[10px]">
                 {/* Applicant Column */}
                 <th
                   onClick={() => handleSort('studentName')}
@@ -896,7 +896,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                 <tr>
                   <td colSpan={6 + dynamicQuestionKeys.length} className="py-14 text-center text-slate-400">
                     <Avatar size="xl" className="mx-auto mb-3" />
-                    <p className="font-bold text-base text-slate-800">No submissions found</p>
+                    <p className="font-semibold text-base text-slate-800">No submissions found</p>
                     <p className="text-sm text-slate-500 mt-1">No responses match the selected form or filters.</p>
                   </td>
                 </tr>
@@ -904,11 +904,11 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                 paginatedResponses.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
                     {/* Student Column */}
-                    <td className="py-4 px-5 font-bold text-slate-900">
+                    <td className="py-4 px-5 font-semibold text-slate-900">
                       <div className="flex items-center gap-3">
                         <Avatar name={r.studentName} size="md" />
                         <div>
-                          <div className="font-bold text-slate-900 text-sm">{r.studentName}</div>
+                          <div className="font-semibold text-slate-900 text-sm">{r.studentName}</div>
                           <div className="text-xs text-slate-400 font-mono mt-0.5">{r.id}</div>
                         </div>
                       </div>
@@ -1049,12 +1049,12 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold capitalize tracking-wider">
                       {viewingResponse.formTitle}
                     </span>
                     <span className="text-slate-400 font-mono text-[11px]">{viewingResponse.id}</span>
                   </div>
-                  <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
+                  <h3 className="font-semibold text-lg text-white flex items-center gap-2">
                     <span>{viewingResponse.studentName}</span>
                     <Badge variant={viewingResponse.status === 'Admitted' ? 'success' : viewingResponse.status === 'Rejected' ? 'error' : 'warning'}>
                       {viewingResponse.status}
@@ -1081,7 +1081,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   <button
                     type="button"
                     onClick={() => setViewingResponse(null)}
-                    className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-sm ml-2 transition-colors cursor-pointer"
+                    className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-semibold text-sm ml-2 transition-colors cursor-pointer"
                   >
                     &times;
                   </button>
@@ -1110,7 +1110,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-slate-500">
+                  <span className="text-[11px] font-semibold text-slate-500">
                     {allEntries.length} Total Fields Recorded
                   </span>
                 </div>
@@ -1131,7 +1131,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   {fieldSearchQuery && (
                     <button
                       onClick={() => setFieldSearchQuery('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-semibold"
                     >
                       &times;
                     </button>
@@ -1143,7 +1143,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   <button
                     onClick={() => setModalLayoutMode('cards')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                      modalLayoutMode === 'cards' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                      modalLayoutMode === 'cards' ? 'bg-white shadow-xs text-emerald-700 font-semibold' : 'text-slate-600 hover:text-slate-900'
                     }`}
                     title="Card Grid View"
                   >
@@ -1153,7 +1153,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   <button
                     onClick={() => setModalLayoutMode('table')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                      modalLayoutMode === 'table' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                      modalLayoutMode === 'table' ? 'bg-white shadow-xs text-emerald-700 font-semibold' : 'text-slate-600 hover:text-slate-900'
                     }`}
                     title="Key-Value Table"
                   >
@@ -1163,7 +1163,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   <button
                     onClick={() => setModalLayoutMode('json')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                      modalLayoutMode === 'json' ? 'bg-white shadow-xs text-emerald-700 font-bold' : 'text-slate-600 hover:text-slate-900'
+                      modalLayoutMode === 'json' ? 'bg-white shadow-xs text-emerald-700 font-semibold' : 'text-slate-600 hover:text-slate-900'
                     }`}
                     title="Raw JSON View"
                   >
@@ -1178,7 +1178,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                 <div className="px-6 py-2 bg-slate-50/50 border-b border-slate-100 flex items-center gap-1.5 overflow-x-auto text-xs shrink-0">
                   <button
                     onClick={() => setActiveCategoryTab('all')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                    className={`px-3 py-1 rounded-lg font-semibold transition-colors whitespace-nowrap ${
                       activeCategoryTab === 'all'
                         ? 'bg-emerald-700 text-white shadow-xs'
                         : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
@@ -1189,7 +1189,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   {catCounts.personal > 0 && (
                     <button
                       onClick={() => setActiveCategoryTab('personal')}
-                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                      className={`px-3 py-1 rounded-lg font-semibold transition-colors whitespace-nowrap ${
                         activeCategoryTab === 'personal'
                           ? 'bg-emerald-700 text-white shadow-xs'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
@@ -1201,7 +1201,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   {catCounts.academic > 0 && (
                     <button
                       onClick={() => setActiveCategoryTab('academic')}
-                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                      className={`px-3 py-1 rounded-lg font-semibold transition-colors whitespace-nowrap ${
                         activeCategoryTab === 'academic'
                           ? 'bg-emerald-700 text-white shadow-xs'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
@@ -1213,7 +1213,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   {catCounts.scheduling > 0 && (
                     <button
                       onClick={() => setActiveCategoryTab('scheduling')}
-                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                      className={`px-3 py-1 rounded-lg font-semibold transition-colors whitespace-nowrap ${
                         activeCategoryTab === 'scheduling'
                           ? 'bg-emerald-700 text-white shadow-xs'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
@@ -1225,7 +1225,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   {catCounts.custom > 0 && (
                     <button
                       onClick={() => setActiveCategoryTab('custom')}
-                      className={`px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap ${
+                      className={`px-3 py-1 rounded-lg font-semibold transition-colors whitespace-nowrap ${
                         activeCategoryTab === 'custom'
                           ? 'bg-emerald-700 text-white shadow-xs'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
@@ -1246,13 +1246,13 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                 ) : filteredEntries.length === 0 ? (
                   <div className="py-12 text-center text-slate-400">
                     <Search className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-                    <p className="font-bold text-slate-700 text-sm">No questionnaire fields match "{fieldSearchQuery}"</p>
+                    <p className="font-semibold text-slate-700 text-sm">No questionnaire fields match "{fieldSearchQuery}"</p>
                     <p className="text-xs text-slate-400 mt-1">Try clearing your search query or selecting a different category tab.</p>
                   </div>
                 ) : modalLayoutMode === 'table' ? (
                   <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
                         <tr>
                           <th className="py-2.5 px-4 w-1/3">Field Question</th>
                           <th className="py-2.5 px-4">Applicant Response</th>
@@ -1263,7 +1263,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                         {filteredEntries.map(([field, val]) => (
                           <tr key={field} className="hover:bg-slate-50/60 transition-colors">
                             <td className="py-2.5 px-4 font-semibold text-slate-700">{field}</td>
-                            <td className="py-2.5 px-4 text-slate-900 font-bold break-words">{String(val)}</td>
+                            <td className="py-2.5 px-4 text-slate-900 font-semibold break-words">{String(val)}</td>
                             <td className="py-2.5 px-3 text-right">
                               <button
                                 onClick={() => copyToClipboard(String(val), field)}
@@ -1286,7 +1286,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                         className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:bg-white transition-all shadow-2xs group"
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          <span className="text-[10px] font-semibold capitalize tracking-wider text-slate-500">
                             {field}
                           </span>
                           <button
@@ -1297,7 +1297,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                             {copiedFieldKey === field ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                           </button>
                         </div>
-                        <div className="text-xs font-bold text-slate-900 break-words leading-relaxed">
+                        <div className="text-xs font-semibold text-slate-900 break-words leading-relaxed">
                           {String(val)}
                         </div>
                       </div>
@@ -1307,7 +1307,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
 
                 {/* Internal Admin Review Remarks */}
                 <div className="pt-4 border-t border-slate-200 space-y-2">
-                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <label className="block text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                     <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Internal Review Notes & Placement Remarks</span>
                   </label>
@@ -1338,11 +1338,11 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
               {/* Modal Footer */}
               <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-600">Update Status:</span>
+                  <span className="text-xs font-semibold text-slate-600">Update Status:</span>
                   <select
                     value={viewingResponse.status}
                     onChange={(e) => handleStatusChange(viewingResponse.id, e.target.value as any)}
-                    className="px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
+                    className="px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none cursor-pointer"
                   >
                     <option value="New">New</option>
                     <option value="Under Review">Under Review</option>
@@ -1356,7 +1356,7 @@ export const FormResponsesTable: React.FC<FormResponsesTableProps> = ({ onAddToa
                   <button
                     type="button"
                     onClick={() => setViewingResponse(null)}
-                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                    className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs transition-colors cursor-pointer"
                   >
                     Done & Close
                   </button>

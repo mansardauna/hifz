@@ -85,7 +85,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-bold text-white shadow-xs animate-pulse">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-semibold text-white shadow-xs animate-pulse">
             {unreadCount}
           </span>
         )}
@@ -97,9 +97,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
           {/* Header */}
           <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-sm text-slate-900">Notifications</h3>
+              <h3 className="font-semibold text-sm text-slate-900">Notifications</h3>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-slate-900 text-white">
+                <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded-full bg-slate-900 text-white">
                   {unreadCount} new
                 </span>
               )}
@@ -192,7 +192,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <h4 className={`text-xs truncate ${!n.read ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>
+                      <h4 className={`text-xs truncate ${!n.read ? 'font-semibold text-slate-900' : 'font-medium text-slate-700'}`}>
                         {n.title}
                       </h4>
                       <span className="text-[10px] text-slate-400 whitespace-nowrap">{n.timestamp}</span>
@@ -215,7 +215,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onNaviga
             <span className="text-[11px] text-slate-500 font-medium">Browser Push Alerts</span>
             <button
               onClick={handleEnablePush}
-              className="text-[11px] font-bold text-slate-900 hover:underline cursor-pointer"
+              className="text-[11px] font-semibold text-slate-900 hover:underline cursor-pointer"
             >
               {pushEnabled ? 'Enabled (Active)' : 'Enable Push Alerts'}
             </button>

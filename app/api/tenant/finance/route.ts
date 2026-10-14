@@ -148,7 +148,10 @@ export async function POST(request: NextRequest) {
       const isOwner =
         authUser.tenantId === tenantId ||
         tenantId === `tenant-${cleanSub}` ||
-        tenantId === cleanSub;
+        tenantId === cleanSub ||
+        (cleanSub.includes('hifz') && (tenantId === 'tenant-hifz' || tenantId === 'hifz')) ||
+        (cleanSub.includes('code') && (tenantId === 'tenant-code' || tenantId === 'code')) ||
+        (cleanSub.includes('furqan') && (tenantId === 'tenant-al-furqan' || tenantId === 'al-furqan'));
 
       if (!isOwner) {
         return apiError('Forbidden: You can only record financial transactions for your assigned academy', 403);
@@ -160,6 +163,21 @@ export async function POST(request: NextRequest) {
     const storedGateway = isExpense ? `expense_${category.toLowerCase().replace(/\s+/g, '_')}` : gateway;
     const finalDescription = description || (isExpense ? `${category} payment to ${party || 'Vendor'}` : `${category} from ${party || 'Student'}`);
 
+    const cleanSub = tenantId.replace(/^tenant-/, '');
+    const tenantRecord = await prisma.tenant.findFirst({
+      where: {
+        OR: [
+          { id: tenantId },
+          { id: `tenant-${cleanSub}` },
+          { subdomain: cleanSub },
+          { subdomain: tenantId },
+          ...(cleanSub.length >= 3 ? [{ subdomain: { contains: cleanSub } }] : []),
+        ],
+      },
+      select: { id: true },
+    });
+    const targetTenantId = tenantRecord ? tenantRecord.id : tenantId;
+
     const newTx = await prisma.paymentTransaction.create({
       data: {
         amount: isExpense ? -Math.abs(numAmount) : Math.abs(numAmount),
@@ -167,7 +185,7 @@ export async function POST(request: NextRequest) {
         gateway: storedGateway,
         status: status === 'Completed' ? 'succeeded' : status,
         transactionId: `${finalDescription} • Ref: ${Date.now().toString(36)}`,
-        tenantId,
+        tenantId: targetTenantId,
         createdAt: date ? new Date(date) : new Date(),
       },
     });

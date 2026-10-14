@@ -85,14 +85,14 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
 
             <div>
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-sm text-slate-900">{plan.name}</h3>
+                <h3 className="font-semibold text-sm text-slate-900">{plan.name}</h3>
                 <span className="text-xs text-slate-400 font-semibold">{plan.nameAr}</span>
               </div>
 
               <p className="text-xs text-slate-500 mt-1">{plan.description}</p>
 
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-2xl font-bold font-mono text-slate-900">${plan.priceMonthly}</span>
+                <span className="text-2xl font-semibold font-mono text-slate-900">${plan.priceMonthly}</span>
                 <span className="text-xs text-slate-500">/ month</span>
               </div>
 
@@ -134,7 +134,7 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
         <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-sm max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-sm text-slate-900">Edit Tuition Plan</h3>
+              <h3 className="font-semibold text-sm text-slate-900">Edit Tuition Plan</h3>
               <button onClick={() => setEditingPlan(null)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
             </div>
 
@@ -219,7 +219,7 @@ export const TenantPricingEditor: React.FC<TenantPricingEditorProps> = ({ onAddT
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-600 text-white font-bold rounded-sm shadow-sm"
+                  className="px-4 py-2 bg-teal-600 text-white font-semibold rounded-sm shadow-sm"
                 >
                   Save
                 </button>

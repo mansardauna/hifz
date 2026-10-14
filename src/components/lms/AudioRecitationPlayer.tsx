@@ -156,7 +156,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
             <Radio className="w-6 h-6 animate-pulse" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-bold text-base text-slate-100 truncate">
+            <h3 className="font-semibold text-base text-slate-100 truncate">
               {isAr ? 'مشغّل التلاوة والتكرار المنهجي' : 'Verse Recitation & Looping Engine'}
             </h3>
             <p className="text-xs text-slate-400 truncate">
@@ -171,7 +171,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
         <div className="flex flex-wrap items-center gap-2.5 max-w-full">
           {/* Looping Selector */}
           <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs shrink-0">
-            <span className="text-[10px] font-bold text-slate-400 ms-2 flex items-center gap-1">
+            <span className="text-[10px] font-semibold text-slate-400 ms-2 flex items-center gap-1">
               <Repeat className="w-3 h-3 text-teal-400" />
               <span>{isAr ? 'التكرار:' : 'Loop:'}</span>
             </span>
@@ -179,7 +179,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
               <button
                 key={num}
                 onClick={() => setLoopCount(num)}
-                className={`px-2 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                className={`px-2 py-1 rounded-lg font-semibold text-xs transition-all cursor-pointer ${
                   loopCount === num ? 'bg-teal-600 text-white shadow' : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -190,7 +190,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
 
           {/* Playback Speed Selector */}
           <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700 text-xs shrink-0">
-            <span className="text-[10px] font-bold text-slate-400 ms-2 flex items-center gap-1">
+            <span className="text-[10px] font-semibold text-slate-400 ms-2 flex items-center gap-1">
               <Sliders className="w-3 h-3 text-amber-400" />
               <span>{isAr ? 'السرعة:' : 'Speed:'}</span>
             </span>
@@ -198,7 +198,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
               <button
                 key={speed}
                 onClick={() => setPlaybackSpeed(speed)}
-                className={`px-2 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                className={`px-2 py-1 rounded-lg font-semibold text-xs transition-all cursor-pointer ${
                   playbackSpeed === speed ? 'bg-amber-600 text-white shadow' : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -214,7 +214,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
         <button
           onClick={onTogglePlay}
           disabled={!currentAyah}
-          className="w-16 h-16 rounded-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold flex items-center justify-center shadow-lg transition-transform transform hover:scale-105 disabled:opacity-40 cursor-pointer"
+          className="w-16 h-16 rounded-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold flex items-center justify-center shadow-lg transition-transform transform hover:scale-105 disabled:opacity-40 cursor-pointer"
         >
           {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ms-1" />}
         </button>
@@ -224,7 +224,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
       <div className="pt-6 border-t border-slate-800 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-bold text-sm text-slate-200 flex items-center gap-2">
+            <h4 className="font-semibold text-sm text-slate-200 flex items-center gap-2">
               <Mic className="w-4 h-4 text-rose-400" />
               <span>{isAr ? 'تسجيل واجب التلاوة والتسميع' : 'Recitation Homework Audio Recorder'}</span>
             </h4>
@@ -234,7 +234,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
           </div>
 
           {isRecording && (
-            <div className="flex items-center gap-2 text-rose-400 font-mono font-bold text-xs bg-rose-950/60 px-3 py-1.5 rounded-full border border-rose-800/60 animate-pulse">
+            <div className="flex items-center gap-2 text-rose-400 font-mono font-semibold text-xs bg-rose-950/60 px-3 py-1.5 rounded-full border border-rose-800/60 animate-pulse">
               <Activity className="w-4 h-4" />
               <span>REC {Math.floor(recordingSeconds / 60)}:{(recordingSeconds % 60).toString().padStart(2, '0')}</span>
             </div>
@@ -245,7 +245,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
           {!isRecording ? (
             <button
               onClick={startRecording}
-              className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
             >
               <Mic className="w-4 h-4" />
               <span>{isAr ? 'بدء التسجيل الصوتي' : 'Start Mic Recording'}</span>
@@ -253,7 +253,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
           ) : (
             <button
               onClick={stopRecording}
-              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-slate-900 font-bold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-slate-900 font-semibold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
             >
               <Square className="w-4 h-4 fill-slate-900" />
               <span>{isAr ? 'إيقاف التسجيل' : 'Stop Recording'}</span>
@@ -267,7 +267,7 @@ export const AudioRecitationPlayer: React.FC<AudioRecitationPlayerProps> = ({
               <button
                 onClick={handleUploadHomework}
                 disabled={isUploading}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
                 <UploadCloud className="w-4 h-4" />
                 <span>{isUploading ? (isAr ? 'جاري الإرسال...' : 'Uploading...') : (isAr ? 'تسليم التلاوة للمعلّم' : 'Submit Homework')}</span>

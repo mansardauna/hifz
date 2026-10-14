@@ -333,7 +333,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
               <AnkabitLogo size="sm" showText={false} />
             </div>
             <div>
-              <span className="text-lg font-extrabold tracking-tight text-slate-900 block leading-tight">
+              <span className="text-lg font-semibold tracking-tight text-slate-900 block leading-tight">
                 Ankabit LMS
               </span>
               <span className="text-[11px] font-medium text-slate-500">
@@ -368,7 +368,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
           <div className="ml-auto">
             <Link
               href="/login"
-              className="px-5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 transition-all shadow-sm"
+              className="px-5 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 transition-all shadow-sm"
             >
               Already have an academy? Sign In
             </Link>
@@ -379,10 +379,10 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
         <div className="max-w-md w-full mx-auto my-auto space-y-6">
           {/* Header */}
           <div className="space-y-2">
-            <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/60">
+            <span className="inline-block text-[11px] font-semibold capitalize tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/60">
               Instant Provisioning
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
               Create Your Academy
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
@@ -402,7 +402,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
             
             {/* Field 1: Track Selection (1 per col) */}
             <div className="space-y-1.5 font-sans">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700">
                 Academy Specialization
               </label>
               <div className="space-y-2">
@@ -430,12 +430,12 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                           style={{ color: config.brandColor }}
                         />
                         <div>
-                          <div className="font-bold text-xs text-slate-900">{config.title}</div>
+                          <div className="font-semibold text-xs text-slate-900">{config.title}</div>
                           <div className="text-[10px] text-slate-500">{config.subtitle}</div>
                         </div>
                       </div>
                       {isSelected ? (
-                        <Check className="w-4 h-4 text-emerald-600 font-bold shrink-0" />
+                        <Check className="w-4 h-4 text-emerald-600 font-semibold shrink-0" />
                       ) : (
                         <div className="w-4 h-4 rounded-full border border-slate-300 shrink-0" />
                       )}
@@ -473,7 +473,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
             {/* Field 3: Subdomain Slug (1 per col) */}
             <div className="space-y-1.5 font-sans">
-              <label htmlFor="subdomain-input" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              <label htmlFor="subdomain-input" className="block text-xs font-semibold capitalize tracking-wider text-slate-700">
                 Academy Subdomain
               </label>
               <div
@@ -551,7 +551,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
 
             {/* Field 6: Password (1 per col) */}
             <div className="space-y-1 font-sans">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              <label className="block text-xs font-semibold capitalize tracking-wider text-slate-700">
                 Password
               </label>
               <div className="relative">
@@ -579,7 +579,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md shadow-emerald-700/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <span>Provisioning Academy...</span>

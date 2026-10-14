@@ -19,10 +19,10 @@ export const Header: React.FC = () => {
     <>
       {/* Top Announcement Banner */}
       {tenant.heroBadgeText && (
-        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white text-[11px] sm:text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 shadow-xs select-none border-b border-emerald-950/40">
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white text-[11px] sm:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 shadow-xs select-none border-b border-emerald-950/40">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           <span>{isAr ? tenant.heroBadgeTextAr || tenant.heroBadgeText : tenant.heroBadgeText}</span>
-          <a href="#pricing" className="underline font-black text-amber-300 hover:text-amber-200 ml-2 shrink-0">
+          <a href="#pricing" className="underline font-semibold text-amber-300 hover:text-amber-200 ml-2 shrink-0">
             {isAr ? 'سجل الآن ←' : 'Enroll Now →'}
           </a>
         </div>
@@ -46,12 +46,12 @@ export const Header: React.FC = () => {
                 }}
               />
             ) : (
-              <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200 flex items-center justify-center bg-[var(--color-primary,#047857)] text-white font-black text-sm shrink-0">
+              <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200 flex items-center justify-center bg-[var(--color-primary,#047857)] text-white font-semibold text-sm shrink-0">
                 {tenant.name ? tenant.name.charAt(0) : 'A'}
               </div>
             )}
             <div>
-              <h1 className={`font-bold text-slate-900 text-sm sm:text-base leading-tight font-display ${isAr ? 'font-arabic text-lg' : ''}`}>
+              <h1 className={`font-semibold text-slate-900 text-sm sm:text-base leading-tight font-display ${isAr ? 'font-arabic text-lg' : ''}`}>
                 {isAr ? (tenant.nameAr || tenant.name) : tenant.name}
               </h1>
               <p className="text-[11px] text-emerald-700 font-mono hidden sm:block">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
@@ -99,7 +99,7 @@ export const Header: React.FC = () => {
                     key={lang.code}
                     onClick={() => setLanguage(lang.code)}
                     className={`w-full px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition-colors ${
-                      language === lang.code ? 'font-bold text-emerald-700 bg-emerald-50/50' : 'text-slate-700'
+                      language === lang.code ? 'font-semibold text-emerald-700 bg-emerald-50/50' : 'text-slate-700'
                     }`}
                   >
                     <span className="flex items-center gap-2">

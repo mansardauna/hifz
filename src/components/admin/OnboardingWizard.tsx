@@ -373,12 +373,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
           <div className="space-y-6">
             {/* Top Brand Logo */}
             <div className="flex items-center gap-2">
-              <span className="text-lg font-black tracking-widest text-slate-950 font-display">
+              <span className="text-lg font-semibold tracking-widest text-slate-950 font-display">
                 ANKABIT
               </span>
               <span
                 style={{ backgroundColor: `${brandHex}15`, color: brandHex }}
-                className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                className="text-[10px] font-semibold capitalize tracking-wider px-2 py-0.5 rounded-full"
               >
                 LMS WIZARD
               </span>
@@ -409,12 +409,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                       ) : isCurrent ? (
                         <div
                           style={{ borderColor: brandHex, color: brandHex }}
-                          className="w-6 h-6 rounded-lg border-2 bg-white flex items-center justify-center font-bold text-xs shadow-xs"
+                          className="w-6 h-6 rounded-lg border-2 bg-white flex items-center justify-center font-semibold text-xs shadow-xs"
                         >
                           <span style={{ backgroundColor: brandHex }} className="w-2 h-2 rounded-full" />
                         </div>
                       ) : (
-                        <div className="w-6 h-6 rounded-lg border border-slate-300 bg-white text-slate-400 flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-lg border border-slate-300 bg-white text-slate-400 flex items-center justify-center font-semibold text-[10px]">
                           {step.id}
                         </div>
                       )}
@@ -424,9 +424,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                     <div className="min-w-0">
                       <div
                         style={isCurrent ? { color: brandHex } : undefined}
-                        className={`text-xs font-bold transition-colors ${
+                        className={`text-xs font-semibold transition-colors ${
                           isCurrent
-                            ? 'font-black'
+                            ? 'font-semibold'
                             : isCompleted
                             ? 'text-slate-800'
                             : 'text-slate-400'
@@ -446,9 +446,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
           {/* Bottom Progress Indicator */}
           <div className="pt-6 border-t border-slate-200/80 mt-6">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-1.5">
               <span>Setup Progress</span>
-              <span style={{ color: brandHex }} className="font-mono font-bold">
+              <span style={{ color: brandHex }} className="font-mono font-semibold">
                 {progressPercentage}%
               </span>
             </div>
@@ -467,7 +467,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
           {/* Top Bar: Step Indicator */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span style={{ color: brandHex }} className="text-xs font-bold uppercase tracking-wider">
+              <span style={{ color: brandHex }} className="text-xs font-semibold capitalize tracking-wider">
                 Step {currentStep} of {steps.length}
               </span>
 
@@ -481,7 +481,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                     message: 'Invite link copied to clipboard. Share with co-instructors.',
                   })
                 }
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <span>Invite Teammate</span>
                 <div className="w-5 h-5 rounded-full overflow-hidden border border-slate-300">
@@ -496,7 +496,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
             {/* Step Header */}
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-950 font-display tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-semibold text-slate-950 font-display tracking-tight">
                 {currentStep === 1 && 'Welcome to Ankabit LMS'}
                 {currentStep === 2 && 'Academy Profile & Identity'}
                 {currentStep === 3 && 'Choose Specialization Track'}
@@ -535,7 +535,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 >
                   <Sparkles style={{ color: brandHex }} className="w-5 h-5 shrink-0 mt-0.5" />
                   <div className="text-xs text-slate-900 leading-relaxed">
-                    <span className="font-bold block text-sm mb-1">Welcome to Your Academy Platform</span>
+                    <span className="font-semibold block text-sm mb-1">Welcome to Your Academy Platform</span>
                     {isQuranNiche
                       ? 'Ankabit provides your institution with Medina Mushaf recitation grading, live interactive halaqahs, Sanad certificate verification, and automated student billing.'
                       : 'Ankabit provides your institution with interactive student portals, live virtual classrooms, certificate builders, and automated tuition processing.'}
@@ -544,7 +544,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-700">Subdomain Access URL</label>
+                    <label className="text-xs font-semibold text-slate-700">Subdomain Access URL</label>
                     <span className="text-[11px] text-slate-500 font-medium">Unique academy web address</span>
                   </div>
 
@@ -555,7 +555,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                         : 'border-slate-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100'
                     }`}
                   >
-                    <span className="px-3.5 py-2.5 bg-slate-50 border-r border-slate-200 text-slate-500 font-bold select-none">
+                    <span className="px-3.5 py-2.5 bg-slate-50 border-r border-slate-200 text-slate-500 font-semibold select-none">
                       https://
                     </span>
                     <input
@@ -567,9 +567,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                         setSubdomain(cleanVal);
                       }}
                       placeholder="e.g. madrasat-al-furqan"
-                      className="flex-1 py-2.5 px-3 bg-white text-slate-900 font-bold focus:outline-none tracking-wide"
+                      className="flex-1 py-2.5 px-3 bg-white text-slate-900 font-semibold focus:outline-none tracking-wide"
                     />
-                    <span className="px-3.5 py-2.5 bg-slate-50 border-l border-slate-200 text-slate-500 font-bold select-none">
+                    <span className="px-3.5 py-2.5 bg-slate-50 border-l border-slate-200 text-slate-500 font-semibold select-none">
                       .ankabit.app
                     </span>
                   </div>
@@ -602,7 +602,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                             setSubdomain(slug);
                           }
                         }}
-                        className="text-[11px] font-bold text-slate-500 hover:text-slate-900 underline decoration-dotted transition-colors cursor-pointer"
+                        className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 underline decoration-dotted transition-colors cursor-pointer"
                       >
                         Auto-sync from Academy Name
                       </button>
@@ -616,7 +616,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
             {currentStep === 2 && (
               <div className="space-y-4 max-w-xl">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Academy Name</label>
+                  <label className="text-xs font-semibold text-slate-700">Academy Name</label>
                   <input
                     type="text"
                     value={academyName}
@@ -632,18 +632,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                         if (slug) setSubdomain(slug);
                       }
                     }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2"
                     placeholder="e.g. Madrasat Al-Furqan Academy"
                   />
                   <div className="flex items-center gap-2 pt-1 text-[11px] text-slate-500">
                     <span>Portal URL:</span>
-                    <span className="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                    <span className="font-mono font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
                       https://{subdomain || 'academy'}.ankabit.app
                     </span>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(1)}
-                      className="text-xs font-bold text-emerald-600 hover:underline cursor-pointer"
+                      className="text-xs font-semibold text-emerald-600 hover:underline cursor-pointer"
                     >
                       (Edit Subdomain)
                     </button>
@@ -651,7 +651,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Academy Tagline</label>
+                  <label className="text-xs font-semibold text-slate-700">Academy Tagline</label>
                   <input
                     type="text"
                     value={tagline}
@@ -666,7 +666,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Brand Color Accent</label>
+                  <label className="text-xs font-semibold text-slate-700">Brand Color Accent</label>
                   <div className="flex items-center gap-3">
                     {['#059669', '#2563eb', '#7c3aed', '#d97706', '#0f172a'].map((c) => (
                       <button
@@ -734,7 +734,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                         <Icon style={isSelected ? { color: brandHex } : undefined} className="w-5 h-5 text-slate-500" />
                         {isSelected && <CheckCircle2 style={{ color: brandHex }} className="w-4 h-4" />}
                       </div>
-                      <h4 className="text-xs font-bold text-slate-900">{n.title}</h4>
+                      <h4 className="text-xs font-semibold text-slate-900">{n.title}</h4>
                       <p className="text-[11px] text-slate-500 leading-snug">{n.desc}</p>
                     </div>
                   );
@@ -755,7 +755,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                       <BookOpen style={{ color: brandHex }} className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-xs sm:text-sm font-black text-slate-900 font-display">
+                      <h3 className="text-xs sm:text-sm font-semibold text-slate-900 font-display">
                         All Academy Categories
                       </h3>
                       <p className="text-[11px] text-slate-400 font-medium">
@@ -778,7 +778,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 </div>
 
                 <div className="text-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  <span className="text-[10px] font-semibold text-slate-400 capitalize tracking-widest">
                     OR CHOOSE SPECIFIC SPECIALIZATIONS
                   </span>
                 </div>
@@ -800,7 +800,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <Icon style={cat.selected ? { color: brandHex } : undefined} className="w-4 h-4 text-slate-400 shrink-0" />
-                          <span className={`text-xs truncate ${cat.selected ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
+                          <span className={`text-xs truncate ${cat.selected ? 'font-semibold text-slate-900' : 'text-slate-600'}`}>
                             {cat.title}
                           </span>
                         </div>
@@ -827,7 +827,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900">Real-Time Video & Audio Classrooms</h4>
+                      <h4 className="text-xs font-semibold text-slate-900">Real-Time Video & Audio Classrooms</h4>
                       <p className="text-[11px] text-slate-500">
                         {isQuranNiche
                           ? 'Enable bidirectional live audio/video halaqahs & interactive studio'
@@ -844,7 +844,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
 
                   <div className="flex items-center justify-between pt-2 border-t border-slate-200/60">
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900">Parent Recording Consent Compliance</h4>
+                      <h4 className="text-xs font-semibold text-slate-900">Parent Recording Consent Compliance</h4>
                       <p className="text-[11px] text-slate-500">
                         {isQuranNiche
                           ? 'Require consent banner before joining live video halaqah'
@@ -866,16 +866,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
             {currentStep === 6 && (
               <div className="space-y-4 max-w-xl">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Monthly Tuition Price ($ USD)</label>
+                  <label className="text-xs font-semibold text-slate-700">Monthly Tuition Price ($ USD)</label>
                   <div className="flex items-center rounded-xl border border-slate-200 overflow-hidden bg-white text-xs font-mono">
-                    <span className="px-3.5 text-slate-400 font-bold">$</span>
+                    <span className="px-3.5 text-slate-400 font-semibold">$</span>
                     <input
                       type="number"
                       value={planPrice}
                       onChange={(e) => setPlanPrice(Number(e.target.value))}
-                      className="flex-1 py-2.5 px-1 bg-transparent text-slate-900 font-bold focus:outline-none"
+                      className="flex-1 py-2.5 px-1 bg-transparent text-slate-900 font-semibold focus:outline-none"
                     />
-                    <span className="px-3 text-slate-400 font-bold">/ month</span>
+                    <span className="px-3 text-slate-400 font-semibold">/ month</span>
                   </div>
                 </div>
 
@@ -886,7 +886,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                     className="p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <span className="text-xs font-bold block text-slate-900">Stripe Billing</span>
+                      <span className="text-xs font-semibold block text-slate-900">Stripe Billing</span>
                       <span className="text-[10px] text-slate-400">Cards & Apple Pay</span>
                     </div>
                     <CreditCard style={enableStripe ? { color: brandHex } : undefined} className="w-4 h-4 text-slate-400" />
@@ -898,7 +898,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                     className="p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <span className="text-xs font-bold block text-slate-900">Moyasar (GCC)</span>
+                      <span className="text-xs font-semibold block text-slate-900">Moyasar (GCC)</span>
                       <span className="text-[10px] text-slate-400">Mada & STC Pay</span>
                     </div>
                     <CreditCard style={enableMoyasar ? { color: brandHex } : undefined} className="w-4 h-4 text-slate-400" />
@@ -911,23 +911,23 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
             {currentStep === 7 && (
               <div className="space-y-4 max-w-xl">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">
+                  <label className="text-xs font-semibold text-slate-700">
                     {isQuranNiche ? 'Lead Instructor / Ustadhah Full Name' : 'Lead Instructor / Faculty Director Full Name'}
                   </label>
                   <input
                     type="text"
                     value={leadTeacherName}
                     onChange={(e) => setLeadTeacherName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Title & Accreditation</label>
+                  <label className="text-xs font-semibold text-slate-700">Title & Accreditation</label>
                   <input
                     type="text"
                     value={leadTeacherTitle}
                     onChange={(e) => setLeadTeacherTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none"
                   />
                 </div>
               </div>
@@ -939,25 +939,25 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
                     <span className="text-slate-500">Academy Name:</span>
-                    <span className="font-bold text-slate-900">{academyName}</span>
+                    <span className="font-semibold text-slate-900">{academyName}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
                     <span className="text-slate-500">Subdomain Address:</span>
-                    <span className="font-bold text-slate-900 font-mono">https://{subdomain || 'academy'}.ankabit.app</span>
+                    <span className="font-semibold text-slate-900 font-mono">https://{subdomain || 'academy'}.ankabit.app</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
                     <span className="text-slate-500">Curriculum Tracks:</span>
-                    <span className="font-bold text-slate-900">
+                    <span className="font-semibold text-slate-900">
                       {categories.filter((c) => c.selected).length} Categories Active
                     </span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
                     <span className="text-slate-500">Lead Faculty:</span>
-                    <span className="font-bold text-slate-900">{leadTeacherName}</span>
+                    <span className="font-semibold text-slate-900">{leadTeacherName}</span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-500">Monthly Tuition:</span>
-                    <span className="font-bold text-emerald-700 font-mono">${planPrice}.00 / month</span>
+                    <span className="font-semibold text-emerald-700 font-mono">${planPrice}.00 / month</span>
                   </div>
                 </div>
 
@@ -977,7 +977,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
               type="button"
               onClick={handlePrev}
               disabled={currentStep === 1}
-              className={`text-xs font-bold transition-colors cursor-pointer ${
+              className={`text-xs font-semibold transition-colors cursor-pointer ${
                 currentStep === 1
                   ? 'text-slate-300 cursor-not-allowed'
                   : 'text-slate-600 hover:text-slate-900'
@@ -991,7 +991,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
               <button
                 type="button"
                 onClick={onComplete}
-                className="text-xs font-bold text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                className="text-xs font-semibold text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
               >
                 I'll do this later
               </button>
@@ -1000,7 +1000,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                 type="button"
                 onClick={handleNext}
                 style={{ backgroundColor: brandHex }}
-                className="hover:opacity-95 text-white font-bold px-6 py-2.5 rounded-full text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                className="hover:opacity-95 text-white font-semibold px-6 py-2.5 rounded-full text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <span>{currentStep === steps.length ? 'Launch Academy' : 'Continue Setup'}</span>
                 <ChevronRight className="w-3.5 h-3.5" />

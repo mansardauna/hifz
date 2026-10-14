@@ -187,7 +187,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
             <Badge variant="primary">Academic Drop-box</Badge>
             <span className="text-xs text-slate-500 font-mono">Term 1 • 2025–2026</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mt-1">
             Homework & Assignment Submissions
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
@@ -201,7 +201,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all cursor-pointer ${
                 activeFilter === filter
                   ? 'bg-purple-700 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -234,7 +234,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div className="space-y-2 flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
+                    <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
                       {asg.courseCode}
                     </span>
                     <span className="text-xs font-semibold text-slate-500">{asg.courseTitle}</span>
@@ -242,7 +242,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                     <span className="text-xs text-slate-500 font-mono">{asg.submissionType}</span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                  <h3 className="text-base sm:text-lg font-semibold text-slate-900 leading-snug">
                     {asg.title}
                   </h3>
 
@@ -274,16 +274,16 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                 <div className="flex flex-col sm:flex-row md:flex-col items-end justify-between gap-3 shrink-0">
                   {isGraded ? (
                     <div className="bg-emerald-100/80 border border-emerald-300 p-3 rounded-2xl text-center min-w-[120px]">
-                      <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider block">Score</span>
-                      <span className="text-2xl font-black text-emerald-950 font-mono">
+                      <span className="text-[10px] capitalize font-semibold text-emerald-800 tracking-wider block">Score</span>
+                      <span className="text-2xl font-semibold text-emerald-950 font-mono">
                         {asg.score} <span className="text-xs text-emerald-700">/ {asg.pointsPossible}</span>
                       </span>
-                      <Badge variant="success" className="mt-1 font-bold">Grade: {asg.letterGrade}</Badge>
+                      <Badge variant="success" className="mt-1 font-semibold">Grade: {asg.letterGrade}</Badge>
                     </div>
                   ) : isSubmitted ? (
                     <div className="bg-blue-50 border border-blue-200 p-3 rounded-2xl text-center min-w-[120px]">
-                      <span className="text-[10px] uppercase font-bold text-blue-800 tracking-wider block">Status</span>
-                      <span className="text-sm font-bold text-blue-900 flex items-center justify-center gap-1 mt-1">
+                      <span className="text-[10px] capitalize font-semibold text-blue-800 tracking-wider block">Status</span>
+                      <span className="text-sm font-semibold text-blue-900 flex items-center justify-center gap-1 mt-1">
                         <Clock className="w-4 h-4 text-blue-600" /> In Review
                       </span>
                       <span className="text-[10px] text-blue-600 block mt-1">Pending Grading</span>
@@ -294,7 +294,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                       size="sm"
                       onClick={() => handleOpenSubmitModal(asg)}
                       leftIcon={<Upload className="w-3.5 h-3.5" />}
-                      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                      className="bg-purple-700 hover:bg-purple-800 text-white font-semibold"
                     >
                       Turn In Assignment
                     </Button>
@@ -306,7 +306,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
               {isGraded && asg.rubricBreakdown && (
                 <div className="mt-4 pt-4 border-t border-emerald-100 space-y-3">
                   <div className="p-3.5 bg-white rounded-xl border border-emerald-200/80 text-xs">
-                    <span className="font-bold text-slate-800 block mb-1">Instructor Feedback:</span>
+                    <span className="font-semibold text-slate-800 block mb-1">Instructor Feedback:</span>
                     <p className="text-slate-700 italic">"{asg.teacherFeedback}"</p>
                   </div>
 
@@ -315,8 +315,8 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                       <div key={rIdx} className="p-2.5 bg-white rounded-xl border border-slate-200 text-xs">
                         <span className="text-[10px] text-slate-500 font-medium block truncate">{rubric.criteria}</span>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="font-bold text-slate-900 font-mono">{rubric.points} / {rubric.maxPoints} pts</span>
-                          <span className="text-[10px] text-emerald-700 font-bold">
+                          <span className="font-semibold text-slate-900 font-mono">{rubric.points} / {rubric.maxPoints} pts</span>
+                          <span className="text-[10px] text-emerald-700 font-semibold">
                             {Math.round((rubric.points / rubric.maxPoints) * 100)}%
                           </span>
                         </div>
@@ -336,10 +336,10 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
             <div className="flex items-start justify-between">
               <div>
-                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
+                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
                   {selectedAssignment.courseCode}
                 </span>
-                <h3 className="text-lg font-black text-slate-900 mt-1">
+                <h3 className="text-lg font-semibold text-slate-900 mt-1">
                   Turn In: {selectedAssignment.title}
                 </h3>
                 <p className="text-xs text-slate-500">Max Score: {selectedAssignment.pointsPossible} Points</p>
@@ -362,14 +362,14 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                 <Upload className="w-8 h-8 mx-auto text-purple-600 mb-2" />
                 {uploadedFileName ? (
                   <div className="space-y-1">
-                    <span className="text-xs font-bold text-emerald-700 flex items-center justify-center gap-1.5">
+                    <span className="text-xs font-semibold text-emerald-700 flex items-center justify-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4" /> {uploadedFileName}
                     </span>
                     <span className="text-[10px] text-slate-500">Ready to submit (Click to re-upload)</span>
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    <span className="text-xs font-bold text-purple-900 block">Click to upload document or scan</span>
+                    <span className="text-xs font-semibold text-purple-900 block">Click to upload document or scan</span>
                     <span className="text-[10px] text-slate-500">Supports PDF, DOCX, ZIP up to 50MB</span>
                   </div>
                 )}
@@ -377,7 +377,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
 
               {/* Text submission notes */}
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-slate-700 block mb-1">
                   Submission Notes or Online Text (Optional)
                 </label>
                 <textarea
@@ -404,7 +404,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                   size="sm"
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                  className="bg-purple-700 hover:bg-purple-800 text-white font-semibold"
                   leftIcon={<Send className="w-3.5 h-3.5" />}
                 >
                   {isSubmitting ? 'Submitting...' : 'Confirm Submission'}

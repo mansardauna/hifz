@@ -174,7 +174,7 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
         <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
           <Building2 className="w-6 h-6 text-emerald-600 shrink-0" />
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Institution Identity & Profile</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Institution Identity & Profile</h2>
             <p className="text-sm text-slate-500">Official academy details displayed on invoices, public landing pages, and student communications.</p>
           </div>
         </div>
@@ -267,7 +267,7 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
         <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
           <Globe className="w-6 h-6 text-blue-600 shrink-0" />
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Platform Subdomain & Custom Domain</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Platform Subdomain & Custom Domain</h2>
             <p className="text-sm text-slate-500">Configure how students, staff, and visitors navigate to your branded academy web address.</p>
           </div>
         </div>
@@ -352,7 +352,7 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
         <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
           <Shield className="w-6 h-6 text-amber-600 shrink-0" />
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Security & Session Policies</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Security & Session Policies</h2>
             <p className="text-sm text-slate-500">Enforce authentication standards, session timeouts, and credential hygiene across your academy.</p>
           </div>
         </div>
@@ -418,14 +418,14 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
         <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
           <Video className="w-6 h-6 text-purple-600 shrink-0" />
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Live Classroom & Community Engine</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Live Classroom & Community Engine</h2>
             <p className="text-sm text-slate-500">Configure WebRTC audio/video quality presets, recitation whiteboard defaults, and forum channels.</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               Classroom Engine Standard
             </h3>
@@ -435,7 +435,7 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
           </div>
 
           <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-blue-600" />
               Community Discussion Channels
             </h3>

@@ -748,7 +748,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             <div className="flex items-center gap-3">
               <FileCheck className="w-7 h-7 text-emerald-600 shrink-0" />
               <div>
-                <h1 className={`text-2xl sm:text-3xl font-black text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+                <h1 className={`text-2xl sm:text-3xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
                   {isAr ? 'استوديو النماذج والاستبيانات المخصصة' : 'Custom Forms & Survey Studio'}
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -762,7 +762,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             <button
               type="button"
               onClick={handleCreateNewForm}
-              className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+              className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>{isAr ? 'إنشاء نموذج جديد' : 'Create New Form'}</span>
@@ -801,11 +801,11 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   )}
 
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/90 text-slate-800 shadow-xs border border-slate-200">
+                    <span className="text-[10px] font-semibold capitalize tracking-wider px-2.5 py-1 rounded-full bg-white/90 text-slate-800 shadow-xs border border-slate-200">
                       {theme.toUpperCase()}
                     </span>
 
-                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                    <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${
                       form.acceptingResponses !== false ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                     }`}>
                       {form.acceptingResponses !== false ? 'Accepting Responses' : 'Closed'}
@@ -818,9 +818,9 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                     <div className="h-6 w-full bg-white/80 border border-slate-300/60 rounded-lg shadow-xs" />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-bold">
+                  <div className="flex items-center justify-between text-[11px] font-semibold">
                     <span className="truncate">{form.fields.length} Questionnaire Fields</span>
-                    <span className="text-emerald-700 font-mono font-black">{formRespCount} Responses</span>
+                    <span className="text-emerald-700 font-mono font-semibold">{formRespCount} Responses</span>
                   </div>
                 </div>
 
@@ -828,11 +828,11 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-extrabold text-base text-slate-900 line-clamp-1 group-hover:text-emerald-700 transition-colors">
+                      <h3 className="font-semibold text-base text-slate-900 line-clamp-1 group-hover:text-emerald-700 transition-colors">
                         {form.title}
                       </h3>
                       {form.isDefault && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-100 text-amber-800 shrink-0">
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold capitalize bg-amber-100 text-amber-800 shrink-0">
                           Landing Page Default
                         </span>
                       )}
@@ -850,7 +850,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                         setEditingFormId(form.id);
                         setActiveStudioTab('questions');
                       }}
-                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span>Edit</span>
@@ -862,7 +862,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                         setEditingFormId(form.id);
                         setActiveStudioTab('responses');
                       }}
-                      className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
                       <BarChart3 className="w-3.5 h-3.5 text-emerald-600" />
                       <span>Responses ({formRespCount})</span>
@@ -915,7 +915,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   type="text"
                   value={activeForm.title}
                   onChange={(e) => handleUpdateActiveForm({ title: e.target.value })}
-                  className="font-black text-xl sm:text-2xl text-slate-900 bg-transparent hover:bg-slate-50 focus:bg-white px-2 py-1 rounded-xl border border-transparent hover:border-slate-200 focus:border-emerald-500 focus:outline-none transition-all"
+                  className="font-semibold text-xl sm:text-2xl text-slate-900 bg-transparent hover:bg-slate-50 focus:bg-white px-2 py-1 rounded-xl border border-transparent hover:border-slate-200 focus:border-emerald-500 focus:outline-none transition-all"
                 />
               </div>
               <input
@@ -931,7 +931,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <div className="flex items-center gap-3">
             {/* Acceptance Responses Switch (Google Forms style) */}
             <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-50 border border-slate-200">
-              <span className="text-xs font-bold text-slate-700">
+              <span className="text-xs font-semibold text-slate-700">
                 {activeForm.acceptingResponses !== false ? 'Accepting Responses' : 'Not Accepting'}
               </span>
               <button
@@ -958,7 +958,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   message: `"${activeForm.title}" is saved and live.`,
                 });
               }}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
             >
               <Save className="w-4 h-4" />
               <span>Save & Publish</span>
@@ -971,7 +971,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setActiveStudioTab('questions')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-5 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer ${
               activeStudioTab === 'questions'
                 ? 'bg-emerald-600 text-white shadow-md'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -984,7 +984,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setActiveStudioTab('responses')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-5 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer ${
               activeStudioTab === 'responses'
                 ? 'bg-emerald-600 text-white shadow-md'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -997,7 +997,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setActiveStudioTab('themes')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-5 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer ${
               activeStudioTab === 'themes'
                 ? 'bg-emerald-600 text-white shadow-md'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1010,7 +1010,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setActiveStudioTab('preview_embed')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-5 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer ${
               activeStudioTab === 'preview_embed'
                 ? 'bg-emerald-600 text-white shadow-md'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1023,7 +1023,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <button
             type="button"
             onClick={() => setActiveStudioTab('code_export')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer ${
+            className={`px-5 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center gap-2 cursor-pointer ${
               activeStudioTab === 'code_export'
                 ? 'bg-emerald-600 text-white shadow-md'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1043,7 +1043,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           {/* Left Palette: Add Field Types */}
           <div className="lg:col-span-3 space-y-4">
             <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider">
+              <h3 className="text-xs font-semibold text-slate-400 capitalize tracking-wider">
                 Add Field Type
               </h3>
               <div className="space-y-2">
@@ -1052,7 +1052,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                     key={item.type}
                     type="button"
                     onClick={() => handleAddField(item.type)}
-                    className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 border border-slate-200/80 text-slate-700 hover:text-emerald-800 font-bold text-xs transition-all cursor-pointer group"
+                    className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 border border-slate-200/80 text-slate-700 hover:text-emerald-800 font-semibold text-xs transition-all cursor-pointer group"
                   >
                     <div className="w-8 h-8 rounded-xl bg-white group-hover:bg-emerald-100 text-slate-500 group-hover:text-emerald-700 flex items-center justify-center shadow-xs">
                       <item.icon className="w-4 h-4" />
@@ -1068,7 +1068,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <div className="lg:col-span-5 space-y-4">
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-400 capitalize tracking-wider">
                   Form Questions ({activeForm.fields.length})
                 </h3>
                 <span className="text-[11px] text-slate-400">Click a question to configure</span>
@@ -1077,7 +1077,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               {activeForm.fields.length === 0 ? (
                 <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
                   <FileText className="w-8 h-8 text-slate-300 mx-auto" />
-                  <p className="text-xs text-slate-400 font-bold">No questions added yet.</p>
+                  <p className="text-xs text-slate-400 font-semibold">No questions added yet.</p>
                   <p className="text-[11px] text-slate-400">Click any field type on the left to start building.</p>
                 </div>
               ) : (
@@ -1096,12 +1096,12 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center justify-center shrink-0">
+                            <span className="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 font-semibold text-[11px] flex items-center justify-center shrink-0">
                               {idx + 1}
                             </span>
                             <div className="min-w-0">
-                              <p className="font-black text-xs text-slate-900 truncate">{field.label}</p>
-                              <span className="text-[10px] text-slate-400 uppercase font-mono">{field.type} • {field.width || 'full'}</span>
+                              <p className="font-semibold text-xs text-slate-900 truncate">{field.label}</p>
+                              <span className="text-[10px] text-slate-400 capitalize font-mono">{field.type} • {field.width || 'full'}</span>
                             </div>
                           </div>
 
@@ -1144,13 +1144,13 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             {selectedField ? (
               <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <h3 className="font-extrabold text-sm text-slate-900">Question Settings</h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Question Settings</h3>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600">{selectedField.type}</span>
                 </div>
 
                 <div className="space-y-4 text-xs">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Question Label (English)</label>
+                    <label className="block font-semibold text-slate-700 mb-1">Question Label (English)</label>
                     <input
                       type="text"
                       value={selectedField.label}
@@ -1160,7 +1160,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Question Label (Arabic)</label>
+                    <label className="block font-semibold text-slate-700 mb-1">Question Label (Arabic)</label>
                     <input
                       type="text"
                       value={selectedField.labelAr || ''}
@@ -1170,7 +1170,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Placeholder Text</label>
+                    <label className="block font-semibold text-slate-700 mb-1">Placeholder Text</label>
                     <input
                       type="text"
                       value={selectedField.placeholder || ''}
@@ -1182,7 +1182,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Field Width</label>
+                      <label className="block font-semibold text-slate-700 mb-1">Field Width</label>
                       <select
                         value={selectedField.width || 'full'}
                         onChange={(e) => handleUpdateField(selectedField.id, { width: e.target.value as FieldWidth })}
@@ -1195,7 +1195,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                     </div>
 
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">Field Type</label>
+                      <label className="block font-semibold text-slate-700 mb-1">Field Type</label>
                       <select
                         value={selectedField.type}
                         onChange={(e) => handleUpdateField(selectedField.id, { type: e.target.value as FieldType })}
@@ -1214,7 +1214,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
 
                   {/* Required Switch */}
                   <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="font-bold text-slate-700">Required Response</span>
+                    <span className="font-semibold text-slate-700">Required Response</span>
                     <input
                       type="checkbox"
                       checked={selectedField.required}
@@ -1226,7 +1226,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   {/* Dropdown Options Editor */}
                   {selectedField.type === 'select' && (
                     <div className="space-y-2 pt-2 border-t border-slate-100">
-                      <label className="block font-bold text-slate-700">Dropdown Options</label>
+                      <label className="block font-semibold text-slate-700">Dropdown Options</label>
                       {(selectedField.options || []).map((opt, oi) => (
                         <div key={oi} className="flex items-center gap-2">
                           <input
@@ -1257,7 +1257,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                           const newOpts = [...(selectedField.options || []), `Option ${(selectedField.options?.length || 0) + 1}`];
                           handleUpdateField(selectedField.id, { options: newOpts });
                         }}
-                        className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+                        className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
                       >
                         <Plus className="w-3 h-3" /> Add Option
                       </button>
@@ -1282,24 +1282,24 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           {/* Form Metrics Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-slate-400 uppercase">Total Submissions</span>
-              <p className="text-2xl font-black text-slate-900 mt-1">{currentFormResponses.length}</p>
+              <span className="text-[11px] font-semibold text-slate-400 capitalize">Total Submissions</span>
+              <p className="text-2xl font-semibold text-slate-900 mt-1">{currentFormResponses.length}</p>
             </div>
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-emerald-600 uppercase">New / Unreviewed</span>
-              <p className="text-2xl font-black text-emerald-600 mt-1">
+              <span className="text-[11px] font-semibold text-emerald-600 capitalize">New / Unreviewed</span>
+              <p className="text-2xl font-semibold text-emerald-600 mt-1">
                 {currentFormResponses.filter((r) => r.status === 'New').length}
               </p>
             </div>
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-              <span className="text-[11px] font-bold text-blue-600 uppercase">Interview / Admitted</span>
-              <p className="text-2xl font-black text-blue-600 mt-1">
+              <span className="text-[11px] font-semibold text-blue-600 capitalize">Interview / Admitted</span>
+              <p className="text-2xl font-semibold text-blue-600 mt-1">
                 {currentFormResponses.filter((r) => ['Interview Scheduled', 'Admitted'].includes(r.status)).length}
               </p>
             </div>
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-bold text-slate-400 uppercase">Export Data</span>
+                <span className="text-[11px] font-semibold text-slate-400 capitalize">Export Data</span>
                 <p className="text-xs text-slate-500 mt-0.5">CSV spreadsheet</p>
               </div>
               <button
@@ -1333,7 +1333,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                 <select
                   value={responseStatusFilter}
                   onChange={(e) => setResponseStatusFilter(e.target.value)}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none"
                 >
                   <option value="All">All Statuses</option>
                   <option value="New">New</option>
@@ -1349,7 +1349,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             {paginatedResponses.length === 0 ? (
               <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
                 <BarChart3 className="w-10 h-10 text-slate-300 mx-auto" />
-                <p className="text-sm font-bold text-slate-600">No responses recorded yet for this form.</p>
+                <p className="text-sm font-semibold text-slate-600">No responses recorded yet for this form.</p>
                 <p className="text-xs text-slate-400">
                   Submissions from your landing page or live test embeds will appear here in real time.
                 </p>
@@ -1357,7 +1357,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-slate-700">
-                  <thead className="bg-slate-50 text-[11px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-200">
+                  <thead className="bg-slate-50 text-[11px] font-semibold capitalize tracking-wider text-slate-400 border-b border-slate-200">
                     <tr>
                       <th className="p-3">Applicant</th>
                       <th className="p-3">Contact</th>
@@ -1369,7 +1369,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                   <tbody className="divide-y divide-slate-100">
                     {paginatedResponses.map((resp) => (
                       <tr key={resp.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="p-3 font-bold text-slate-900">
+                        <td className="p-3 font-semibold text-slate-900">
                           <div>{resp.studentName}</div>
                           <div className="text-[10px] text-slate-400 font-mono">{resp.id}</div>
                         </td>
@@ -1384,7 +1384,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                           <select
                             value={resp.status}
                             onChange={(e) => handleUpdateResponseStatus(resp.id, e.target.value as any)}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${
+                            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${
                               resp.status === 'New' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
                               resp.status === 'Admitted' ? 'bg-blue-50 text-blue-800 border-blue-200' :
                               resp.status === 'Rejected' ? 'bg-rose-50 text-rose-800 border-rose-200' :
@@ -1402,7 +1402,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                           <button
                             type="button"
                             onClick={() => setSelectedResponseForModal(resp)}
-                            className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[11px] transition-colors"
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-[11px] transition-colors"
                           >
                             Inspect
                           </button>
@@ -1442,7 +1442,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
         <div className="space-y-6">
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">Form UI Theme & Visual Styling</h3>
+              <h3 className="text-base font-semibold text-slate-900">Form UI Theme & Visual Styling</h3>
               <p className="text-xs text-slate-500 mt-1">
                 Select a visual design language for this form. It renders across your landing page and embeds.
               </p>
@@ -1503,12 +1503,12 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                         <div className={`h-2 w-1/3 rounded-full ${themeOpt.accent}`} />
                         <div className="h-3 w-full bg-slate-200/60 rounded" />
                       </div>
-                      <h4 className="font-extrabold text-xs text-slate-900">{themeOpt.title}</h4>
+                      <h4 className="font-semibold text-xs text-slate-900">{themeOpt.title}</h4>
                       <p className="text-[11px] text-slate-500 leading-relaxed">{themeOpt.desc}</p>
                     </div>
 
                     <div className="pt-2 flex items-center justify-between">
-                      <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-700' : 'text-slate-400'}`}>
+                      <span className={`text-[10px] font-semibold ${isSelected ? 'text-emerald-700' : 'text-slate-400'}`}>
                         {isSelected ? 'Active Theme' : 'Select'}
                       </span>
                     </div>
@@ -1520,7 +1520,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
             {/* Accent Color Palette & Banner Image */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100 text-xs">
               <div className="space-y-3">
-                <label className="block font-bold text-slate-700">Primary Theme Accent Color</label>
+                <label className="block font-semibold text-slate-700">Primary Theme Accent Color</label>
                 <div className="flex items-center gap-3">
                   {Object.keys(THEME_COLOR_MAP).map((cKey) => {
                     const isPicked = (activeForm.accentColor || 'emerald') === cKey;
@@ -1540,7 +1540,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               </div>
 
               <div className="space-y-3">
-                <label className="block font-bold text-slate-700">Header Banner Image URL (Optional)</label>
+                <label className="block font-semibold text-slate-700">Header Banner Image URL (Optional)</label>
                 <input
                   type="text"
                   value={activeForm.headerBannerUrl || ''}
@@ -1551,7 +1551,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               </div>
 
               <div className="space-y-3">
-                <label className="block font-bold text-slate-700">Submit Button Text</label>
+                <label className="block font-semibold text-slate-700">Submit Button Text</label>
                 <input
                   type="text"
                   value={activeForm.submitButtonText || ''}
@@ -1562,7 +1562,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               </div>
 
               <div className="space-y-3">
-                <label className="block font-bold text-slate-700">Custom Success Message</label>
+                <label className="block font-semibold text-slate-700">Custom Success Message</label>
                 <input
                   type="text"
                   value={activeForm.customSuccessMessage || ''}
@@ -1595,7 +1595,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           {/* Right: Embed & Integration Assistant */}
           <div className="lg:col-span-4 space-y-4">
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 text-xs">
-              <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+              <h3 className="font-semibold text-sm text-slate-900 flex items-center gap-2">
                 <Layers className="w-4 h-4 text-emerald-600" />
                 <span>Landing Page Embed</span>
               </h3>
@@ -1605,7 +1605,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               </p>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <span className="font-bold text-slate-700 block">Form ID Identifier</span>
+                <span className="font-semibold text-slate-700 block">Form ID Identifier</span>
                 <div className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-slate-200 font-mono text-[11px] text-slate-800">
                   <span>{activeForm.id}</span>
                   <button
@@ -1636,7 +1636,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                       message: `"${activeForm.title}" is now the active form on your landing page.`,
                     });
                   }}
-                  className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-all text-xs cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold transition-all text-xs cursor-pointer"
                 >
                   Set as Landing Page Default Form
                 </button>
@@ -1654,8 +1654,8 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">GrapesJS Native Block Code</span>
-                <h3 className="font-extrabold text-base text-slate-900">Standalone HTML & Scoped CSS</h3>
+                <span className="text-[10px] font-semibold capitalize tracking-wider text-emerald-600">GrapesJS Native Block Code</span>
+                <h3 className="font-semibold text-base text-slate-900">Standalone HTML & Scoped CSS</h3>
                 <p className="text-xs text-slate-500">
                   This form is automatically populated as a draggable block in your <strong>GrapesJS Page Builder</strong> under "Admissions & Forms".
                 </p>
@@ -1669,7 +1669,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                     navigator.clipboard.writeText(compiled.combined);
                     onAddToast({ type: 'success', title: 'Code Copied', message: 'Combined HTML & CSS copied to clipboard!' });
                   }}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>Copy Combined HTML & CSS</span>
@@ -1681,7 +1681,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               {/* HTML Snippet */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-700">Semantic HTML Markup</span>
+                  <span className="font-semibold text-xs text-slate-700">Semantic HTML Markup</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -1689,7 +1689,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                       navigator.clipboard.writeText(compiled.html);
                       onAddToast({ type: 'success', title: 'HTML Copied', message: 'Form HTML copied to clipboard.' });
                     }}
-                    className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-blue-600 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
                     <span>Copy HTML</span>
@@ -1703,7 +1703,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               {/* CSS Snippet */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-700">Scoped Pure CSS (Theme: {activeForm.themeStyle || 'minimalist'})</span>
+                  <span className="font-semibold text-xs text-slate-700">Scoped Pure CSS (Theme: {activeForm.themeStyle || 'minimalist'})</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -1711,7 +1711,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
                       navigator.clipboard.writeText(compiled.css);
                       onAddToast({ type: 'success', title: 'CSS Copied', message: 'Form CSS copied to clipboard.' });
                     }}
-                    className="text-[11px] text-blue-600 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-blue-600 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
                     <span>Copy CSS</span>
@@ -1732,13 +1732,13 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-black text-base text-slate-900">{selectedResponseForModal.studentName}</h3>
+                <h3 className="font-semibold text-base text-slate-900">{selectedResponseForModal.studentName}</h3>
                 <span className="text-xs text-slate-400">{selectedResponseForModal.email} • {selectedResponseForModal.phone}</span>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedResponseForModal(null)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
+                className="text-slate-400 hover:text-slate-600 font-semibold"
               >
                 
               </button>
@@ -1746,16 +1746,16 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
 
             <div className="space-y-3 max-h-96 overflow-y-auto pr-1 text-xs">
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                <span className="font-bold text-slate-600">Submission Timestamp:</span>
+                <span className="font-semibold text-slate-600">Submission Timestamp:</span>
                 <span className="font-mono text-slate-800">{selectedResponseForModal.submittedAt}</span>
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Questionnaire Answers:</h4>
+                <h4 className="font-semibold text-slate-700 capitalize tracking-wider text-[10px]">Questionnaire Answers:</h4>
                 {Object.entries(selectedResponseForModal.data || {}).map(([key, val], idx) => (
                   <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-[11px] font-bold text-slate-500 block">{key}</span>
-                    <span className="text-xs font-bold text-slate-900 mt-0.5 block">{String(val)}</span>
+                    <span className="text-[11px] font-semibold text-slate-500 block">{key}</span>
+                    <span className="text-xs font-semibold text-slate-900 mt-0.5 block">{String(val)}</span>
                   </div>
                 ))}
               </div>
@@ -1765,7 +1765,7 @@ export const VisualFormBuilder: React.FC<VisualFormBuilderProps> = ({ onAddToast
               <button
                 type="button"
                 onClick={() => setSelectedResponseForModal(null)}
-                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs"
+                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs"
               >
                 Close
               </button>

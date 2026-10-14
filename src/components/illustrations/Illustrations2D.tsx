@@ -422,8 +422,8 @@ export const LaptopHeroMockupIllustration: React.FC<{ className?: string }> = ({
     {/* Floating "Monthly Growth" Metric Card on Top Left */}
     <div className="absolute -top-6 -left-4 sm:-top-8 sm:-left-8 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-200/80 dark:border-slate-800 transition-transform duration-300 hover:scale-105">
       <div className="flex items-center justify-between gap-4 mb-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Monthly Growth</span>
-        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
+        <span className="text-xs font-semibold capitalize tracking-wider text-slate-500 dark:text-slate-400">Monthly Growth</span>
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
           +18.4% ↗
         </span>
       </div>
@@ -434,7 +434,7 @@ export const LaptopHeroMockupIllustration: React.FC<{ className?: string }> = ({
       </svg>
       <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
         <span>Active Learners</span>
-        <span className="font-bold text-slate-900 dark:text-white">12,480</span>
+        <span className="font-semibold text-slate-900 dark:text-white">12,480</span>
       </div>
     </div>
 
@@ -476,15 +476,15 @@ export const LaptopHeroMockupIllustration: React.FC<{ className?: string }> = ({
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
                 <div className="text-[10px] text-slate-400 font-medium">Students</div>
-                <div className="text-base sm:text-xl font-bold text-white mt-1">2,840</div>
+                <div className="text-base sm:text-xl font-semibold text-white mt-1">2,840</div>
               </div>
               <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
                 <div className="text-[10px] text-slate-400 font-medium">Live Halaqahs</div>
-                <div className="text-base sm:text-xl font-bold text-emerald-400 mt-1">18 Active</div>
+                <div className="text-base sm:text-xl font-semibold text-emerald-400 mt-1">18 Active</div>
               </div>
               <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
                 <div className="text-[10px] text-slate-400 font-medium">Tuition Yield</div>
-                <div className="text-base sm:text-xl font-bold text-blue-400 mt-1">$48,290</div>
+                <div className="text-base sm:text-xl font-semibold text-blue-400 mt-1">$48,290</div>
               </div>
             </div>
 

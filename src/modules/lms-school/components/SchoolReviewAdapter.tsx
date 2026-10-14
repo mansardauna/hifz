@@ -12,7 +12,7 @@ export const SchoolReviewAdapter: React.FC<ReviewAdapterProps> = ({ submission }
             <GraduationCap className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white">Academic Submission & Coursework Document</h4>
+            <h4 className="text-xs font-semibold text-white">Academic Submission & Coursework Document</h4>
             <p className="text-[11px] text-slate-400">
               {submission.courseTitle || 'AP Physics / Calculus'} • {submission.assignmentTitle || submission.title}
             </p>

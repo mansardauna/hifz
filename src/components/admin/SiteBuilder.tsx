@@ -68,7 +68,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h2 className={`text-2xl font-bold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+          <h2 className={`text-2xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
             {isAr ? 'محرر الموقع والتهيئة البصرية' : 'Live Landing Page & Site Builder'}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
@@ -78,7 +78,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
 
         <button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           <span>{isAr ? 'حفظ ونشر التعديلات' : 'Save Live Changes'}</span>
@@ -88,13 +88,13 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Branding & Colors */}
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
             <Palette className="w-4 h-4 text-teal-600" />
             <span>{isAr ? 'الهوية البصرية والألوان' : 'Branding & Theme Colors'}</span>
           </h3>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Primary Color (اللون الرئيسي)</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Primary Color (اللون الرئيسي)</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -112,7 +112,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Secondary Color (اللون الثانوي)</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Secondary Color (اللون الثانوي)</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -130,7 +130,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Logo Image URL</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Logo Image URL</label>
             <input
               type="text"
               value={formData.logoUrl}
@@ -140,7 +140,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Favicon Emoji / Icon</label>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Favicon Emoji / Icon</label>
             <input
               type="text"
               value={formData.faviconUrl}
@@ -152,14 +152,14 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
 
         {/* Hero & About Copy Editor */}
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+          <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
             <Layout className="w-4 h-4 text-amber-600" />
             <span>{isAr ? 'محتوى الهيرو والتعريف' : 'Hero & About Section Copy'}</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Academy Name (English)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Academy Name (English)</label>
               <input
                 type="text"
                 value={formData.name}
@@ -168,7 +168,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">اسم المعهد (بالعربية)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">اسم المعهد (بالعربية)</label>
               <input
                 type="text"
                 value={formData.nameAr}
@@ -181,7 +181,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Hero Tagline (English)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Hero Tagline (English)</label>
               <textarea
                 rows={2}
                 value={formData.tagline}
@@ -190,7 +190,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">العنوان الرئيسي الهيرو (بالعربية)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">العنوان الرئيسي الهيرو (بالعربية)</label>
               <textarea
                 rows={2}
                 value={formData.taglineAr}
@@ -203,7 +203,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Contact Email</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Contact Email</label>
               <input
                 type="email"
                 value={formData.contactEmail}
@@ -212,7 +212,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Contact Phone</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Contact Phone</label>
               <input
                 type="text"
                 value={formData.contactPhone}

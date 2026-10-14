@@ -78,7 +78,7 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
       {/* Top Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h2 className={`text-2xl font-bold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
+          <h2 className={`text-2xl font-semibold text-slate-900 ${isAr ? 'font-arabic text-3xl' : ''}`}>
             {isAr ? 'محرر الصفحات المرئي (GrapesJS Canvas)' : 'Visual Page Builder (GrapesJS Canvas)'}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
@@ -89,7 +89,7 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
         <div className="flex items-center gap-3">
           <button
             onClick={() => onAddToast({ type: 'success', title: 'Page Published!', message: 'All block changes saved to live tenant site.' })}
-            className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer outline-none"
           >
             <Save className="w-4 h-4" />
             <span>Publish Site Layout</span>
@@ -101,7 +101,7 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Block Library Palette */}
         <div className="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-slate-400 capitalize tracking-wider">
             {isAr ? 'مكتبة الأقسام والقوالب' : 'Visual Block Library'}
           </h3>
 
@@ -113,13 +113,13 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
                 <button
                   key={tmpl.type}
                   onClick={() => handleAddBlock(tmpl.type)}
-                  className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50 hover:bg-teal-50/50 text-slate-800 font-bold text-xs transition-all flex items-center gap-3 text-start shadow-sm"
+                  className="w-full p-3.5 rounded-xl border border-slate-200 hover:border-teal-500 bg-slate-50 hover:bg-teal-50/50 text-slate-800 font-semibold text-xs transition-all flex items-center gap-3 text-start shadow-sm"
                 >
                   <div className="p-2 rounded-lg bg-white border border-slate-200 text-teal-600 shadow-xs">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">{tmpl.label}</p>
+                    <p className="font-semibold text-slate-900">{tmpl.label}</p>
                     <p className="text-[10px] text-slate-400 font-normal">Click to insert into canvas</p>
                   </div>
                 </button>
@@ -179,18 +179,18 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
 
                   {/* Block Canvas Content Preview */}
                   <div className="space-y-3">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-600 bg-teal-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-mono font-semibold capitalize tracking-wider text-teal-600 bg-teal-100 px-2 py-0.5 rounded">
                       Section: {block.type}
                     </span>
 
                     {block.type === 'calligraphy' ? (
                       <div className="text-center py-6">
-                        <h3 className="font-arabic text-3xl font-bold leading-relaxed">{block.titleAr}</h3>
+                        <h3 className="font-arabic text-3xl font-semibold leading-relaxed">{block.titleAr}</h3>
                         <p className="text-xs opacity-75 font-sans mt-2">{block.title}</p>
                       </div>
                     ) : (
                       <div>
-                        <h3 className={`text-xl font-bold ${isAr ? 'font-arabic text-2xl' : ''}`}>
+                        <h3 className={`text-xl font-semibold ${isAr ? 'font-arabic text-2xl' : ''}`}>
                           {isAr ? block.titleAr : block.title}
                         </h3>
                         <p className="text-xs opacity-80 mt-1 leading-relaxed">
@@ -207,14 +207,14 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
 
         {/* Right Column: Style & Content Inspector */}
         <div className="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-slate-400 capitalize tracking-wider">
             {isAr ? 'خصائص القسم المعدد' : 'Section Property Inspector'}
           </h3>
 
           {selectedBlock ? (
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Section Title (English)</label>
+                <label className="block font-semibold text-slate-700 mb-1">Section Title (English)</label>
                 <input
                   type="text"
                   value={selectedBlock.title}
@@ -224,7 +224,7 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">عنوان القسم (بالعربية)</label>
+                <label className="block font-semibold text-slate-700 mb-1">عنوان القسم (بالعربية)</label>
                 <input
                   type="text"
                   value={selectedBlock.titleAr}
@@ -235,7 +235,7 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Description Content</label>
+                <label className="block font-semibold text-slate-700 mb-1">Description Content</label>
                 <textarea
                   rows={3}
                   value={selectedBlock.content}
@@ -245,7 +245,7 @@ export const VisualPageBuilder: React.FC<VisualPageBuilderProps> = ({ onAddToast
               </div>
 
               <div className="pt-2 border-t border-slate-100 space-y-3">
-                <label className="block font-bold text-slate-700">Background Color</label>
+                <label className="block font-semibold text-slate-700">Background Color</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"

@@ -12,7 +12,7 @@ export const CodeReviewAdapter: React.FC<ReviewAdapterProps> = ({ submission }) 
             <Code2 className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white">Source Code Submission & AST Inspection</h4>
+            <h4 className="text-xs font-semibold text-white">Source Code Submission & AST Inspection</h4>
             <p className="text-[11px] text-slate-400">
               {submission.language || 'TypeScript / React'} • Branch: <span className="font-mono text-emerald-400">main</span>
             </p>
@@ -63,7 +63,7 @@ export const CodeReviewAdapter: React.FC<ReviewAdapterProps> = ({ submission }) 
           <Terminal className="w-4 h-4 text-emerald-400" />
           <span className="text-slate-300 font-medium">Automated Runner: Jest & ESLint Validations</span>
         </div>
-        <span className="text-emerald-400 font-mono font-bold flex items-center gap-1">
+        <span className="text-emerald-400 font-mono font-semibold flex items-center gap-1">
           <CheckCircle2 className="w-3.5 h-3.5" /> 0 Errors • 0 Lints
         </span>
       </div>

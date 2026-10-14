@@ -413,15 +413,15 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
             </button>
 
             <form onSubmit={handlePageInputSubmit} className="flex items-center gap-1">
-              <span className="text-xs font-bold text-amber-950">Page</span>
+              <span className="text-xs font-semibold text-amber-950">Page</span>
               <input
                 type="text"
                 value={pageInputValue}
                 onChange={(e) => setPageInputValue(e.target.value)}
                 onBlur={() => setPageInputValue(String(currentPageNumber))}
-                className="w-12 text-center text-xs font-mono font-bold bg-white border border-amber-900/30 rounded-md py-0.5 text-amber-950 focus:outline-none focus:ring-1 focus:ring-amber-600"
+                className="w-12 text-center text-xs font-mono font-semibold bg-white border border-amber-900/30 rounded-md py-0.5 text-amber-950 focus:outline-none focus:ring-1 focus:ring-amber-600"
               />
-              <span className="text-xs font-bold text-amber-800/80">/ {TOTAL_MUSHAF_PAGES}</span>
+              <span className="text-xs font-semibold text-amber-800/80">/ {TOTAL_MUSHAF_PAGES}</span>
             </form>
 
             <button
@@ -439,7 +439,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           <select
             value={currentJuz}
             onChange={(e) => handleSelectJuz(Number(e.target.value))}
-            className="bg-amber-50/80 text-amber-950 font-bold text-xs px-2.5 py-1.5 rounded-xl border border-amber-900/20 focus:outline-none focus:ring-1 focus:ring-amber-600 cursor-pointer"
+            className="bg-amber-50/80 text-amber-950 font-semibold text-xs px-2.5 py-1.5 rounded-xl border border-amber-900/20 focus:outline-none focus:ring-1 focus:ring-amber-600 cursor-pointer"
           >
             {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => (
               <option key={juz} value={juz}>
@@ -463,7 +463,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                   goToPage(approxPage);
                 }
               }}
-              className="hidden md:inline-block bg-amber-50/80 text-amber-950 font-bold text-xs px-2.5 py-1.5 rounded-xl border border-amber-900/20 focus:outline-none focus:ring-1 focus:ring-amber-600 cursor-pointer max-w-[160px] truncate"
+              className="hidden md:inline-block bg-amber-50/80 text-amber-950 font-semibold text-xs px-2.5 py-1.5 rounded-xl border border-amber-900/20 focus:outline-none focus:ring-1 focus:ring-amber-600 cursor-pointer max-w-[160px] truncate"
             >
               {surahList.map((s) => (
                 <option key={s.number} value={s.number}>
@@ -480,7 +480,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           <button
             type="button"
             onClick={() => setShowTranslation(!showTranslation)}
-            className="px-2.5 py-1.5 rounded-xl bg-white text-amber-900 border border-amber-900/20 text-xs font-bold hover:bg-amber-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            className="px-2.5 py-1.5 rounded-xl bg-white text-amber-900 border border-amber-900/20 text-xs font-semibold hover:bg-amber-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
           >
             {showTranslation ? <Eye className="w-3.5 h-3.5 text-amber-700" /> : <EyeOff className="w-3.5 h-3.5 text-slate-400" />}
             <span className="hidden sm:inline">{showTranslation ? 'Translation' : 'Arabic Only'}</span>
@@ -491,16 +491,16 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
             <button
               type="button"
               onClick={() => setFontSizePx((prev) => Math.max(18, prev - 2))}
-              className="px-2 py-1.5 hover:bg-amber-50 text-amber-900 font-bold border-r border-amber-900/10 cursor-pointer"
+              className="px-2 py-1.5 hover:bg-amber-50 text-amber-900 font-semibold border-r border-amber-900/10 cursor-pointer"
               title="Decrease font size"
             >
               A-
             </button>
-            <span className="px-2 text-amber-950 font-mono text-[11px] font-bold">{fontSizePx}px</span>
+            <span className="px-2 text-amber-950 font-mono text-[11px] font-semibold">{fontSizePx}px</span>
             <button
               type="button"
               onClick={() => setFontSizePx((prev) => Math.min(42, prev + 2))}
-              className="px-2 py-1.5 hover:bg-amber-50 text-amber-900 font-bold cursor-pointer"
+              className="px-2 py-1.5 hover:bg-amber-50 text-amber-900 font-semibold cursor-pointer"
               title="Increase font size"
             >
               A+
@@ -511,7 +511,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           <button
             type="button"
             onClick={() => setIsTajweedModalOpen(true)}
-            className="px-2.5 py-1.5 rounded-xl bg-white text-amber-900 border border-amber-900/20 text-xs font-bold hover:bg-amber-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            className="px-2.5 py-1.5 rounded-xl bg-white text-amber-900 border border-amber-900/20 text-xs font-semibold hover:bg-amber-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
             title="Tajweed Colors"
           >
             <Layers className="w-3.5 h-3.5 text-amber-700" />
@@ -522,7 +522,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           <button
             type="button"
             onClick={() => setIsRecordingModalOpen(true)}
-            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
           >
             <Mic className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Record Oral Task</span>
@@ -539,12 +539,12 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           {/* Top Medina Mushaf Frame Header */}
           <div className="flex items-center justify-between border-b-2 border-amber-900/20 pb-3 mb-6 select-none font-serif text-amber-950">
             {/* Right: Surah Name in Arabic Script */}
-            <div className="text-sm sm:text-base font-bold">
+            <div className="text-sm sm:text-base font-semibold">
               {mushafPage?.surahs.map((s) => s.name).join(' • ') || 'سورة'}
             </div>
 
             {/* Center: Juz Indicator */}
-            <div className="text-xs sm:text-sm font-bold text-amber-800 bg-amber-100/60 px-3 py-0.5 rounded-full border border-amber-900/10">
+            <div className="text-xs sm:text-sm font-semibold text-amber-800 bg-amber-100/60 px-3 py-0.5 rounded-full border border-amber-900/10">
               الجزء {currentJuz}
             </div>
 
@@ -559,7 +559,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
             {isLoadingPage ? (
               <div className="py-32 text-center text-amber-900 flex flex-col items-center justify-center gap-3">
                 <Loader2 className="w-8 h-8 animate-spin text-amber-700" />
-                <p className="text-xs font-bold text-amber-900">Loading Medina Mushaf Page {currentPageNumber}...</p>
+                <p className="text-xs font-semibold text-amber-900">Loading Medina Mushaf Page {currentPageNumber}...</p>
               </div>
             ) : mushafPage?.ayahs && mushafPage.ayahs.length > 0 ? (
               <div className="space-y-4">
@@ -573,7 +573,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                       {/* Surah Header Cartouche when an ayah is verse 1 */}
                       {ayah.isFirstInSurah && (
                         <div className="my-6 text-center">
-                          <div className="bg-gradient-to-r from-amber-200/90 via-amber-100 to-amber-200/90 border-2 border-amber-800/40 rounded-2xl py-3 px-6 shadow-inner text-amber-950 font-serif font-black text-xl sm:text-2xl tracking-wide select-none">
+                          <div className="bg-gradient-to-r from-amber-200/90 via-amber-100 to-amber-200/90 border-2 border-amber-800/40 rounded-2xl py-3 px-6 shadow-inner text-amber-950 font-serif font-semibold text-xl sm:text-2xl tracking-wide select-none">
                             {ayah.surah.name} ({ayah.surah.englishName})
                           </div>
 
@@ -612,7 +612,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                         title={`Ayah ${ayah.numberInSurah} - Click to listen & read`}
                       >
                         {ayah.text}{' '}
-                        <span className="text-amber-800 font-bold px-1 select-none font-serif text-[0.85em]">
+                        <span className="text-amber-800 font-semibold px-1 select-none font-serif text-[0.85em]">
                           ﴿{ayah.numberInSurah}﴾
                         </span>{' '}
                       </span>
@@ -627,11 +627,11 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                     className="mt-6 p-4 rounded-2xl bg-amber-50/70 border border-amber-900/15 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans shadow-2xs"
                   >
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="font-bold text-amber-950">
+                      <span className="font-semibold text-amber-950">
                         {activeAyah.surah.englishName} • Verse {activeAyah.numberInSurah}
                       </span>
                       {isAudioPlaying && (
-                        <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.2 rounded-full">
+                        <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.2 rounded-full">
                           <Activity className="w-3 h-3 animate-spin text-emerald-700" />
                           Reciting
                         </span>
@@ -643,7 +643,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               </div>
             ) : (
               <div className="py-20 text-center text-amber-900">
-                <p className="text-sm font-bold">No verses available on this page.</p>
+                <p className="text-sm font-semibold">No verses available on this page.</p>
               </div>
             )}
           </div>
@@ -655,14 +655,14 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               type="button"
               onClick={() => goToPage(currentPageNumber - 1)}
               disabled={currentPageNumber <= 1}
-              className="text-xs font-bold text-amber-900 hover:text-amber-950 disabled:opacity-30 transition-colors flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-amber-900 hover:text-amber-950 disabled:opacity-30 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Previous Page</span>
             </button>
 
             {/* Center Medina Page Medallion */}
-            <div className="w-10 h-10 rounded-full border-2 border-amber-900/40 bg-amber-100 flex items-center justify-center font-serif font-black text-sm text-amber-950 shadow-inner">
+            <div className="w-10 h-10 rounded-full border-2 border-amber-900/40 bg-amber-100 flex items-center justify-center font-serif font-semibold text-sm text-amber-950 shadow-inner">
               {currentPageNumber}
             </div>
 
@@ -671,7 +671,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               type="button"
               onClick={() => goToPage(currentPageNumber + 1)}
               disabled={currentPageNumber >= TOTAL_MUSHAF_PAGES}
-              className="text-xs font-bold text-amber-900 hover:text-amber-950 disabled:opacity-30 transition-colors flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-amber-900 hover:text-amber-950 disabled:opacity-30 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <span>Next Page</span>
               <ChevronRight className="w-4 h-4" />
@@ -689,7 +689,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           <Volume2 className="w-6 h-6 text-emerald-400 shrink-0" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h4 className="text-xs font-black text-white truncate">
+              <h4 className="text-xs font-semibold text-white truncate">
                 {activeAyah?.surah.name || 'Al-Quran'} • Verse {activeAyah?.numberInSurah || 1}
               </h4>
               {loopCount > 1 && (
@@ -718,7 +718,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
           <button
             type="button"
             onClick={handleToggleCurrentAudio}
-            className="w-11 h-11 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center transition-all shadow-lg shadow-emerald-500/30 cursor-pointer font-bold"
+            className="w-11 h-11 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center transition-all shadow-lg shadow-emerald-500/30 cursor-pointer font-semibold"
             title={isAudioPlaying ? 'Pause' : 'Play'}
           >
             {isAudioPlaying ? (
@@ -755,7 +755,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
 
           {/* Ayah Looper Selector */}
           <div className="flex items-center bg-slate-800/80 p-0.5 rounded-xl border border-slate-700">
-            <span className="text-[10px] text-slate-400 px-1.5 font-bold">Loop:</span>
+            <span className="text-[10px] text-slate-400 px-1.5 font-semibold">Loop:</span>
             {[1, 3, 5, 10].map((count) => (
               <button
                 key={count}
@@ -764,7 +764,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                   setLoopCount(count);
                   setCurrentLoopIteration(1);
                 }}
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-semibold transition-all cursor-pointer ${
                   loopCount === count
                     ? 'bg-emerald-600 text-white'
                     : 'text-slate-400 hover:text-white'
@@ -782,9 +782,9 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                 key={speed}
                 type="button"
                 onClick={() => setPlaybackSpeed(speed)}
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer ${
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-semibold transition-all cursor-pointer ${
                   playbackSpeed === speed
-                    ? 'bg-emerald-500 text-slate-950 font-black'
+                    ? 'bg-emerald-500 text-slate-950 font-semibold'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -803,7 +803,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               <div className="flex items-center gap-2.5">
                 <Mic className="w-6 h-6 text-emerald-700 shrink-0" />
                 <div>
-                  <h3 className="text-sm font-black text-slate-900">Record Oral Recitation Homework</h3>
+                  <h3 className="text-sm font-semibold text-slate-900">Record Oral Recitation Homework</h3>
                   <p className="text-xs text-slate-500">Record your recitation for Page {currentPageNumber} to submit to your Sheikh.</p>
                 </div>
               </div>
@@ -819,11 +819,11 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
             {/* Recorder Body */}
             <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">
+                <span className="text-xs font-semibold text-slate-700">
                   Target Verse: <strong className="text-emerald-700">{activeAyah?.surah.name || 'Current'} (Ayah {activeAyah?.numberInSurah || 1})</strong>
                 </span>
                 {recordedAudioUrl && (
-                  <span className="text-xs font-mono font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-md">
+                  <span className="text-xs font-mono font-semibold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-md">
                     {recordingSeconds}s recorded
                   </span>
                 )}
@@ -831,7 +831,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
 
               {isRecording ? (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between text-rose-600 font-bold bg-rose-50 border border-rose-200 p-3 rounded-xl animate-pulse">
+                  <div className="flex items-center justify-between text-rose-600 font-semibold bg-rose-50 border border-rose-200 p-3 rounded-xl animate-pulse">
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
                       <span className="text-xs">Recording Live Recitation...</span>
@@ -842,7 +842,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                   <button
                     type="button"
                     onClick={stopRecording}
-                    className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
+                    className="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                   >
                     <Square className="w-4 h-4 fill-current" />
                     Stop Recording
@@ -854,7 +854,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                     <button
                       type="button"
                       onClick={togglePlayRecordedAudio}
-                      className="flex items-center gap-2 text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer"
+                      className="flex items-center gap-2 text-xs font-semibold text-emerald-700 hover:text-emerald-800 cursor-pointer"
                     >
                       {isPlayingRecorded ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
                       <span>{isPlayingRecorded ? 'Pause Recitation' : 'Preview Oral Recording'}</span>
@@ -863,7 +863,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                     <button
                       type="button"
                       onClick={deleteRecordedAudio}
-                      className="text-rose-500 hover:text-rose-700 p-1 cursor-pointer flex items-center gap-1 text-xs font-bold"
+                      className="text-rose-500 hover:text-rose-700 p-1 cursor-pointer flex items-center gap-1 text-xs font-semibold"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Re-record</span>
@@ -874,7 +874,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                     type="button"
                     onClick={handleSubmitHomework}
                     disabled={isSubmittingHomework}
-                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
+                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                   >
                     {isSubmittingHomework ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -888,7 +888,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                 <button
                   type="button"
                   onClick={startRecording}
-                  className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
+                  className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                 >
                   <Mic className="w-4 h-4" />
                   <span>Start Microphone Recording</span>
@@ -906,7 +906,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <Layers className="w-5 h-5 text-amber-900 shrink-0" />
-                <h3 className="text-sm font-black text-slate-900">Tajweed Color Guide</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Tajweed Color Guide</h3>
               </div>
               <button
                 type="button"
@@ -921,7 +921,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-start gap-3">
                 <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 mt-0.5 shrink-0" />
                 <div>
-                  <strong className="text-emerald-900 block font-bold">Ghunnah (غنة) - 2 Harakat</strong>
+                  <strong className="text-emerald-900 block font-semibold">Ghunnah (غنة) - 2 Harakat</strong>
                   <p className="text-[11px] text-emerald-800 mt-0.5">Nasal sound held for 2 beats on Noon/Meem with Shaddah.</p>
                 </div>
               </div>
@@ -929,7 +929,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               <div className="p-3 bg-blue-50 rounded-xl border border-blue-200 flex items-start gap-3">
                 <span className="w-3.5 h-3.5 rounded-full bg-blue-500 mt-0.5 shrink-0" />
                 <div>
-                  <strong className="text-blue-900 block font-bold">Qalqalah (قلقلة) - Echoing</strong>
+                  <strong className="text-blue-900 block font-semibold">Qalqalah (قلقلة) - Echoing</strong>
                   <p className="text-[11px] text-blue-800 mt-0.5">Vibrant bouncing sound on letters: ق، ط، ب، ج، د when with Sukoon.</p>
                 </div>
               </div>
@@ -937,7 +937,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               <div className="p-3 bg-orange-50 rounded-xl border border-orange-200 flex items-start gap-3">
                 <span className="w-3.5 h-3.5 rounded-full bg-orange-500 mt-0.5 shrink-0" />
                 <div>
-                  <strong className="text-orange-900 block font-bold">Ikhfaa (إخفاء) - Concealment</strong>
+                  <strong className="text-orange-900 block font-semibold">Ikhfaa (إخفاء) - Concealment</strong>
                   <p className="text-[11px] text-orange-800 mt-0.5">Hiding the Noon Sakinah/Tanween before the 15 Ikhfaa letters.</p>
                 </div>
               </div>
@@ -945,7 +945,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
               <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 flex items-start gap-3">
                 <span className="w-3.5 h-3.5 rounded-full bg-purple-500 mt-0.5 shrink-0" />
                 <div>
-                  <strong className="text-purple-900 block font-bold">Madd (مد) - Elongation (4-6 Harakat)</strong>
+                  <strong className="text-purple-900 block font-semibold">Madd (مد) - Elongation (4-6 Harakat)</strong>
                   <p className="text-[11px] text-purple-800 mt-0.5">Madd Munfasil / Muttasil / Lazim elongated for 4, 5, or 6 counts.</p>
                 </div>
               </div>

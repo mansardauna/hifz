@@ -74,12 +74,12 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ onAddToast }) 
       {/* Header Card */}
       <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-lg">
+          <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-semibold text-lg">
             {name.charAt(0).toUpperCase()}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-slate-900">{name}</h2>
+              <h2 className="text-base font-semibold text-slate-900">{name}</h2>
               <Badge variant="success">{user?.role?.toUpperCase() || 'STUDENT'}</Badge>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">{email} • {tenant?.name || 'Academy'}</p>
@@ -111,7 +111,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ onAddToast }) 
       <Card>
         {activeTab === 'profile' ? (
           <form onSubmit={handleSaveProfile} className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">
+            <h3 className="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-100">
               Personal Information
             </h3>
 
@@ -165,7 +165,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ onAddToast }) 
           </form>
         ) : (
           <form onSubmit={handleSaveSecurity} className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">
+            <h3 className="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-100">
               Security & Password
             </h3>
 

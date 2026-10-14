@@ -150,7 +150,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Code2 className="w-7 h-7 text-indigo-600" />
-            <h2 className="text-xl font-black text-slate-900">Coding Track & Syllabus Studio</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Coding Track & Syllabus Studio</h2>
           </div>
           <p className="text-xs text-slate-500">
             Design FreeCodeCamp-style coding curricula with auto-graded unit tests and interactive challenges.
@@ -160,7 +160,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
         <Button
           variant="primary"
           onClick={handleOpenAddChallenge}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Add Coding Challenge
@@ -170,7 +170,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
       {/* Track & Module Selector Bar */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Active Track</label>
+          <label className="text-xs font-semibold text-slate-700 capitalize tracking-wider">Active Track</label>
           <select
             value={selectedTrackId}
             onChange={(e) => {
@@ -178,7 +178,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
               const track = trackList.find((t) => t.id === e.target.value);
               if (track?.modules[0]) setSelectedModuleId(track.modules[0].id);
             }}
-            className="w-full text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-blue-500"
+            className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-blue-500"
           >
             {trackList.map((t) => (
               <option key={t.id} value={t.id}>
@@ -189,11 +189,11 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Active Module</label>
+          <label className="text-xs font-semibold text-slate-700 capitalize tracking-wider">Active Module</label>
           <select
             value={selectedModuleId}
             onChange={(e) => setSelectedModuleId(e.target.value)}
-            className="w-full text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-blue-500"
+            className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-blue-500"
           >
             {activeTrack?.modules.map((m) => (
               <option key={m.id} value={m.id}>
@@ -209,7 +209,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-blue-600" />
-            <span className="font-bold text-xs text-slate-800 uppercase tracking-wider">
+            <span className="font-semibold text-xs text-slate-800 capitalize tracking-wider">
               {activeModule?.challenges.length || 0} Coding Challenges in Syllabus
             </span>
           </div>
@@ -222,12 +222,12 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
               className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 font-semibold text-xs flex items-center justify-center shrink-0">
                   {index + 1}
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-sm text-slate-900 truncate">{challenge.title}</h4>
+                    <h4 className="font-semibold text-sm text-slate-900 truncate">{challenge.title}</h4>
                     <Badge variant={challenge.difficulty === 'beginner' ? 'success' : 'warning'} size="sm">
                       {challenge.difficulty}
                     </Badge>
@@ -288,7 +288,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
         <div className="space-y-4 max-h-[75vh] overflow-y-auto p-1 font-sans">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="text-xs font-bold text-slate-700 block mb-1">Challenge Title</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Challenge Title</label>
               <Input
                 value={editingChallenge.title || ''}
                 onChange={(e) => setEditingChallenge({ ...editingChallenge, title: e.target.value })}
@@ -297,11 +297,11 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Difficulty</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Difficulty</label>
               <select
                 value={editingChallenge.difficulty || 'beginner'}
                 onChange={(e) => setEditingChallenge({ ...editingChallenge, difficulty: e.target.value as any })}
-                className="w-full text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900"
+                className="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900"
               >
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
@@ -311,7 +311,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-1">Instructions (Markdown / Theory)</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">Instructions (Markdown / Theory)</label>
             <textarea
               rows={4}
               value={editingChallenge.instructions || ''}
@@ -323,7 +323,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Starter Code (Student Boilerplate)</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Starter Code (Student Boilerplate)</label>
               <textarea
                 rows={5}
                 value={editingChallenge.starterCode || ''}
@@ -332,7 +332,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Reference Solution Code</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Reference Solution Code</label>
               <textarea
                 rows={5}
                 value={editingChallenge.solutionCode || ''}
@@ -345,7 +345,7 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
           {/* Automated Test Suite Assertions */}
           <div className="border-t border-slate-200 pt-4 space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-slate-800 capitalize tracking-wider flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span>Automated Unit Test Assertions</span>
               </label>
@@ -396,8 +396,8 @@ export const CodingSyllabusManager: React.FC<CodingSyllabusManagerProps> = ({
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleSaveChallenge} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
-              <Save className="w-4 h-4 mr-1.5" /> Save Challenge
+            <Button variant="primary" onClick={handleSaveChallenge} leftIcon={<Save className="w-4 h-4" />}>
+              Save Challenge
             </Button>
           </div>
         </div>

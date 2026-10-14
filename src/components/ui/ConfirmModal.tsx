@@ -59,7 +59,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           {getIcon()}
         </div>
 
-        <h3 className="text-lg font-extrabold text-slate-900 mb-2">{title}</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">{title}</h3>
         <p className="text-xs text-slate-500 mb-6 leading-relaxed">{message}</p>
 
         <div className="flex items-center gap-3 w-full">
@@ -68,7 +68,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             variant="secondary"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 justify-center font-bold"
+            className="flex-1 justify-center font-semibold"
           >
             {cancelText}
           </Button>
@@ -77,7 +77,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             variant={variant === 'danger' ? 'danger' : 'primary'}
             onClick={onConfirm}
             isLoading={isLoading}
-            className="flex-1 justify-center font-bold"
+            className="flex-1 justify-center font-semibold"
           >
             {confirmText}
           </Button>

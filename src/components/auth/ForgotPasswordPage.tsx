@@ -30,7 +30,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onAddToa
         <div className="bg-white rounded-sm p-6 sm:p-8 shadow-sm border border-slate-200">
           {!submitted ? (
             <>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Reset Password</h2>
+              <h2 className="text-xl font-semibold text-slate-900 mb-1">Reset Password</h2>
               <p className="text-xs text-slate-500 mb-6">
                 Enter your registered student or teacher email address to receive password reset instructions.
               </p>
@@ -52,7 +52,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onAddToa
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-sm shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-sm shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <span>Send Reset Link</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -64,7 +64,7 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onAddToa
               <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-base text-slate-900">Check Your Inbox</h3>
+              <h3 className="font-semibold text-base text-slate-900">Check Your Inbox</h3>
               <p className="text-xs text-slate-600">
                 We sent a password reset link to <strong className="text-slate-900">{email}</strong>.
               </p>

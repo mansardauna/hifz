@@ -255,10 +255,10 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
       <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-semibold">
               <Zap className="w-4 h-4 fill-current" />
             </div>
-            <h2 className="text-lg font-extrabold text-slate-900">Workflows & Academy Automations</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Workflows & Academy Automations</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
             Automate student onboarding, payment receipts, classroom reminders, and staff notification triggers.
@@ -268,7 +268,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" /> Create New Automation
           </button>
@@ -278,23 +278,23 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Active Workflows</span>
-          <div className="text-2xl font-black text-slate-900">{automations.filter((a) => a.enabled).length} / {automations.length}</div>
-          <p className="text-[10px] text-emerald-600 font-bold">● Running continuously</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Active Workflows</span>
+          <div className="text-2xl font-semibold text-slate-900">{automations.filter((a) => a.enabled).length} / {automations.length}</div>
+          <p className="text-[10px] text-emerald-600 font-semibold">● Running continuously</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Total Executions</span>
-          <div className="text-2xl font-black text-slate-900">863</div>
-          <p className="text-[10px] text-blue-600 font-bold">+18 today</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Total Executions</span>
+          <div className="text-2xl font-semibold text-slate-900">863</div>
+          <p className="text-[10px] text-blue-600 font-semibold">+18 today</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Success Rate</span>
-          <div className="text-2xl font-black text-slate-900">99.8%</div>
-          <p className="text-[10px] text-emerald-600 font-bold">0 critical failures</p>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Success Rate</span>
+          <div className="text-2xl font-semibold text-slate-900">99.8%</div>
+          <p className="text-[10px] text-emerald-600 font-semibold">0 critical failures</p>
         </div>
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">Avg Execution Time</span>
-          <div className="text-2xl font-black text-slate-900">182ms</div>
+          <span className="text-[10px] font-semibold text-slate-400 capitalize">Avg Execution Time</span>
+          <div className="text-2xl font-semibold text-slate-900">182ms</div>
           <p className="text-[10px] text-slate-400">Edge serverless runtime</p>
         </div>
       </div>
@@ -304,7 +304,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
         <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/60">
           <div className="flex items-center gap-2">
             <Sliders className="w-4 h-4 text-slate-700" />
-            <h3 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">Configured Automation Rules</h3>
+            <h3 className="font-semibold text-xs text-slate-900 capitalize tracking-wider">Configured Automation Rules</h3>
           </div>
           <span className="text-xs text-slate-500">{automations.length} total rules</span>
         </div>
@@ -312,7 +312,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold capitalize text-[10px] tracking-wider">
                 <th className="py-3.5 px-4">Workflow Name & Description</th>
                 <th className="py-3.5 px-4">Trigger Event</th>
                 <th className="py-3.5 px-4">Dispatched Actions</th>
@@ -326,13 +326,13 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
               {automations.map((auto) => (
                 <tr key={auto.id} className="hover:bg-slate-50/60 transition-colors">
                   <td className="py-3.5 px-4 max-w-xs">
-                    <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                    <div className="font-semibold text-slate-900 text-xs flex items-center gap-1.5">
                       {auto.name}
                     </div>
                     <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{auto.description}</p>
                   </td>
                   <td className="py-3.5 px-4 whitespace-nowrap">
-                    <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-bold text-[10px] inline-flex items-center gap-1">
+                    <span className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-semibold text-[10px] inline-flex items-center gap-1">
                       <Zap className="w-2.5 h-2.5 fill-current" /> {auto.trigger}
                     </span>
                   </td>
@@ -346,7 +346,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                       ))}
                     </div>
                   </td>
-                  <td className="py-3.5 px-4 text-center font-bold text-slate-900 font-mono">
+                  <td className="py-3.5 px-4 text-center font-semibold text-slate-900 font-mono">
                     {auto.executionCount}
                   </td>
                   <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap text-[11px]">
@@ -359,11 +359,11 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                       title={auto.enabled ? 'Click to Pause' : 'Click to Enable'}
                     >
                       {auto.enabled ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
                           Paused
                         </span>
                       )}
@@ -372,7 +372,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                   <td className="py-3.5 px-4 text-right">
                     <button
                       onClick={() => handleTestTrigger(auto)}
-                      className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold transition-colors inline-flex items-center gap-1 cursor-pointer"
                       title="Simulate / Test Trigger"
                     >
                       <Play className="w-3 h-3 fill-current text-slate-700" /> Test
@@ -390,9 +390,9 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
         <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/60">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-blue-600" />
-            <h3 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">Live Workflow Execution Logs</h3>
+            <h3 className="font-semibold text-xs text-slate-900 capitalize tracking-wider">Live Workflow Execution Logs</h3>
           </div>
-          <span className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+          <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Real-Time Audit Log
           </span>
         </div>
@@ -400,7 +400,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold capitalize text-[10px] tracking-wider">
                 <th className="py-3.5 px-4">Timestamp</th>
                 <th className="py-3.5 px-4">Workflow</th>
                 <th className="py-3.5 px-4">Trigger Context</th>
@@ -415,7 +415,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                   <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px] whitespace-nowrap">
                     {log.timestamp}
                   </td>
-                  <td className="py-3.5 px-4 font-bold text-slate-900">
+                  <td className="py-3.5 px-4 font-semibold text-slate-900">
                     {log.automationName}
                   </td>
                   <td className="py-3.5 px-4 text-slate-600 text-[11px]">
@@ -425,7 +425,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                     {log.recipient}
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
                       <Check className="w-2.5 h-2.5" /> {log.status}
                     </span>
                   </td>
@@ -445,14 +445,14 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-semibold">
                   <Zap className="w-3.5 h-3.5 fill-current" />
                 </div>
-                <h3 className="font-extrabold text-sm text-slate-900">Create Workflow Automation</h3>
+                <h3 className="font-semibold text-sm text-slate-900">Create Workflow Automation</h3>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-semibold text-xs"
               >
                 &times;
               </button>
@@ -460,7 +460,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
 
             <form onSubmit={handleCreateRule} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Workflow Name</label>
+                <label className="font-semibold text-slate-800">Workflow Name</label>
                 <input
                   type="text"
                   placeholder="e.g. VIP Student WhatsApp Welcome"
@@ -472,7 +472,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Trigger Event</label>
+                <label className="font-semibold text-slate-800">Trigger Event</label>
                 <select
                   value={newRuleTrigger}
                   onChange={(e) => setNewRuleTrigger(e.target.value)}
@@ -487,7 +487,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Action to Execute</label>
+                <label className="font-semibold text-slate-800">Action to Execute</label>
                 <select
                   value={newRuleAction}
                   onChange={(e) => setNewRuleAction(e.target.value)}
@@ -501,7 +501,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-800">Description (Optional)</label>
+                <label className="font-semibold text-slate-800">Description (Optional)</label>
                 <textarea
                   placeholder="Briefly describe what this automation accomplishes..."
                   value={newRuleDescription}
@@ -515,13 +515,13 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-semibold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
+                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold transition-colors cursor-pointer shadow-xs"
                 >
                   Save & Activate
                 </button>

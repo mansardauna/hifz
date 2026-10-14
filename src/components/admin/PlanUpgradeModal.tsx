@@ -131,7 +131,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <Badge variant="primary" className="px-2.5 py-0.5 text-xs font-bold">
+              <Badge variant="primary" className="px-2.5 py-0.5 text-xs font-semibold">
                 Multi-Tenant Scale & Growth
               </Badge>
               <span className="text-xs text-slate-400 flex items-center gap-1 font-medium">
@@ -139,7 +139,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                 Instant Auto-Activation
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
               Scale Your Academy with Powerful Features
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5 max-w-2xl">
@@ -154,7 +154,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
               <button
                 type="button"
                 onClick={() => setBillingCycle('monthly')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   billingCycle === 'monthly'
                     ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -165,14 +165,14 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
               <button
                 type="button"
                 onClick={() => setBillingCycle('yearly')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
                   billingCycle === 'yearly'
                     ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <span>Yearly</span>
-                <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-black">
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.2 rounded-full font-semibold">
                   -20%
                 </span>
               </button>
@@ -235,7 +235,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                 >
                   {/* Popular Floating Tag */}
                   {p.isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[10px] font-semibold capitalize tracking-wider px-3 py-0.5 rounded-full shadow-sm flex items-center gap-1">
                       <Sparkles className="w-3 h-3" />
                       <span>{p.badge || 'Most Popular'}</span>
                     </div>
@@ -244,13 +244,13 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                   <div>
                     {/* Header */}
                     <div className="flex items-center justify-between mb-1.5">
-                      <h3 className="font-black text-slate-900 text-base">{p.name}</h3>
+                      <h3 className="font-semibold text-slate-900 text-base">{p.name}</h3>
                       {isCurrent ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-900 text-white rounded-full">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 bg-slate-900 text-white rounded-full">
                           Current
                         </span>
                       ) : p.badge && !p.isPopular ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 text-slate-700 rounded-full">
                           {p.badge}
                         </span>
                       ) : null}
@@ -263,14 +263,14 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                     {/* Pricing Box */}
                     <div className="my-4 py-3 px-3.5 bg-slate-50 rounded-xl border border-slate-100">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                        <span className="text-2xl sm:text-3xl font-semibold text-slate-900">
                           ${displayPrice}
                         </span>
-                        <span className="text-xs text-slate-500 font-bold">
+                        <span className="text-xs text-slate-500 font-semibold">
                           {displayPrice === 0 ? 'forever' : '/ month'}
                         </span>
                       </div>
-                      <div className="text-[11px] text-emerald-700 font-bold mt-1">
+                      <div className="text-[11px] text-emerald-700 font-semibold mt-1">
                         {billingCycle === 'yearly' && p.priceYearly > 0
                           ? `$${p.priceYearly}/yr billed annually (2 months free)`
                           : `$${p.priceYearly}/yr billed annually`}
@@ -279,19 +279,19 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
 
                     {/* Quota Limits Bar */}
                     <div className="space-y-2 mb-4 pb-3 border-b border-slate-100">
-                      <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <div className="text-xs font-semibold text-slate-800 flex items-center justify-between">
                         <span className="flex items-center gap-1.5">
                           <Users className="w-3.5 h-3.5 text-slate-400" />
                           <span>Student Limit:</span>
                         </span>
-                        <span className="text-emerald-700 font-extrabold">
+                        <span className="text-emerald-700 font-semibold">
                           {p.studentCapacity >= 99999
                             ? 'Unlimited Students'
                             : `${p.studentCapacity} Active Students`}
                         </span>
                       </div>
                       {p.teacherSeats && (
-                        <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                        <div className="text-xs font-semibold text-slate-800 flex items-center justify-between">
                           <span className="flex items-center gap-1.5">
                             <Zap className="w-3.5 h-3.5 text-slate-400" />
                             <span>Teacher Seats:</span>
@@ -319,7 +319,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
                     <Button
                       variant={p.isPopular ? 'primary' : isCurrent ? 'secondary' : 'outline'}
                       size="sm"
-                      className="w-full font-bold text-xs py-2.5 shadow-xs"
+                      className="w-full font-semibold text-xs py-2.5 shadow-xs"
                       disabled={isCurrent || isProcessing === p.id}
                       onClick={() => handleUpgrade(p.id, p.name, p.studentCapacity)}
                     >
@@ -367,7 +367,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900">
+              <h4 className="text-xs font-semibold text-slate-900">
                 14-Day Money-Back Guarantee & Cancel Anytime
               </h4>
               <p className="text-[11px] text-slate-500">
@@ -375,7 +375,7 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
               </p>
             </div>
           </div>
-          <span className="text-xs text-emerald-700 font-bold shrink-0">Encrypted 256-bit SSL</span>
+          <span className="text-xs text-emerald-700 font-semibold shrink-0">Encrypted 256-bit SSL</span>
         </div>
       </div>
     </Modal>

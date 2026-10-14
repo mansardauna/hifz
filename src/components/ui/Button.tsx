@@ -32,19 +32,19 @@ export const Button: React.FC<ButtonProps> = ({
   const isTab = variant === 'tab';
 
   const baseStyles = isTab
-    ? 'inline-flex items-center justify-center font-bold text-sm border-b-2 transition-all cursor-pointer whitespace-nowrap select-none rounded-t-lg'
-    : 'inline-flex items-center justify-center font-bold rounded-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98]';
+    ? 'inline-flex items-center justify-center font-semibold text-sm border-b-2 transition-all cursor-pointer whitespace-nowrap select-none rounded-t-lg outline-none focus:outline-none'
+    : 'inline-flex items-center justify-center font-semibold rounded-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none active:scale-[0.98] outline-none focus:outline-none';
 
   const sizeStyles = isTab
     ? {
-        sm: 'py-2.5 px-4 text-xs sm:text-sm font-semibold gap-2',
-        md: 'py-3 px-5 text-sm font-bold gap-2',
-        lg: 'py-3.5 px-6 text-base font-bold gap-2.5',
+        sm: 'py-2.5 px-4 text-xs sm:text-sm font-semibold gap-2.5',
+        md: 'py-3.5 px-6 text-sm font-semibold gap-2.5',
+        lg: 'py-4 px-8 text-base font-semibold gap-3',
       }
     : {
-        sm: 'h-9 px-3.5 text-xs sm:text-sm font-semibold gap-2',
-        md: 'h-11 px-5 text-sm font-bold gap-2 shadow-xs',
-        lg: 'h-12 px-6 text-base font-bold gap-2.5 shadow-sm',
+        sm: 'h-10 px-4 text-xs sm:text-sm font-semibold gap-2.5',
+        md: 'h-12 px-6 text-sm font-semibold gap-2.5 shadow-xs',
+        lg: 'h-14 px-8 text-base font-semibold gap-3 shadow-sm',
       };
 
   const variantStyles = {
@@ -74,10 +74,10 @@ export const Button: React.FC<ButtonProps> = ({
       {isLoading ? (
         <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0 -ml-1 mr-1" />
       ) : (
-        leftIcon && <span className="shrink-0">{leftIcon}</span>
+        leftIcon && <span className="inline-flex items-center shrink-0">{leftIcon}</span>
       )}
-      <span>{children}</span>
-      {!isLoading && rightIcon && <span className="shrink-0">{rightIcon}</span>}
+      <span className="inline-flex items-center">{children}</span>
+      {!isLoading && rightIcon && <span className="inline-flex items-center shrink-0">{rightIcon}</span>}
     </button>
   );
 };

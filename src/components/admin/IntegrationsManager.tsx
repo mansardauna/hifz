@@ -187,7 +187,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
         <div>
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
-            <h2 className="text-xl font-bold">API Keys & Live Integrations</h2>
+            <h2 className="text-xl font-semibold">API Keys & Live Integrations</h2>
           </div>
           <p className="text-xs text-slate-300 mt-2 max-w-2xl leading-relaxed">
             Connect live infrastructure services and payment processors. Enter your API credentials from each provider below to activate live processing.
@@ -206,7 +206,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
             <div className="flex items-center gap-3">
               <Video className="w-6 h-6 text-blue-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">LiveKit Cloud (WebRTC SFU)</h3>
+                <h3 className="text-sm font-semibold text-slate-900">LiveKit Cloud (WebRTC SFU)</h3>
                 <p className="text-[11px] text-slate-500">Live 1-on-1 & Group HD video classroom rooms</p>
               </div>
             </div>
@@ -240,7 +240,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
               placeholder="APIxxxxxxxxxxxx"
             />
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">LiveKit API Secret</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">LiveKit API Secret</label>
               <div className="relative">
                 <input
                   type={showSecrets['livekit'] ? 'text' : 'password'}
@@ -272,7 +272,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
             <div className="flex items-center gap-3">
               <CreditCard className="w-6 h-6 text-indigo-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Stripe Payments & Subscriptions</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Stripe Payments & Subscriptions</h3>
                 <p className="text-[11px] text-slate-500">Credit cards, Apple Pay, and automated tuition</p>
               </div>
             </div>
@@ -300,7 +300,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
               placeholder="pk_live_..."
             />
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Stripe Secret Key</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Stripe Secret Key</label>
               <div className="relative">
                 <input
                   type={showSecrets['stripe'] ? 'text' : 'password'}
@@ -338,7 +338,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
             <div className="flex items-center gap-3">
               <CreditCard className="w-6 h-6 text-emerald-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Moyasar Gateway (Mada / GCC)</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Moyasar Gateway (Mada / GCC)</h3>
                 <p className="text-[11px] text-slate-500">Saudi local debit cards & Apple Pay</p>
               </div>
             </div>
@@ -366,7 +366,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
               placeholder="pk_live_..."
             />
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Moyasar Secret Key</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Moyasar Secret Key</label>
               <div className="relative">
                 <input
                   type={showSecrets['moyasar'] ? 'text' : 'password'}
@@ -398,7 +398,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
             <div className="flex items-center gap-3">
               <Database className="w-6 h-6 text-purple-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Database Connection</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Database Connection</h3>
                 <p className="text-[11px] text-slate-500">Persistent database connection string</p>
               </div>
             </div>
@@ -409,7 +409,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
 
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">DATABASE_URL Connection String</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">DATABASE_URL Connection String</label>
               <div className="relative">
                 <input
                   type={showSecrets['database'] ? 'text' : 'password'}
@@ -441,7 +441,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
             <div className="flex items-center gap-3">
               <Mail className="w-6 h-6 text-sky-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Resend (Transactional Emails)</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Resend (Transactional Emails)</h3>
                 <p className="text-[11px] text-slate-500">Student enrollment emails & receipts</p>
               </div>
             </div>
@@ -483,7 +483,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
             <div className="flex items-center gap-3">
               <Cpu className="w-6 h-6 text-amber-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-bold text-slate-900">OpenAI API (Speech & AI)</h3>
+                <h3 className="text-sm font-semibold text-slate-900">OpenAI API (Speech & AI)</h3>
                 <p className="text-[11px] text-slate-500">Recitation audio analysis & AI assistance</p>
               </div>
             </div>
@@ -505,7 +505,7 @@ export const IntegrationsManager: React.FC<IntegrationsManagerProps> = ({ onAddT
 
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">OpenAI API Key</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">OpenAI API Key</label>
               <div className="relative">
                 <input
                   type={showSecrets['openai'] ? 'text' : 'password'}

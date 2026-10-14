@@ -658,14 +658,14 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
             {isCoding ? <Code className="w-5 h-5 text-blue-600 shrink-0" /> : <BookOpen className="w-5 h-5 text-emerald-600 shrink-0" />}
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate leading-none">{roomTitle}</h2>
+                <h2 className="text-xs sm:text-sm font-semibold text-slate-900 truncate leading-none">{roomTitle}</h2>
                 {isInCall ? (
-                  <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 shrink-0">
+                  <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                     Live ({formatTimer(sessionSeconds)})
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
                     Forum
                   </span>
                 )}
@@ -682,7 +682,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 size="sm"
                 onClick={handleStartCall}
                 leftIcon={<PhoneCall className="w-3.5 h-3.5" />}
-                className="font-bold text-xs px-3"
+                className="font-semibold text-xs px-3"
               >
                 Call
               </Button>
@@ -692,7 +692,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 size="sm"
                 onClick={handleLeaveCall}
                 leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
-                className="font-bold text-xs px-3"
+                className="font-semibold text-xs px-3"
               >
                 Leave
               </Button>
@@ -701,7 +701,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         </div>
 
         {/* Center Smart Tab Pills — Horizontally Scrollable on Mobile */}
-        <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 overflow-x-auto no-scrollbar max-w-full">
+        <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 overflow-x-auto no-scrollbar max-w-full">
           <button
             onClick={() => setActiveTab('video')}
             className={`px-3 py-1.5 sm:py-2 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap select-none ${
@@ -780,7 +780,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
             size="sm"
             onClick={() => setShowAssessmentModal(true)}
             leftIcon={<Award className="w-3.5 h-3.5 text-amber-500" />}
-            className="font-bold text-xs"
+            className="font-semibold text-xs"
           >
             Level Rubric
           </Button>
@@ -791,7 +791,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               size="sm"
               onClick={handleStartCall}
               leftIcon={<PhoneCall className="w-3.5 h-3.5" />}
-              className="font-bold text-xs"
+              className="font-semibold text-xs"
             >
               Start Class Call
             </Button>
@@ -801,7 +801,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               size="sm"
               onClick={handleLeaveCall}
               leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
             >
               Leave Call
             </Button>
@@ -826,7 +826,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           </div>
           <button
             onClick={() => setLivekitNotice(null)}
-            className="text-amber-700 hover:text-amber-900 font-bold ml-2 text-xs cursor-pointer"
+            className="text-amber-700 hover:text-amber-900 font-semibold ml-2 text-xs cursor-pointer"
           >
             Dismiss
           </button>
@@ -836,7 +836,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
       {/* 2. DYNAMIC LEVEL CLASSIFIER & POD FILTER SUB-BAR */}
       <div className="bg-white border-b border-slate-200 px-3 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0 shadow-2xs">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[11px] shrink-0">
+          <div className="flex items-center gap-1.5 text-slate-500 font-semibold text-[11px] shrink-0">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
             <span>Filter by Level:</span>
           </div>
@@ -844,7 +844,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
             <button
               onClick={() => setSelectedLevelFilter('all')}
-              className={`px-2.5 py-1 rounded-md font-bold text-[11px] transition-all cursor-pointer select-none ${
+              className={`px-2.5 py-1 rounded-md font-semibold text-[11px] transition-all cursor-pointer select-none ${
                 selectedLevelFilter === 'all'
                   ? 'bg-white text-slate-900 shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
@@ -860,9 +860,9 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 <button
                   key={lvl}
                   onClick={() => setSelectedLevelFilter(lvl)}
-                  className={`px-2.5 py-1 rounded-md font-bold text-[11px] transition-all cursor-pointer select-none flex items-center gap-1 ${
+                  className={`px-2.5 py-1 rounded-md font-semibold text-[11px] transition-all cursor-pointer select-none flex items-center gap-1 ${
                     isSelected
-                      ? `${cfg.badgeColor} shadow-2xs font-extrabold`
+                      ? `${cfg.badgeColor} shadow-2xs font-semibold`
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -877,12 +877,12 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
         {/* Current Active User Level Badge & Pod Indicator */}
         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
           <span className="text-[11px] text-slate-500 font-medium">Your Track:</span>
-          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${levelConfigs[activeUserLevel].badgeColor} flex items-center gap-1`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${levelConfigs[activeUserLevel].badgeColor} flex items-center gap-1`}>
             {React.createElement(levelConfigs[activeUserLevel].icon, { className: 'w-3 h-3' })}
             {levelConfigs[activeUserLevel].label}
           </span>
           {activeBreakoutPod !== 'main' && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
               Pod: {activeBreakoutPod}
             </span>
           )}
@@ -907,7 +907,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 />
                 {!videoEnabled && (
                   <div className="flex flex-col items-center gap-2">
-                    <div className={`w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-xl shadow-lg ${
+                    <div className={`w-16 h-16 rounded-full text-white flex items-center justify-center font-semibold text-xl shadow-lg ${
                       isCoding ? 'bg-blue-600' : isSchool ? 'bg-purple-600' : 'bg-emerald-600'
                     }`}>
                       {currentUserName.charAt(0)}
@@ -917,9 +917,9 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 )}
 
                 {/* Floating Indicators */}
-                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-bold flex items-center gap-2 border border-slate-700/60">
+                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-semibold flex items-center gap-2 border border-slate-700/60">
                   <span>{currentUserName} (You)</span>
-                  <span className={`text-[10px] px-2 py-0.2 rounded-md font-bold ${levelConfigs[activeUserLevel].badgeColor}`}>
+                  <span className={`text-[10px] px-2 py-0.2 rounded-md font-semibold ${levelConfigs[activeUserLevel].badgeColor}`}>
                     {activeUserLevel === 'beginner' ? 'Lvl 1' : activeUserLevel === 'intermediate' ? 'Lvl 2' : 'Lvl 3'}
                   </span>
                   {micEnabled ? (
@@ -933,7 +933,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 </div>
 
                 {handRaised && (
-                  <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-2 rounded-xl font-bold shadow-lg animate-bounce">
+                  <div className="absolute top-3 right-3 bg-amber-500 text-slate-950 p-2 rounded-xl font-semibold shadow-lg animate-bounce">
                     <Hand className="w-4 h-4" />
                   </div>
                 )}
@@ -961,7 +961,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
                     {!hasRemoteVideo && (
                       <div className="flex flex-col items-center text-center p-4 gap-2.5">
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl shadow-lg ${
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center font-semibold text-xl shadow-lg ${
                           remoteParticipantName
                             ? 'bg-blue-600 text-white ring-2 ring-blue-400/40'
                             : 'bg-slate-800 text-slate-400 ring-2 ring-slate-700/50'
@@ -970,7 +970,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                         </div>
                         
                         <div className="space-y-1 max-w-xs">
-                          <span className="text-xs font-bold text-white block">
+                          <span className="text-xs font-semibold text-white block">
                             {remoteParticipantName || (userRole === 'teacher' ? 'Waiting for student to connect...' : 'Instructor / Peer Session')}
                           </span>
                           <span className="text-[11px] text-slate-400 leading-tight block">
@@ -991,7 +991,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   </>
                 )}
 
-                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-bold flex items-center gap-2 border border-slate-700/60">
+                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-1 rounded-xl text-white text-xs font-semibold flex items-center gap-2 border border-slate-700/60">
                   <span>{remoteParticipantName || (isDemo ? (isSchool ? 'Faculty: Dr. Eleanor Vance' : isCoding ? 'Mentor: Sarah Jenkins' : 'Ustaz: Shaykh Abdul Rahman') : (userRole === 'teacher' ? 'Waiting for Student to Join' : 'Waiting for Instructor to Join'))}</span>
                   <span className="text-xs px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
                     {remoteParticipantName ? 'Connected' : 'Room Channel'}
@@ -1005,7 +1005,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
             <div className="p-3 sm:p-4 bg-slate-950/90 backdrop-blur-md border-t border-slate-800/80 flex items-center justify-center gap-2.5 sm:gap-4 shrink-0">
               <button
                 onClick={toggleMic}
-                className={`p-3 sm:p-3.5 rounded-2xl font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   micEnabled
                     ? 'bg-slate-800 hover:bg-slate-700 text-white'
                     : 'bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-400/40'
@@ -1017,7 +1017,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
               <button
                 onClick={toggleVideo}
-                className={`p-3 sm:p-3.5 rounded-2xl font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   videoEnabled
                     ? 'bg-slate-800 hover:bg-slate-700 text-white'
                     : 'bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-400/40'
@@ -1029,7 +1029,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
               <button
                 onClick={toggleScreenShare}
-                className={`p-3 sm:p-3.5 rounded-2xl font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   screenSharing ? 'bg-blue-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                 }`}
                 title="Share Screen"
@@ -1039,7 +1039,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
               <button
                 onClick={() => setHandRaised(!handRaised)}
-                className={`p-3 sm:p-3.5 rounded-2xl font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                className={`p-3 sm:p-3.5 rounded-2xl font-semibold transition-all cursor-pointer select-none active:scale-95 ${
                   handRaised ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                 }`}
                 title="Raise Hand"
@@ -1049,7 +1049,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
               <button
                 onClick={handleLeaveCall}
-                className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer select-none active:scale-95"
+                className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-2 shadow-lg transition-all cursor-pointer select-none active:scale-95"
                 title="End Call"
               >
                 <PhoneOff className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
@@ -1064,7 +1064,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-5xl mx-auto w-full shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <Layers className="w-5 h-5 text-indigo-600" />
                   {classroomConfig.breakoutPodsTitle}
                 </h3>
@@ -1083,12 +1083,12 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                       setIsAdminConfigOpen(true);
                     }}
                     leftIcon={<Sliders className="w-3.5 h-3.5 text-indigo-600" />}
-                    className="font-bold text-xs"
+                    className="font-semibold text-xs"
                   >
                     Configure Pods
                   </Button>
                 )}
-                <Badge variant="info" className="font-bold text-xs shrink-0">
+                <Badge variant="info" className="font-semibold text-xs shrink-0">
                   Main Room + {classroomConfig.pods.length} Active Pods
                 </Badge>
               </div>
@@ -1112,24 +1112,24 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${cfg.badgeColor}`}>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badgeColor}`}>
                           {tier.toUpperCase()}
                         </span>
                         {isMyPod && (
-                          <span className="text-[10px] font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
                             Your Assigned Pod
                           </span>
                         )}
                       </div>
 
                       <div>
-                        <h4 className="font-extrabold text-sm text-slate-900 leading-snug">{cfg.label}</h4>
+                        <h4 className="font-semibold text-sm text-slate-900 leading-snug">{cfg.label}</h4>
                         <p className="text-xs text-slate-500 mt-1 leading-relaxed">{cfg.sublabel}</p>
                       </div>
 
                       {/* Target Learning Objectives */}
                       <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider block">Pod Focus Topics:</span>
+                        <span className="text-[10px] font-semibold capitalize text-slate-500 tracking-wider block">Pod Focus Topics:</span>
                         <ul className="space-y-1 text-xs text-slate-700">
                           {cfg.targetTopics.map((topic, i) => (
                             <li key={i} className="flex items-start gap-1.5 text-[11px]">
@@ -1142,7 +1142,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
                       {/* Current Attendees in Pod */}
                       <div className="space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                        <span className="text-[10px] font-semibold capitalize text-slate-400 tracking-wider">
                           Active Learners ({podStudents.length}):
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -1151,7 +1151,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                               key={st.id}
                               className="px-2 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-semibold flex items-center gap-1"
                             >
-                              <div className="w-4 h-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-bold">
+                              <div className="w-4 h-4 rounded-full bg-slate-900 text-white text-[9px] flex items-center justify-center font-semibold">
                                 {st.avatar}
                               </div>
                               <span>{st.name}</span>
@@ -1165,7 +1165,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                       {isJoined ? (
                         <button
                           onClick={() => setActiveBreakoutPod('main')}
-                          className="w-full py-2 rounded-xl bg-slate-800 text-white text-xs font-bold hover:bg-slate-700 transition-all cursor-pointer"
+                          className="w-full py-2 rounded-xl bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700 transition-all cursor-pointer"
                         >
                           Return to Main Stage
                         </button>
@@ -1175,7 +1175,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                             setActiveBreakoutPod(tier);
                             setActiveTab('video');
                           }}
-                          className="w-full py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
+                          className="w-full py-2.5 rounded-xl bg-[var(--color-primary,#047857)] text-white text-xs font-semibold hover:brightness-95 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs outline-none"
                         >
                           <Users className="w-3.5 h-3.5" />
                           <span>Join {tier === 'beginner' ? 'Level 1' : tier === 'intermediate' ? 'Level 2' : 'Level 3'} Pod</span>
@@ -1195,14 +1195,14 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
             <div className="p-3.5 sm:p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Radio className={`w-4 h-4 animate-pulse ${isCoding ? 'text-blue-600' : isSchool ? 'text-purple-600' : isQuran ? 'text-emerald-600' : 'text-slate-800'}`} />
-                <span className="text-xs sm:text-sm font-bold text-slate-900">
+                <span className="text-xs sm:text-sm font-semibold text-slate-900">
                   {isCoding ? 'Engineering Discussion Thread & Code Snippets' : isSchool ? 'Academic Lecture Thread & Lecture Slides' : isQuran ? 'Halaqah Thread & Tajweed Inquiries' : `${roomTitle} Discussion & Inquiries`}
                 </span>
               </div>
               {!isInCall && (
                 <button
                   onClick={handleStartCall}
-                  className={`text-xs font-bold hover:underline flex items-center gap-1 cursor-pointer ${
+                  className={`text-xs font-semibold hover:underline flex items-center gap-1 cursor-pointer ${
                     isCoding ? 'text-blue-700' : isSchool ? 'text-purple-700' : isQuran ? 'text-emerald-700' : 'text-slate-800'
                   }`}
                 >
@@ -1215,20 +1215,20 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               {forumMessages.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2 my-auto">
                   <MessageSquare className="w-10 h-10 text-slate-300 mx-auto" />
-                  <p className="text-sm font-bold text-slate-700">No classroom messages yet</p>
+                  <p className="text-sm font-semibold text-slate-700">No classroom messages yet</p>
                   <p className="text-xs text-slate-400">Post a message below to begin discussion with the class.</p>
                 </div>
               ) : (
                 forumMessages.map((msg) => (
                   <div key={msg.id} className="flex items-start gap-2.5 sm:gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-semibold text-xs shrink-0">
                       {msg.sender.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-xs text-slate-900">{msg.sender}</span>
+                        <span className="font-semibold text-xs text-slate-900">{msg.sender}</span>
                         {msg.role === 'teacher' && (
-                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded capitalize ${
                             isCoding ? 'bg-blue-100 text-blue-800' : isSchool ? 'bg-purple-100 text-purple-800' : isQuran ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800'
                           }`}>
                             {isCoding ? 'Lead Mentor' : isSchool ? 'Professor' : isQuran ? 'Ustadh' : 'Instructor'}
@@ -1236,7 +1236,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                         )}
                         <span className="text-[10px] text-slate-400">{msg.time}</span>
                         {msg.pinned && (
-                          <span className="text-[10px] text-amber-600 font-bold flex items-center gap-0.5">
+                          <span className="text-[10px] text-amber-600 font-semibold flex items-center gap-0.5">
                             <Pin className="w-2.5 h-2.5" /> Pinned
                           </span>
                         )}
@@ -1267,7 +1267,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
               />
               <button
                 type="submit"
-                className="p-3 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                className="p-3 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
@@ -1281,7 +1281,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                <h3 className="font-semibold text-sm sm:text-base text-slate-900 flex items-center gap-2">
                   <ListTodo className="w-4.5 h-4.5 text-amber-600" />
                   {classroomConfig.agendaTitle}
                 </h3>
@@ -1300,7 +1300,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                       setIsAdminConfigOpen(true);
                     }}
                     leftIcon={<Sliders className="w-3.5 h-3.5 text-amber-600" />}
-                    className="font-bold text-xs"
+                    className="font-semibold text-xs"
                   >
                     Configure Agenda
                   </Button>
@@ -1310,7 +1310,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   variant="outline"
                   onClick={() => setShowAssessmentModal(true)}
                   leftIcon={<Award className="w-3.5 h-3.5 text-amber-500" />}
-                  className="font-bold text-xs"
+                  className="font-semibold text-xs"
                 >
                   Grade Rubric
                 </Button>
@@ -1329,12 +1329,12 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                     <div key={lvl} className="border border-slate-200 rounded-2xl p-4 bg-slate-50/60 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${cfg.badgeColor}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badgeColor}`}>
                             {cfg.label}
                           </span>
                           <span className="text-xs text-slate-500 font-medium hidden sm:inline">{cfg.sublabel}</span>
                         </div>
-                        <span className="text-[10px] font-mono font-bold text-slate-500">
+                        <span className="text-[10px] font-mono font-semibold text-slate-500">
                           {tierMilestones.filter((m) => m.done).length}/{tierMilestones.length} Done
                         </span>
                       </div>
@@ -1372,7 +1372,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                                 {item.done && <CheckCircle2 className="w-3.5 h-3.5" />}
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className={`text-xs sm:text-sm font-bold ${item.done ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                                <p className={`text-xs sm:text-sm font-semibold ${item.done ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
                                   {item.title}
                                 </p>
                                 <span className="text-[10px] text-slate-400">Target Time: {item.targetMinutes || 20} mins</span>
@@ -1416,7 +1416,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="flex-1 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 overflow-y-auto space-y-6 max-w-4xl mx-auto w-full shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="text-sm sm:text-base font-semibold text-slate-900 flex items-center gap-2">
                   <UserCheck className="w-4.5 h-4.5 text-emerald-600" />
                   Live Classroom Roster & Level Classification
                 </h3>
@@ -1431,7 +1431,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   variant="primary"
                   onClick={() => setShowAssessmentModal(true)}
                   leftIcon={<Award className="w-3.5 h-3.5" />}
-                  className="font-bold text-xs"
+                  className="font-semibold text-xs"
                 >
                   Evaluate Level
                 </Button>
@@ -1440,20 +1440,20 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200">
-                <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider block">Total Active</span>
-                <span className="text-lg font-black text-emerald-950">{liveAttendees.length} Students</span>
+                <span className="text-[10px] capitalize font-semibold text-emerald-800 tracking-wider block">Total Active</span>
+                <span className="text-lg font-semibold text-emerald-950">{liveAttendees.length} Students</span>
                 <p className="text-[11px] text-emerald-700 mt-0.5">Automated WebRTC presence</p>
               </div>
 
               <div className="p-3.5 bg-purple-50 rounded-xl border border-purple-200">
-                <span className="text-[10px] uppercase font-bold text-purple-800 tracking-wider block">Session Duration</span>
-                <span className="text-lg font-black text-purple-950 font-mono">{formatTimer(sessionSeconds)}</span>
+                <span className="text-[10px] capitalize font-semibold text-purple-800 tracking-wider block">Session Duration</span>
+                <span className="text-lg font-semibold text-purple-950 font-mono">{formatTimer(sessionSeconds)}</span>
                 <p className="text-[11px] text-purple-700 mt-0.5">Target: 45 Minutes</p>
               </div>
 
               <div className="p-3.5 bg-blue-50 rounded-xl border border-blue-200">
-                <span className="text-[10px] uppercase font-bold text-blue-800 tracking-wider block">Level Distribution</span>
-                <span className="text-sm font-black text-blue-950 flex items-center gap-1.5 mt-1">
+                <span className="text-[10px] capitalize font-semibold text-blue-800 tracking-wider block">Level Distribution</span>
+                <span className="text-sm font-semibold text-blue-950 flex items-center gap-1.5 mt-1">
                   <span className="text-emerald-700">L1: {liveAttendees.filter((a) => a.level === 'beginner').length}</span> • 
                   <span className="text-blue-700">L2: {liveAttendees.filter((a) => a.level === 'intermediate').length}</span> • 
                   <span className="text-purple-700">L3: {liveAttendees.filter((a) => a.level === 'advanced').length}</span>
@@ -1464,7 +1464,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <h4 className="text-xs font-semibold text-slate-700 capitalize tracking-wider">
                   Participant Roster {selectedLevelFilter !== 'all' ? `(Filtered by ${selectedLevelFilter})` : ''}
                 </h4>
                 <span className="text-xs text-slate-500 font-medium">Click "Evaluate" to assess live performance</span>
@@ -1479,17 +1479,17 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                     return (
                       <div key={att.id} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 transition-colors">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-semibold text-xs flex items-center justify-center shrink-0">
                             {att.avatar}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-xs font-bold text-slate-900 truncate">{att.name}</p>
-                              <span className={`px-2 py-0.2 rounded-full text-[10px] font-extrabold border ${cfg.badgeColor}`}>
+                              <p className="text-xs font-semibold text-slate-900 truncate">{att.name}</p>
+                              <span className={`px-2 py-0.2 rounded-full text-[10px] font-semibold border ${cfg.badgeColor}`}>
                                 {cfg.label.split(':')[0]}
                               </span>
                               {att.currentScore && (
-                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">
+                                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">
                                   Score: {att.currentScore}%
                                 </span>
                               )}
@@ -1502,12 +1502,12 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
                         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                           {isCompleted ? (
-                            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                            <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
                               <ShieldCheck className="w-3.5 h-3.5" />
                               Completed
                             </span>
                           ) : (
-                            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
+                            <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
                               <Clock className="w-3.5 h-3.5 animate-spin text-amber-700" />
                               Attending
                             </span>
@@ -1518,7 +1518,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                               setAssessmentStudent(att);
                               setShowAssessmentModal(true);
                             }}
-                            className="px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
                           >
                             Rubric
                           </button>
@@ -1538,13 +1538,13 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-5 sm:p-6 space-y-5 animate-in fade-in zoom-in duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-white font-bold ${
+                <div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-white font-semibold ${
                   isCoding ? 'bg-blue-600' : isSchool ? 'bg-purple-600' : 'bg-emerald-600'
                 }`}>
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm sm:text-base font-black text-slate-900">
+                  <h3 className="text-sm sm:text-base font-semibold text-slate-900">
                     {classroomConfig.rubricTitle}
                   </h3>
                   <p className="text-[11px] text-slate-500">
@@ -1563,14 +1563,14 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                       setIsAdminConfigOpen(true);
                     }}
                     leftIcon={<Sliders className="w-3.5 h-3.5 text-emerald-600" />}
-                    className="font-bold text-xs"
+                    className="font-semibold text-xs"
                   >
                     Edit Criteria
                   </Button>
                 )}
                 <button
                   onClick={() => setShowAssessmentModal(false)}
-                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-semibold text-sm cursor-pointer"
                 >
                   &times;
                 </button>
@@ -1587,8 +1587,8 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 classroomConfig.rubricCriteria.map((crit, idx) => (
                   <div key={crit.id || idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-900">{crit.name}</span>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                      <span className="text-xs font-semibold text-slate-900">{crit.name}</span>
+                      <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
                         Max: {crit.maxScore || 5} pts
                       </span>
                     </div>
@@ -1611,7 +1611,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
 
             {/* Target Level Reclassification Selector */}
             <div className="p-3.5 bg-indigo-50/70 rounded-2xl border border-indigo-200 space-y-2">
-              <span className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-indigo-950 flex items-center gap-1.5">
                 <TrendingUp className="w-3.5 h-3.5 text-indigo-600" />
                 Assign Level Promotion / Track:
               </span>
@@ -1631,7 +1631,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                           );
                         }
                       }}
-                      className={`p-2 rounded-xl text-center border font-bold text-xs transition-all cursor-pointer ${
+                      className={`p-2 rounded-xl text-center border font-semibold text-xs transition-all cursor-pointer ${
                         isCur
                           ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
                           : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
@@ -1649,7 +1649,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAssessmentModal(false)}
-                className="font-bold text-xs"
+                className="font-semibold text-xs"
               >
                 Cancel
               </Button>
@@ -1660,7 +1660,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   setShowAssessmentModal(false);
                 }}
                 leftIcon={<Check className="w-3.5 h-3.5" />}
-                className="font-bold text-xs"
+                className="font-semibold text-xs"
               >
                 Save Evaluation & Update Level
               </Button>
