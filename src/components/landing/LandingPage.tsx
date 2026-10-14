@@ -39,7 +39,7 @@ import {
   HelpCircle,
   Hammer
 } from 'lucide-react';
-import { sanitizeHtml } from '../../utils/sanitizeHtml';
+import { sanitizeHtml, sanitizeCss } from '../../utils/sanitizeHtml';
 
 interface LandingPageProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -410,7 +410,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
             {liveCss && (
               <style
                 id="grapesjs-published-css"
-                dangerouslySetInnerHTML={{ __html: liveCss }}
+                dangerouslySetInnerHTML={{ __html: sanitizeCss(liveCss) }}
               />
             )}
             <div

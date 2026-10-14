@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { runSandboxedCode } from '../../../utils/sandboxedCodeRunner';
 import { CodingChallenge, TestResult } from '../types';
 import {
   Play,
@@ -68,51 +69,15 @@ export const CodingChallengeRunner: React.FC<CodingChallengeRunnerProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [code, challenge]);
 
-  // Execute Code and evaluate Automated Unit Test Assertions
-  const runTests = () => {
+  // Execute Code and evaluate Automated Unit Test Assertions inside isolated sandbox iframe
+  const runTests = async () => {
     setIsRunning(true);
-    const capturedLogs: string[] = [];
-    const customConsole = {
-      log: (...args: any[]) => {
-        capturedLogs.push(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
-      },
-      error: (...args: any[]) => {
-        capturedLogs.push(`[ERROR] ${args.join(' ')}`);
-      },
-      warn: (...args: any[]) => {
-        capturedLogs.push(`[WARN] ${args.join(' ')}`);
-      },
-    };
 
     try {
-      // Evaluate user code in safe sandbox scope
-      const evaluateFn = new Function('console', `${code}\nreturn { ${getExportedSymbols(code)} };`);
-      const exportsObj = evaluateFn(customConsole);
+      const sandboxRes = await runSandboxedCode(code, challenge.testCases);
+      const results: TestResult[] = sandboxRes.testResults || [];
 
-      const results: TestResult[] = challenge.testCases.map((tc) => {
-        try {
-          // Build test execution sandbox
-          const testRunnerFn = new Function('console', ...Object.keys(exportsObj), `
-            ${code}
-            return Boolean(${tc.testCode});
-          `);
-          const passed = Boolean(testRunnerFn(customConsole, ...Object.values(exportsObj)));
-          return {
-            testId: tc.id,
-            description: tc.description,
-            passed,
-          };
-        } catch (err: any) {
-          return {
-            testId: tc.id,
-            description: tc.description,
-            passed: false,
-            error: err.message || 'Assertion Error',
-          };
-        }
-      });
-
-      setLogs(capturedLogs);
+      setLogs(sandboxRes.logs);
       setTestResults(results);
 
       const everyTestPassed = results.length > 0 && results.every((r) => r.passed);
@@ -122,11 +87,10 @@ export const CodingChallengeRunner: React.FC<CodingChallengeRunnerProps> = ({
         success('Challenge Completed!', 'All unit test cases passed with flying colors!');
         if (onComplete) onComplete(challenge.id);
       } else {
-        error('Tests Failed', 'Some test cases did not pass. Check the assertions panel.');
+        error('Tests Failed', sandboxRes.error || 'Some test cases did not pass. Check the assertions panel.');
       }
     } catch (err: any) {
-      capturedLogs.push(`Syntax / Runtime Error: ${err.message}`);
-      setLogs(capturedLogs);
+      setLogs([`Execution Error: ${err.message}`]);
       setTestResults(
         challenge.testCases.map((tc) => ({
           testId: tc.id,

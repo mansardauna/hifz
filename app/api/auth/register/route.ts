@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '../../../../src/server/services/authService';
 import { apiError, handleApiError } from '../../../../src/server/lib/apiResponse';
+import { redisClient } from '../../../../src/lib/redis';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown-client';
+    const rateCheck = await redisClient.checkRateLimit(`register:${ip}`, 5, 60);
+    if (!rateCheck.allowed) {
+      return apiError('Too many registration requests from this IP. Please wait a minute before retrying.', 429);
+    }
+
     const body = await request.json();
-    const { email, password, name, role = 'admin', subdomain } = body;
+    const { email, password, name, subdomain } = body;
 
     if (!email) {
       return apiError('Email is required', 400);
@@ -21,7 +28,7 @@ export async function POST(request: NextRequest) {
       email,
       password,
       name,
-      role,
+      role: 'student', // Public registration role is strictly enforced to student
       subdomain,
     });
 

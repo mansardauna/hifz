@@ -110,7 +110,8 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
     setIsProcessing(true);
 
     try {
-      const newStudent: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'> = {
+      // 1. Submit applicant registration with authentic Pending status
+      const newStudentPayload = {
         name: studentData.name,
         studentName: studentData.name,
         email: studentData.email,
@@ -119,32 +120,46 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
         courseInterest: activePlan.name,
         preferredSchedule: 'Evening Track',
         priorHifzLevel: studentData.priorLevel,
-        status: 'Admitted',
-        paymentStatus: 'Paid',
+        status: 'New' as const,
+        paymentStatus: 'Pending' as const,
         selectedPlanId: activePlan.id,
         selectedPlanName: activePlan.name,
         tuitionAmount: activePlan.priceMonthly,
-        notes: `Enrolled via Checkout (${studentData.paymentMethod.toUpperCase()}).`,
-        invoices: [
-          {
-            id: `inv-${Date.now()}`,
-            planName: activePlan.name,
-            amount: activePlan.priceMonthly,
-            currency: activePlan.currency,
-            status: 'Paid',
-            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            paidAt: new Date().toISOString(),
-            gateway: studentData.paymentMethod === 'moyasar' ? 'moyasar' : studentData.paymentMethod === 'bank_transfer' ? 'bank_transfer' : 'stripe',
-            transactionId: `tx_${Math.random().toString(36).substring(2, 9)}`,
-          },
-        ],
+        notes: `Application initiated via Checkout (${studentData.paymentMethod.toUpperCase()}).`,
       };
 
-      await api.createLead({
+      const createdLead = await api.createLead({
         tenantId: tenant.id,
-        ...newStudent,
+        ...newStudentPayload,
       });
 
+      // 2. Route to authentic Stripe checkout session if card payment
+      if (studentData.paymentMethod === 'stripe') {
+        const checkoutRes = await fetch('/api/stripe/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'student_tuition',
+            tenantId: tenant.id,
+            leadId: createdLead?.id,
+            planId: activePlan.id,
+            studentEmail: studentData.email,
+            studentName: studentData.name,
+            amount: activePlan.priceMonthly,
+            description: `Admission Tuition: ${activePlan.name}`,
+          }),
+        });
+
+        const checkoutData = await checkoutRes.json();
+        if (checkoutData.url) {
+          window.location.href = checkoutData.url;
+          return;
+        } else {
+          throw new Error(checkoutData.message || checkoutData.error || 'Could not initiate Stripe checkout session');
+        }
+      }
+
+      // 3. For Bank Wire or alternative gateways, show confirmation step with instructions
       triggerEventNotification('payment_received', {
         amount: `$${activePlan.priceMonthly}`,
         payerName: studentData.name,
@@ -152,11 +167,11 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
       });
 
       setStep(4);
-    } catch (err) {
+    } catch (err: any) {
       onAddToast({
         type: 'error',
-        title: 'Submission Error',
-        message: 'Could not complete registration. Please try again.',
+        title: 'Checkout Error',
+        message: err.message || 'Could not initiate payment session. Please verify your details or try again.',
       });
     } finally {
       setIsProcessing(false);

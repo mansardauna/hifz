@@ -90,22 +90,33 @@ export const PlanUpgradeModal: React.FC<PlanUpgradeModalProps> = ({
 
   const handleUpgrade = async (planId: string, planName: string, studentCapacity: number) => {
     setIsProcessing(planId);
-
-    // Simulate payment gateway redirect & tokenization
-    setTimeout(() => {
-      updateTenantConfig({
-        subscriptionPlan: planId as TenantSubscriptionPlan,
-        studentCapacity: studentCapacity,
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'platform_tier_upgrade',
+          tierId: planId,
+          academySubdomain: tenant.subdomain || tenant.id,
+        }),
       });
 
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error(data.message || data.error || 'Could not initiate Stripe checkout session');
+    } catch (err: any) {
+      if (onAddToast) {
+        onAddToast({
+          type: 'error',
+          title: 'Upgrade Checkout Notice',
+          message: err.message || 'Payment gateway could not be reached. Ensure STRIPE_SECRET_KEY is configured on the platform server.',
+        });
+      }
       setIsProcessing(null);
-      onClose();
-
-      triggerEventNotification('plan_upgraded', {
-        planName,
-        capacity: studentCapacity >= 99999 ? 'Unlimited' : studentCapacity,
-      });
-    }, 900);
+    }
   };
 
   return (

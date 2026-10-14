@@ -96,10 +96,10 @@ Authentication is handled through JWT-secured server endpoints ([`/api/auth`](ap
 Users cannot cross-login into academies they do not belong to. Attempting to sign into Academy B with an account registered under Academy A returns `HTTP 400 Bad Request`:
 > *"This account belongs to [Academy Name]. Please sign in at your assigned academy URL."*
 
-### SuperAdmin Credentials
-- **Email**: `superadmin@ankabit.app`
-- **Password**: `Admin12345!`
-- **Access Route**: `http://localhost:3000/super-admin` or `http://localhost:3000/login`
+### SuperAdmin Account Provisioning
+- **Default Master Email**: `superadmin@ankabit.app`
+- **Initial Password**: Provisioned via `INITIAL_SUPERADMIN_PASSWORD` (or `INITIAL_ADMIN_PASSWORD` in `.env`). Administrators must rotate this password upon initial setup.
+- **Access Route**: `/super-admin` or `/login`
 
 ---
 

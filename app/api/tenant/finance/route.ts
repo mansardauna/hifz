@@ -20,6 +20,19 @@ export async function GET(request: NextRequest) {
       return apiError('tenantId is required', 400);
     }
 
+    // Ownership verification: prevent cross-tenant IDOR
+    if (authUser.role !== 'superadmin') {
+      const cleanSub = authUser.tenantSubdomain?.toLowerCase() || '';
+      const isOwner =
+        authUser.tenantId === tenantId ||
+        tenantId === `tenant-${cleanSub}` ||
+        tenantId === cleanSub;
+
+      if (!isOwner) {
+        return apiError('Forbidden: You can only access financial records for your assigned academy', 403);
+      }
+    }
+
     // 1. Fetch real payment transactions in MySQL
     const transactions = await prisma.paymentTransaction.findMany({
       where: { tenantId },
@@ -127,6 +140,19 @@ export async function POST(request: NextRequest) {
 
     if (!tenantId) {
       return apiError('tenantId is required', 400);
+    }
+
+    // Ownership verification: prevent cross-tenant IDOR
+    if (authUser.role !== 'superadmin') {
+      const cleanSub = authUser.tenantSubdomain?.toLowerCase() || '';
+      const isOwner =
+        authUser.tenantId === tenantId ||
+        tenantId === `tenant-${cleanSub}` ||
+        tenantId === cleanSub;
+
+      if (!isOwner) {
+        return apiError('Forbidden: You can only record financial transactions for your assigned academy', 403);
+      }
     }
 
     const isExpense = type.toLowerCase() === 'expense';

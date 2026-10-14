@@ -47,9 +47,23 @@ export class LeadsService {
 
     if (process.env.DATABASE_URL && data.tenantId) {
       try {
+        const cleanSub = data.tenantId.replace(/^tenant-/, '');
+        const tenant = await prisma.tenant.findFirst({
+          where: {
+            OR: [
+              { id: data.tenantId },
+              { id: `tenant-${cleanSub}` },
+              { subdomain: cleanSub },
+              { subdomain: data.tenantId }
+            ]
+          }
+        });
+
+        const targetTenantId = tenant ? tenant.id : data.tenantId;
+
         return await prisma.lead.create({
           data: {
-            tenantId: data.tenantId,
+            tenantId: targetTenantId,
             studentName: leadName,
             email: data.email || '',
             phone: data.phone || '',
@@ -64,7 +78,8 @@ export class LeadsService {
           },
         });
       } catch (err) {
-        console.warn('Database lead create warning, using memory fallback:', err);
+        console.warn('Database lead create exception:', err);
+        throw err;
       }
     }
 

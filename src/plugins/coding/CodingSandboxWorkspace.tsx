@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { runSandboxedCode } from '../../utils/sandboxedCodeRunner';
 import {
   Play,
   RotateCcw,
@@ -221,37 +222,29 @@ export const CodingSandboxWorkspace: React.FC<CodingSandboxWorkspaceProps> = () 
     ]);
   };
 
-  const handleRunCode = () => {
+  const handleRunCode = async () => {
     setIsRunning(true);
-    setTerminalLogs((prev) => [...prev, `\n> Executing script at ${new Date().toLocaleTimeString()}...`]);
+    setTerminalLogs((prev) => [...prev, `\n> Executing script in isolated sandbox at ${new Date().toLocaleTimeString()}...`]);
 
-    const logs: string[] = [];
-    const customConsole = {
-      log: (...args: any[]) => {
-        logs.push(args.map((a) => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' '));
-      },
-      warn: (...args: any[]) => {
-        logs.push(`[WARN] ${args.join(' ')}`);
-      },
-      error: (...args: any[]) => {
-        logs.push(`[ERROR] ${args.join(' ')}`);
-      },
-    };
-
-    setTimeout(() => {
-      try {
-        const runFn = new Function('console', code);
-        runFn(customConsole);
-
-        setTerminalLogs((prev) => [...prev, ...logs, '[OK] Process exited with code 0.']);
+    try {
+      const result = await runSandboxedCode(code);
+      if (result.success) {
+        setTerminalLogs((prev) => [...prev, ...result.logs, '[OK] Process exited with code 0.']);
         setTestPassed(true);
-      } catch (err: any) {
-        setTerminalLogs((prev) => [...prev, ...logs, `[ERROR] Runtime Exception: ${err.message}`]);
+      } else {
+        setTerminalLogs((prev) => [
+          ...prev,
+          ...result.logs,
+          `[ERROR] ${result.error || 'Runtime Exception'}`,
+        ]);
         setTestPassed(false);
-      } finally {
-        setIsRunning(false);
       }
-    }, 250);
+    } catch (err: any) {
+      setTerminalLogs((prev) => [...prev, `[ERROR] Execution Exception: ${err.message}`]);
+      setTestPassed(false);
+    } finally {
+      setIsRunning(false);
+    }
   };
 
   const handleResetCode = () => {

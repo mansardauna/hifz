@@ -45,22 +45,28 @@ export function handleApiError(error: unknown) {
     return apiError(error.message, error.status);
   }
   if (error instanceof Error) {
-    if (error.name === 'SyntaxError' && error.message.toLowerCase().includes('json')) {
+    const msg = error.message.toLowerCase();
+    if (error.name === 'SyntaxError' && msg.includes('json')) {
       return apiError('Invalid JSON payload in request body', 400);
     }
-    if (error.message.toLowerCase().includes('authentication required') || error.message.toLowerCase().includes('invalid email or password')) {
+    if (msg.includes('authentication required') || msg.includes('invalid email or password')) {
       return apiError(error.message, 401);
     }
-    if (error.message.toLowerCase().includes('already exists') || error.message.toLowerCase().includes('taken')) {
+    if (msg.includes('already exists') || msg.includes('taken')) {
       return apiError(error.message, 409);
     }
-    if (error.message.toLowerCase().includes('required') || error.message.toLowerCase().includes('must be at least')) {
+    if (msg.includes('required') || msg.includes('must be at least') || msg.includes('not found') || msg.includes('invalid')) {
       return apiError(error.message, 400);
     }
-    if (error.message.toLowerCase().includes('forbidden')) {
+    if (msg.includes('forbidden') || msg.includes('unauthorized')) {
       return apiError(error.message, 403);
     }
-    return apiError(error.message, 400);
+
+    // Sanitize unhandled internal database/system exceptions in production
+    if (process.env.NODE_ENV === 'production') {
+      return apiError('An unexpected server error occurred. Please try again later.', 500);
+    }
+    return apiError(error.message, 500);
   }
   return apiError('An unexpected server error occurred', 500);
 }

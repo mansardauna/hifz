@@ -134,43 +134,39 @@ For billing support: admissions@${tenant.subdomain}.ankabit.app
   const handleProcessPayment = async () => {
     setIsProcessingPayment(true);
     try {
-      // Create new paid invoice
-      const newInvoiceNumber = `INV-2026-${Math.floor(100 + Math.random() * 900)}`;
-      const newInvoice: InvoiceItem = {
-        id: `inv-${Date.now()}`,
-        invoiceNumber: newInvoiceNumber,
-        description: isQuran()
-          ? 'Hifz & Tajweed Halaqah Monthly Tuition Renewal'
-          : isCodingNiche
-          ? 'Bootcamp Immersion Module Tuition'
-          : 'Academic Term Coursework Renewal',
-        amount: parseFloat(payAmount) || 65,
-        currency: 'USD',
-        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        status: 'paid',
-        paidAt: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        paymentMethod: payGateway === 'stripe' ? 'Stripe (Card / Apple Pay)' : 'Moyasar (Saudi Mada)',
-      };
-
-      // Simulate gateway authorization latency
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setInvoices((prev) => [newInvoice, ...prev]);
-      setIsPayModalOpen(false);
-
-      if (onAddToast) {
-        onAddToast({
-          type: 'success',
-          title: 'Tuition Payment Successful',
-          message: `Successfully processed $${payAmount} via ${payGateway === 'stripe' ? 'Stripe Gateway' : 'Moyasar Mada'}. Invoice ${newInvoiceNumber} generated.`,
+      if (payGateway === 'stripe') {
+        const res = await fetch('/api/stripe/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'student_tuition',
+            tenantId: tenant.id,
+            studentEmail: user?.email,
+            studentName: user?.name,
+            amount: parseFloat(payAmount) || 65,
+            description: isQuran()
+              ? 'Hifz & Tajweed Halaqah Monthly Tuition Renewal'
+              : isCodingNiche
+              ? 'Bootcamp Immersion Module Tuition'
+              : 'Academic Term Coursework Renewal',
+          }),
         });
+
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        throw new Error(data.message || data.error || 'Could not initialize Stripe checkout session');
+      } else {
+        throw new Error('Selected payment method is currently undergoing gateway maintenance. Please select Stripe card checkout.');
       }
-    } catch {
+    } catch (err: any) {
       if (onAddToast) {
         onAddToast({
           type: 'error',
-          title: 'Payment Failed',
-          message: 'Could not process gateway transaction. Please check card credentials.',
+          title: 'Payment Gateway Notice',
+          message: err.message || 'Payment processing could not be initiated. Please verify gateway settings.',
         });
       }
     } finally {

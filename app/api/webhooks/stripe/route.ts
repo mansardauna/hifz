@@ -7,6 +7,11 @@ import { queueService } from '../../../../src/services/queueService';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+/**
+ * POST /api/webhooks/stripe
+ * Authoritative Stripe webhook listener with cryptographic signature enforcement.
+ * Rejects unsigned requests to prevent forged tier upgrades or unauthorized student admissions.
+ */
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
@@ -14,33 +19,57 @@ export async function POST(request: NextRequest) {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+    if (!secretKey) {
+      console.error('[Stripe Webhook Error] STRIPE_SECRET_KEY is not configured in environment.');
+      return NextResponse.json({ error: 'Stripe secret key not configured' }, { status: 500 });
+    }
+
+    if (!sig) {
+      return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
+    }
+
     let event: Stripe.Event;
 
-    if (secretKey && webhookSecret && sig && webhookSecret !== 'whsec_test') {
+    if (webhookSecret) {
       const stripe = new Stripe(secretKey, { apiVersion: '2024-04-10' as any });
       try {
         event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
       } catch (err: any) {
-        console.error('[Stripe Webhook Error] Stripe webhook signature verification failed:', err.message);
-        return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+        console.error('[Stripe Webhook Error] Stripe signature verification failed:', err.message);
+        return NextResponse.json({ error: `Webhook Signature Verification Failed: ${err.message}` }, { status: 400 });
       }
     } else {
-      // Fallback parse for development / testing without webhook secret
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[Stripe Webhook Error] STRIPE_WEBHOOK_SECRET must be configured in production.');
+        return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET required in production' }, { status: 500 });
+      }
+      // Non-production fallback only with explicit development warning
+      console.warn('[Stripe Webhook] Warning: Parsing raw webhook payload in local development mode without secret.');
       try {
         event = JSON.parse(rawBody);
-      } catch (e) {
-        return NextResponse.json({ error: 'Webhook payload parse error' }, { status: 400 });
+      } catch {
+        return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
       }
     }
 
-    // Idempotency Guard: prevent duplicate webhook event execution
+    // Persistent Deduplication Check (MySQL + Redis)
+    if (process.env.DATABASE_URL) {
+      const existingTx = await prisma.paymentTransaction.findFirst({
+        where: { transactionId: event.id },
+      });
+      if (existingTx) {
+        console.log(`[Stripe:Webhook] Event ${event.id} already recorded in DB. Skipping.`);
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+    }
+
     const isProcessed = await webhookService.isEventProcessed('stripe', event.id);
     if (isProcessed) {
-      console.log(`[Stripe:Webhook] Event ${event.id} already processed. Skipping.`);
+      console.log(`[Stripe:Webhook] Event ${event.id} already processed in cache. Skipping.`);
       return NextResponse.json({ received: true, duplicate: true });
     }
 
-    // Process specific Stripe events
+    // Process Stripe events
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -99,7 +128,6 @@ export async function POST(request: NextRequest) {
                 },
               });
 
-              // Asynchronously dispatch welcome & enrollment notification
               if (customerEmail) {
                 await queueService.dispatchEmail(
                   customerEmail,
@@ -124,9 +152,7 @@ export async function POST(request: NextRequest) {
         break;
     }
 
-    // Mark event processed with 30-day lease
     await webhookService.markEventProcessed('stripe', event.id);
-
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error('Stripe webhook handling error:', error);

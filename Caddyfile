@@ -9,19 +9,25 @@
     
     # Enable admin API only inside Docker network
     admin off
+
+    # Prevent SSL Cert-issuance DoS by querying app verification endpoint
+    on_demand_tls {
+        ask http://app:3000/api/domains/check
+    }
 }
 
 # 1. Main Apex & Wildcard Subdomain Block (*.ankabit.app & ankabit.app)
 {$ROOT_DOMAIN:ankabit.app}, *.{$ROOT_DOMAIN:ankabit.app} {
     encode gzip zstd
 
-    # Enterprise HTTP Security Headers
+    # Enterprise HTTP Security Headers & Content Security Policy (CSP)
     header {
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "SAMEORIGIN"
         Referrer-Policy "strict-origin-when-cross-origin"
         Permissions-Policy "camera=(self), microphone=(self), display-capture=(self)"
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' data: https: blob:; connect-src 'self' https://api.stripe.com https://api.moyasar.com wss: https:; frame-src 'self' https://js.stripe.com https://hooks.stripe.com; object-src 'none';"
         -Server
     }
 
@@ -41,7 +47,7 @@
 }
 
 # 2. Dynamic Custom Tenant Domains (e.g. al-furqan.org, quranacademy.co.uk)
-# Automatically requests free SSL via On-Demand TLS for custom tenant domains
+# Automatically requests free SSL via On-Demand TLS for validated custom tenant domains
 https:// {
     tls {
         on_demand
@@ -53,6 +59,8 @@ https:// {
         X-Content-Type-Options "nosniff"
         X-Frame-Options "SAMEORIGIN"
         Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(self), microphone=(self), display-capture=(self)"
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' data: https: blob:; connect-src 'self' https://api.stripe.com https://api.moyasar.com wss: https:; frame-src 'self' https://js.stripe.com https://hooks.stripe.com; object-src 'none';"
         -Server
     }
 

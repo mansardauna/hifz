@@ -35,13 +35,20 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
-  // Never intercept or cache API requests, Next.js dynamic chunks, or auth endpoints
-  if (
+  // Strictly prevent caching of all authenticated, administrative, and private routes
+  const isExcludedFromCache =
     url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/_next/') ||
     url.pathname.includes('/login') ||
-    url.pathname.includes('/admin')
-  ) {
+    url.pathname.includes('/admin') ||
+    url.pathname.includes('/super-admin') ||
+    url.pathname.includes('/lms') ||
+    url.pathname.includes('/dashboard') ||
+    url.pathname.includes('/settings') ||
+    url.pathname.includes('/profile') ||
+    url.pathname.includes('/onboarding');
+
+  if (isExcludedFromCache) {
     return;
   }
 

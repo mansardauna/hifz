@@ -1,11 +1,12 @@
-﻿import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting TechMadrasah Multi-Tenant Database Seed...');
-  const defaultPasswordHash = await bcrypt.hash('Password123!', 10);
+  const seedPassword = process.env.INITIAL_ADMIN_PASSWORD || 'ChangeMeOnFirstLogin2026!';
+  const defaultPasswordHash = await bcrypt.hash(seedPassword, 10);
 
   // 1. Seed Tenant: Al-Furqan Quran Academy
   const alFurqan = await prisma.tenant.upsert({

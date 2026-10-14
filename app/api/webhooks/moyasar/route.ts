@@ -6,22 +6,93 @@ import { queueService } from '../../../../src/services/queueService';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+/**
+ * POST /api/webhooks/moyasar
+ * Cryptographically verified webhook for Moyasar payments (Saudi Mada / Apple Pay).
+ * Validates payload signature or verifies the transaction against Moyasar's API.
+ */
 export async function POST(request: NextRequest) {
   try {
-    const payload = await request.json();
+    const rawBody = await request.text();
+    const moyasarSignature = request.headers.get('moyasar-signature') || request.headers.get('x-moyasar-signature');
+    const authHeader = request.headers.get('authorization');
+    const webhookSecret = process.env.MOYASAR_WEBHOOK_SECRET;
+    const apiKey = process.env.MOYASAR_SECRET_KEY;
+
+    let payload: any;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
+
     const { id, status, amount, currency, metadata } = payload;
 
     if (!id) {
       return NextResponse.json({ error: 'Missing transaction ID' }, { status: 400 });
     }
 
-    // Idempotency Guard: prevent duplicate webhook event execution
+    // 1. Signature / Secret Verification
+    let isAuthentic = false;
+
+    // Check header webhook secret token if configured
+    if (webhookSecret) {
+      if (
+        moyasarSignature === webhookSecret ||
+        authHeader === `Bearer ${webhookSecret}` ||
+        authHeader === `Basic ${Buffer.from(webhookSecret + ':').toString('base64')}`
+      ) {
+        isAuthentic = true;
+      }
+    }
+
+    // 2. Authoritative Verification via Moyasar REST API
+    if (!isAuthentic && apiKey) {
+      try {
+        const verifyRes = await fetch(`https://api.moyasar.com/v1/payments/${id}`, {
+          headers: {
+            Authorization: `Basic ${Buffer.from(apiKey + ':').toString('base64')}`,
+          },
+        });
+
+        if (verifyRes.ok) {
+          const remotePayment = await verifyRes.json();
+          if (remotePayment.id === id && remotePayment.status === 'paid') {
+            isAuthentic = true;
+          }
+        }
+      } catch (verifyErr) {
+        console.error('[Moyasar API Verification Error]:', verifyErr);
+      }
+    }
+
+    // If neither signature nor API verification succeeded, reject in production
+    if (!isAuthentic) {
+      if (process.env.NODE_ENV === 'production' || webhookSecret || apiKey) {
+        console.error(`[Moyasar:Webhook] Rejecting unverified webhook for payment ID ${id}`);
+        return NextResponse.json({ error: 'Unauthorized webhook request' }, { status: 401 });
+      }
+      console.warn(`[Moyasar:Webhook] Warning: accepting unverified webhook in development mode for payment ID ${id}`);
+    }
+
+    // 3. Persistent Idempotency Guard (Redis + MySQL)
+    if (process.env.DATABASE_URL) {
+      const existingTx = await prisma.paymentTransaction.findFirst({
+        where: { transactionId: id },
+      });
+      if (existingTx) {
+        console.log(`[Moyasar:Webhook] Transaction ${id} already recorded in DB. Skipping.`);
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+    }
+
     const isProcessed = await webhookService.isEventProcessed('moyasar', id);
     if (isProcessed) {
-      console.log(`[Moyasar:Webhook] Event ${id} already processed. Skipping.`);
+      console.log(`[Moyasar:Webhook] Event ${id} already processed in cache. Skipping.`);
       return NextResponse.json({ received: true, duplicate: true });
     }
 
+    // 4. Process Payment
     if (status === 'paid') {
       const tenantId = metadata?.tenantId;
       const leadId = metadata?.leadId;
@@ -52,7 +123,6 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          // Asynchronously dispatch receipt and WhatsApp / email notice
           if (studentEmail) {
             await queueService.dispatchEmail(
               studentEmail,
@@ -65,9 +135,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Mark event processed with 30-day lease
     await webhookService.markEventProcessed('moyasar', id);
-
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error('Moyasar webhook error:', error);

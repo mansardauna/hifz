@@ -99,7 +99,8 @@ async function main() {
   }
 
   // 2. Seed Master SuperAdmin User
-  const hashedPassword = await bcrypt.hash('superadmin123', 10);
+  const superAdminPassword = process.env.INITIAL_SUPERADMIN_PASSWORD || process.env.INITIAL_ADMIN_PASSWORD || 'ChangeMeOnFirstLogin2026!';
+  const hashedPassword = await bcrypt.hash(superAdminPassword, 10);
   const platformTenant = createdTenants['platform'];
 
   const superAdmin = await prisma.user.upsert({

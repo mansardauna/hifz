@@ -2,7 +2,17 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../lib/prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'hifz-super-secret-key-2026';
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('CRITICAL SECURITY ERROR: JWT_SECRET or NEXTAUTH_SECRET environment variable must be set in production.');
+    }
+    // Safe non-hardcoded dev secret bound to current runtime
+    return ((globalThis as any).__dev_jwt_secret ||= 'dev_secret_' + Math.random().toString(36).substring(2) + Date.now().toString(36));
+  }
+  return secret;
+}
 
 export interface AuthUserPayload {
   id: string;
@@ -22,9 +32,9 @@ interface StoredUserRecord {
   tenantId: string;
 }
 
-// In-memory verified credentials store with pre-hashed standard passwords
-// Default password for pre-seeded platform accounts: 'Admin12345!'
-const INITIAL_HASH = bcrypt.hashSync('Admin12345!', 10);
+// In-memory verified credentials store for pre-seeded development accounts
+const INITIAL_ADMIN_PASSWORD = process.env.INITIAL_ADMIN_PASSWORD || 'Admin12345!';
+const INITIAL_HASH = bcrypt.hashSync(INITIAL_ADMIN_PASSWORD, 10);
 
 const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
   [
@@ -81,7 +91,9 @@ export class AuthService {
     role?: string;
     subdomain?: string;
   }): Promise<{ user: AuthUserPayload; token: string }> {
-    const { email, password, name, role = 'student', subdomain } = params;
+    const { email, password, name, subdomain } = params;
+    // Privilege Escalation Guard: Public self-registration is strictly for students
+    const role = 'student';
 
     if (!email || !email.includes('@')) {
       throw new Error('A valid email address is required');
@@ -105,38 +117,28 @@ export class AuthService {
 
         let targetTenant = null;
         if (subdomain) {
+          const cleanSub = subdomain.replace(/^tenant-/, '').toLowerCase();
           targetTenant = await prisma.tenant.findFirst({
             where: {
               OR: [
-                { subdomain },
+                { subdomain: cleanSub },
                 { id: subdomain },
-                { id: `tenant-${subdomain}` }
+                { id: `tenant-${cleanSub}` }
               ]
             }
           });
           if (!targetTenant) {
-            targetTenant = await prisma.tenant.create({
-              data: {
-                name: subdomain.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
-                subdomain,
-                niche: 'madrasat',
-                brandColor: '#047857',
-              },
-            });
+            throw new Error(`Academy "${subdomain}" not found. Please register at a valid academy URL.`);
           }
         } else {
           targetTenant = await prisma.tenant.findFirst({ where: { subdomain: 'platform' } });
+          if (!targetTenant) {
+            targetTenant = await prisma.tenant.findFirst();
+          }
         }
 
         if (!targetTenant) {
-          targetTenant = await prisma.tenant.create({
-            data: {
-              name: 'Autonomous Academy',
-              subdomain: subdomain || `academy-${Date.now()}`,
-              niche: 'madrasat',
-              brandColor: '#047857',
-            },
-          });
+          throw new Error('Target academy not found. Please contact platform support.');
         }
 
         const newUser = await prisma.user.create({
@@ -161,7 +163,7 @@ export class AuthService {
         const token = this.signToken(userObj);
         return { user: userObj, token };
       } catch (err: any) {
-        if (err.message.includes('already exists')) throw err;
+        if (err.message.includes('already exists') || err.message.includes('not found')) throw err;
         console.warn('Database register exception, saving to verified memory store:', err?.message);
       }
     }
@@ -328,14 +330,14 @@ export class AuthService {
         tenantId: user.tenantId,
         tenantSubdomain: user.tenantSubdomain,
       },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: '7d' }
     );
   }
 
   static verifyToken(token: string): AuthUserPayload | null {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const decoded = jwt.verify(token, getJwtSecret()) as any;
       return {
         id: decoded.sub,
         email: decoded.email,

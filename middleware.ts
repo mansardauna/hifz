@@ -15,15 +15,18 @@ export const config = {
 
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
-  const rawHost = req.headers.get('host') || 'localhost:3002';
+  const rawHost = req.headers.get('host') || 'localhost:3000';
 
   // Extract hostname without port
   const currentHost = rawHost.replace(/:\d+$/, '').toLowerCase();
+  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase();
 
   // Root domains that should serve the platform directly on main domain paths
   const isRootHost =
     currentHost === 'localhost' ||
     currentHost === '127.0.0.1' ||
+    currentHost === rootDomain ||
+    currentHost === `www.${rootDomain}` ||
     currentHost === 'ankabit.app' ||
     currentHost === 'www.ankabit.app' ||
     currentHost === 'techmadrasah.app' ||
@@ -37,9 +40,12 @@ export default async function middleware(req: NextRequest) {
   }
 
   let subdomain: string | null = null;
+  let customDomain: string | null = null;
 
-  // 1. Standard RFC 6761 subdomain: e.g. hifz-academy.ankabit.app, code-academy.ankabit.app
-  if (currentHost.endsWith('.localhost')) {
+  // 1. Dynamic root domain matching
+  if (currentHost.endsWith(`.${rootDomain}`)) {
+    subdomain = currentHost.replace(`.${rootDomain}`, '');
+  } else if (currentHost.endsWith('.localhost')) {
     subdomain = currentHost.replace('.localhost', '');
   } else if (currentHost.endsWith('.ankabit.app')) {
     subdomain = currentHost.replace('.ankabit.app', '');
@@ -48,24 +54,23 @@ export default async function middleware(req: NextRequest) {
   } else if (currentHost.endsWith('.hifz.app')) {
     subdomain = currentHost.replace('.hifz.app', '');
   } else if (currentHost.startsWith('localhost.') || currentHost.startsWith('127.0.0.1.')) {
-    // 2. Alternative localhost format: e.g. localhost.al-furqan
     subdomain = currentHost.replace(/^(localhost|127\.0\.0\.1)\./, '');
   } else {
-    // 3. Multi-part domain: e.g. al-furqan.mydomain.com
-    const parts = currentHost.split('.');
-    if (parts.length > 2) {
-      subdomain = parts[0];
-    }
+    // 2. Custom apex / third-party domain (e.g. al-furqan.org, quranacademy.co.uk)
+    customDomain = currentHost;
+    subdomain = currentHost;
   }
 
-  // If a valid tenant subdomain is resolved (and not a system prefix like 'www' or 'app')
+  // If a valid tenant subdomain or custom apex domain is resolved (and not a system prefix)
   if (subdomain && subdomain !== 'www' && subdomain !== 'app' && subdomain !== 'localhost') {
-    // Check if the pathname already begins with the subdomain (avoid double prefixing)
     if (!url.pathname.startsWith(`/${subdomain}`)) {
       const response = NextResponse.rewrite(
         new URL(`/${subdomain}${url.pathname}${url.search}`, req.url)
       );
       response.headers.set('x-subdomain', subdomain);
+      if (customDomain) {
+        response.headers.set('x-custom-domain', customDomain);
+      }
       return response;
     }
   }
