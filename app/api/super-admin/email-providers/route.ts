@@ -26,24 +26,25 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { action, provider, providers, recipient, subject, content, providerId } = body;
+    const targetConfig = provider || body.config;
 
     // 1. Requirement 2: Real Pre-activation Health Check & Connection Test
     if (action === 'test_provider') {
-      if (!provider) {
+      if (!targetConfig) {
         return apiError('Provider configuration is required for connection testing.', 400);
       }
 
-      console.log(`[API:email-providers] Testing connection for ${provider.name} (${provider.type})...`);
-      const testResult = await EmailGatewayService.testProviderConnection(provider);
+      console.log(`[API:email-providers] Testing connection for ${targetConfig.name} (${targetConfig.type})...`);
+      const testResult = await EmailGatewayService.testProviderConnection(targetConfig);
 
       // If test succeeded, update stored provider's isVerified flag and timestamp
       const allProviders = EmailGatewayService.getProviders();
-      const existingIdx = allProviders.findIndex((p) => p.id === provider.id);
+      const existingIdx = allProviders.findIndex((p) => p.id === targetConfig.id);
 
       if (existingIdx >= 0) {
         allProviders[existingIdx] = {
           ...allProviders[existingIdx],
-          ...provider,
+          ...targetConfig,
           isVerified: testResult.success,
           status: testResult.success
             ? allProviders[existingIdx].enabled
@@ -115,19 +116,31 @@ export async function POST(request: NextRequest) {
         </div>
       `;
 
-      const result = await EmailGatewayService.sendEmail({
-        to: recipient,
-        subject: testSubject,
-        html: testHtml,
-        preferredProviderId: providerId,
-      });
+      try {
+        const result = await EmailGatewayService.sendEmail({
+          to: recipient,
+          subject: testSubject,
+          html: testHtml,
+          preferredProviderId: providerId,
+        });
 
-      return NextResponse.json({
-        success: true,
-        message: `Test email dispatched successfully via ${result.providerName}.`,
-        result,
-        providers: EmailGatewayService.getProviders(),
-      });
+        return NextResponse.json({
+          success: true,
+          message: `Test email dispatched successfully via ${result.providerName}.`,
+          providerUsed: result.providerName,
+          result,
+          failoverHistory: result.attempts?.map((a) => `${a.providerName}: ${a.status} ${a.error || ''}`),
+          providers: EmailGatewayService.getProviders(),
+        });
+      } catch (sendErr: any) {
+        return NextResponse.json({
+          success: false,
+          message: sendErr.message || 'Email delivery failed. No active verified providers or daily quotas reached.',
+          providerUsed: null,
+          failoverHistory: ['Failover chain halted: ' + sendErr.message],
+          providers: EmailGatewayService.getProviders(),
+        });
+      }
     }
 
     // 4. Reset Daily Quota Counter Manually
