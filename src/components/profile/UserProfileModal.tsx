@@ -143,7 +143,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
               isLoading={isSaving}
               leftIcon={<Save className="w-4 h-4" />}
             >
-              Save Profile
+              Save
             </Button>
           </div>
         </form>
@@ -183,7 +183,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
               isLoading={isSaving}
               leftIcon={<Save className="w-4 h-4" />}
             >
-              Update Password
+              Update
             </Button>
           </div>
         </form>

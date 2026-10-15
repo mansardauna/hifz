@@ -344,7 +344,7 @@ export const StaffRolesManager: React.FC = () => {
               onClick={() => setIsInviteModalOpen(true)}
               leftIcon={<UserPlus className="w-4 h-4" />}
             >
-              + Provision Staff Member
+              Add Staff
             </Button>
           </div>
         }
@@ -369,7 +369,7 @@ export const StaffRolesManager: React.FC = () => {
             onClick={() => setIsInviteModalOpen(true)}
             leftIcon={<UserPlus className="w-4 h-4" />}
           >
-            Add Staff Member
+            Add Staff
           </Button>
         </div>
 
@@ -387,7 +387,7 @@ export const StaffRolesManager: React.FC = () => {
             <div className="max-w-md mx-auto space-y-1">
               <h3 className="text-base font-semibold text-slate-800">No staff accounts provisioned yet</h3>
               <p className="text-sm text-slate-500">
-                Click "+ Provision Staff Member" to directly add instructors, teachers, or admissions registrars with credentials to access their academy portal.
+                Click "Add Staff" to directly add instructors, teachers, or admissions registrars with credentials to access their academy portal.
               </p>
             </div>
             <Button
@@ -396,7 +396,7 @@ export const StaffRolesManager: React.FC = () => {
               onClick={() => setIsInviteModalOpen(true)}
               leftIcon={<UserPlus className="w-4 h-4" />}
             >
-              Provision First Staff Member
+              Add Staff
             </Button>
           </div>
         ) : (
@@ -555,7 +555,7 @@ export const StaffRolesManager: React.FC = () => {
                           onClick={() => handleApproveApplicant(app)}
                           leftIcon={<Check className="w-3.5 h-3.5" />}
                         >
-                          Approve & Admit
+                          Approve
                         </Button>
                       </div>
                     </td>
@@ -690,7 +690,7 @@ export const StaffRolesManager: React.FC = () => {
               isLoading={isProvisioning}
               leftIcon={<Check className="w-4 h-4" />}
             >
-              Provision Account
+              Save
             </Button>
           </div>
         </div>

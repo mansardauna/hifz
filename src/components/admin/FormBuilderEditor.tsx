@@ -77,7 +77,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
           className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>{isAr ? 'إضافة حقل استبيان' : 'Add Custom Field'}</span>
+          <span>{isAr ? 'إضافة حقل' : 'Add Field'}</span>
         </button>
       </div>
 
@@ -221,7 +221,7 @@ export const FormBuilderEditor: React.FC<FormBuilderEditorProps> = ({ onAddToast
                   type="submit"
                   className="w-full py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-md"
                 >
-                  Save Field Configurations
+                  Save
                 </button>
               </div>
             </form>

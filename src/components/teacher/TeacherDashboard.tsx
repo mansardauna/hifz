@@ -621,7 +621,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         classroomName: 'Live Code Huddle / Pair Room',
         forumName: 'Developer Community Forum',
         curriculumName: 'Interactive Coding Sandbox',
-        evaluateAction: 'Review PR & Code',
+        evaluateAction: 'Review',
         studentsMetric: 'Active Mentees',
         pendingMetric: 'Pending Pull Requests',
         masteryMetric: 'Test Suite Pass Rate',
@@ -636,7 +636,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         classroomName: 'Live Virtual Classroom',
         forumName: 'Academic Subject Forum',
         curriculumName: 'Academic Syllabus & Gradebook',
-        evaluateAction: 'Grade Exam / Paper',
+        evaluateAction: 'Grade',
         studentsMetric: 'Enrolled Students',
         pendingMetric: 'Pending Submissions',
         masteryMetric: 'Average Class GPA',
@@ -651,7 +651,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
         classroomName: classroomConfig.breakoutPodsTitle || 'Live Video Halaqah',
         forumName: 'Halaqah Group Forum',
         curriculumName: 'Mushaf Reader & Tajweed',
-        evaluateAction: 'Grade Recitation & Tajweed',
+        evaluateAction: 'Grade',
         studentsMetric: 'Enrolled Qariyahs',
         pendingMetric: 'Pending Recitations',
         masteryMetric: 'Tajweed Mastery Rate',
@@ -665,7 +665,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
       classroomName: classroomConfig.breakoutPodsTitle || 'Live Interactive Classroom',
       forumName: 'Academy Community Forum',
       curriculumName: 'Curriculum & Coursework',
-      evaluateAction: 'Grade & Review Submission',
+      evaluateAction: 'Grade',
       studentsMetric: 'Enrolled Students',
       pendingMetric: 'Pending Submissions',
       masteryMetric: 'Average Student Mastery',
@@ -933,7 +933,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                   className="font-semibold text-xs"
                   leftIcon={<Radio className="w-3.5 h-3.5" />}
                 >
-                  {isCodingNiche ? 'Start Pair Room' : isSchoolNiche ? 'Launch Classroom' : isMadrasatNiche ? 'Start Live Halaqah' : 'Launch Classroom'}
+                  Start Class
                 </Button>
               }
             />
@@ -1241,7 +1241,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                                 onClick={() => handleOpenGrading(sub)}
                                 className="font-semibold text-xs"
                               >
-                                {sub.status === 'Graded' ? 'Review Grade' : 'Grade Submission'}
+                                {sub.status === 'Graded' ? 'Review' : 'Grade'}
                               </Button>
                             </td>
                           </tr>
@@ -1384,7 +1384,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       leftIcon={<Play className="w-4 h-4" />}
                       className="px-6 py-3 font-semibold text-xs shadow-md"
                     >
-                      Launch & Broadcast Live Class
+                      Start Class
                     </Button>
                   </div>
                 </Card>
@@ -1416,7 +1416,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         leftIcon={isCopiedInvite ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                         className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700 font-semibold text-xs"
                       >
-                        {isCopiedInvite ? 'Link Copied!' : 'Copy Student Invite Link'}
+                        {isCopiedInvite ? 'Copied' : 'Copy Link'}
                       </Button>
 
                       <Button
@@ -1426,7 +1426,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
                         className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
                       >
-                        End Class Session
+                        End Class
                       </Button>
                     </div>
                   </div>
@@ -1569,7 +1569,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       leftIcon={<CheckCircle2 className="w-4 h-4" />}
                       className="font-semibold text-xs shadow-xs"
                     >
-                      Save Roll Call
+                      Save
                     </Button>
                   </div>
                 </div>
@@ -1598,7 +1598,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         }}
                         className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer text-[11px]"
                       >
-                        Mark All in Filter Present
+                        Mark All Present
                       </button>
 
                       <button
@@ -1617,7 +1617,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         }}
                         className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 font-semibold border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer text-[11px]"
                       >
-                        Mark All Excused
+                        Mark Excused
                       </button>
                     </div>
                   </div>
@@ -1898,7 +1898,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 onClick={() => onAddToast({ type: 'success', title: 'Settings Saved', message: 'Instructor profile updated.' })}
                 className="font-semibold"
               >
-                Save Changes
+                Save
               </Button>
             </Card>
           )}
@@ -2256,7 +2256,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                           leftIcon={<Trash2 className="w-3.5 h-3.5 text-rose-500" />}
                           className="text-xs text-rose-600 hover:bg-rose-50"
                         >
-                          Delete & Re-record
+                          Delete
                         </Button>
                       </div>
                     </div>
@@ -2270,7 +2270,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         leftIcon={<Mic className="w-3.5 h-3.5 text-emerald-600" />}
                         className="font-semibold text-xs bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-800"
                       >
-                        Record Audio Feedback Note
+                        Record Note
                       </Button>
                       <span className="text-[11px] text-slate-400">
                         Microphone will capture oral articulation & tajweed corrections.
@@ -2302,7 +2302,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 className="font-semibold shadow-md"
                 rightIcon={<CheckCircle2 className="w-4 h-4" />}
               >
-                Publish Grade & Notify Student
+                Submit Grade
               </Button>
             </div>
           </div>

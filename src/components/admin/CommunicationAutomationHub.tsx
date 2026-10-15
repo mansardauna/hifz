@@ -848,7 +848,7 @@ If this was due to an excused absence, please contact us at {{contact_phone}}.`,
                 leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-xs"
               >
-                Save Configuration
+                Save
               </Button>
             </div>
           </Card>
@@ -1049,7 +1049,7 @@ If this was due to an excused absence, please contact us at {{contact_phone}}.`,
                 leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-xs"
               >
-                Save Configuration
+                Save
               </Button>
             </div>
           </Card>
@@ -1257,7 +1257,7 @@ If this was due to an excused absence, please contact us at {{contact_phone}}.`,
                     leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
                     className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shrink-0 shadow-xs"
                   >
-                    Save Template
+                    Save
                   </Button>
                 </div>
               </Card>

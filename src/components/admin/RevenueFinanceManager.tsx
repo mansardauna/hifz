@@ -214,7 +214,7 @@ export const RevenueFinanceManager: React.FC = () => {
             onClick={() => setIsAddModalOpen(true)}
             leftIcon={<PlusCircle className="w-4 h-4" />}
           >
-            Record Transaction
+            Add Record
           </Button>
         }
       />
@@ -595,7 +595,7 @@ export const RevenueFinanceManager: React.FC = () => {
                 type="submit"
                 className="font-semibold"
               >
-                Record {form.type} Entry
+                Save
               </Button>
             </div>
           </form>

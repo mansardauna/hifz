@@ -264,7 +264,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               onClick={() => setStep(2)}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Continue to Select Plan
+              Continue
             </Button>
           </div>
         </div>
@@ -310,7 +310,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               onClick={() => setStep(3)}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Proceed to Payment (${activePlan.priceMonthly}/mo)
+              Proceed
             </Button>
           </div>
         </div>
@@ -415,7 +415,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
               disabled={!isCurrentMethodConnected}
               rightIcon={<Lock className="w-3.5 h-3.5" />}
             >
-              {isCurrentMethodConnected ? `Pay $${activePlan.priceMonthly} & Enroll` : 'Gateway Not Connected'}
+              {isCurrentMethodConnected ? 'Pay & Enroll' : 'Unavailable'}
             </Button>
           </div>
         </form>
@@ -437,7 +437,7 @@ export const StudentEnrollmentModal: React.FC<StudentEnrollmentModalProps> = ({
                 router.push(`/${tenant.subdomain}/lms`);
               }}
             >
-              Go to Student Portal
+              Enter Portal
             </Button>
           </div>
         </div>

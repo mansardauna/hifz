@@ -851,7 +851,7 @@ export const LiveClassroomHub: React.FC<LiveClassroomHubProps> = ({
                   onClick={handleTeacherMuteAll}
                   className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  <VolumeX className="w-4 h-4" /> Mute All Students
+                  <VolumeX className="w-4 h-4" /> Mute All
                 </button>
               </div>
             )}

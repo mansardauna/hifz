@@ -387,7 +387,7 @@ export const OralRecitationStudio: React.FC<OralRecitationStudioProps> = ({
           className="h-11 px-6 rounded-xl text-sm font-semibold gap-2"
         >
           <UploadCloud className="w-4 h-4" />
-          {isQuran ? 'Submit Recitation to Ustadhah' : 'Submit Oral Recording to Faculty'}
+          Submit
         </Button>
       </div>
     </Card>

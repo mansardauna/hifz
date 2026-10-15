@@ -323,7 +323,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
               {isSubmitting ? (
                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                'Create Student Account'
+                'Sign Up'
               )}
             </button>
           </form>

@@ -525,7 +525,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
             className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
           >
             <Mic className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Record Oral Task</span>
+            <span className="hidden sm:inline">Record</span>
           </button>
         </div>
       </div>
@@ -857,7 +857,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                       className="flex items-center gap-2 text-xs font-semibold text-emerald-700 hover:text-emerald-800 cursor-pointer"
                     >
                       {isPlayingRecorded ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
-                      <span>{isPlayingRecorded ? 'Pause Recitation' : 'Preview Oral Recording'}</span>
+                      <span>{isPlayingRecorded ? 'Pause' : 'Preview'}</span>
                     </button>
 
                     <button
@@ -881,7 +881,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                     ) : (
                       <UploadCloud className="w-4 h-4" />
                     )}
-                    <span>Publish & Submit to Sheikh for Correction</span>
+                    <span>Submit</span>
                   </button>
                 </div>
               ) : (
@@ -891,7 +891,7 @@ export const QuranViewer: React.FC<QuranViewerProps> = ({
                   className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                 >
                   <Mic className="w-4 h-4" />
-                  <span>Start Microphone Recording</span>
+                  <span>Record</span>
                 </button>
               )}
             </div>

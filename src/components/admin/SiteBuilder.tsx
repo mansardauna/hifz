@@ -81,7 +81,7 @@ export const SiteBuilder: React.FC<SiteBuilderProps> = ({ onAddToast }) => {
           className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
         >
           <Save className="w-4 h-4" />
-          <span>{isAr ? 'حفظ ونشر التعديلات' : 'Save Live Changes'}</span>
+          <span>{isAr ? 'حفظ' : 'Save'}</span>
         </button>
       </div>
 

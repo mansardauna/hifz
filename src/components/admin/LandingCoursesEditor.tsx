@@ -81,7 +81,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
           className="px-5 py-2.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white font-semibold font-display text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>{isAr ? 'إضافة دورة جديدة' : 'Add New Program'}</span>
+          <span>{isAr ? 'إضافة دورة' : 'Add Program'}</span>
         </button>
       </div>
 
@@ -220,7 +220,7 @@ export const LandingCoursesEditor: React.FC<LandingCoursesEditorProps> = ({ onAd
                   type="submit"
                   className="w-full py-3 rounded-md bg-emerald-700 text-white font-semibold font-display hover:bg-emerald-800 shadow-md cursor-pointer"
                 >
-                  Save Changes
+                  Save
                 </button>
               </div>
             </form>

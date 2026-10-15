@@ -1090,7 +1090,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                   type="submit"
                   className="px-6 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold rounded-xl shadow-md transition-all cursor-pointer outline-none"
                 >
-                  Publish Topic
+                  Post
                 </button>
               </div>
             </form>
@@ -1170,7 +1170,7 @@ export const LMSCommunityForum: React.FC<LMSCommunityForumProps> = ({ onAddToast
                   onClick={handleAddChannel}
                   className="px-6 py-2.5 bg-[var(--color-primary,#047857)] hover:brightness-95 text-white font-semibold rounded-xl shadow-md transition-all cursor-pointer outline-none"
                 >
-                  Create Channel
+                  Create
                 </button>
               </div>
             </div>

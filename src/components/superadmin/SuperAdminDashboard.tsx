@@ -1660,7 +1660,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   onClick={handleSaveGlobalGateways}
                   className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
                 >
-                  Save Master Gateways
+                  Save
                 </Button>
               </div>
 
@@ -1832,7 +1832,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       leftIcon={<Send className="w-3.5 h-3.5" />}
                       className="text-xs font-semibold text-emerald-800 border-emerald-200 hover:bg-emerald-50 shrink-0"
                     >
-                      Send Test Email
+                      Send Test
                     </Button>
                   </div>
                 </div>
@@ -2003,7 +2003,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       leftIcon={<Send className="w-3.5 h-3.5" />}
                       className="text-xs font-semibold text-teal-800 border-teal-200 hover:bg-teal-50 shrink-0"
                     >
-                      Send Test WhatsApp
+                      Send Test
                     </Button>
                   </div>
                 </div>
@@ -2034,7 +2034,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   leftIcon={<Plus className="w-4 h-4" />}
                   className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
                 >
-                  Add Staff Member
+                  Add Staff
                 </Button>
               </div>
 
@@ -2345,7 +2345,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       leftIcon={<Save className="w-4 h-4" />}
                       className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
                     >
-                      Save Infrastructure Config
+                      Save
                     </Button>
                   </div>
 
@@ -2932,7 +2932,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       leftIcon={<Save className="w-4 h-4" />}
                       className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
                     >
-                      Save Payment Gateways
+                      Save
                     </Button>
                   </div>
 
@@ -3224,7 +3224,7 @@ export const SuperAdminDashboard: React.FC = () => {
                         isLoading={isSavingAnnouncement}
                         className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
                       >
-                        Publish Broadcast
+                        Publish
                       </Button>
                     </div>
                   </div>
@@ -3519,7 +3519,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 onClick={handleSavePlan}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
               >
-                Save & Broadcast Plan
+                Save
               </Button>
             </div>
           </div>
@@ -3610,7 +3610,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 onClick={handleSaveStaff}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
               >
-                Save Staff Account
+                Save
               </Button>
             </div>
           </div>

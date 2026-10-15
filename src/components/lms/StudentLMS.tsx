@@ -365,7 +365,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                     onClick={() => setActiveTab('videos')}
                     className="h-9 px-4 rounded-xl bg-white text-emerald-950 font-semibold text-xs sm:text-sm shadow-sm hover:bg-emerald-50 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
                   >
-                    <Play className="w-3.5 h-3.5 fill-current" /> Join Live Class
+                    <Play className="w-3.5 h-3.5 fill-current" /> Join Class
                   </button>
                 </div>
               )}
@@ -490,14 +490,14 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                         }}
                         className="w-full h-11 bg-slate-950 hover:bg-slate-800 text-white px-4 rounded-xl text-sm font-semibold transition-all shadow-sm cursor-pointer text-center active:scale-[0.98]"
                       >
-                        {isQuran ? 'Record Recitation Homework' : 'Submit Practical Assignment'}
+                        {isQuran ? 'Record Homework' : 'Submit Assignment'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setActiveTab('courses')}
                         className="w-full h-11 bg-white hover:bg-slate-50 text-slate-900 px-4 rounded-xl text-sm font-semibold border border-slate-200 transition-all cursor-pointer text-center active:scale-[0.98]"
                       >
-                        {isQuran ? 'Open 604-Page Medina Mushaf' : 'Open Course Syllabus & Library'}
+                        {isQuran ? 'Open Mushaf' : 'Open Syllabus'}
                       </button>
                     </div>
                   </div>
@@ -1037,7 +1037,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                       className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm shadow-md transition-all inline-flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98]"
                     >
                       <Play className="w-4 h-4 fill-current text-emerald-400" />
-                      <span>Enter {enrolledCourseTitle} Live Room</span>
+                      <span>Enter Class</span>
                     </button>
                   </div>
                 </div>

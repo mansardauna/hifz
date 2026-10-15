@@ -802,7 +802,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
             <div className="flex justify-end pt-4 border-t border-slate-100">
               <Button variant="primary" size="sm" onClick={handleSaveGeneral}>
-                Save General Settings
+                Save
               </Button>
             </div>
           </Card>
@@ -1196,7 +1196,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
             <div className="flex justify-end pt-4 border-t border-slate-100">
               <Button variant="primary" size="sm" onClick={handleSaveBranding}>
-                Save & Apply Brand Theme
+                Save
               </Button>
             </div>
           </Card>
@@ -1237,7 +1237,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                   leftIcon={<UserPlus className="w-4 h-4" />}
                   className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs"
                 >
-                  Provision / Invite Staff
+                  Add Staff
                 </Button>
               </div>
             </div>
@@ -1438,7 +1438,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 leftIcon={<Save className="w-4 h-4" />}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs"
               >
-                {isSavingPermissions ? 'Saving...' : 'Save Role Permissions Matrix'}
+                {isSavingPermissions ? 'Saving...' : 'Save'}
               </Button>
             </div>
 
@@ -1678,7 +1678,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
 
           <div className="flex justify-end pt-4 border-t border-slate-100">
             <Button variant="primary" size="sm" onClick={handleSaveAuthLayout}>
-              Save Login & Form Settings
+              Save
             </Button>
           </div>
         </Card>
@@ -2305,7 +2305,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 leftIcon={<Save className="w-4 h-4" />}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
               >
-                Save Classroom & Community Settings
+                Save
               </Button>
             </div>
           </Card>
@@ -2368,7 +2368,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 Cancel
               </Button>
               <Button variant="primary" size="sm" onClick={handleInviteStaff} disabled={isProvisioning}>
-                {isProvisioning ? 'Provisioning...' : 'Provision Account'}
+                {isProvisioning ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </div>
@@ -2422,7 +2422,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                 }}
                 leftIcon={<Copy className="w-3.5 h-3.5" />}
               >
-                Copy Credentials
+                Copy
               </Button>
               <Button
                 variant="primary"

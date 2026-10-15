@@ -296,7 +296,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                       leftIcon={<Upload className="w-3.5 h-3.5" />}
                       className="bg-purple-700 hover:bg-purple-800 text-white font-semibold"
                     >
-                      Turn In Assignment
+                      Submit
                     </Button>
                   )}
                 </div>
@@ -407,7 +407,7 @@ export const SchoolAssignmentsPortal: React.FC<SchoolAssignmentsPortalProps> = (
                   className="bg-purple-700 hover:bg-purple-800 text-white font-semibold"
                   leftIcon={<Send className="w-3.5 h-3.5" />}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Confirm Submission'}
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
                 </Button>
               </div>
             </form>

@@ -137,7 +137,7 @@ export const SchoolReportCardView: React.FC = () => {
               leftIcon={<Printer className="w-4 h-4" />}
               className="text-white border-purple-400/40 bg-white/10 hover:bg-white/20 font-semibold"
             >
-              Print / Save PDF
+              Print
             </Button>
             <Button
               variant="primary"
@@ -146,7 +146,7 @@ export const SchoolReportCardView: React.FC = () => {
               leftIcon={<Download className="w-4 h-4" />}
               className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
             >
-              Download Official PDF
+              Download PDF
             </Button>
           </div>
         </div>

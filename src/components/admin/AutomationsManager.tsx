@@ -270,7 +270,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
             onClick={() => setIsCreateModalOpen(true)}
             className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5" /> Create New Automation
+            <Plus className="w-3.5 h-3.5" /> Add Automation
           </button>
         </div>
       </div>
@@ -523,7 +523,7 @@ export const AutomationsManager: React.FC<AutomationsManagerProps> = ({ onAddToa
                   type="submit"
                   className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold transition-colors cursor-pointer shadow-xs"
                 >
-                  Save & Activate
+                  Save
                 </button>
               </div>
             </form>

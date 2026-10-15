@@ -383,14 +383,14 @@ export const StaffAndStudentManager: React.FC = () => {
               onClick={() => setIsAddStudentOpen(true)}
               leftIcon={<UserPlus className="w-4 h-4 text-slate-700" />}
             >
-              Admit Student
+              Add Student
             </Button>
             <Button
               variant="primary"
               onClick={() => setIsAddStaffOpen(true)}
               leftIcon={<ShieldCheck className="w-4 h-4" />}
             >
-              {isQuran ? "Add Staff / Ustadhah" : "Add Faculty / Staff"}
+              Add Staff
             </Button>
           </div>
         }
@@ -866,7 +866,7 @@ export const StaffAndStudentManager: React.FC = () => {
                 Cancel
               </Button>
               <Button variant="primary" type="submit" className="font-semibold">
-                Save & Generate Credentials
+                Save
               </Button>
             </div>
           </form>
@@ -971,7 +971,7 @@ export const StaffAndStudentManager: React.FC = () => {
                 Cancel
               </Button>
               <Button variant="primary" type="submit" className="font-semibold">
-                Admit Student & Issue Credentials
+                Save
               </Button>
             </div>
           </form>

@@ -166,7 +166,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
             disabled={isSaving}
             leftIcon={<Save className="w-4 h-4" />}
           >
-            {isSaving ? (isAr ? 'جاري الحفظ...' : 'Saving...') : (isAr ? 'حفظ التعديلات' : 'Save Hierarchy')}
+            {isSaving ? (isAr ? 'جاري الحفظ...' : 'Saving...') : (isAr ? 'حفظ' : 'Save')}
           </Button>
         }
       />
@@ -188,7 +188,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
             onClick={handleCreateCourse}
             leftIcon={<Plus className="w-4 h-4" />}
           >
-            Create First Course Track
+            Create Track
           </Button>
         </div>
       ) : (
@@ -285,7 +285,7 @@ export const CourseBuilder: React.FC<CourseBuilderProps> = ({ onAddToast }) => {
           }`}
         >
           <Plus className="w-4 h-4" />
-          <span>Add New Curriculum Module</span>
+          <span>Add Module</span>
         </button>
       </div>
         </>
