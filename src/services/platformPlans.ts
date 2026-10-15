@@ -348,6 +348,59 @@ export const MOCK_PLATFORM_SUBSCRIBERS: PlatformSubscriber[] = [
 ];
 
 export const DEFAULT_SUPERADMIN_GATEWAYS: SuperAdminGatewaySettings = {
+  emailProviders: [
+    {
+      id: 'prov_resend_1',
+      name: 'Resend API (Primary)',
+      type: 'resend',
+      enabled: true,
+      priority: 1,
+      dailyQuota: 100,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromEmail: 'onboarding@resend.dev',
+      fromName: 'Ankabit Academy OS',
+      apiKey: '',
+    },
+    {
+      id: 'prov_sendpulse_1',
+      name: 'SendPulse SMTP / API (Fallback 1)',
+      type: 'sendpulse',
+      enabled: false,
+      priority: 2,
+      dailyQuota: 50,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromEmail: 'noreply@ankabit.app',
+      fromName: 'Ankabit Academy OS',
+      sendpulseMode: 'smtp',
+      sendpulseSmtpUser: '',
+      sendpulseSmtpPass: '',
+    },
+    {
+      id: 'prov_nodemailer_1',
+      name: 'Nodemailer Custom SMTP (Fallback 2)',
+      type: 'nodemailer',
+      enabled: false,
+      priority: 3,
+      dailyQuota: 500,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromEmail: 'notifications@ankabit.app',
+      fromName: 'Ankabit Platform Mailer',
+      smtpHost: 'smtp.gmail.com',
+      smtpPort: 587,
+      smtpUser: '',
+      smtpPass: '',
+      smtpSecure: false,
+    },
+  ],
   email: {
     enabled: true,
     provider: 'smtp',
@@ -378,7 +431,12 @@ export const getStoredSuperAdminGateways = (): SuperAdminGatewaySettings => {
     const raw = localStorage.getItem(STORAGE_KEY_GATEWAYS);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.email && parsed.whatsapp) return parsed;
+      if (parsed && parsed.email && parsed.whatsapp) {
+        if (!parsed.emailProviders || !Array.isArray(parsed.emailProviders) || parsed.emailProviders.length === 0) {
+          parsed.emailProviders = DEFAULT_SUPERADMIN_GATEWAYS.emailProviders;
+        }
+        return parsed;
+      }
     }
   } catch (e) {
     console.warn('Error reading superadmin gateways:', e);

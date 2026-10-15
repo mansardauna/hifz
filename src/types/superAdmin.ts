@@ -52,7 +52,38 @@ export interface SuperAdminUser {
   avatarUrl?: string;
 }
 
+export type EmailEngineType = 'resend' | 'sendpulse' | 'nodemailer';
+
+export interface EmailProviderConfig {
+  id: string;
+  name: string;
+  type: EmailEngineType;
+  enabled: boolean;
+  priority: number;
+  dailyQuota: number;
+  sentToday: number;
+  lastResetDate: string;
+  status: 'active' | 'inactive' | 'exhausted' | 'unverified' | 'error';
+  isVerified: boolean;
+  lastTestedAt?: string | null;
+  lastError?: string | null;
+  fromEmail: string;
+  fromName: string;
+  apiKey?: string;
+  sendpulseMode?: 'smtp' | 'api';
+  sendpulseApiUserId?: string;
+  sendpulseApiSecret?: string;
+  sendpulseSmtpUser?: string;
+  sendpulseSmtpPass?: string;
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpSecure?: boolean;
+}
+
 export interface SuperAdminGatewaySettings {
+  emailProviders?: EmailProviderConfig[];
   email: {
     enabled: boolean;
     provider: EmailProviderType;

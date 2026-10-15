@@ -10,6 +10,8 @@ import {
   SuperAdminGatewaySettings,
   SuperAdminInfrastructureSettings,
   SuperAdminPaymentSettings,
+  EmailEngineType,
+  EmailProviderConfig,
 } from '../../types/superAdmin';
 import {
   getStoredPlatformPlans,
@@ -79,6 +81,9 @@ import {
   Save,
   Languages,
   RefreshCw,
+  RotateCcw,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal, DataTablePagination, StatCard } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
@@ -194,19 +199,63 @@ export const SuperAdminDashboard: React.FC = () => {
   const [testWARecipient, setTestWARecipient] = useState('+1 (800) 555-0199');
   const [isSendingPlatformTest, setIsSendingPlatformTest] = useState(false);
 
+  // Multi-Provider Failover Gateway State
+  const [emailProviders, setEmailProviders] = useState<EmailProviderConfig[]>([]);
+  const [isLoadingEmailProviders, setIsLoadingEmailProviders] = useState(false);
+  const [isTestingProviderId, setIsTestingProviderId] = useState<string | null>(null);
+  const [editingEmailProvider, setEditingEmailProvider] = useState<EmailProviderConfig | null>(null);
+  const [isEmailProviderModalOpen, setIsEmailProviderModalOpen] = useState(false);
+  const [isTestingInModal, setIsTestingInModal] = useState(false);
+  const [modalTestFeedback, setModalTestFeedback] = useState<{ success: boolean; message: string } | null>(null);
+  const [isSendingFailoverTest, setIsSendingFailoverTest] = useState(false);
+  const [failoverTestResult, setFailoverTestResult] = useState<{
+    success: boolean;
+    message: string;
+    providerUsed?: string;
+    failoverHistory?: string[];
+  } | null>(null);
+
   // System Settings State
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [globalAnnouncement, setGlobalAnnouncement] = useState('');
   const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
 
+  const fetchEmailProviders = useCallback(async () => {
+    setIsLoadingEmailProviders(true);
+    try {
+      const res = await fetch('/api/super-admin/email-providers');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.providers) && data.providers.length > 0) {
+          setEmailProviders(data.providers);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Live fetch for email providers failed, checking stored fallback:', err);
+    } finally {
+      setIsLoadingEmailProviders(false);
+    }
+
+    const stored = getStoredSuperAdminGateways();
+    if (stored.emailProviders && stored.emailProviders.length > 0) {
+      setEmailProviders(stored.emailProviders);
+    }
+  }, []);
+
   useEffect(() => {
     setPlans(getStoredPlatformPlans());
     setStaffUsers(getStoredSuperAdminUsers());
-    setGatewaySettings(getStoredSuperAdminGateways());
+    const storedGateways = getStoredSuperAdminGateways();
+    setGatewaySettings(storedGateways);
+    if (storedGateways.emailProviders && storedGateways.emailProviders.length > 0) {
+      setEmailProviders(storedGateways.emailProviders);
+    }
     setInfraSettings(getStoredSuperAdminInfrastructure());
     setPaymentSettings(getStoredSuperAdminPaymentGateways());
     fetchSuperAdminData();
-  }, [fetchSuperAdminData]);
+    fetchEmailProviders();
+  }, [fetchSuperAdminData, fetchEmailProviders]);
 
   // Calculate high-level financial & tenant statistics from REAL database records
   const totalAcademies = tenants.length;
@@ -363,8 +412,297 @@ export const SuperAdminDashboard: React.FC = () => {
 
   // Gateway Settings Handlers
   const handleSaveGlobalGateways = () => {
-    saveSuperAdminGateways(gatewaySettings);
+    const updated = {
+      ...gatewaySettings,
+      emailProviders,
+    };
+    saveSuperAdminGateways(updated);
     success('Gateways Saved', 'Platform SuperAdmin shared credentials have been updated.');
+  };
+
+  const handleTestProviderConnection = async (targetProvider: EmailProviderConfig) => {
+    setIsTestingProviderId(targetProvider.id);
+    try {
+      const res = await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'test_provider',
+          config: targetProvider,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success('Connection Verified', data.message);
+        const updated = emailProviders.map((p) =>
+          p.id === targetProvider.id
+            ? { ...p, isVerified: true, status: p.enabled ? ('active' as const) : ('inactive' as const), lastTestedAt: new Date().toISOString(), lastError: null }
+            : p
+        );
+        setEmailProviders(updated);
+        await fetch('/api/super-admin/email-providers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save_providers', providers: updated }),
+        });
+      } else {
+        error('Verification Failed', data.message || 'Credentials or handshake failed.');
+        const updated = emailProviders.map((p) =>
+          p.id === targetProvider.id
+            ? { ...p, isVerified: false, status: 'error' as const, lastError: data.message }
+            : p
+        );
+        setEmailProviders(updated);
+      }
+    } catch (err: any) {
+      error('Verification Error', err.message || 'Network error while testing provider.');
+    } finally {
+      setIsTestingProviderId(null);
+    }
+  };
+
+  const handleToggleProviderEnabled = async (targetProvider: EmailProviderConfig) => {
+    if (!targetProvider.enabled && !targetProvider.isVerified) {
+      warning('Verification Required', `"${targetProvider.name}" is unverified. Please run Test Connection before activating it for live student data.`);
+      return;
+    }
+
+    const updated = emailProviders.map((p) =>
+      p.id === targetProvider.id
+        ? {
+            ...p,
+            enabled: !p.enabled,
+            status: !p.enabled ? ('active' as const) : ('inactive' as const),
+          }
+        : p
+    );
+    setEmailProviders(updated);
+
+    try {
+      const res = await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_providers', providers: updated }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success(
+          targetProvider.enabled ? 'Provider Deactivated' : 'Provider Activated',
+          `"${targetProvider.name}" is now ${targetProvider.enabled ? 'offline' : 'active in delivery failover pool'}.`
+        );
+      } else {
+        error('Update Failed', data.message);
+        fetchEmailProviders();
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to update provider status');
+      fetchEmailProviders();
+    }
+  };
+
+  const handleOpenAddProvider = () => {
+    const newProv: EmailProviderConfig = {
+      id: `prov_custom_${Date.now()}`,
+      name: 'Custom SMTP Server',
+      type: 'nodemailer',
+      enabled: false,
+      priority: emailProviders.length + 1,
+      dailyQuota: 500,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromEmail: 'notifications@ankabit.app',
+      fromName: 'Ankabit Academy OS',
+      smtpHost: 'smtp.gmail.com',
+      smtpPort: 587,
+      smtpUser: '',
+      smtpPass: '',
+      smtpSecure: false,
+    };
+    setEditingEmailProvider(newProv);
+    setModalTestFeedback(null);
+    setIsEmailProviderModalOpen(true);
+  };
+
+  const handleOpenEditProvider = (provider: EmailProviderConfig) => {
+    setEditingEmailProvider(JSON.parse(JSON.stringify(provider)));
+    setModalTestFeedback(null);
+    setIsEmailProviderModalOpen(true);
+  };
+
+  const handleSaveEmailProviderModal = async () => {
+    if (!editingEmailProvider) return;
+    if (!editingEmailProvider.name.trim()) {
+      error('Validation Error', 'Provider name cannot be empty.');
+      return;
+    }
+    if (!editingEmailProvider.fromEmail.trim()) {
+      error('Validation Error', 'Sender Email (From) cannot be empty.');
+      return;
+    }
+
+    let updatedList: EmailProviderConfig[];
+    const exists = emailProviders.some((p) => p.id === editingEmailProvider.id);
+    if (exists) {
+      updatedList = emailProviders.map((p) => (p.id === editingEmailProvider.id ? editingEmailProvider : p));
+    } else {
+      updatedList = [...emailProviders, editingEmailProvider];
+    }
+
+    updatedList.sort((a, b) => a.priority - b.priority);
+    setEmailProviders(updatedList);
+
+    try {
+      const res = await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_providers', providers: updatedList }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success('Provider Saved', `"${editingEmailProvider.name}" settings saved.`);
+        setIsEmailProviderModalOpen(false);
+      } else {
+        error('Save Failed', data.message);
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to save provider config.');
+    }
+  };
+
+  const handleTestInModal = async () => {
+    if (!editingEmailProvider) return;
+    setIsTestingInModal(true);
+    setModalTestFeedback(null);
+    try {
+      const res = await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'test_provider',
+          config: editingEmailProvider,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setModalTestFeedback({ success: true, message: data.message });
+        setEditingEmailProvider({
+          ...editingEmailProvider,
+          isVerified: true,
+          status: editingEmailProvider.enabled ? 'active' : 'inactive',
+          lastTestedAt: new Date().toISOString(),
+          lastError: null,
+        });
+        success('Connection Verified', data.message);
+      } else {
+        setModalTestFeedback({ success: false, message: data.message || 'Verification failed.' });
+        setEditingEmailProvider({
+          ...editingEmailProvider,
+          isVerified: false,
+          status: 'error',
+          lastError: data.message,
+        });
+        error('Verification Failed', data.message);
+      }
+    } catch (err: any) {
+      setModalTestFeedback({ success: false, message: err.message || 'Network error.' });
+      error('Test Error', err.message);
+    } finally {
+      setIsTestingInModal(false);
+    }
+  };
+
+  const handleResetDailyQuotas = async (providerId?: string) => {
+    try {
+      const res = await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reset_quota',
+          providerId,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success('Quotas Reset', data.message);
+        fetchEmailProviders();
+      } else {
+        error('Reset Failed', data.message);
+      }
+    } catch (err: any) {
+      error('Error', err.message);
+    }
+  };
+
+  const handleSendFailoverTestEmail = async () => {
+    if (!testEmailRecipient.trim()) {
+      error('Recipient Required', 'Please enter a test recipient email address.');
+      return;
+    }
+    setIsSendingFailoverTest(true);
+    setFailoverTestResult(null);
+
+    try {
+      const res = await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send_test_email',
+          recipient: testEmailRecipient.trim(),
+        }),
+      });
+      const data = await res.json();
+      setFailoverTestResult({
+        success: data.success,
+        message: data.message,
+        providerUsed: data.providerUsed,
+        failoverHistory: data.failoverHistory,
+      });
+
+      if (data.success) {
+        success('Test Dispatched', `Delivered via ${data.providerUsed || 'gateway'} to ${testEmailRecipient}`);
+        fetchEmailProviders();
+      } else {
+        error('Delivery Failed', data.message || 'All providers failed or daily quotas exhausted.');
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to dispatch test email.');
+      setFailoverTestResult({
+        success: false,
+        message: err.message || 'Network error while attempting delivery.',
+      });
+    } finally {
+      setIsSendingFailoverTest(false);
+    }
+  };
+
+  const handleMovePriority = async (providerId: string, direction: 'up' | 'down') => {
+    const index = emailProviders.findIndex((p) => p.id === providerId);
+    if (index === -1) return;
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === emailProviders.length - 1) return;
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    const reordered = [...emailProviders];
+    const temp = reordered[index];
+    reordered[index] = reordered[targetIndex];
+    reordered[targetIndex] = temp;
+
+    // Re-assign priorities 1, 2, 3...
+    const updated = reordered.map((p, idx) => ({ ...p, priority: idx + 1 }));
+    setEmailProviders(updated);
+
+    try {
+      await fetch('/api/super-admin/email-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_providers', providers: updated }),
+      });
+      success('Priority Updated', `Failover rotation sequence changed.`);
+    } catch {
+      fetchEmailProviders();
+    }
   };
 
   const handleSaveInfrastructure = () => {
@@ -1664,178 +2002,322 @@ export const SuperAdminDashboard: React.FC = () => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Master Email Gateway */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div className="flex items-center gap-2 text-emerald-700">
-                      <Mail className="w-5 h-5" />
-                      <h3 className="font-semibold text-sm text-slate-900">Platform Shared Email Gateway</h3>
-                    </div>
-                    <Badge variant="info" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
-                      Master Pool
-                    </Badge>
-                  </div>
-
+              {/* Multi-Provider Email Gateway & Automated Failover Pool */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-slate-100 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Provider Engine</label>
-                    <select
-                      value={gatewaySettings.email.provider}
-                      onChange={(e) =>
-                        setGatewaySettings({
-                          ...gatewaySettings,
-                          email: { ...gatewaySettings.email, provider: e.target.value as EmailProviderType },
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
-                    >
-                      <option value="smtp">Custom SMTP Server (Self-Hosted / Relay)</option>
-                      <option value="resend">Resend API</option>
-                      <option value="sendgrid">SendGrid Web API</option>
-                      <option value="postmark">Postmark Server API</option>
-                      <option value="aws_ses">Amazon Simple Email Service (SES)</option>
-                    </select>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-5 h-5 text-emerald-700" />
+                      <h3 className="font-semibold text-base text-slate-900">Multi-Provider Email Infrastructure & Automated Failover Pool</h3>
+                      <Badge variant="info" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
+                        Active Pool: {emailProviders.filter((p) => p.enabled && p.isVerified).length} / {emailProviders.length} Engines
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Configure master email delivery with automatic failover across <strong>Resend</strong>, <strong>SendPulse</strong>, and <strong>Nodemailer</strong>. When any provider exhausts its free daily quota, the system switches in real-time to the next fallback so the academy never stalls.
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Email Address</label>
-                      <input
-                        type="email"
-                        value={gatewaySettings.email.fromEmail}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            email: { ...gatewaySettings.email, fromEmail: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                        placeholder="notifications@ankabit.app"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Display Name</label>
-                      <input
-                        type="text"
-                        value={gatewaySettings.email.fromName}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            email: { ...gatewaySettings.email, fromName: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                        placeholder="Ankabit Quran Cloud"
-                      />
-                    </div>
-                  </div>
-
-                  {gatewaySettings.email.provider === 'smtp' && (
-                    <div className="space-y-3 pt-2">
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="col-span-2">
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Host</label>
-                          <input
-                            type="text"
-                            value={gatewaySettings.email.smtpHost || gatewaySettings.email.host || ''}
-                            onChange={(e) =>
-                              setGatewaySettings({
-                                ...gatewaySettings,
-                                email: { ...gatewaySettings.email, smtpHost: e.target.value, host: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                            placeholder="smtp.mailgun.org"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">Port</label>
-                          <input
-                            type="number"
-                            value={gatewaySettings.email.smtpPort || gatewaySettings.email.port || 587}
-                            onChange={(e) =>
-                              setGatewaySettings({
-                                ...gatewaySettings,
-                                email: { ...gatewaySettings.email, smtpPort: Number(e.target.value), port: Number(e.target.value) },
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Username</label>
-                          <input
-                            type="text"
-                            value={gatewaySettings.email.smtpUser || gatewaySettings.email.user || ''}
-                            onChange={(e) =>
-                              setGatewaySettings({
-                                ...gatewaySettings,
-                                email: { ...gatewaySettings.email, smtpUser: e.target.value, user: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Password</label>
-                          <input
-                            type="password"
-                            value={gatewaySettings.email.smtpPass || gatewaySettings.email.pass || ''}
-                            onChange={(e) =>
-                              setGatewaySettings({
-                                ...gatewaySettings,
-                                email: { ...gatewaySettings.email, smtpPass: e.target.value, pass: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {gatewaySettings.email.provider !== 'smtp' && (
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Master Provider API Key</label>
-                      <input
-                        type="password"
-                        value={gatewaySettings.email.apiKey || ''}
-                        onChange={(e) =>
-                          setGatewaySettings({
-                            ...gatewaySettings,
-                            email: { ...gatewaySettings.email, apiKey: e.target.value },
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                        placeholder="key_live_..."
-                      />
-                    </div>
-                  )}
-
-                  {/* Live Test Sender for Email */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
-                    <input
-                      type="email"
-                      value={testEmailRecipient}
-                      onChange={(e) => setTestEmailRecipient(e.target.value)}
-                      placeholder="test-recipient@example.com"
-                      className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-emerald-600"
-                    />
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleSendPlatformTest('email')}
-                      isLoading={isSendingPlatformTest}
-                      leftIcon={<Send className="w-3.5 h-3.5" />}
-                      className="text-xs font-semibold text-emerald-800 border-emerald-200 hover:bg-emerald-50 shrink-0"
+                      onClick={() => handleResetDailyQuotas()}
+                      leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+                      className="text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                      title="Reset sent counter for today"
                     >
-                      Send Test
+                      Reset Daily Quotas
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleOpenAddProvider}
+                      leftIcon={<Plus className="w-3.5 h-3.5" />}
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs"
+                    >
+                      Add Provider
                     </Button>
                   </div>
                 </div>
+
+                {/* Provider Cards Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {emailProviders.map((provider, index) => {
+                    const percent = Math.min(100, Math.round((provider.sentToday / Math.max(1, provider.dailyQuota)) * 100));
+                    const isExhausted = provider.sentToday >= provider.dailyQuota;
+                    const isTesting = isTestingProviderId === provider.id;
+
+                    return (
+                      <div
+                        key={provider.id}
+                        className={`rounded-2xl border p-5 flex flex-col justify-between transition-all ${
+                          provider.enabled && provider.isVerified
+                            ? 'bg-white border-emerald-200 shadow-xs ring-1 ring-emerald-50'
+                            : 'bg-slate-50/70 border-slate-200 opacity-90'
+                        }`}
+                      >
+                        <div className="space-y-4">
+                          {/* Priority and Toggle Header */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                Priority #{provider.priority} {index === 0 ? '(Primary)' : `(Fallback ${index})`}
+                              </span>
+                              <div className="flex items-center">
+                                <button
+                                  type="button"
+                                  disabled={index === 0}
+                                  onClick={() => handleMovePriority(provider.id, 'up')}
+                                  className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                                  title="Increase priority"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={index === emailProviders.length - 1}
+                                  onClick={() => handleMovePriority(provider.id, 'down')}
+                                  className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                                  title="Decrease priority"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Activation Toggle with Verification Gate */}
+                            <div className="flex items-center gap-2">
+                              {!provider.isVerified && (
+                                <span title="Must verify connection before activating" className="text-amber-500">
+                                  <Lock className="w-3.5 h-3.5" />
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleProviderEnabled(provider)}
+                                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                  provider.enabled && provider.isVerified
+                                    ? 'bg-emerald-600'
+                                    : provider.enabled
+                                    ? 'bg-amber-500'
+                                    : 'bg-slate-300'
+                                }`}
+                                title={provider.isVerified ? (provider.enabled ? 'Click to deactivate' : 'Click to activate') : 'Must test and verify connection first'}
+                              >
+                                <span
+                                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                    provider.enabled ? 'translate-x-4' : 'translate-x-0'
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Provider Title & Badges */}
+                          <div>
+                            <div className="flex items-center justify-between gap-2">
+                              <h4 className="font-bold text-sm text-slate-900 truncate" title={provider.name}>
+                                {provider.name}
+                              </h4>
+                              <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                                {provider.type}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 truncate mt-0.5" title={provider.fromEmail}>
+                              From: {provider.fromName} &lt;{provider.fromEmail}&gt;
+                            </p>
+                          </div>
+
+                          {/* Status and Verification Badge */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {provider.isVerified ? (
+                              <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                Verified & Ready
+                              </Badge>
+                            ) : (
+                              <Badge variant="warning" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                Unverified - Test Required
+                              </Badge>
+                            )}
+
+                            {isExhausted ? (
+                              <Badge variant="error" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px]">
+                                Quota Exhausted
+                              </Badge>
+                            ) : provider.enabled ? (
+                              <Badge variant="info" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px]">
+                                Live in Rotation
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-slate-500 border-slate-200 text-[10px]">
+                                Inactive
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Daily Quota Progress Bar */}
+                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-slate-600">Daily Quota Usage:</span>
+                              <span className={isExhausted ? 'text-rose-600' : 'text-slate-900'}>
+                                {provider.sentToday} / {provider.dailyQuota} ({percent}%)
+                              </span>
+                            </div>
+
+                            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                              <div
+                                className={`h-full transition-all duration-300 rounded-full ${
+                                  percent >= 100 ? 'bg-rose-500' : percent >= 80 ? 'bg-amber-500' : 'bg-emerald-600'
+                                }`}
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+
+                            <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5">
+                              <span>Remaining: {Math.max(0, provider.dailyQuota - provider.sentToday)} free</span>
+                              <span>Auto-failover on limit</span>
+                            </div>
+                          </div>
+
+                          {/* Connection Details Summary */}
+                          <div className="text-[11px] text-slate-600 space-y-1 bg-white/70 p-2.5 rounded-lg border border-slate-100">
+                            {provider.type === 'resend' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">Resend API Key:</span>
+                                <span className="font-mono text-slate-800 font-semibold">
+                                  {provider.apiKey ? `${provider.apiKey.substring(0, 7)}...` : 'Not Set'}
+                                </span>
+                              </div>
+                            )}
+
+                            {provider.type === 'sendpulse' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">Mode:</span>
+                                <span className="font-semibold text-slate-800">
+                                  {provider.sendpulseMode === 'api' ? 'REST API OAuth' : 'SendPulse SMTP (465)'}
+                                </span>
+                              </div>
+                            )}
+
+                            {provider.type === 'nodemailer' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">SMTP Host:</span>
+                                <span className="font-semibold text-slate-800 truncate max-w-[130px]">
+                                  {provider.smtpHost || 'smtp.gmail.com'}:{provider.smtpPort || 587}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                              <span>Last Verified:</span>
+                              <span>
+                                {provider.lastTestedAt ? new Date(provider.lastTestedAt).toLocaleTimeString() : 'Never'}
+                              </span>
+                            </div>
+
+                            {provider.lastError && (
+                              <p className="text-[10px] text-rose-600 font-medium truncate" title={provider.lastError}>
+                                Error: {provider.lastError}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Card Actions */}
+                        <div className="flex items-center gap-2 pt-4 border-t border-slate-100 mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTestProviderConnection(provider)}
+                            isLoading={isTesting}
+                            leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
+                            className="flex-1 text-xs font-semibold text-emerald-800 border-emerald-200 hover:bg-emerald-50"
+                          >
+                            Test
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenEditProvider(provider)}
+                            leftIcon={<Edit3 className="w-3.5 h-3.5" />}
+                            className="flex-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          >
+                            Configure
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Live Multi-Provider Failover Tester Box */}
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <Zap className="w-4 h-4 text-emerald-600" />
+                        Live Failover Test Dispatcher
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        Dispatches a live notification email through the multi-provider router. If the primary provider's daily quota is full or encounters an error, it will automatically route through the fallback engines.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <input
+                        type="email"
+                        value={testEmailRecipient}
+                        onChange={(e) => setTestEmailRecipient(e.target.value)}
+                        placeholder="admin@academy.com"
+                        className="flex-1 sm:w-64 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-emerald-600"
+                      />
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={handleSendFailoverTestEmail}
+                        isLoading={isSendingFailoverTest}
+                        leftIcon={<Send className="w-3.5 h-3.5" />}
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shrink-0"
+                      >
+                        Send Test
+                      </Button>
+                    </div>
+                  </div>
+
+                  {failoverTestResult && (
+                    <div
+                      className={`p-3 rounded-lg border text-xs space-y-1.5 ${
+                        failoverTestResult.success
+                          ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
+                          : 'bg-rose-50/70 border-rose-200 text-rose-900'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between font-bold">
+                        <span>{failoverTestResult.success ? '[SUCCESS] Delivery Dispatched' : '[FAILED] Delivery Stalled'}</span>
+                        {failoverTestResult.providerUsed && (
+                          <span className="px-2 py-0.5 rounded bg-white border border-emerald-300 text-emerald-800 text-[10px]">
+                            Dispatched via: {failoverTestResult.providerUsed}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px]">{failoverTestResult.message}</p>
+                      {failoverTestResult.failoverHistory && failoverTestResult.failoverHistory.length > 0 && (
+                        <div className="pt-1.5 border-t border-emerald-200/60 font-mono text-[10px] space-y-0.5">
+                          <span className="font-bold">Failover Execution Trace:</span>
+                          {failoverTestResult.failoverHistory.map((h, i) => (
+                            <div key={i} className="text-slate-600">↳ {h}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Master WhatsApp Gateway */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
@@ -3612,6 +4094,349 @@ export const SuperAdminDashboard: React.FC = () => {
               >
                 Save
               </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Email Provider Configuration Modal */}
+      {isEmailProviderModalOpen && editingEmailProvider && (
+        <Modal
+          isOpen={isEmailProviderModalOpen}
+          onClose={() => setIsEmailProviderModalOpen(false)}
+          title={`Configure ${editingEmailProvider.name}`}
+          size="lg"
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Provider Name</label>
+                <input
+                  type="text"
+                  value={editingEmailProvider.name}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
+                  placeholder="e.g. Resend Primary API"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Engine Type</label>
+                <select
+                  value={editingEmailProvider.type}
+                  onChange={(e) => {
+                    const newType = e.target.value as EmailEngineType;
+                    setEditingEmailProvider({
+                      ...editingEmailProvider,
+                      type: newType,
+                      isVerified: false,
+                    });
+                  }}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
+                >
+                  <option value="resend">Resend (REST API - 100/day free)</option>
+                  <option value="sendpulse">SendPulse (SMTP Relay or REST API - 50/day free)</option>
+                  <option value="nodemailer">Nodemailer (Custom SMTP Relay - 500/day)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Priority Order</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={editingEmailProvider.priority}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, priority: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                />
+                <p className="text-[10px] text-slate-400 mt-0.5">1 = Primary choice</p>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Daily Free Quota Limit</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={editingEmailProvider.dailyQuota}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, dailyQuota: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                />
+                <p className="text-[10px] text-slate-400 mt-0.5">Auto-switches once reached</p>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Current Sent Today</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editingEmailProvider.sentToday}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, sentToday: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-slate-50 focus:outline-none focus:border-emerald-600"
+                />
+                <p className="text-[10px] text-slate-400 mt-0.5">Resets automatically at 00:00</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Email Address (From)</label>
+                <input
+                  type="email"
+                  value={editingEmailProvider.fromEmail}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, fromEmail: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                  placeholder="notifications@ankabit.app"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Sender Display Name</label>
+                <input
+                  type="text"
+                  value={editingEmailProvider.fromName}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, fromName: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                  placeholder="Ankabit Quran Cloud"
+                />
+              </div>
+            </div>
+
+            {/* Provider Specific Settings */}
+            {editingEmailProvider.type === 'resend' && (
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-800">Resend API Authentication</span>
+                  <Badge variant="outline" className="text-[10px] border-slate-300">HTTP REST</Badge>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Resend API Key</label>
+                  <input
+                    type="password"
+                    value={editingEmailProvider.apiKey || ''}
+                    onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, apiKey: e.target.value, isVerified: false })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                    placeholder="re_xxxxxxxxxxxxxxxxx"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-0.5">Get your API key from resend.com dashboard. Includes 100 free emails/day.</p>
+                </div>
+              </div>
+            )}
+
+            {editingEmailProvider.type === 'sendpulse' && (
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-800">SendPulse Connection Mode</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingEmailProvider({ ...editingEmailProvider, sendpulseMode: 'smtp', isVerified: false })}
+                      className={`px-2.5 py-1 text-xs rounded-lg font-semibold transition cursor-pointer ${editingEmailProvider.sendpulseMode === 'smtp' ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'}`}
+                    >
+                      SMTP Relay
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingEmailProvider({ ...editingEmailProvider, sendpulseMode: 'api', isVerified: false })}
+                      className={`px-2.5 py-1 text-xs rounded-lg font-semibold transition cursor-pointer ${editingEmailProvider.sendpulseMode === 'api' ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'}`}
+                    >
+                      REST API
+                    </button>
+                  </div>
+                </div>
+
+                {editingEmailProvider.sendpulseMode === 'api' ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">SendPulse API User ID</label>
+                      <input
+                        type="text"
+                        value={editingEmailProvider.sendpulseApiUserId || ''}
+                        onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, sendpulseApiUserId: e.target.value, isVerified: false })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        placeholder="Client ID from API tab"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">SendPulse API Secret</label>
+                      <input
+                        type="password"
+                        value={editingEmailProvider.sendpulseApiSecret || ''}
+                        onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, sendpulseApiSecret: e.target.value, isVerified: false })}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                        placeholder="Client Secret"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">SendPulse SMTP Login Email</label>
+                        <input
+                          type="text"
+                          value={editingEmailProvider.sendpulseSmtpUser || ''}
+                          onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, sendpulseSmtpUser: e.target.value, isVerified: false })}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                          placeholder="your-smtp-account@domain.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1">SendPulse SMTP Password</label>
+                        <input
+                          type="password"
+                          value={editingEmailProvider.sendpulseSmtpPass || ''}
+                          onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, sendpulseSmtpPass: e.target.value, isVerified: false })}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                          placeholder="SMTP password from SendPulse SMTP tab"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-500">Connecting automatically to smtp-pulse.com on port 465 (SSL).</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {editingEmailProvider.type === 'nodemailer' && (
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-800">Nodemailer Custom SMTP Server</span>
+                  <Badge variant="outline" className="text-[10px] border-slate-300">Direct TCP Socket</Badge>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="col-span-2">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Host</label>
+                    <input
+                      type="text"
+                      value={editingEmailProvider.smtpHost || ''}
+                      onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, smtpHost: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                      placeholder="smtp.gmail.com or mail.yourdomain.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Port</label>
+                    <input
+                      type="number"
+                      value={editingEmailProvider.smtpPort || 587}
+                      onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, smtpPort: Number(e.target.value), isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Username</label>
+                    <input
+                      type="text"
+                      value={editingEmailProvider.smtpUser || ''}
+                      onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, smtpUser: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                      placeholder="user@domain.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">SMTP Password / App Key</label>
+                    <input
+                      type="password"
+                      value={editingEmailProvider.smtpPass || ''}
+                      onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, smtpPass: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="smtpSecureCheck"
+                    checked={editingEmailProvider.smtpSecure || false}
+                    onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, smtpSecure: e.target.checked, isVerified: false })}
+                    className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <label htmlFor="smtpSecureCheck" className="text-xs text-slate-700 font-medium cursor-pointer">
+                    Use SSL Direct Security (required for port 465)
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {/* Test Connection Button & Gate Status */}
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-800">Verification Gate:</span>
+                  {editingEmailProvider.isVerified ? (
+                    <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      Verified & Ready
+                    </Badge>
+                  ) : (
+                    <Badge variant="warning" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      Unverified (Must Test)
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  Providers cannot be activated or given student data to send until connection & auth are tested.
+                </p>
+                {modalTestFeedback && (
+                  <p className={`text-[11px] font-semibold mt-1 ${modalTestFeedback.success ? 'text-emerald-700' : 'text-rose-600'}`}>
+                    {modalTestFeedback.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTestInModal}
+                isLoading={isTestingInModal}
+                leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
+                className="text-xs font-semibold text-emerald-800 border-emerald-300 hover:bg-emerald-50 shrink-0"
+              >
+                Test Connection
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="enableProviderCheck"
+                  disabled={!editingEmailProvider.isVerified}
+                  checked={editingEmailProvider.enabled}
+                  onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, enabled: e.target.checked })}
+                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                />
+                <label
+                  htmlFor="enableProviderCheck"
+                  className={`text-xs font-semibold ${editingEmailProvider.isVerified ? 'text-slate-900 cursor-pointer' : 'text-slate-400 cursor-not-allowed'}`}
+                >
+                  Activate for Live Outbound Pool {!editingEmailProvider.isVerified && '(Unlock by Testing)'}
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEmailProviderModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSaveEmailProviderModal}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
+                >
+                  Save
+                </Button>
+              </div>
             </div>
           </div>
         </Modal>
