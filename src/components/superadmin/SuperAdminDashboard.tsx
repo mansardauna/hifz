@@ -12,6 +12,8 @@ import {
   SuperAdminPaymentSettings,
   EmailEngineType,
   EmailProviderConfig,
+  WhatsAppEngineType,
+  WhatsAppProviderConfig,
 } from '../../types/superAdmin';
 import {
   getStoredPlatformPlans,
@@ -215,6 +217,22 @@ export const SuperAdminDashboard: React.FC = () => {
     failoverHistory?: string[];
   } | null>(null);
 
+  // Multi-Provider WhatsApp Failover Gateway State
+  const [whatsappProviders, setWhatsappProviders] = useState<WhatsAppProviderConfig[]>([]);
+  const [isLoadingWhatsAppProviders, setIsLoadingWhatsAppProviders] = useState(false);
+  const [isTestingWhatsAppId, setIsTestingWhatsAppId] = useState<string | null>(null);
+  const [editingWhatsAppProvider, setEditingWhatsAppProvider] = useState<WhatsAppProviderConfig | null>(null);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+  const [isTestingWhatsAppInModal, setIsTestingWhatsAppInModal] = useState(false);
+  const [modalWATestFeedback, setModalWATestFeedback] = useState<{ success: boolean; message: string } | null>(null);
+  const [isSendingWAFailoverTest, setIsSendingWAFailoverTest] = useState(false);
+  const [waFailoverTestResult, setWaFailoverTestResult] = useState<{
+    success: boolean;
+    message: string;
+    providerUsed?: string;
+    failoverHistory?: string[];
+  } | null>(null);
+
   // System Settings State
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [globalAnnouncement, setGlobalAnnouncement] = useState('');
@@ -243,6 +261,29 @@ export const SuperAdminDashboard: React.FC = () => {
     }
   }, []);
 
+  const fetchWhatsAppProviders = useCallback(async () => {
+    setIsLoadingWhatsAppProviders(true);
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.providers) && data.providers.length > 0) {
+          setWhatsappProviders(data.providers);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Live fetch for WhatsApp providers failed, checking stored fallback:', err);
+    } finally {
+      setIsLoadingWhatsAppProviders(false);
+    }
+
+    const stored = getStoredSuperAdminGateways();
+    if (stored.whatsappProviders && stored.whatsappProviders.length > 0) {
+      setWhatsappProviders(stored.whatsappProviders);
+    }
+  }, []);
+
   useEffect(() => {
     setPlans(getStoredPlatformPlans());
     setStaffUsers(getStoredSuperAdminUsers());
@@ -251,11 +292,15 @@ export const SuperAdminDashboard: React.FC = () => {
     if (storedGateways.emailProviders && storedGateways.emailProviders.length > 0) {
       setEmailProviders(storedGateways.emailProviders);
     }
+    if (storedGateways.whatsappProviders && storedGateways.whatsappProviders.length > 0) {
+      setWhatsappProviders(storedGateways.whatsappProviders);
+    }
     setInfraSettings(getStoredSuperAdminInfrastructure());
     setPaymentSettings(getStoredSuperAdminPaymentGateways());
     fetchSuperAdminData();
     fetchEmailProviders();
-  }, [fetchSuperAdminData, fetchEmailProviders]);
+    fetchWhatsAppProviders();
+  }, [fetchSuperAdminData, fetchEmailProviders, fetchWhatsAppProviders]);
 
   // Calculate high-level financial & tenant statistics from REAL database records
   const totalAcademies = tenants.length;
@@ -415,6 +460,7 @@ export const SuperAdminDashboard: React.FC = () => {
     const updated = {
       ...gatewaySettings,
       emailProviders,
+      whatsappProviders,
     };
     saveSuperAdminGateways(updated);
     success('Gateways Saved', 'Platform SuperAdmin shared credentials have been updated.');
@@ -702,6 +748,286 @@ export const SuperAdminDashboard: React.FC = () => {
       success('Priority Updated', `Failover rotation sequence changed.`);
     } catch {
       fetchEmailProviders();
+    }
+  };
+
+  const handleTestWhatsAppConnection = async (targetProvider: WhatsAppProviderConfig) => {
+    setIsTestingWhatsAppId(targetProvider.id);
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'test_provider',
+          config: targetProvider,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success('WhatsApp Verified', data.message);
+        const updated = whatsappProviders.map((p) =>
+          p.id === targetProvider.id
+            ? { ...p, isVerified: true, status: p.enabled ? ('active' as const) : ('inactive' as const), lastTestedAt: new Date().toISOString(), lastError: null }
+            : p
+        );
+        setWhatsappProviders(updated);
+        await fetch('/api/super-admin/whatsapp-providers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'save_providers', providers: updated }),
+        });
+      } else {
+        error('Verification Failed', data.message || 'Credentials or handshake failed.');
+        const updated = whatsappProviders.map((p) =>
+          p.id === targetProvider.id
+            ? { ...p, isVerified: false, status: 'error' as const, lastError: data.message }
+            : p
+        );
+        setWhatsappProviders(updated);
+      }
+    } catch (err: any) {
+      error('Verification Error', err.message || 'Network error while testing WhatsApp provider.');
+    } finally {
+      setIsTestingWhatsAppId(null);
+    }
+  };
+
+  const handleToggleWhatsAppEnabled = async (targetProvider: WhatsAppProviderConfig) => {
+    if (!targetProvider.enabled && !targetProvider.isVerified) {
+      warning('Verification Required', `"${targetProvider.name}" is unverified. Please run Test Connection before activating it for live WhatsApp notifications.`);
+      return;
+    }
+
+    const updated = whatsappProviders.map((p) =>
+      p.id === targetProvider.id
+        ? {
+            ...p,
+            enabled: !p.enabled,
+            status: !p.enabled ? ('active' as const) : ('inactive' as const),
+          }
+        : p
+    );
+    setWhatsappProviders(updated);
+
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_providers', providers: updated }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success(
+          targetProvider.enabled ? 'Provider Deactivated' : 'Provider Activated',
+          `"${targetProvider.name}" is now ${targetProvider.enabled ? 'offline' : 'active in WhatsApp delivery pool'}.`
+        );
+      } else {
+        error('Update Failed', data.message);
+        fetchWhatsAppProviders();
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to update WhatsApp provider status');
+      fetchWhatsAppProviders();
+    }
+  };
+
+  const handleOpenAddWhatsAppProvider = () => {
+    const newProv: WhatsAppProviderConfig = {
+      id: `wa_custom_${Date.now()}`,
+      name: 'Custom Twilio Gateway',
+      type: 'twilio',
+      enabled: false,
+      priority: whatsappProviders.length + 1,
+      dailyQuota: 100,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromNumber: '+14155238886',
+      accountSid: '',
+      authToken: '',
+    };
+    setEditingWhatsAppProvider(newProv);
+    setModalWATestFeedback(null);
+    setIsWhatsAppModalOpen(true);
+  };
+
+  const handleOpenEditWhatsAppProvider = (provider: WhatsAppProviderConfig) => {
+    setEditingWhatsAppProvider(JSON.parse(JSON.stringify(provider)));
+    setModalWATestFeedback(null);
+    setIsWhatsAppModalOpen(true);
+  };
+
+  const handleSaveWhatsAppProviderModal = async () => {
+    if (!editingWhatsAppProvider) return;
+    if (!editingWhatsAppProvider.name.trim()) {
+      error('Validation Error', 'Provider name cannot be empty.');
+      return;
+    }
+    if (!editingWhatsAppProvider.fromNumber.trim()) {
+      error('Validation Error', 'Sender Phone Number cannot be empty.');
+      return;
+    }
+
+    let updatedList: WhatsAppProviderConfig[];
+    const exists = whatsappProviders.some((p) => p.id === editingWhatsAppProvider.id);
+    if (exists) {
+      updatedList = whatsappProviders.map((p) => (p.id === editingWhatsAppProvider.id ? editingWhatsAppProvider : p));
+    } else {
+      updatedList = [...whatsappProviders, editingWhatsAppProvider];
+    }
+
+    updatedList.sort((a, b) => a.priority - b.priority);
+    setWhatsappProviders(updatedList);
+
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_providers', providers: updatedList }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success('WhatsApp Provider Saved', `"${editingWhatsAppProvider.name}" settings saved.`);
+        setIsWhatsAppModalOpen(false);
+      } else {
+        error('Save Failed', data.message);
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to save WhatsApp provider config.');
+    }
+  };
+
+  const handleTestWhatsAppInModal = async () => {
+    if (!editingWhatsAppProvider) return;
+    setIsTestingWhatsAppInModal(true);
+    setModalWATestFeedback(null);
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'test_provider',
+          config: editingWhatsAppProvider,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setModalWATestFeedback({ success: true, message: data.message });
+        setEditingWhatsAppProvider({
+          ...editingWhatsAppProvider,
+          isVerified: true,
+          status: editingWhatsAppProvider.enabled ? 'active' : 'inactive',
+          lastTestedAt: new Date().toISOString(),
+          lastError: null,
+        });
+        success('WhatsApp Verified', data.message);
+      } else {
+        setModalWATestFeedback({ success: false, message: data.message || 'Verification failed.' });
+        setEditingWhatsAppProvider({
+          ...editingWhatsAppProvider,
+          isVerified: false,
+          status: 'error',
+          lastError: data.message,
+        });
+        error('Verification Failed', data.message);
+      }
+    } catch (err: any) {
+      setModalWATestFeedback({ success: false, message: err.message || 'Network error.' });
+      error('Test Error', err.message);
+    } finally {
+      setIsTestingWhatsAppInModal(false);
+    }
+  };
+
+  const handleResetWhatsAppDailyQuotas = async (providerId?: string) => {
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reset_quota',
+          providerId,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        success('Quotas Reset', data.message);
+        fetchWhatsAppProviders();
+      } else {
+        error('Reset Failed', data.message);
+      }
+    } catch (err: any) {
+      error('Error', err.message);
+    }
+  };
+
+  const handleSendWAFailoverTest = async () => {
+    if (!testWARecipient.trim()) {
+      error('Recipient Required', 'Please enter a test recipient WhatsApp phone number.');
+      return;
+    }
+    setIsSendingWAFailoverTest(true);
+    setWaFailoverTestResult(null);
+
+    try {
+      const res = await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send_test_whatsapp',
+          recipient: testWARecipient.trim(),
+        }),
+      });
+      const data = await res.json();
+      setWaFailoverTestResult({
+        success: data.success,
+        message: data.message,
+        providerUsed: data.providerUsed,
+        failoverHistory: data.failoverHistory,
+      });
+
+      if (data.success) {
+        success('WhatsApp Dispatched', `Delivered via ${data.providerUsed || 'gateway'} to ${testWARecipient}`);
+        fetchWhatsAppProviders();
+      } else {
+        error('Delivery Failed', data.message || 'All WhatsApp providers failed or daily quotas exhausted.');
+      }
+    } catch (err: any) {
+      error('Error', err.message || 'Failed to dispatch test WhatsApp message.');
+      setWaFailoverTestResult({
+        success: false,
+        message: err.message || 'Network error while attempting WhatsApp delivery.',
+      });
+    } finally {
+      setIsSendingWAFailoverTest(false);
+    }
+  };
+
+  const handleMoveWAPriority = async (providerId: string, direction: 'up' | 'down') => {
+    const index = whatsappProviders.findIndex((p) => p.id === providerId);
+    if (index === -1) return;
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === whatsappProviders.length - 1) return;
+
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    const reordered = [...whatsappProviders];
+    const temp = reordered[index];
+    reordered[index] = reordered[targetIndex];
+    reordered[targetIndex] = temp;
+
+    const updated = reordered.map((p, idx) => ({ ...p, priority: idx + 1 }));
+    setWhatsappProviders(updated);
+
+    try {
+      await fetch('/api/super-admin/whatsapp-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_providers', providers: updated }),
+      });
+      success('Priority Updated', `WhatsApp failover rotation sequence updated.`);
+    } catch {
+      fetchWhatsAppProviders();
     }
   };
 
@@ -1021,7 +1347,7 @@ export const SuperAdminDashboard: React.FC = () => {
               className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold justify-center shadow-md"
               disabled={isAuthenticating}
             >
-              {isAuthenticating ? 'Verifying Security...' : 'Unlock SuperAdmin Console'}
+              {isAuthenticating ? 'Verifying...' : 'Unlock Console'}
             </Button>
           </form>
 
@@ -1570,7 +1896,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     onClick={() => setActiveTab('academies')}
                     className="text-xs font-semibold text-slate-700 border-slate-200 hover:bg-slate-50"
                   >
-                    View All Academies
+                    View All
                   </Button>
                 </div>
 
@@ -2317,177 +2643,324 @@ export const SuperAdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {/* Master WhatsApp Gateway */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div className="flex items-center gap-2 text-teal-700">
+              {/* WhatsApp Multi-Provider Failover Deck */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700">
                       <MessageSquare className="w-5 h-5" />
-                      <h3 className="font-semibold text-sm text-slate-900">Platform Shared WhatsApp Gateway</h3>
                     </div>
-                    <Badge variant="info" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
-                      Master Pool
-                    </Badge>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-sm text-slate-900">Platform Shared WhatsApp Gateway</h3>
+                        <Badge variant="info" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
+                          Multi-Provider Auto-Failover
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Meta Cloud API, Twilio & Infobip with real-time rate limit failover and strict pre-activation handshake verification.
+                      </p>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Provider Engine</label>
-                    <select
-                      value={gatewaySettings.whatsapp.provider}
-                      onChange={(e) =>
-                        setGatewaySettings({
-                          ...gatewaySettings,
-                          whatsapp: { ...gatewaySettings.whatsapp, provider: e.target.value as WhatsAppProviderType },
-                        })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-600"
-                    >
-                      <option value="cloud_api">Meta Cloud API (Official WhatsApp Business)</option>
-                      <option value="twilio">Twilio Programmable Messaging</option>
-                      <option value="infobip">Infobip WhatsApp Business API</option>
-                    </select>
-                  </div>
-
-                  {(gatewaySettings.whatsapp.provider === 'cloud_api' || gatewaySettings.whatsapp.provider === 'meta_cloud') && (
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number ID</label>
-                        <input
-                          type="text"
-                          value={gatewaySettings.whatsapp.phoneNumberId || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, phoneNumberId: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                          placeholder="109849284920482"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Permanent System User Token</label>
-                        <input
-                          type="password"
-                          value={gatewaySettings.whatsapp.accessToken || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, accessToken: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                          placeholder="EAAX..."
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {gatewaySettings.whatsapp.provider === 'twilio' && (
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Twilio Account SID</label>
-                        <input
-                          type="text"
-                          value={gatewaySettings.whatsapp.twilioAccountSid || gatewaySettings.whatsapp.accountSid || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, twilioAccountSid: e.target.value, accountSid: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">Auth Token</label>
-                          <input
-                            type="password"
-                            value={gatewaySettings.whatsapp.twilioAuthToken || gatewaySettings.whatsapp.authToken || ''}
-                            onChange={(e) =>
-                              setGatewaySettings({
-                                ...gatewaySettings,
-                                whatsapp: { ...gatewaySettings.whatsapp, twilioAuthToken: e.target.value, authToken: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">From Number / Sender</label>
-                          <input
-                            type="text"
-                            value={gatewaySettings.whatsapp.twilioFromNumber || gatewaySettings.whatsapp.fromNumber || ''}
-                            onChange={(e) =>
-                              setGatewaySettings({
-                                ...gatewaySettings,
-                                whatsapp: { ...gatewaySettings.whatsapp, twilioFromNumber: e.target.value, fromNumber: e.target.value },
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                            placeholder="whatsapp:+14155238886"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {gatewaySettings.whatsapp.provider === 'infobip' && (
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Infobip Base URL</label>
-                        <input
-                          type="text"
-                          value={gatewaySettings.whatsapp.infobipBaseUrl || gatewaySettings.whatsapp.baseUrl || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, infobipBaseUrl: e.target.value, baseUrl: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                          placeholder="https://xyz.api.infobip.com"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Infobip API Key</label>
-                        <input
-                          type="password"
-                          value={gatewaySettings.whatsapp.infobipApiKey || gatewaySettings.whatsapp.apiKey || ''}
-                          onChange={(e) =>
-                            setGatewaySettings({
-                              ...gatewaySettings,
-                              whatsapp: { ...gatewaySettings.whatsapp, infobipApiKey: e.target.value, apiKey: e.target.value },
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Live Test Sender for WhatsApp */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={testWARecipient}
-                      onChange={(e) => setTestWARecipient(e.target.value)}
-                      placeholder="+1234567890"
-                      className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-teal-600"
-                    />
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleSendPlatformTest('whatsapp')}
-                      isLoading={isSendingPlatformTest}
-                      leftIcon={<Send className="w-3.5 h-3.5" />}
-                      className="text-xs font-semibold text-teal-800 border-teal-200 hover:bg-teal-50 shrink-0"
+                      onClick={() => handleResetWhatsAppDailyQuotas()}
+                      leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+                      className="text-xs text-slate-600 hover:bg-slate-100"
                     >
-                      Send Test
+                      Reset Quotas
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleOpenAddWhatsAppProvider}
+                      leftIcon={<Plus className="w-3.5 h-3.5" />}
+                      className="bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold"
+                    >
+                      Add Provider
                     </Button>
                   </div>
+                </div>
+
+                {/* WhatsApp Provider Rotation Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {whatsappProviders.map((provider, index) => {
+                    const percent = provider.dailyQuota > 0 ? Math.min(100, Math.round((provider.sentToday / provider.dailyQuota) * 100)) : 0;
+                    const isExhausted = provider.sentToday >= provider.dailyQuota;
+                    const isTesting = isTestingWhatsAppId === provider.id;
+
+                    return (
+                      <div
+                        key={provider.id}
+                        className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
+                          !provider.enabled
+                            ? 'bg-slate-50/60 border-slate-200 opacity-80'
+                            : isExhausted
+                            ? 'bg-rose-50/30 border-rose-200'
+                            : 'bg-white border-teal-200/80 shadow-xs'
+                        }`}
+                      >
+                        <div className="space-y-3">
+                          {/* Top row: Priority & Active Switch */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <Badge
+                                variant={index === 0 ? 'success' : 'outline'}
+                                className={`text-[10px] font-bold ${
+                                  index === 0 ? 'bg-teal-50 text-teal-800 border-teal-200' : 'text-slate-600 border-slate-200'
+                                }`}
+                              >
+                                {index === 0 ? 'Primary (1)' : `Fallback (${index + 1})`}
+                              </Badge>
+
+                              {/* Priority reordering buttons */}
+                              <div className="flex items-center">
+                                <button
+                                  type="button"
+                                  disabled={index === 0}
+                                  onClick={() => handleMoveWAPriority(provider.id, 'up')}
+                                  className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                                  title="Move Up in Priority Rotation"
+                                >
+                                  <ArrowUp className="w-3 h-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={index === whatsappProviders.length - 1}
+                                  onClick={() => handleMoveWAPriority(provider.id, 'down')}
+                                  className="p-0.5 text-slate-400 hover:text-slate-700 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                                  title="Move Down in Priority Rotation"
+                                >
+                                  <ArrowDown className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Enable/Disable Toggle */}
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={provider.enabled}
+                                onChange={() => handleToggleWhatsAppEnabled(provider)}
+                                className="sr-only"
+                              />
+                              <div
+                                className={`w-8 h-4 rounded-full transition-colors relative ${
+                                  provider.enabled ? 'bg-teal-600' : 'bg-slate-300'
+                                }`}
+                              >
+                                <div
+                                  className={`w-3 h-3 rounded-full bg-white transition-transform absolute top-0.5 ${
+                                    provider.enabled ? 'left-4' : 'left-0.5'
+                                  }`}
+                                />
+                              </div>
+                              <span className="text-[10px] font-semibold text-slate-600">
+                                {provider.enabled ? 'Active' : 'Off'}
+                              </span>
+                            </label>
+                          </div>
+
+                          {/* Provider Header & Verification Status */}
+                          <div>
+                            <h4 className="text-xs font-bold text-slate-900 truncate" title={provider.name}>
+                              {provider.name}
+                            </h4>
+                            <p className="text-[10px] text-slate-500 capitalize">
+                              Engine: {provider.type === 'cloud_api' ? 'Meta Cloud API' : provider.type === 'twilio' ? 'Twilio Messaging' : 'Infobip Enterprise'}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
+                            {provider.isVerified ? (
+                              <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] flex items-center gap-1">
+                                <CheckCircle className="w-2.5 h-2.5" />
+                                Ready & Tested
+                              </Badge>
+                            ) : (
+                              <Badge variant="warning" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] flex items-center gap-1">
+                                <AlertCircle className="w-2.5 h-2.5" />
+                                Unverified
+                              </Badge>
+                            )}
+
+                            {provider.enabled ? (
+                              <Badge variant="info" className="bg-teal-50 text-teal-700 border-teal-200 text-[10px]">
+                                In Rotation
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-slate-500 border-slate-200 text-[10px]">
+                                Inactive
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Daily Quota Progress Bar */}
+                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-slate-600">Daily Messages:</span>
+                              <span className={isExhausted ? 'text-rose-600' : 'text-slate-900'}>
+                                {provider.sentToday} / {provider.dailyQuota} ({percent}%)
+                              </span>
+                            </div>
+
+                            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                              <div
+                                className={`h-full transition-all duration-300 rounded-full ${
+                                  percent >= 100 ? 'bg-rose-500' : percent >= 80 ? 'bg-amber-500' : 'bg-teal-600'
+                                }`}
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+
+                            <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5">
+                              <span>Remaining: {Math.max(0, provider.dailyQuota - provider.sentToday)} free</span>
+                              <span>Auto-failover on limit</span>
+                            </div>
+                          </div>
+
+                          {/* Connection Details Summary */}
+                          <div className="text-[11px] text-slate-600 space-y-1 bg-white/70 p-2.5 rounded-lg border border-slate-100">
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-400">Sender Number:</span>
+                              <span className="font-mono text-slate-800 font-semibold truncate max-w-[130px]">
+                                {provider.fromNumber || 'Not Set'}
+                              </span>
+                            </div>
+
+                            {provider.type === 'cloud_api' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">Phone ID:</span>
+                                <span className="font-mono text-slate-800 font-semibold truncate max-w-[130px]">
+                                  {provider.phoneNumberId || 'Not Set'}
+                                </span>
+                              </div>
+                            )}
+
+                            {provider.type === 'twilio' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">Account SID:</span>
+                                <span className="font-mono text-slate-800 font-semibold truncate max-w-[130px]">
+                                  {provider.accountSid ? `${provider.accountSid.substring(0, 8)}...` : 'Not Set'}
+                                </span>
+                              </div>
+                            )}
+
+                            {provider.type === 'infobip' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-400">Base URL:</span>
+                                <span className="font-semibold text-slate-800 truncate max-w-[130px]">
+                                  {provider.infobipBaseUrl || 'api.infobip.com'}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                              <span>Last Verified:</span>
+                              <span>
+                                {provider.lastTestedAt ? new Date(provider.lastTestedAt).toLocaleTimeString() : 'Never'}
+                              </span>
+                            </div>
+
+                            {provider.lastError && (
+                              <p className="text-[10px] text-rose-600 font-medium truncate" title={provider.lastError}>
+                                Error: {provider.lastError}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Card Actions */}
+                        <div className="flex items-center gap-2 pt-4 border-t border-slate-100 mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTestWhatsAppConnection(provider)}
+                            isLoading={isTesting}
+                            leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
+                            className="flex-1 text-xs font-semibold text-teal-800 border-teal-200 hover:bg-teal-50"
+                          >
+                            Test
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenEditWhatsAppProvider(provider)}
+                            leftIcon={<Edit3 className="w-3.5 h-3.5" />}
+                            className="flex-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                          >
+                            Configure
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Live Multi-Provider Failover Tester Box for WhatsApp */}
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <Zap className="w-4 h-4 text-teal-600" />
+                        Live WhatsApp Failover Test Dispatcher
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        Dispatches a live WhatsApp test message through the multi-provider failover router. If the primary provider quota is exhausted or encounters an API error, it will immediately rotate to the fallback engines.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <input
+                        type="text"
+                        value={testWARecipient}
+                        onChange={(e) => setTestWARecipient(e.target.value)}
+                        placeholder="+1234567890"
+                        className="flex-1 sm:w-64 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-teal-600"
+                      />
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={handleSendWAFailoverTest}
+                        isLoading={isSendingWAFailoverTest}
+                        leftIcon={<Send className="w-3.5 h-3.5" />}
+                        className="bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shrink-0"
+                      >
+                        Send Test
+                      </Button>
+                    </div>
+                  </div>
+
+                  {waFailoverTestResult && (
+                    <div
+                      className={`p-3 rounded-lg border text-xs space-y-1.5 ${
+                        waFailoverTestResult.success
+                          ? 'bg-teal-50/70 border-teal-200 text-teal-900'
+                          : 'bg-rose-50/70 border-rose-200 text-rose-900'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between font-bold">
+                        <span>{waFailoverTestResult.success ? '[SUCCESS] Delivery Dispatched' : '[FAILED] Delivery Stalled'}</span>
+                        {waFailoverTestResult.providerUsed && (
+                          <span className="px-2 py-0.5 rounded bg-white border border-teal-300 text-teal-800 text-[10px]">
+                            Dispatched via: {waFailoverTestResult.providerUsed}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px]">{waFailoverTestResult.message}</p>
+                      {waFailoverTestResult.failoverHistory && waFailoverTestResult.failoverHistory.length > 0 && (
+                        <div className="pt-1.5 border-t border-teal-200/60 font-mono text-[10px] space-y-0.5">
+                          <span className="font-bold">Failover Execution Trace:</span>
+                          {waFailoverTestResult.failoverHistory.map((h, i) => (
+                            <div key={i} className="text-slate-600">↳ {h}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -4398,7 +4871,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
                 className="text-xs font-semibold text-emerald-800 border-emerald-300 hover:bg-emerald-50 shrink-0"
               >
-                Test Connection
+                Test
               </Button>
             </div>
 
@@ -4433,6 +4906,262 @@ export const SuperAdminDashboard: React.FC = () => {
                   size="sm"
                   onClick={handleSaveEmailProviderModal}
                   className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold"
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Configure WhatsApp Provider Modal */}
+      {isWhatsAppModalOpen && editingWhatsAppProvider && (
+        <Modal
+          isOpen={isWhatsAppModalOpen}
+          onClose={() => setIsWhatsAppModalOpen(false)}
+          title={`Configure ${editingWhatsAppProvider.name}`}
+          size="lg"
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Provider Nickname</label>
+                <input
+                  type="text"
+                  value={editingWhatsAppProvider.name}
+                  onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                  placeholder="e.g. Meta Cloud Primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">WhatsApp Engine Type</label>
+                <select
+                  value={editingWhatsAppProvider.type}
+                  onChange={(e) =>
+                    setEditingWhatsAppProvider({
+                      ...editingWhatsAppProvider,
+                      type: e.target.value as WhatsAppEngineType,
+                      isVerified: false,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-semibold"
+                >
+                  <option value="cloud_api">Meta Cloud API (Official WhatsApp)</option>
+                  <option value="twilio">Twilio Programmable Messaging</option>
+                  <option value="infobip">Infobip Enterprise API</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Daily Message Quota</label>
+                <input
+                  type="number"
+                  value={editingWhatsAppProvider.dailyQuota}
+                  onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, dailyQuota: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Sender WhatsApp Phone Number</label>
+                <input
+                  type="text"
+                  value={editingWhatsAppProvider.fromNumber || ''}
+                  onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, fromNumber: e.target.value, isVerified: false })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                  placeholder="+14155238886"
+                />
+              </div>
+            </div>
+
+            {/* Meta Cloud API Specific Settings */}
+            {editingWhatsAppProvider.type === 'cloud_api' && (
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-800">Meta WhatsApp Cloud API Credentials</span>
+                  <Badge variant="outline" className="text-[10px] border-teal-200 text-teal-700">Official Graph API v18.0</Badge>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Phone Number ID</label>
+                    <input
+                      type="text"
+                      value={editingWhatsAppProvider.phoneNumberId || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, phoneNumberId: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="e.g. 109849284920482"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Permanent System User Access Token</label>
+                    <input
+                      type="password"
+                      value={editingWhatsAppProvider.accessToken || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, accessToken: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="EAABw..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">WhatsApp Business Account ID (WABA ID - Optional)</label>
+                    <input
+                      type="text"
+                      value={editingWhatsAppProvider.wabaId || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, wabaId: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="e.g. 102938475610293"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Twilio Specific Settings */}
+            {editingWhatsAppProvider.type === 'twilio' && (
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-800">Twilio Programmable Messaging</span>
+                  <Badge variant="outline" className="text-[10px] border-slate-300">REST API</Badge>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Twilio Account SID</label>
+                    <input
+                      type="text"
+                      value={editingWhatsAppProvider.accountSid || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, accountSid: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Twilio Auth Token</label>
+                    <input
+                      type="password"
+                      value={editingWhatsAppProvider.authToken || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, authToken: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="••••••••••••••••••••••••••••••••"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Infobip Specific Settings */}
+            {editingWhatsAppProvider.type === 'infobip' && (
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-800">Infobip Enterprise WhatsApp</span>
+                  <Badge variant="outline" className="text-[10px] border-slate-300">HTTP REST</Badge>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Infobip Base URL</label>
+                    <input
+                      type="text"
+                      value={editingWhatsAppProvider.infobipBaseUrl || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, infobipBaseUrl: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="https://xyz.api.infobip.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Infobip API Key</label>
+                    <input
+                      type="password"
+                      value={editingWhatsAppProvider.infobipApiKey || ''}
+                      onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, infobipApiKey: e.target.value, isVerified: false })}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-teal-600 font-mono"
+                      placeholder="App Key from Infobip Portal"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Test Connection Button & Gate Status */}
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-800">Verification Gate:</span>
+                  {editingWhatsAppProvider.isVerified ? (
+                    <Badge variant="success" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      Verified & Ready
+                    </Badge>
+                  ) : (
+                    <Badge variant="warning" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      Unverified (Must Test)
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  WhatsApp providers cannot be activated or given student notifications until credentials and phone number are tested.
+                </p>
+                {modalWATestFeedback && (
+                  <p className={`text-[11px] font-semibold mt-1 ${modalWATestFeedback.success ? 'text-emerald-700' : 'text-rose-600'}`}>
+                    {modalWATestFeedback.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTestWhatsAppInModal}
+                isLoading={isTestingWhatsAppInModal}
+                leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
+                className="text-xs font-semibold text-teal-800 border-teal-300 hover:bg-teal-50 shrink-0"
+              >
+                Test
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="enableWAProviderCheck"
+                  disabled={!editingWhatsAppProvider.isVerified}
+                  checked={editingWhatsAppProvider.enabled}
+                  onChange={(e) => setEditingWhatsAppProvider({ ...editingWhatsAppProvider, enabled: e.target.checked })}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                />
+                <label
+                  htmlFor="enableWAProviderCheck"
+                  className={`text-xs font-semibold ${editingWhatsAppProvider.isVerified ? 'text-slate-900 cursor-pointer' : 'text-slate-400 cursor-not-allowed'}`}
+                >
+                  Activate for Live Outbound Pool {!editingWhatsAppProvider.isVerified && '(Unlock by Testing)'}
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsWhatsAppModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSaveWhatsAppProviderModal}
+                  className="bg-teal-700 hover:bg-teal-800 text-white font-semibold"
                 >
                   Save
                 </Button>

@@ -1384,7 +1384,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                       leftIcon={<Play className="w-4 h-4" />}
                       className="px-6 py-3 font-semibold text-xs shadow-md"
                     >
-                      Start Class
+                      Start
                     </Button>
                   </div>
                 </Card>
@@ -1416,7 +1416,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         leftIcon={isCopiedInvite ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                         className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700 font-semibold text-xs"
                       >
-                        {isCopiedInvite ? 'Copied' : 'Copy Link'}
+                        {isCopiedInvite ? 'Copied' : 'Copy'}
                       </Button>
 
                       <Button
@@ -1426,7 +1426,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         leftIcon={<PhoneOff className="w-3.5 h-3.5" />}
                         className="bg-red-600 hover:bg-red-700 text-white font-semibold text-xs"
                       >
-                        End Class
+                        End
                       </Button>
                     </div>
                   </div>
@@ -2270,7 +2270,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                         leftIcon={<Mic className="w-3.5 h-3.5 text-emerald-600" />}
                         className="font-semibold text-xs bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-800"
                       >
-                        Record Note
+                        Record
                       </Button>
                       <span className="text-[11px] text-slate-400">
                         Microphone will capture oral articulation & tajweed corrections.
@@ -2302,7 +2302,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onAddToast }
                 className="font-semibold shadow-md"
                 rightIcon={<CheckCircle2 className="w-4 h-4" />}
               >
-                Submit Grade
+                Grade
               </Button>
             </div>
           </div>

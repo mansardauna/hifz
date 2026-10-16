@@ -1,0 +1,51 @@
+[
+  {
+    "id": "wa_cloud_api_1",
+    "name": "Meta Cloud API (Official WhatsApp)",
+    "type": "cloud_api",
+    "enabled": true,
+    "priority": 1,
+    "dailyQuota": 250,
+    "sentToday": 0,
+    "lastResetDate": "2026-10-15",
+    "status": "unverified",
+    "isVerified": false,
+    "fromNumber": "+15551234567",
+    "phoneNumberId": "",
+    "accessToken": "",
+    "wabaId": "",
+    "lastError": null
+  },
+  {
+    "id": "wa_twilio_1",
+    "name": "Twilio Programmable Messaging (Fallback 1)",
+    "type": "twilio",
+    "enabled": false,
+    "priority": 2,
+    "dailyQuota": 100,
+    "sentToday": 0,
+    "lastResetDate": "2026-10-15",
+    "status": "unverified",
+    "isVerified": false,
+    "fromNumber": "+14155238886",
+    "accountSid": "",
+    "authToken": "",
+    "lastError": null
+  },
+  {
+    "id": "wa_infobip_1",
+    "name": "Infobip Enterprise WhatsApp (Fallback 2)",
+    "type": "infobip",
+    "enabled": false,
+    "priority": 3,
+    "dailyQuota": 500,
+    "sentToday": 0,
+    "lastResetDate": "2026-10-15",
+    "status": "unverified",
+    "isVerified": false,
+    "fromNumber": "+447860099299",
+    "infobipBaseUrl": "https://api.infobip.com",
+    "infobipApiKey": "",
+    "lastError": null
+  }
+]

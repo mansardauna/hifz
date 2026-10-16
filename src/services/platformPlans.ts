@@ -413,6 +413,54 @@ export const DEFAULT_SUPERADMIN_GATEWAYS: SuperAdminGatewaySettings = {
     smtpSecure: true,
     apiKey: '',
   },
+  whatsappProviders: [
+    {
+      id: 'wa_meta_1',
+      name: 'Meta Cloud API (Official)',
+      type: 'cloud_api',
+      enabled: true,
+      priority: 1,
+      dailyQuota: 250,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromNumber: '+1 (800) 555-0199',
+      phoneNumberId: '109283746592019',
+      accessToken: '',
+      wabaId: 'waba_9918273645',
+    },
+    {
+      id: 'wa_twilio_1',
+      name: 'Twilio WhatsApp (Fallback 1)',
+      type: 'twilio',
+      enabled: false,
+      priority: 2,
+      dailyQuota: 100,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromNumber: '+14155238886',
+      accountSid: '',
+      authToken: '',
+    },
+    {
+      id: 'wa_infobip_1',
+      name: 'Infobip WhatsApp (Fallback 2)',
+      type: 'infobip',
+      enabled: false,
+      priority: 3,
+      dailyQuota: 100,
+      sentToday: 0,
+      lastResetDate: new Date().toISOString().split('T')[0],
+      status: 'unverified',
+      isVerified: false,
+      fromNumber: '+447860099299',
+      infobipBaseUrl: 'https://api.infobip.com',
+      infobipApiKey: '',
+    },
+  ],
   whatsapp: {
     enabled: true,
     provider: 'cloud_api',
@@ -434,6 +482,9 @@ export const getStoredSuperAdminGateways = (): SuperAdminGatewaySettings => {
       if (parsed && parsed.email && parsed.whatsapp) {
         if (!parsed.emailProviders || !Array.isArray(parsed.emailProviders) || parsed.emailProviders.length === 0) {
           parsed.emailProviders = DEFAULT_SUPERADMIN_GATEWAYS.emailProviders;
+        }
+        if (!parsed.whatsappProviders || !Array.isArray(parsed.whatsappProviders) || parsed.whatsappProviders.length === 0) {
+          parsed.whatsappProviders = DEFAULT_SUPERADMIN_GATEWAYS.whatsappProviders;
         }
         return parsed;
       }

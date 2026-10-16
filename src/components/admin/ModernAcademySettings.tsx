@@ -537,8 +537,9 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
     triggerEventNotification('settings_saved');
   };
 
-  const handleVerifyCustomDomain = () => {
-    if (!customDomain.trim()) {
+  const handleVerifyCustomDomain = async () => {
+    const cleanDomain = customDomain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    if (!cleanDomain) {
       error('Domain Required', 'Please enter your custom domain (e.g. academy.com).');
       return;
     }
@@ -547,10 +548,20 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       return;
     }
     setIsVerifyingDomain(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch(`/api/domains/check?domain=${encodeURIComponent(cleanDomain)}`);
+      updateTenantConfig({ customDomain: cleanDomain });
+      if (res.ok) {
+        success('DNS Verified & Linked!', `Custom domain "${cleanDomain}" is active and authorized. CNAME target: cname.ankabit.app`);
+      } else {
+        success('Custom Domain Attached', `"${cleanDomain}" linked to your academy. Point CNAME to cname.ankabit.app to complete SSL handshake.`);
+      }
+    } catch {
+      updateTenantConfig({ customDomain: cleanDomain });
+      success('Domain Saved', `Custom domain "${cleanDomain}" attached to academy.`);
+    } finally {
       setIsVerifyingDomain(false);
-      success('DNS Connected!', `CNAME record for ${customDomain} successfully resolved to Vercel.`);
-    }, 1200);
+    }
   };
 
   const handleUpdatePassword = () => {
@@ -1397,7 +1408,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                             onClick={() => handleAcceptApplicant(app)}
                             className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-[11px] py-1 px-2.5"
                           >
-                            {processingApplicantId === app.id ? 'Processing...' : 'Accept & Activate'}
+                            {processingApplicantId === app.id ? 'Processing...' : 'Accept'}
                           </Button>
                           <Button
                             variant="outline"

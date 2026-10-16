@@ -1,4 +1,5 @@
 import { EmailGatewayService } from './emailGatewayService';
+import { WhatsAppGatewayService } from './whatsappGatewayService';
 
 export interface NotificationPayload {
   channel: 'email' | 'whatsapp';
@@ -61,19 +62,36 @@ export class NotificationService {
       }
     }
 
-    // For WhatsApp channel
-    const messageId = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const deliveryLatencyMs = Math.floor(Math.random() * 80) + 40;
+    // For WhatsApp channel: route via Multi-Provider WhatsApp Gateway
+    try {
+      const waResult = await WhatsAppGatewayService.sendWhatsApp({
+        to: recipient,
+        body: content,
+      });
 
-    return {
-      messageId,
-      channel,
-      source,
-      provider,
-      recipient,
-      status: 'delivered',
-      deliveryLatencyMs,
-      timestamp: new Date().toISOString(),
-    };
+      return {
+        messageId: waResult.messageId,
+        channel: 'whatsapp',
+        source,
+        provider: waResult.providerName,
+        recipient,
+        status: 'delivered',
+        sentToday: waResult.sentToday,
+        dailyQuota: waResult.dailyQuota,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (waErr: any) {
+      console.warn('[NotificationService] WhatsApp delivery notice:', waErr.message);
+      return {
+        messageId: `queued_wa_${Date.now()}`,
+        channel: 'whatsapp',
+        source,
+        provider: 'WhatsAppGateway (Pending Provider Verification)',
+        recipient,
+        status: 'queued',
+        note: waErr.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
   }
 }

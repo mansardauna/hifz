@@ -82,8 +82,37 @@ export interface EmailProviderConfig {
   smtpSecure?: boolean;
 }
 
+export type WhatsAppEngineType = 'cloud_api' | 'twilio' | 'infobip';
+
+export interface WhatsAppProviderConfig {
+  id: string;
+  name: string;
+  type: WhatsAppEngineType;
+  enabled: boolean;
+  priority: number;
+  dailyQuota: number;
+  sentToday: number;
+  lastResetDate: string;
+  status: 'active' | 'inactive' | 'exhausted' | 'unverified' | 'error';
+  isVerified: boolean;
+  lastTestedAt?: string | null;
+  lastError?: string | null;
+  fromNumber: string;
+  // Meta Cloud API
+  phoneNumberId?: string;
+  accessToken?: string;
+  wabaId?: string;
+  // Twilio
+  accountSid?: string;
+  authToken?: string;
+  // Infobip
+  infobipBaseUrl?: string;
+  infobipApiKey?: string;
+}
+
 export interface SuperAdminGatewaySettings {
   emailProviders?: EmailProviderConfig[];
+  whatsappProviders?: WhatsAppProviderConfig[];
   email: {
     enabled: boolean;
     provider: EmailProviderType;

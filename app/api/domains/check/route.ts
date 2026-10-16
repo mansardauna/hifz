@@ -13,20 +13,27 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const domain = (searchParams.get('domain') || '').toLowerCase().trim();
+    const rawDomain = (searchParams.get('domain') || '').toLowerCase().trim();
+    const domain = rawDomain.replace(/^https?:\/\//, '').replace(/:\d+$/, '').replace(/['"]/g, '');
 
     if (!domain) {
       return new NextResponse('Missing domain query parameter', { status: 400 });
     }
 
-    const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase();
+    const rawRoot = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase().trim();
+    const rootDomain = rawRoot.replace(/['"]/g, '');
 
     // 1. Root domain and standard subdomains are always authorized
     if (
       domain === rootDomain ||
       domain === `www.${rootDomain}` ||
       domain.endsWith(`.${rootDomain}`) ||
-      domain.endsWith('.localhost')
+      domain === 'ankabit.app' ||
+      domain === 'www.ankabit.app' ||
+      domain.endsWith('.ankabit.app') ||
+      domain.endsWith('.localhost') ||
+      domain === 'localhost' ||
+      domain === '127.0.0.1'
     ) {
       return new NextResponse('Domain Authorized', { status: 200 });
     }
