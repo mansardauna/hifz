@@ -66,15 +66,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const isDevAllowed = process.env.ALLOW_DEV_WEBHOOKS === 'true' || process.env.NODE_ENV !== 'production';
+    // Strict Verification Guard
+    if (!isAuthentic) {
+      const isExplicitDevBypass =
+        process.env.ALLOW_DEV_WEBHOOKS === 'true' &&
+        process.env.NODE_ENV === 'development' &&
+        !webhookSecret &&
+        !apiKey;
 
-    // If neither signature nor API verification succeeded, reject in production
-    if (!isAuthentic && !isDevAllowed) {
-      if (process.env.NODE_ENV === 'production' || webhookSecret || apiKey) {
+      if (!isExplicitDevBypass) {
         console.error(`[Moyasar:Webhook] Rejecting unverified webhook for payment ID ${id}`);
         return NextResponse.json({ error: 'Unauthorized webhook request' }, { status: 401 });
       }
-      console.warn(`[Moyasar:Webhook] Warning: accepting unverified webhook in development mode for payment ID ${id}`);
+      console.warn(`[Moyasar:Webhook] Warning: accepting unverified webhook in explicit local dev bypass for payment ID ${id}`);
     }
 
     // 3. Persistent Idempotency Guard (Redis + MySQL)

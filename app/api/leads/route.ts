@@ -126,6 +126,22 @@ export async function PUT(request: NextRequest) {
       return apiError('Lead ID is required for update', 400);
     }
 
+    // Tenant isolation: verify lead belongs to the administrator's tenant
+    if (authUser.role !== 'superadmin') {
+      const existing = await prisma.lead.findUnique({
+        where: { id },
+        select: { id: true, tenantId: true },
+      });
+
+      if (!existing) {
+        return apiError('Lead not found', 404);
+      }
+
+      if (existing.tenantId !== authUser.tenantId) {
+        return apiError('Forbidden: Cannot modify admissions leads from another academy.', 403);
+      }
+    }
+
     const updated = await LeadsService.updateLead(id, updates);
     return NextResponse.json(updated);
   } catch (error: any) {

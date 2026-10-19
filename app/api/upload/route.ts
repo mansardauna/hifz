@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const authUser = requireAuth(request);
     const { searchParams } = new URL(request.url);
     const contentType = searchParams.get('contentType') || '';
-    const rawTenantId = searchParams.get('tenantId') || authUser.tenantId || 'general';
+    const requestedTenantId = searchParams.get('tenantId');
     const rawCategory = searchParams.get('category') || 'general';
 
     const ext = MIME_TO_EXT[contentType];
@@ -51,7 +51,25 @@ export async function GET(request: NextRequest) {
       ? (rawCategory as UploadCategory)
       : 'general';
 
-    const tenantId = rawTenantId.replace(/[^a-zA-Z0-9_-]/g, '') || 'general';
+    // Strict Tenant Isolation: SuperAdmins can upload for any tenant; non-superadmins are strictly restricted to their own tenant
+    let tenantId = authUser.tenantId;
+    if (authUser.role === 'superadmin') {
+      tenantId = (requestedTenantId || authUser.tenantId || 'platform').replace(/[^a-zA-Z0-9_-]/g, '') || 'platform';
+    } else {
+      if (requestedTenantId && requestedTenantId !== authUser.tenantId) {
+        return NextResponse.json(
+          { error: 'Forbidden: Cannot request upload access for another tenant.' },
+          { status: 403 }
+        );
+      }
+      if (!tenantId) {
+        return NextResponse.json(
+          { error: 'Forbidden: Authenticated user must belong to an active tenant.' },
+          { status: 403 }
+        );
+      }
+      tenantId = tenantId.replace(/[^a-zA-Z0-9_-]/g, '');
+    }
     const fileUuid = crypto.randomBytes(16).toString('hex');
     const fileName = `${Date.now()}-${fileUuid}${ext}`;
 
@@ -85,7 +103,27 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const rawCategory = (formData.get('category') as string) || 'general';
-    const rawTenantId = (formData.get('tenantId') as string) || authUser.tenantId || 'general';
+    const requestedTenantId = formData.get('tenantId') as string | null;
+
+    // Strict Tenant Isolation: SuperAdmins can upload for any tenant; non-superadmins are strictly restricted to their own tenant
+    let tenantId = authUser.tenantId;
+    if (authUser.role === 'superadmin') {
+      tenantId = (requestedTenantId || authUser.tenantId || 'platform').replace(/[^a-zA-Z0-9_-]/g, '') || 'platform';
+    } else {
+      if (requestedTenantId && requestedTenantId !== authUser.tenantId) {
+        return NextResponse.json(
+          { error: 'Forbidden: Cannot upload files to another tenant.' },
+          { status: 403 }
+        );
+      }
+      if (!tenantId) {
+        return NextResponse.json(
+          { error: 'Forbidden: Authenticated user must belong to an active tenant.' },
+          { status: 403 }
+        );
+      }
+      tenantId = tenantId.replace(/[^a-zA-Z0-9_-]/g, '');
+    }
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided in form data' }, { status: 400 });
@@ -116,7 +154,6 @@ export async function POST(request: NextRequest) {
       ? (rawCategory as UploadCategory)
       : 'general';
 
-    const tenantId = rawTenantId.replace(/[^a-zA-Z0-9_-]/g, '') || 'general';
     const fileUuid = crypto.randomBytes(16).toString('hex');
     const fileName = `${Date.now()}-${fileUuid}${ext}`;
 

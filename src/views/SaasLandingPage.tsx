@@ -497,7 +497,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <div className="lg:col-span-6 relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 aspect-video relative">
                 <img
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
+                  src="/images/students_male_well_dressed.jpg"
                   alt="Students collaborating"
                   className="w-full h-full object-cover"
                 />
@@ -594,7 +594,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
             <div className="lg:col-span-5 relative">
               <div className="rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 aspect-[4/3]">
                 <img
-                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80"
+                  src="/images/support_team_male_well_dressed.jpg"
                   alt="Ankabit support team"
                   className="w-full h-full object-cover"
                 />

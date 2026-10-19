@@ -130,8 +130,20 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      // First-run protection: if SETUP_TOKEN or SETUP_SECRET is set in environment, enforce it
+      // First-run protection: In production, fail closed if SETUP_TOKEN or SETUP_SECRET is unset.
+      const isProduction = process.env.NODE_ENV === 'production';
       const requiredToken = process.env.SETUP_TOKEN || process.env.SETUP_SECRET;
+
+      if (!requiredToken && isProduction) {
+        return NextResponse.json(
+          {
+            error:
+              'Security Error: In production, SETUP_TOKEN or SETUP_SECRET must be configured in environment variables to initialize the platform.',
+          },
+          { status: 403 }
+        );
+      }
+
       if (requiredToken) {
         const headerToken = request.headers.get('x-setup-token');
         const urlToken = new URL(request.url).searchParams.get('token');

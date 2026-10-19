@@ -118,8 +118,13 @@ export class BillingService {
 
       if (leadId) {
         const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-        if (lead && lead.tuitionAmount) {
-          finalAmount = Number(lead.tuitionAmount);
+        if (lead) {
+          if (tenant && lead.tenantId !== tenant.id) {
+            throw new Error(`Forbidden: Lead '${leadId}' does not belong to the selected academy '${tenant.id}'.`);
+          }
+          if (lead.tuitionAmount) {
+            finalAmount = Number(lead.tuitionAmount);
+          }
         }
       }
     } else if (params.amount && params.amount > 0) {

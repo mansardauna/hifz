@@ -16,9 +16,33 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const rawOrigin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    // Sanitize origin to prevent open redirect vulnerabilities
-    const origin = rawOrigin.replace(/\/+$/, '');
+
+    // Whitelist-validated origin to prevent open redirect vulnerabilities
+    const getSafeOrigin = (): string => {
+      const defaultOrigin = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, '');
+      const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase();
+      const rawOrigin = req.headers.get('origin');
+      if (!rawOrigin) return defaultOrigin;
+
+      try {
+        const parsed = new URL(rawOrigin);
+        const hostname = parsed.hostname.toLowerCase();
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          return parsed.origin;
+        }
+        if (hostname === rootDomain || hostname.endsWith(`.${rootDomain}`)) {
+          return parsed.origin;
+        }
+        const defaultHost = new URL(defaultOrigin).hostname.toLowerCase();
+        if (hostname === defaultHost || hostname.endsWith(`.${defaultHost}`)) {
+          return parsed.origin;
+        }
+      } catch (_e) {}
+
+      return defaultOrigin;
+    };
+
+    const origin = getSafeOrigin();
 
     const { type = 'student_tuition' } = body;
 

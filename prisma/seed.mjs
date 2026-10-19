@@ -1,12 +1,27 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting TechMadrasah Multi-Tenant Database Seed...');
-  const seedPassword = process.env.INITIAL_ADMIN_PASSWORD || 'ChangeMeOnFirstLogin2026!';
-  const defaultPasswordHash = await bcrypt.hash(seedPassword, 10);
+  
+  const isProduction = process.env.NODE_ENV === 'production';
+  let seedPassword = process.env.INITIAL_ADMIN_PASSWORD;
+
+  if (isProduction) {
+    if (!seedPassword || seedPassword.length < 12) {
+      console.error('❌ [Security Error] In production, INITIAL_ADMIN_PASSWORD must be configured and contain at least 12 characters.');
+      process.exit(1);
+    }
+  } else if (!seedPassword) {
+    const randomHex = crypto.randomBytes(6).toString('hex');
+    seedPassword = `DevAdmin_${randomHex}!2026`;
+    console.log(`🔑 [Dev Seed Generated Password]: ${seedPassword}`);
+  }
+
+  const defaultPasswordHash = await bcrypt.hash(seedPassword, 12);
 
   // 1. Seed Tenant: Al-Furqan Quran Academy
   const alFurqan = await prisma.tenant.upsert({

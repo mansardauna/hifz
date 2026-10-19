@@ -19,40 +19,36 @@ export async function POST(request: NextRequest) {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-    const isDevAllowed = process.env.ALLOW_DEV_WEBHOOKS === 'true' || process.env.NODE_ENV !== 'production';
-
-    if (!secretKey && !isDevAllowed) {
-      console.error('[Stripe Webhook Error] STRIPE_SECRET_KEY is not configured in environment.');
-      return NextResponse.json({ error: 'Stripe secret key not configured' }, { status: 500 });
-    }
-
-    if (!sig && !isDevAllowed) {
-      return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
-    }
-
     let event: Stripe.Event;
 
-    if (webhookSecret && sig && secretKey) {
+    if (webhookSecret && secretKey) {
+      if (!sig) {
+        return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 });
+      }
       const stripe = new Stripe(secretKey, { apiVersion: '2024-04-10' as any });
       try {
         event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
       } catch (err: any) {
-        if (!isDevAllowed) {
-          console.error('[Stripe Webhook Error] Stripe signature verification failed:', err.message);
-          return NextResponse.json({ error: `Webhook Signature Verification Failed: ${err.message}` }, { status: 400 });
-        }
-        event = JSON.parse(rawBody);
+        console.error('[Stripe Webhook Error] Stripe signature verification failed:', err.message);
+        return NextResponse.json({ error: `Webhook Signature Verification Failed: ${err.message}` }, { status: 400 });
       }
     } else {
-      if (!isDevAllowed) {
-        console.error('[Stripe Webhook Error] STRIPE_WEBHOOK_SECRET must be configured in production.');
-        return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET required in production' }, { status: 500 });
+      // Strict dev bypass: ONLY permitted in local development if explicitly enabled and webhook secret is unconfigured
+      const isExplicitDevBypass =
+        process.env.ALLOW_DEV_WEBHOOKS === 'true' &&
+        process.env.NODE_ENV === 'development';
+
+      if (!isExplicitDevBypass) {
+        console.error('[Stripe Webhook Error] STRIPE_WEBHOOK_SECRET and STRIPE_SECRET_KEY are required.');
+        return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET is required to verify webhooks' }, { status: 500 });
       }
+
       try {
         event = JSON.parse(rawBody);
       } catch {
         return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
       }
+      console.warn('[Stripe Webhook Warning] Processing unsigned webhook payload under explicit local dev bypass.');
     }
 
     // Persistent Deduplication Check (MySQL + Redis)

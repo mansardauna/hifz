@@ -29,6 +29,7 @@ export interface SupabaseConfig {
   anonKey?: string;
   serviceRoleKey?: string;
   dbPassword?: string;
+  connectionString?: string;
 }
 
 export interface DatabaseConfig {
@@ -320,8 +321,40 @@ export async function testDatabaseConnection(
   // ---- 3. SUPABASE ENGINE ----
   if (engine === 'supabase') {
     const cfg = params.supabase || {};
-    const url = (cfg.url || '').trim();
-    const key = (cfg.serviceRoleKey || cfg.anonKey || '').trim();
+    const url = (cfg.url || process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
+    const key = (cfg.serviceRoleKey || cfg.anonKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
+    const connStr = cfg.connectionString || process.env.POSTGRES_DATABASE_URL;
+
+    // If connection string is provided, test via PostgreSQL driver first
+    if (connStr) {
+      const client = new PgClient({
+        connectionString: connStr,
+        connectionTimeoutMillis: TEST_TIMEOUT_MS,
+        ssl: { rejectUnauthorized: false },
+      });
+      try {
+        await Promise.race([client.connect(), timeoutReject(TEST_TIMEOUT_MS)]);
+        await Promise.race([client.query('SELECT 1'), timeoutReject(TEST_TIMEOUT_MS)]);
+        const latencyMs = Date.now() - start;
+        return {
+          connected: true,
+          engine: 'supabase',
+          latencyMs,
+          message: `Supabase PostgreSQL connection verified — ${latencyMs}ms response.`,
+        };
+      } catch (pgErr: any) {
+        // If PostgreSQL connection fails, try REST API if url & key exist
+        if (!url || !key) {
+          return {
+            connected: false,
+            engine: 'supabase',
+            error: pgErr?.message || 'Failed to connect to Supabase PostgreSQL database.',
+          };
+        }
+      } finally {
+        await client.end().catch(() => {});
+      }
+    }
 
     if (!url) {
       return { connected: false, engine: 'supabase', error: 'Supabase project URL is required.' };
