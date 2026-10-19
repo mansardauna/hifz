@@ -4,6 +4,12 @@
 # ==============================================================================
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+APP_DIR="$PROJECT_ROOT/lms"
+
+cd "$APP_DIR"
+
 echo "=========================================================="
 echo "🚀 Starting Ankabit LMS Production Deployment..."
 echo "=========================================================="
@@ -32,9 +38,9 @@ if [ "$AVAILABLE_MEM" -lt 2000 ] && [ "$SWAP_TOTAL" -lt 1000 ]; then
 fi
 
 # 3. Pull latest Git changes if in a repository
-if [ -d ".git" ]; then
+if [ -d "$PROJECT_ROOT/.git" ]; then
     echo "📥 Pulling latest git repository changes..."
-    git pull origin main || git pull origin master || true
+    (cd "$PROJECT_ROOT" && git pull origin main) || (cd "$PROJECT_ROOT" && git pull origin master) || true
 fi
 
 # 4. Pull base images and build containers
@@ -65,7 +71,12 @@ fi
 
 # 6. Run Database Migrations
 echo "🗄️ Running Prisma database migrations..."
-docker compose run --rm app npx prisma migrate deploy || docker compose run --rm app npx prisma db push
+if [ -d "prisma/migrations" ] && find prisma/migrations -type f -print -quit | grep -q .; then
+    docker compose run --rm app npx prisma migrate deploy
+else
+    echo "No Prisma migrations found; synchronizing the schema with db push."
+    docker compose run --rm app npx prisma db push
+fi
 
 # 7. Start App and Reverse Proxy
 echo "🌐 Starting Application and Caddy Reverse Proxy..."

@@ -33,8 +33,8 @@ npm run build
 npm run start
 ```
 
-Copy `.env.example` to `.env.local` for local development. Use
-`.env.production.template` as the production configuration reference. Never
+Copy `lms/.env.example` to `lms/.env.local` for local development. Use
+`lms/.env.production.template` as the production configuration reference. Never
 commit populated environment files or provider credentials.
 
 ## Distribution Package

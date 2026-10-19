@@ -5,8 +5,12 @@
 # ==============================================================================
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+APP_DIR="$PROJECT_ROOT/lms"
+
 if [ "$EUID" -ne 0 ]; then
-    echo "❌ Please run this script as root (sudo ./scripts/setup-production.sh)"
+    echo "❌ Please run this script as root (sudo ./junks/setup-production.sh)"
     exit 1
 fi
 
@@ -63,12 +67,12 @@ systemctl restart fail2ban
 
 # 5. Create Daily Database Backup Cron Job
 echo "⏰ Setting up daily cron job for database backups..."
-CRON_JOB="0 3 * * * cd $(pwd) && ./scripts/backup-db.sh >> /var/log/ankabit-backup.log 2>&1"
+CRON_JOB="0 3 * * * cd $APP_DIR && $SCRIPT_DIR/backup-db.sh >> /var/log/ankabit-backup.log 2>&1"
 (crontab -l 2>/dev/null | grep -Fv "backup-db.sh" ; echo "$CRON_JOB") | crontab -
 
 echo "=========================================================="
 echo "🎉 Server initialization complete!"
 echo "Next steps:"
-echo " 1. Configure .env.production (cp .env.production.template .env.production)"
-echo " 2. Run ./scripts/deploy.sh"
+echo " 1. Configure .env.production (cp lms/.env.production.template lms/.env.production)"
+echo " 2. Run ./junks/deploy.sh"
 echo "=========================================================="
