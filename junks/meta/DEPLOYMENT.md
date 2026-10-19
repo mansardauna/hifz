@@ -51,15 +51,15 @@ cd /var/www/ankabit
 ### Step 2: Initialize Server Environment
 Run the automated initialization script to install Docker, configure UFW firewall, and set up fail2ban:
 ```bash
-chmod +x scripts/*.sh
-sudo ./scripts/setup-production.sh
+chmod +x junks/*.sh
+sudo ./junks/setup-production.sh
 ```
 
 ### Step 3: Configure Production Environment Variables
 Copy the template and fill in your production credentials:
 ```bash
-cp .env.production.template .env.production
-nano .env.production
+cp lms/.env.production.template lms/.env.production
+nano lms/.env.production
 ```
 
 Ensure you update:
@@ -73,7 +73,7 @@ Ensure you update:
 
 ### Step 4: Run 1-Click Deployment
 ```bash
-./scripts/deploy.sh
+./junks/deploy.sh
 ```
 The deploy script automatically:
 1. Validates environment configurations.
@@ -162,7 +162,7 @@ Ensure firewall ports `7880/tcp`, `7881/tcp`, and `50000-50100/udp` are allowed 
 ### Daily Backups
 The initialization script automatically installs a daily 03:00 AM cron job. You can also trigger an immediate backup anytime:
 ```bash
-./scripts/backup-db.sh
+./junks/backup-db.sh
 ```
 - Backups are stored in `/var/backups/ankabit/`.
 - Compressed using `gzip -9`.
@@ -181,7 +181,7 @@ To deploy updates with zero downtime:
 ```bash
 cd /var/www/ankabit
 git pull origin main
-./scripts/deploy.sh
+./junks/deploy.sh
 ```
 
 ---
