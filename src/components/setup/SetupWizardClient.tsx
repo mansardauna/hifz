@@ -65,6 +65,17 @@ export function SetupWizardClient() {
   const [fromEmail, setFromEmail] = useState('noreply@ankabit.com');
   const [currency, setCurrency] = useState('USD');
 
+  // Security Setup Token (required for production first-run setup)
+  const [setupToken, setSetupToken] = useState('');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token') || params.get('setupToken');
+      if (token) setSetupToken(token);
+    }
+  }, []);
+
   const [errorMessage, setErrorMessage] = useState('');
 
   // Run live database connection check
@@ -147,10 +158,15 @@ export function SetupWizardClient() {
     setIsSubmitting(true);
     setErrorMessage('');
     try {
-      const res = await fetch('/api/setup', {
+      const queryParam = setupToken ? `?token=${encodeURIComponent(setupToken.trim())}` : '';
+      const res = await fetch(`/api/setup${queryParam}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(setupToken ? { 'x-setup-token': setupToken.trim() } : {}),
+        },
         body: JSON.stringify({
+          setupToken: setupToken.trim(),
           databaseType,
           mysqlHost,
           mysqlPort,
@@ -537,6 +553,17 @@ export function SetupWizardClient() {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <Input
+                    label="Platform Setup Token / Secret (Required in production)"
+                    type="password"
+                    value={setupToken}
+                    onChange={(e) => setSetupToken(e.target.value)}
+                    placeholder="Enter SETUP_TOKEN from your Vercel or environment variables"
+                    helperText="In production, platform initialization is protected by the SETUP_TOKEN environment variable."
+                  />
                 </div>
               </div>
             </div>

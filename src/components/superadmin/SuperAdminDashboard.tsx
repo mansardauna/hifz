@@ -96,6 +96,7 @@ import { useConfirm } from '../../context/ConfirmModalContext';
 export const SuperAdminDashboard: React.FC = () => {
   const { success, error, info, warning } = useToast();
   const { user, login, logout } = useAuth();
+  const isSuperAdminAuthenticated = user?.role === 'superadmin';
   const confirm = useConfirm();
   const { language, setLanguage, supportedLanguages, isRtl, t } = useTranslation();
 
@@ -297,10 +298,26 @@ export const SuperAdminDashboard: React.FC = () => {
     }
     setInfraSettings(getStoredSuperAdminInfrastructure());
     setPaymentSettings(getStoredSuperAdminPaymentGateways());
-    fetchSuperAdminData();
-    fetchEmailProviders();
-    fetchWhatsAppProviders();
-  }, [fetchSuperAdminData, fetchEmailProviders, fetchWhatsAppProviders]);
+    if (isSuperAdminAuthenticated) {
+      fetchSuperAdminData();
+      fetchEmailProviders();
+      fetchWhatsAppProviders();
+    }
+  }, [isSuperAdminAuthenticated, fetchSuperAdminData, fetchEmailProviders, fetchWhatsAppProviders]);
+
+  // Automated redirect to /setup if system has not been initialized yet
+  useEffect(() => {
+    if (!isSuperAdminAuthenticated) {
+      fetch('/api/setup')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.isSetupCompleted === false && data.superAdminExists === false) {
+            window.location.href = '/setup';
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isSuperAdminAuthenticated]);
 
   // Calculate high-level financial & tenant statistics from REAL database records
   const totalAcademies = tenants.length;
@@ -1204,9 +1221,6 @@ export const SuperAdminDashboard: React.FC = () => {
     window.location.href = `/${targetTenant.subdomain}/admin`;
   };
 
-  // Authentication Handler for SuperAdmin Gate
-  const isSuperAdminAuthenticated = user?.role === 'superadmin';
-
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!adminEmailInput || !adminPasswordInput) {
@@ -1225,6 +1239,8 @@ export const SuperAdminDashboard: React.FC = () => {
         login(data.user.email, data.user.role, data.user.name, data.token, data.user.tenantId);
         success('Access Granted', 'Welcome to the Platform SuperAdmin Console.');
         fetchSuperAdminData();
+        fetchEmailProviders();
+        fetchWhatsAppProviders();
       } else {
         error('Access Denied', data.message || data.error || 'Invalid SuperAdmin credentials.');
       }
@@ -1351,9 +1367,12 @@ export const SuperAdminDashboard: React.FC = () => {
             </Button>
           </form>
 
-          <div className="pt-2 text-center">
+          <div className="pt-2 text-center flex flex-col gap-2">
             <a href="/login" className="text-xs font-semibold text-slate-500 hover:text-slate-800">
               ← Return to Academy Login
+            </a>
+            <a href="/setup" className="text-[11px] text-emerald-700 hover:text-emerald-800 font-medium transition-colors">
+              First-time installation? Go to Platform Setup Wizard →
             </a>
           </div>
         </div>
