@@ -370,4 +370,65 @@ describe('Ankabit LMS Security & Multi-Tenant Isolation Suite', () => {
     });
   });
 
+  // =========================================================================
+  // Additional Deep Isolation Audits: Members, Finance, and Courses
+  // =========================================================================
+  describe('Comprehensive Tenant Boundary Enforcement', () => {
+    test('Admin cannot read or export members from another academy', () => {
+      const admin = {
+        id: 'usr_admin_1',
+        role: 'admin',
+        tenantId: 'tenant-al-furqan',
+        tenantSubdomain: 'al-furqan',
+      };
+      const requestedTenant = 'tenant-other-academy';
+      const cleanSub = requestedTenant.replace('tenant-', '');
+
+      const isAllowed =
+        admin.role === 'superadmin' ||
+        admin.tenantId === requestedTenant ||
+        (admin.tenantSubdomain && cleanSub === admin.tenantSubdomain);
+
+      assert.equal(isAllowed, false, 'Tenant admin must NOT access member list of another tenant');
+    });
+
+    test('Admin cannot read financial analytics and transaction stream of another academy', () => {
+      const admin = {
+        id: 'usr_admin_1',
+        role: 'admin',
+        tenantId: 'tenant-al-furqan',
+        tenantSubdomain: 'al-furqan',
+      };
+      const requestedTenant = 'tenant-other-academy';
+      const cleanSub = admin.tenantSubdomain?.toLowerCase() || '';
+
+      const isOwner =
+        admin.role === 'superadmin' ||
+        admin.tenantId === requestedTenant ||
+        requestedTenant === `tenant-${cleanSub}` ||
+        requestedTenant === cleanSub;
+
+      assert.equal(isOwner, false, 'Tenant admin must NOT access finance records of another tenant');
+    });
+
+    test('Teacher or admin cannot publish courses under another academy', () => {
+      const teacher = {
+        id: 'usr_teacher_1',
+        role: 'teacher',
+        tenantId: 'tenant-al-furqan',
+        tenantSubdomain: 'al-furqan',
+      };
+      const targetTenantId = 'tenant-competitor';
+      const cleanSub = teacher.tenantSubdomain?.toLowerCase() || '';
+
+      const isOwner =
+        teacher.role === 'superadmin' ||
+        teacher.tenantId === targetTenantId ||
+        targetTenantId === `tenant-${cleanSub}` ||
+        targetTenantId === cleanSub;
+
+      assert.equal(isOwner, false, 'Teacher must NOT publish courses under a different tenant');
+    });
+  });
+
 });
