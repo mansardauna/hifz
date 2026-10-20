@@ -5,3 +5,15 @@ tmp
 node_modules
 .next
 .DS_Store
+dist/
+scratch/
+.env
+.env.local
+.env*.local
+*.tsbuildinfo
+
+# Sensitive config & private uploaded assets
+data/database.config.json
+lms/data/database.config.json
+storage/
+lms/storage/

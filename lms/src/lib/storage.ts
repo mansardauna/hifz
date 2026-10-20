@@ -18,6 +18,8 @@ export interface PresignedUploadResponse {
   headers: Record<string, string>;
 }
 
+export const PRIVATE_CATEGORIES = ['recitations', 'assignments'] as const;
+
 function hmac(key: Buffer | string, value: string): Buffer {
   return crypto.createHmac('sha256', key).update(value, 'utf8').digest();
 }
@@ -64,7 +66,7 @@ export const storageService = {
     const region = process.env.R2_REGION || 'auto';
 
     // Categories that contain sensitive student PII or oral recordings
-    const isPrivate = category === 'recitations' || category === 'assignments';
+    const isPrivate = (PRIVATE_CATEGORIES as readonly string[]).includes(category);
 
     // If R2 / S3 credentials configured, sign with AWS SigV4
     if (r2AccountId && r2AccessKey && r2SecretKey) {
@@ -160,7 +162,8 @@ export const storageService = {
   },
 
   /**
-   * Generates a pre-signed GET URL for authorized temporary download of private recordings.
+   * Generates a cryptographically signed GET URL for downloading private assets.
+   * Access expires after the specified duration (default: 30 minutes / 1800s).
    */
   generatePresignedDownloadUrl(fileKey: string, expiresInSeconds = 1800): string {
     const r2AccountId = process.env.R2_ACCOUNT_ID;
@@ -215,7 +218,11 @@ export const storageService = {
       return `https://${host}${canonicalURI}?${canonicalQueryString}&X-Amz-Signature=${signature}`;
     }
 
-    return `/uploads/${fileKey}`;
+    // Local / Dev Fallback: private files route through authorized media route
+    const isPrivate = (PRIVATE_CATEGORIES as readonly string[]).some((cat) => fileKey.includes(`/${cat}/`));
+    return isPrivate
+      ? `/api/media?key=${encodeURIComponent(fileKey)}`
+      : `/uploads/${fileKey}`;
   },
 
   /**

@@ -11,7 +11,7 @@ export const runtime = 'nodejs';
  * Authoritative Stripe Checkout session generator.
  * Supports:
  * 1. Platform tier upgrades (requires admin auth and locks down pricing).
- * 2. Student tuition / course enrollment checkout.
+ * 2. Student tuition / course enrollment checkout (server-derived pricing, tenant/lead validation).
  */
 export async function POST(req: NextRequest) {
   try {
@@ -73,6 +73,8 @@ export async function POST(req: NextRequest) {
         return apiError('tenantId is required for checkout', 400);
       }
 
+      // Security: Client-supplied amount is intentionally omitted to prevent client price tampering.
+      // Pricing is strictly derived server-side from lead records or tenant pricing plans.
       const result = await BillingService.createStudentTuitionCheckout({
         tenantId,
         leadId: body.leadId,
@@ -80,8 +82,8 @@ export async function POST(req: NextRequest) {
         studentEmail,
         studentName,
         description: body.description,
-        amount: body.amount ? Number(body.amount) : undefined,
         origin,
+        authUser,
       });
 
       return NextResponse.json(result);

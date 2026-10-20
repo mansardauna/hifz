@@ -4,6 +4,9 @@ import path from 'path';
 import crypto from 'crypto';
 import mysql from 'mysql2/promise';
 import { Client as PgClient } from 'pg';
+import { encryptSecret, decryptSecret } from '../../lib/vault';
+
+export { encryptSecret, decryptSecret };
 
 export type DatabaseEngine = 'mysql' | 'postgres' | 'supabase';
 
@@ -66,6 +69,10 @@ export async function loadDatabaseConfig(): Promise<DatabaseConfig | null> {
     const raw = await fs.readFile(configFilePath(), 'utf8');
     const parsed = JSON.parse(raw) as DatabaseConfig;
     if (parsed && (parsed.engine === 'mysql' || parsed.engine === 'postgres' || parsed.engine === 'supabase')) {
+      if (parsed.mysql?.password) parsed.mysql.password = decryptSecret(parsed.mysql.password);
+      if (parsed.postgres?.password) parsed.postgres.password = decryptSecret(parsed.postgres.password);
+      if (parsed.supabase?.serviceRoleKey) parsed.supabase.serviceRoleKey = decryptSecret(parsed.supabase.serviceRoleKey);
+      if (parsed.supabase?.dbPassword) parsed.supabase.dbPassword = decryptSecret(parsed.supabase.dbPassword);
       cachedConfig = parsed;
       return cachedConfig;
     }
@@ -141,7 +148,22 @@ export async function saveDatabaseConfig(config: DatabaseConfig): Promise<void> 
 
   const dir = path.join(process.cwd(), 'data');
   await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(configFilePath(), JSON.stringify(cachedConfig, null, 2), { mode: 0o600 });
+  // Encrypt sensitive secrets before persisting to disk
+  const diskConfig: DatabaseConfig = JSON.parse(JSON.stringify(cachedConfig));
+  if (diskConfig.mysql?.password) {
+    diskConfig.mysql.password = encryptSecret(diskConfig.mysql.password);
+  }
+  if (diskConfig.postgres?.password) {
+    diskConfig.postgres.password = encryptSecret(diskConfig.postgres.password);
+  }
+  if (diskConfig.supabase?.serviceRoleKey) {
+    diskConfig.supabase.serviceRoleKey = encryptSecret(diskConfig.supabase.serviceRoleKey);
+  }
+  if (diskConfig.supabase?.dbPassword) {
+    diskConfig.supabase.dbPassword = encryptSecret(diskConfig.supabase.dbPassword);
+  }
+
+  await fs.writeFile(configFilePath(), JSON.stringify(diskConfig, null, 2), { mode: 0o600 });
 }
 
 export function resetDatabaseConfigCache(): void {

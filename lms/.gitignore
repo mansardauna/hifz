@@ -25,3 +25,7 @@ yarn-error.log*
 .env
 *.tsbuildinfo
 scratch/
+
+# Sensitive database configuration & private tenant assets
+data/database.config.json
+storage/

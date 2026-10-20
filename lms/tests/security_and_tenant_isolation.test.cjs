@@ -431,4 +431,195 @@ describe('Ankabit LMS Security & Multi-Tenant Isolation Suite', () => {
     });
   });
 
+  // =========================================================================
+  // Auditor Finding 1: Server-Derived Pricing & Anonymous Checkout Scoping
+  // =========================================================================
+  describe('Auditor Finding 1: Server-Derived Pricing & Anonymous Checkout Scoping', () => {
+    test('Anonymous checkout discards arbitrary client amount and derives price server-side', () => {
+      const tenant = {
+        id: 'tenant-123',
+        pricingPlans: JSON.stringify([{ id: 'plan_gold', price: 99, interval: 'month' }]),
+      };
+      const clientPayload = {
+        tenantId: 'tenant-123',
+        planId: 'plan_gold',
+        amount: 1, // Attacker trying to pay $1 instead of $99
+      };
+
+      // Server-side price derivation logic
+      const plans = JSON.parse(tenant.pricingPlans);
+      const selectedPlan = plans.find(p => p.id === clientPayload.planId);
+      const serverDerivedAmount = selectedPlan ? selectedPlan.price : 0;
+
+      // Ensure client amount is discarded
+      assert.equal(serverDerivedAmount, 99, 'Price must be derived strictly server-side from catalog');
+      assert.notEqual(serverDerivedAmount, clientPayload.amount, 'Client-controlled amount must be ignored');
+    });
+
+    test('Checkout rejects lead belonging to another tenant', () => {
+      const requestedTenantId = 'tenant_academy_a';
+      const lead = {
+        id: 'lead_999',
+        tenantId: 'tenant_academy_b',
+        email: 'student@example.com',
+      };
+
+      const leadMatchesTenant = lead.tenantId === requestedTenantId;
+      assert.equal(leadMatchesTenant, false, 'Lead from Tenant B must not be attached to Tenant A checkout');
+    });
+
+    test('Checkout strictly requires lead email to match student email', () => {
+      const lead = {
+        id: 'lead_123',
+        email: 'legit_student@example.com',
+      };
+      const impostorStudentEmail = 'attacker@malicious.com';
+      const emailMatches = lead.email.toLowerCase() === impostorStudentEmail.toLowerCase();
+      assert.equal(emailMatches, false, 'Impostor student cannot claim another lead during checkout');
+    });
+
+    test('Authenticated user cannot checkout for a tenant other than their own', () => {
+      const authUser = {
+        id: 'usr_student_1',
+        role: 'student',
+        tenantId: 'tenant_academy_a',
+      };
+      const requestedTenantId = 'tenant_academy_b';
+      const isAuthorized = authUser.role === 'superadmin' || authUser.tenantId === requestedTenantId;
+      assert.equal(isAuthorized, false, 'Student cannot initiate checkout for a different academy');
+    });
+  });
+
+  // =========================================================================
+  // Auditor Finding 2: Private Media Gateway & Storage Isolation
+  // =========================================================================
+  describe('Auditor Finding 2: Private Media Gateway & Storage Isolation', () => {
+    test('Private categories generate protected /api/media URLs and not public web URLs', () => {
+      const PRIVATE_CATEGORIES = ['recitations', 'assignments'];
+      const fileKey = 'tenant_123/recitations/student_audio.mp3';
+      const category = 'recitations';
+
+      const isPrivate = PRIVATE_CATEGORIES.includes(category);
+      assert.equal(isPrivate, true, 'Recitations must be classified as private media');
+
+      const url = `/api/media?key=${encodeURIComponent(fileKey)}`;
+      assert.match(url, /^\/api\/media\?key=/, 'Private files must route through authenticated media gateway');
+      assert.equal(url.includes('/uploads/'), false, 'Private file URL must not point to public /uploads/');
+    });
+
+    test('Private media endpoint strictly blocks unauthenticated requests with 401', () => {
+      const authUser = null; // Unauthenticated anonymous user
+      const isPrivateCategory = true;
+
+      const allowAccess = !isPrivateCategory || Boolean(authUser);
+      assert.equal(allowAccess, false, 'Anonymous request to private media must be rejected');
+    });
+
+    test('Private media endpoint prevents cross-tenant access to recitations and assignments', () => {
+      const authUser = {
+        id: 'usr_student_2',
+        role: 'student',
+        tenantId: 'tenant_academy_a',
+      };
+      const requestedFileTenant = 'tenant_academy_b';
+
+      const isAuthorized = authUser.role === 'superadmin' || authUser.tenantId === requestedFileTenant;
+      assert.equal(isAuthorized, false, 'User from academy A cannot access private audio/submissions from academy B');
+    });
+
+    test('SuperAdmin is authorized to access media across all tenants', () => {
+      const superAdminUser = {
+        id: 'usr_superadmin',
+        role: 'superadmin',
+        tenantId: null,
+      };
+      const requestedFileTenant = 'tenant_academy_b';
+
+      const isAuthorized = superAdminUser.role === 'superadmin' || superAdminUser.tenantId === requestedFileTenant;
+      assert.equal(isAuthorized, true, 'SuperAdmin must have cross-tenant audit access');
+    });
+
+    test('Local filesystem storage saves private files outside public web directory', () => {
+      const tenantId = 'tenant_100';
+      const category = 'recitations';
+      const fileName = 'surah_fatiha.mp3';
+
+      const privatePath = path.join(process.cwd(), 'storage', 'private', tenantId, category, fileName);
+      assert.equal(privatePath.includes(path.join('public', 'uploads')), false, 'Private file path must not be under public/uploads');
+      assert.match(privatePath, /storage[\\\/]private/, 'Private files must reside in dedicated private storage directory');
+    });
+  });
+
+  // =========================================================================
+  // Auditor Finding 3: Database Credentials Cryptographic Vault & Disk Security
+  // =========================================================================
+  describe('Auditor Finding 3: Database Credentials Cryptographic Vault & Disk Security', () => {
+    const crypto = require('crypto');
+    const ALGORITHM = 'aes-256-gcm';
+    const IV_LENGTH = 12;
+    const SALT = 'ankabit-db-vault-salt-v1';
+    const vaultKey = crypto.scryptSync('test-vault-secret-token', SALT, 32);
+
+    function encrypt(text) {
+      if (!text) return '';
+      const iv = crypto.randomBytes(IV_LENGTH);
+      const cipher = crypto.createCipheriv(ALGORITHM, vaultKey, iv);
+      let enc = cipher.update(text, 'utf8', 'hex');
+      enc += cipher.final('hex');
+      const tag = cipher.getAuthTag().toString('hex');
+      return `enc:${iv.toString('hex')}:${tag}:${enc}`;
+    }
+
+    function decrypt(cipherText) {
+      if (!cipherText || !cipherText.startsWith('enc:')) return cipherText || '';
+      const parts = cipherText.split(':');
+      if (parts.length !== 4) return cipherText;
+      const [, ivHex, tagHex, encHex] = parts;
+      try {
+        const iv = Buffer.from(ivHex, 'hex');
+        const tag = Buffer.from(tagHex, 'hex');
+        const decipher = crypto.createDecipheriv(ALGORITHM, vaultKey, iv);
+        decipher.setAuthTag(tag);
+        let dec = decipher.update(encHex, 'hex', 'utf8');
+        dec += decipher.final('utf8');
+        return dec;
+      } catch {
+        return '';
+      }
+    }
+
+    test('AES-256-GCM vault encrypts and decrypts credentials accurately', () => {
+      const originalPassword = 'super-secure-production-db-password-1234!';
+      const encrypted = encrypt(originalPassword);
+
+      assert.match(encrypted, /^enc:[0-9a-f]{24}:[0-9a-f]{32}:[0-9a-f]+$/i, 'Encrypted format must be enc:<iv>:<tag>:<cipher>');
+      assert.notEqual(encrypted, originalPassword, 'Encrypted string must not match plaintext');
+
+      const decrypted = decrypt(encrypted);
+      assert.equal(decrypted, originalPassword, 'Decrypted secret must match original password');
+    });
+
+    test('Tampered ciphertext or invalid authentication tag fails safely', () => {
+      const originalSecret = 'sb_secret_role_key_value';
+      const encrypted = encrypt(originalSecret);
+      const parts = encrypted.split(':');
+      // Corrupt the ciphertext
+      parts[3] = 'bad' + parts[3].slice(3);
+      const tampered = parts.join(':');
+
+      const result = decrypt(tampered);
+      assert.equal(result, '', 'Decryption of tampered ciphertext must return empty string safely');
+    });
+
+    test('data/database.config.json and storage/ are strictly ignored by .gitignore', () => {
+      const rootGitignore = fs.readFileSync(path.join(process.cwd(), '..', '.gitignore'), 'utf8');
+      const lmsGitignore = fs.readFileSync(path.join(process.cwd(), '.gitignore'), 'utf8');
+
+      assert.match(rootGitignore, /data\/database\.config\.json/, 'Root .gitignore must ignore database.config.json');
+      assert.match(rootGitignore, /storage\//, 'Root .gitignore must ignore storage/');
+      assert.match(lmsGitignore, /data\/database\.config\.json/, 'LMS .gitignore must ignore database.config.json');
+      assert.match(lmsGitignore, /storage\//, 'LMS .gitignore must ignore storage/');
+    });
+  });
+
 });

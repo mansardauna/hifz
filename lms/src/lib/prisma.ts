@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
+import { decryptSecret } from './vault';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -23,23 +24,26 @@ function resolveActiveDatabaseUrl(): string | undefined {
       const raw = fs.readFileSync(configPath, 'utf8');
       const cfg = JSON.parse(raw);
       if (cfg.engine === 'mysql' && cfg.mysql) {
-        const { host, port, database, user, password } = cfg.mysql;
+        const { host, port, database, user } = cfg.mysql;
+        const password = decryptSecret(cfg.mysql.password);
         const auth = password ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}` : encodeURIComponent(user);
         return `mysql://${auth}@${host}:${port || 3306}/${database}`;
       }
       if (cfg.engine === 'postgres' && cfg.postgres) {
-        const { host, port, database, user, password, ssl } = cfg.postgres;
+        const { host, port, database, user, ssl } = cfg.postgres;
+        const password = decryptSecret(cfg.postgres.password);
         const auth = password ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}` : encodeURIComponent(user);
         return `postgresql://${auth}@${host}:${port || 5432}/${database}${ssl ? '?sslmode=require' : ''}`;
       }
       if (cfg.engine === 'supabase') {
         if (cfg.supabase?.connectionString) return cfg.supabase.connectionString;
         if (process.env.POSTGRES_DATABASE_URL) return process.env.POSTGRES_DATABASE_URL;
-        if (cfg.supabase?.url && cfg.supabase?.dbPassword) {
+        const dbPassword = decryptSecret(cfg.supabase?.dbPassword);
+        if (cfg.supabase?.url && dbPassword) {
           try {
             const u = new URL(cfg.supabase.url);
             const projectRef = u.hostname.split('.')[0];
-            return `postgresql://postgres.${projectRef}:${encodeURIComponent(cfg.supabase.dbPassword)}@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require`;
+            return `postgresql://postgres.${projectRef}:${encodeURIComponent(dbPassword)}@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?sslmode=require`;
           } catch (_e) {}
         }
       }
