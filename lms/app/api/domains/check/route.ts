@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 
 /**
  * GET /api/domains/check?domain=academy.org
- * On-Demand TLS "Ask" endpoint for Caddy reverse proxy.
+ * Domain verification endpoint for an external reverse proxy or TLS provider.
  * Validates whether incoming custom hostnames belong to an approved tenant academy
  * before Let's Encrypt / ZeroSSL certificate issuance to eliminate cert-issuance DoS attacks.
  */

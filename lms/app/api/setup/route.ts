@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { prisma, reconfigurePrismaDatabase } from '@/lib/prisma';
+import { prisma, reconfigurePrismaDatabase } from '../../../src/lib/prisma';
 import {
   loadDatabaseConfig,
   saveDatabaseConfig,
@@ -11,9 +11,9 @@ import {
   testDatabaseConnection,
   DatabaseEngine,
   DatabaseConfig,
-} from '@/server/lib/multiDbService';
-import { getAuthenticatedUser } from '@/server/lib/serverAuth';
-import { AuthService } from '@/server/services/authService';
+} from '../../../src/server/lib/multiDbService';
+import { getAuthenticatedUser } from '../../../src/server/lib/serverAuth';
+import { AuthService } from '../../../src/server/services/authService';
 
 let isSetupInProgress = false;
 
@@ -316,7 +316,6 @@ export async function POST(request: NextRequest) {
       databaseEngine: engine,
       loginUrl: '/login',
       dashboardUrl: '/super-admin',
-      token,
     });
 
     response.cookies.set('ankabit_token', token, {

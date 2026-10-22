@@ -32,7 +32,7 @@
   <li>Next.js 14 App Router, React 18 and TypeScript</li>
   <li>Prisma ORM with MySQL, PostgreSQL and MariaDB-compatible deployment options</li>
   <li>Tailwind CSS, Material UI, Emotion, Recharts and Lucide</li>
-  <li>Docker, Caddy and Nginx deployment assets included</li>
+  <li>Docker deployment assets included; connect the app to your preferred reverse proxy</li>
 </ul>
 
 <h2>Requirements</h2>

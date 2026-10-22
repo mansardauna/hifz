@@ -35,9 +35,9 @@ When deploying to Vercel with Supabase:
    DIRECT_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres"
    DATABASE_ENGINE="supabase"
    ```
-2. Run database migration / push:
+2. For an initial non-production schema setup, run:
    ```bash
-   npx prisma db push
+    npx prisma db push
    ```
 
 ---
@@ -50,7 +50,7 @@ When running locally with XAMPP MySQL:
    DATABASE_URL="mysql://root:@localhost:3306/ankabit_lms"
    DATABASE_ENGINE="mysql"
    ```
-2. Run database schema sync:
+2. Run database schema sync for local development:
    ```bash
    node scripts/prepare-prisma.cjs
    npx prisma db push

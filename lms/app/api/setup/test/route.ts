@@ -1,9 +1,9 @@
 'use strict';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { testDatabaseConnection, DatabaseEngine } from '@/server/lib/multiDbService';
-import { prisma } from '@/lib/prisma';
-import { getAuthenticatedUser } from '@/server/lib/serverAuth';
+import { testDatabaseConnection, DatabaseEngine } from '../../../../src/server/lib/multiDbService';
+import { prisma } from '../../../../src/lib/prisma';
+import { getAuthenticatedUser } from '../../../../src/server/lib/serverAuth';
 
 /**
  * POST /api/setup/test — Validates database credentials entered in the setup wizard

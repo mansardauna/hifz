@@ -43,7 +43,6 @@ export const SchoolPracticalSubmission: React.FC<SchoolPracticalSubmissionProps>
       const formData = new FormData();
       formData.append('file', file);
       formData.append('category', 'assignments');
-      formData.append('tenantId', 'school-vocational');
 
       try {
         const res = await fetch('/api/upload', {

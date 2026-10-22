@@ -1,3 +1,8 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
@@ -17,6 +22,10 @@ const nextConfig = {
   webpack: (config) => {
     // Canvas & Audio SSR safety
     config.resolve.fallback = { fs: false, path: false };
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.join(projectRoot, 'src'),
+    };
     return config;
   },
   async headers() {

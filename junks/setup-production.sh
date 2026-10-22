@@ -49,9 +49,9 @@ echo "🔒 Configuring UFW Firewall..."
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow 22/tcp comment "SSH Remote Management"
-ufw allow 80/tcp comment "HTTP Auto-SSL ACME Challenge"
+# Open these ports only when an external reverse proxy terminates HTTP/TLS here.
+ufw allow 80/tcp comment "HTTP Web Traffic"
 ufw allow 443/tcp comment "HTTPS Web Traffic"
-ufw allow 443/udp comment "HTTP/3 QUIC Media Acceleration"
 # Optional LiveKit media ports (uncomment if self-hosting SFU instead of LiveKit Cloud):
 # ufw allow 7880/tcp comment "LiveKit SFU Signaling"
 # ufw allow 7881/tcp comment "LiveKit SFU TCP"

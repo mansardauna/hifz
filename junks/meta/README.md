@@ -51,5 +51,5 @@ chmod +x junks/distribute.sh
 ./junks/distribute.sh
 ```
 
-See `DEPLOYMENT.md` for Docker, Caddy, database, LiveKit, payment and backup
+See `DEPLOYMENT.md` for Docker, database, LiveKit, payment and backup
 configuration.

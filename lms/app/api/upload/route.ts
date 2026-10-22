@@ -178,15 +178,26 @@ export async function POST(request: NextRequest) {
 
     // Cloudflare R2 / AWS S3 direct upload
     if (process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY) {
-      // Security: Private files are never served through public CDN domain. They route through authorized /api/media.
-      const fileUrl = isPrivate
-        ? `/api/media?key=${encodeURIComponent(fileKey)}`
-        : `https://${process.env.R2_PUBLIC_DOMAIN || 'media.ankabit.app'}/${fileKey}`;
+      const signedUpload = storageService.generatePresignedUploadUrl({
+        fileName,
+        contentType: mimeType,
+        tenantId,
+        category,
+      });
+      const uploadResponse = await fetch(signedUpload.uploadUrl, {
+        method: signedUpload.method,
+        headers: signedUpload.headers,
+        body: buffer,
+      });
+
+      if (!uploadResponse.ok) {
+        return NextResponse.json({ error: 'Cloud storage upload failed.' }, { status: 502 });
+      }
 
       return NextResponse.json({
         success: true,
-        url: fileUrl,
-        fileKey,
+        url: signedUpload.publicUrl,
+        fileKey: signedUpload.fileKey,
         isPrivate,
         fileName,
         fileSize,

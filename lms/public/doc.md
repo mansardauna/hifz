@@ -265,7 +265,7 @@ cp .env.example .env
 # 3. Generate Prisma client
 npx prisma generate
 
-# 4. Run database migrations
+# 4. Synchronize the schema for local development only
 npx prisma db push
 
 # 5. Build and start production server
@@ -276,7 +276,7 @@ npm run start
 ### Production Docker & Microservices
 The repository includes production deployment configurations:
 - **`docker-compose.yml`**: Provisions Next.js, MySQL 8.0, and LiveKit SFU container clusters.
-- **`Caddyfile`**: Automated Let's Encrypt SSL reverse proxy handling wildcard subdomains (`*.ankabit.app`).
+- **External reverse proxy**: Terminate HTTPS and route traffic to the application on port 3000.
 - **`livekit.yaml`**: Standalone LiveKit WebRTC media server configuration for self-hosted instances.
 
 ---

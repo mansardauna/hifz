@@ -9,6 +9,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 APP_DIR="$PROJECT_ROOT/lms"
 
 cd "$APP_DIR"
+COMPOSE=(docker compose --env-file .env.production)
 
 echo "=========================================================="
 echo "🚀 Starting Ankabit LMS Production Deployment..."
@@ -45,17 +46,17 @@ fi
 
 # 4. Pull base images and build containers
 echo "🔨 Building Docker images..."
-docker compose build --pull app
+"${COMPOSE[@]}" build --pull app
 
 # 5. Start Database and Cache services first
 echo "📦 Starting Database and Cache containers..."
-docker compose up -d mysql redis
+"${COMPOSE[@]}" up -d mysql redis
 
 # Wait for MySQL to report healthy
 echo "⏳ Waiting for MySQL to become healthy..."
 TIMEOUT=60
 while [ $TIMEOUT -gt 0 ]; do
-    if docker compose ps mysql | grep -q "healthy"; then
+    if "${COMPOSE[@]}" ps mysql | grep -q "healthy"; then
         echo "✅ MySQL is ready and healthy."
         break
     fi
@@ -65,22 +66,28 @@ done
 
 if [ $TIMEOUT -le 0 ]; then
     echo "❌ MySQL failed to become healthy within 60 seconds."
-    docker compose logs mysql
+    "${COMPOSE[@]}" logs mysql
     exit 1
 fi
 
 # 6. Run Database Migrations
 echo "🗄️ Running Prisma database migrations..."
 if [ -d "prisma/migrations" ] && find prisma/migrations -type f -print -quit | grep -q .; then
-    docker compose run --rm app npx prisma migrate deploy
+    "${COMPOSE[@]}" run --rm app npx prisma migrate deploy
 else
-    echo "No Prisma migrations found; synchronizing the schema with db push."
-    docker compose run --rm app npx prisma db push
+    if [ "${ALLOW_DB_PUSH:-false}" = "true" ]; then
+        echo "No Prisma migrations found; applying schema with explicitly enabled db push."
+        "${COMPOSE[@]}" run --rm app npx prisma db push
+    else
+        echo "❌ No Prisma migrations found. Refusing an uncontrolled production schema change."
+        echo "Create and commit migrations, or explicitly set ALLOW_DB_PUSH=true for a controlled initial setup."
+        exit 1
+    fi
 fi
 
 # 7. Start App and Reverse Proxy
-echo "🌐 Starting Application and Caddy Reverse Proxy..."
-docker compose up -d --remove-orphans
+echo "🌐 Starting Application and its supporting services..."
+"${COMPOSE[@]}" up -d --remove-orphans
 
 # 8. Healthcheck verification
 echo "🩺 Performing application health check..."
@@ -100,7 +107,7 @@ if [ "$HEALTHY" = true ]; then
     echo "=========================================================="
     echo "🎉 DEPLOYMENT SUCCESSFUL!"
     echo "=========================================================="
-    echo "Platform is running live with automatic SSL."
+    echo "Platform is running. Configure your external reverse proxy and TLS separately."
     echo "Domain: https://${NEXT_PUBLIC_ROOT_DOMAIN:-ankabit.app}"
     echo "Wildcards: https://*.${NEXT_PUBLIC_ROOT_DOMAIN:-ankabit.app}"
 else

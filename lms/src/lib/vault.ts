@@ -13,9 +13,13 @@ export function getVaultKey(): Buffer {
     process.env.SETUP_TOKEN ||
     process.env.SETUP_SECRET ||
     process.env.JWT_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    'ankabit-lms-secure-vault-key-seed-2026';
-  return crypto.scryptSync(secret, SALT, 32);
+    process.env.NEXTAUTH_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('DB_ENCRYPTION_KEY or an equivalent production secret must be configured.');
+  }
+  // Keep the development fallback stable so local encrypted setup data survives restarts.
+  const effectiveSecret = secret || 'ankabit-lms-secure-vault-key-seed-2026';
+  return crypto.scryptSync(effectiveSecret, SALT, 32);
 }
 
 /**
@@ -34,6 +38,7 @@ export function encryptSecret(plainText?: string): string {
     return `enc:${iv.toString('hex')}:${tag}:${encrypted}`;
   } catch (err) {
     console.error('[Vault] Encryption error:', err);
+    if (process.env.NODE_ENV === 'production') throw err;
     return plainText;
   }
 }

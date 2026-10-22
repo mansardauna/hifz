@@ -200,7 +200,7 @@ export function DocsPortal() {
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
                 <span className="text-xs font-semibold text-emerald-700 capitalize tracking-wider block mb-1">Custom Domain (CNAME)</span>
                 <code className="text-sm font-mono text-slate-800 font-semibold block mb-2">https://portal.academy.edu</code>
-                <p className="text-xs text-slate-500">Proxied via CNAME to domains.ankabit.app with automatic SSL certification.</p>
+                <p className="text-xs text-slate-500">Proxied through your configured domain and external TLS provider.</p>
               </div>
 
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
@@ -700,16 +700,16 @@ export function DocsPortal() {
     {
       id: 'deployment',
       category: 'Operations',
-      title: 'Docker, Caddy & Production Deployment',
-      description: 'Containerized deployment guide with automated SSL and Caddy reverse proxy.',
+      title: 'Docker & Production Deployment',
+      description: 'Containerized deployment guide with an external reverse proxy and TLS provider.',
       icon: Server,
-      tags: ['deployment', 'docker', 'caddy', 'production', 'nginx', 'ssl'],
+      tags: ['deployment', 'docker', 'production', 'nginx', 'ssl'],
       content: (
         <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Docker, Caddy & Production Deployment</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Docker & Production Deployment</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
-              Standard production topology using Docker Compose with Caddy automatic TLS.
+              Standard production topology using Docker Compose behind an external reverse proxy.
             </p>
           </div>
 

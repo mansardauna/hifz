@@ -274,6 +274,10 @@ export class AuthService {
       }
     }
 
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Database authentication is unavailable. In-memory demo accounts are disabled in production.');
+    }
+
     // 2. Verified Memory Registry Authentication
     const memoryUser = MEMORY_USERS.get(normalizedEmail);
     if (!memoryUser) {
