@@ -20,7 +20,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({ onAddToast }) 
 
   // Profile Form State
   const [name, setName] = useState<string>(user?.name || (isQuran ? 'Abdullah Ahmad' : 'Alex Morgan'));
-  const [email, setEmail] = useState<string>(user?.email || (isQuran ? 'student@hifz.app' : 'student@academy.com'));
+    const [email, setEmail] = useState<string>(user?.email || (isQuran ? 'student@liwanlms.com' : 'student@academy.com'));
   const [phone, setPhone] = useState<string>('+1 (555) 345-6789');
 
   // Password / Security Form State

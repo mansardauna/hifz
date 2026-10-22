@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
         const presignedGetUrl = storageService.generatePresignedDownloadUrl(normalizedKey, 300);
         return NextResponse.redirect(presignedGetUrl, 307);
       } else {
-        const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'media.ankabit.app';
+        const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'media.liwanlms.com';
         return NextResponse.redirect(`https://${publicDomain}/${normalizedKey}`, 307);
       }
     }

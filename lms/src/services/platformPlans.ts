@@ -9,6 +9,8 @@ import {
   SuperAdminPaymentSettings,
 } from '../types/superAdmin';
 
+const platformRootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost';
+
 export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
   {
     id: 'free',
@@ -27,7 +29,7 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
     features: [
       'Up to 15 Active Students',
       '1 Teacher Seat',
-      'Subdomain (*.ankabit.app)',
+      `Subdomain (*.${platformRootDomain})`,
       'Basic Page & Form Builder',
       'Custom Email/WhatsApp Gateway (Dedicated)',
       'Basic Overview KPI Numbers',
@@ -64,7 +66,7 @@ export const DEFAULT_PLATFORM_PLANS: PlatformSubscriptionPlan[] = [
     features: [
       'Up to 50 Active Students',
       '2 Teacher Seats',
-      'Subdomain (*.ankabit.app)',
+      `Subdomain (*.${platformRootDomain})`,
       'Audio Homework Looper & Recorder',
       'Custom Merchant Gateways (Stripe / Moyasar)',
       'Dedicated Email/WhatsApp Credentials',
@@ -375,7 +377,7 @@ export const DEFAULT_SUPERADMIN_GATEWAYS: SuperAdminGatewaySettings = {
       lastResetDate: new Date().toISOString().split('T')[0],
       status: 'unverified',
       isVerified: false,
-      fromEmail: 'noreply@ankabit.app',
+      fromEmail: `noreply@${platformRootDomain}`,
       fromName: 'Ankabit Academy OS',
       sendpulseMode: 'smtp',
       sendpulseSmtpUser: '',
@@ -392,7 +394,7 @@ export const DEFAULT_SUPERADMIN_GATEWAYS: SuperAdminGatewaySettings = {
       lastResetDate: new Date().toISOString().split('T')[0],
       status: 'unverified',
       isVerified: false,
-      fromEmail: 'notifications@ankabit.app',
+      fromEmail: `notifications@${platformRootDomain}`,
       fromName: 'Ankabit Platform Mailer',
       smtpHost: 'smtp.gmail.com',
       smtpPort: 587,
@@ -404,7 +406,7 @@ export const DEFAULT_SUPERADMIN_GATEWAYS: SuperAdminGatewaySettings = {
   email: {
     enabled: true,
     provider: 'smtp',
-    fromEmail: 'noreply@ankabit.app',
+      fromEmail: `noreply@${platformRootDomain}`,
     fromName: 'Ankabit Platform & Academy OS',
     smtpHost: 'smtp.sendgrid.net',
     smtpPort: 587,
@@ -508,7 +510,7 @@ export const DEFAULT_SUPERADMIN_USERS: SuperAdminUser[] = [
   {
     id: 'usr-super-1',
     name: 'Master Platform Admin',
-    email: 'superadmin@ankabit.app',
+    email: `superadmin@${platformRootDomain}`,
     role: 'superadmin' as const,
     status: 'active' as const,
     lastActiveAt: 'Active Now',
@@ -517,7 +519,7 @@ export const DEFAULT_SUPERADMIN_USERS: SuperAdminUser[] = [
   {
     id: 'usr-super-2',
     name: 'Sarah Jennings',
-    email: 'sarah.support@ankabit.app',
+    email: `sarah.support@${platformRootDomain}`,
     role: 'platform_support' as const,
     status: 'active' as const,
     lastActiveAt: '15 mins ago',
@@ -526,7 +528,7 @@ export const DEFAULT_SUPERADMIN_USERS: SuperAdminUser[] = [
   {
     id: 'usr-super-3',
     name: 'Karim Mansour',
-    email: 'karim.finance@ankabit.app',
+    email: `karim.finance@${platformRootDomain}`,
     role: 'billing_manager' as const,
     status: 'active' as const,
     lastActiveAt: '2 hours ago',
@@ -535,7 +537,7 @@ export const DEFAULT_SUPERADMIN_USERS: SuperAdminUser[] = [
   {
     id: 'usr-super-4',
     name: 'DevOps Lead Engineer',
-    email: 'infra@ankabit.app',
+    email: `infra@${platformRootDomain}`,
     role: 'infrastructure_lead' as const,
     status: 'active' as const,
     lastActiveAt: '1 day ago',
@@ -571,13 +573,13 @@ export const saveSuperAdminUsers = (users: SuperAdminUser[]) => {
 export const DEFAULT_SUPERADMIN_INFRASTRUCTURE: SuperAdminInfrastructureSettings = {
   database: {
     provider: 'postgres_cluster',
-    host: 'db-cluster.internal.ankabit.app',
+    host: `db-cluster.internal.${platformRootDomain}`,
     port: 5432,
     databaseName: 'ankabit_lms_production',
     username: 'ankabit_admin',
     password: '',
-    connectionString: 'postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production?sslmode=require&connection_limit=25',
-    directUrl: 'postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production',
+    connectionString: `postgresql://liwan_admin:[PASSWORD]@db-cluster.internal.${platformRootDomain}:5432/liwanlms_production?sslmode=require&connection_limit=25`,
+    directUrl: `postgresql://liwan_admin:[PASSWORD]@db-cluster.internal.${platformRootDomain}:5432/liwanlms_production`,
     ssl: true,
     poolSize: 25,
     maxOverflow: 10,
@@ -585,15 +587,15 @@ export const DEFAULT_SUPERADMIN_INFRASTRUCTURE: SuperAdminInfrastructureSettings
   },
   redis: {
     enabled: true,
-    host: 'redis-cache.internal.ankabit.app',
+    host: `redis-cache.internal.${platformRootDomain}`,
     port: 6379,
     password: '',
     tls: true,
     clusterMode: false,
-    connectionString: 'rediss://:[PASSWORD]@redis-cache.internal.ankabit.app:6379',
+    connectionString: 'rediss://:[PASSWORD]@redis-cache.internal.liwanlms.com:6379',
   },
   livekit: {
-    serverUrl: 'wss://livekit.ankabit.app',
+    serverUrl: `wss://livekit.${platformRootDomain}`,
     apiKey: '',
     apiSecret: '',
     region: 'eu-central-1',
@@ -605,7 +607,7 @@ export const DEFAULT_SUPERADMIN_INFRASTRUCTURE: SuperAdminInfrastructureSettings
     accessKeyId: '',
     secretAccessKey: '',
     endpoint: 'https://r2.cloudflarestorage.com',
-    publicCdnUrl: 'https://cdn.ankabit.app',
+    publicCdnUrl: `https://cdn.${platformRootDomain}`,
     forcePathStyle: false,
   },
 };
@@ -685,5 +687,3 @@ export const saveSuperAdminPaymentGateways = (payments: SuperAdminPaymentSetting
     console.warn('Error saving superadmin payments:', e);
   }
 };
-
-

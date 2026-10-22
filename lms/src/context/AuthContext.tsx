@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getPlatformRootDomain } from '../lib/platformDomain';
 
 export type UserRole = 'student' | 'teacher' | 'admin' | 'superadmin';
 
@@ -228,7 +229,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       demoAvatar = '/images/muslim_girl_student.jpg';
     } else if (role === 'superadmin') {
       demoName = 'Platform SuperAdmin';
-      demoEmail = 'superadmin@ankabit.app';
+      demoEmail = `superadmin@${getPlatformRootDomain()}`;
       demoAvatar = '/images/muslim_teacher_woman.jpg';
     }
 
@@ -238,7 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email: demoEmail,
       role,
       tenantId: user?.tenantId || 'tenant-demo',
-      tenantSubdomain: user?.tenantSubdomain || 'demo',
+      tenantSubdomain: user?.tenantSubdomain || 'liwan-academy',
       avatarUrl: demoAvatar,
     };
 

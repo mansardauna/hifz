@@ -60,7 +60,7 @@ export class BillingService {
             currency: 'usd',
             product_data: {
               name: targetTier.name,
-              description: `Monthly subscription for ${academySubdomain}.ankabit.app`,
+              description: `Monthly subscription for ${academySubdomain}.liwanlms.com`,
             },
             unit_amount: targetTier.priceUsd * 100,
             recurring: { interval: 'month' },
@@ -209,7 +209,7 @@ export class BillingService {
             currency: currency.toLowerCase(),
             product_data: {
               name: description || `Academy Tuition — ${studentName}`,
-              description: `Enrolled in ${academySubdomain}.ankabit.app`,
+      description: `Enrolled in ${academySubdomain}.liwanlms.com`,
             },
             unit_amount: Math.round(finalAmount * 100),
           },

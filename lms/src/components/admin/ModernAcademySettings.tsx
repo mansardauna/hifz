@@ -552,9 +552,9 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
       const res = await fetch(`/api/domains/check?domain=${encodeURIComponent(cleanDomain)}`);
       updateTenantConfig({ customDomain: cleanDomain });
       if (res.ok) {
-        success('DNS Verified & Linked!', `Custom domain "${cleanDomain}" is active and authorized. CNAME target: cname.ankabit.app`);
+        success('DNS Verified & Linked!', `Custom domain "${cleanDomain}" is active and authorized. CNAME target: liwanlms.com`);
       } else {
-        success('Custom Domain Attached', `"${cleanDomain}" linked to your academy. Point CNAME to cname.ankabit.app to complete SSL handshake.`);
+        success('Custom Domain Attached', `"${cleanDomain}" linked to your academy. Point CNAME to liwanlms.com to complete SSL handshake.`);
       }
     } catch {
       updateTenantConfig({ customDomain: cleanDomain });
@@ -754,13 +754,13 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     className="w-56 px-3 py-2 border-y border-slate-300 text-xs font-mono font-semibold bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                   <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 rounded-r-xl text-xs font-mono text-slate-600 font-semibold select-none">
-                    .ankabit.app
+                     .liwanlms.com
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 mt-1">
                   Portal address:{' '}
                   <span className="font-mono font-semibold text-slate-700">
-                    https://{subdomain || 'academy'}.ankabit.app
+                      https://{subdomain || 'academy'}.liwanlms.com
                   </span>
                 </p>
               </div>
@@ -876,7 +876,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
                     <div className="ml-2 text-[10px] text-slate-500 font-mono flex-1 truncate">
-                      https://{subdomain || 'your-academy'}.ankabit.app
+                          https://{subdomain || 'your-academy'}.liwanlms.com
                     </div>
                   </div>
 
@@ -1067,7 +1067,7 @@ export const ModernAcademySettings: React.FC<ModernAcademySettingsProps> = ({
                         </div>
                         <div className="min-w-0">
                           <div className="font-semibold text-xs text-white truncate">{companyName}</div>
-                          <div className="text-[9px] text-white/50 truncate font-mono">{subdomain}.ankabit.app</div>
+                          <div className="text-[9px] text-white/50 truncate font-mono">{subdomain}.liwanlms.com</div>
                         </div>
                       </div>
 

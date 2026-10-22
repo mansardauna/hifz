@@ -810,7 +810,7 @@ export const StudentLMS: React.FC<StudentLMSProps> = ({ onAddToast }) => {
                         {tenant.name || 'Academy Central Campus'}
                       </h3>
                       <p className="text-xs text-slate-400 font-medium">
-                        {tenant.customDomain || `${tenant.subdomain}.ankabit.app`} • Online SFU
+                        {tenant.customDomain || `${tenant.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost'}`} • Online SFU
                       </p>
                     </div>
 

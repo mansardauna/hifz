@@ -41,10 +41,10 @@ const HIFZ_TENANT_ID = 'cmukffmy70003ttc94dslvw5f';
 
 const MEMORY_USERS: Map<string, StoredUserRecord> = new Map([
   [
-    'superadmin@ankabit.app',
+    'superadmin@liwanlms.com',
     {
       id: 'usr-superadmin',
-      email: 'superadmin@ankabit.app',
+      email: 'superadmin@liwanlms.com',
       name: 'Platform SuperAdmin',
       passwordHash: INITIAL_HASH,
       role: 'superadmin',

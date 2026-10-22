@@ -19,7 +19,7 @@ export default async function middleware(req: NextRequest) {
 
   // Extract hostname without port
   const currentHost = rawHost.replace(/:\d+$/, '').toLowerCase();
-  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase();
+  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || currentHost).toLowerCase();
 
   // Root domains that should serve the platform directly on main domain paths
   const isRootHost =
@@ -27,8 +27,6 @@ export default async function middleware(req: NextRequest) {
     currentHost === '127.0.0.1' ||
     currentHost === rootDomain ||
     currentHost === `www.${rootDomain}` ||
-    currentHost === 'ankabit.app' ||
-    currentHost === 'www.ankabit.app' ||
     currentHost === 'techmadrasah.app' ||
     currentHost === 'www.techmadrasah.app' ||
     currentHost === 'hifz.app' ||
@@ -47,8 +45,6 @@ export default async function middleware(req: NextRequest) {
     subdomain = currentHost.replace(`.${rootDomain}`, '');
   } else if (currentHost.endsWith('.localhost')) {
     subdomain = currentHost.replace('.localhost', '');
-  } else if (currentHost.endsWith('.ankabit.app')) {
-    subdomain = currentHost.replace('.ankabit.app', '');
   } else if (currentHost.endsWith('.techmadrasah.app')) {
     subdomain = currentHost.replace('.techmadrasah.app', '');
   } else if (currentHost.endsWith('.hifz.app')) {

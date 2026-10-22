@@ -290,7 +290,7 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
                 className="w-full px-3 text-sm font-medium text-slate-900 focus:outline-none"
               />
               <span className="px-3.5 text-sm text-slate-500 bg-slate-50 border-l border-slate-200 h-full flex items-center select-none font-mono">
-                .ankabit.app
+                 .liwanlms.com
               </span>
             </div>
             <p className="text-xs text-slate-500">
@@ -330,7 +330,7 @@ export const GeneralAcademySettings: React.FC<GeneralAcademySettingsProps> = ({
               </Button>
             </div>
             <p className="text-xs text-slate-500">
-              Point a CNAME record from your DNS registrar to <code className="text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded font-mono">domains.ankabit.app</code>.
+              Point a CNAME record from your DNS registrar to <code className="text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded font-mono">liwanlms.com</code>.
             </p>
           </div>
         </div>

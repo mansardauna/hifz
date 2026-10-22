@@ -96,7 +96,7 @@ Invoice Number:   ${inv.invoiceNumber}
 Date:             ${inv.paidAt || inv.date}
 Student Name:     ${user?.name || 'Enrolled Student'}
 Student Email:    ${user?.email || 'student@academy.com'}
-Campus / Domain:  ${tenant.customDomain || `${tenant.subdomain}.ankabit.app`}
+      Campus / Domain:  ${tenant.customDomain || `${tenant.subdomain}.liwanlms.com`}
 
 ------------------------------------------------------------
 DESCRIPTION:
@@ -108,7 +108,7 @@ STATUS:           SUCCESSFULLY PROCESSED (PAID IN FULL)
 SECURITY:         256-Bit SSL Encrypted Transaction
 ============================================================
 Thank you for your enrollment at ${tenant.name}.
-For billing support: admissions@${tenant.subdomain}.ankabit.app
+      For billing support: admissions@${tenant.subdomain}.liwanlms.com
 ============================================================
     `.trim();
 

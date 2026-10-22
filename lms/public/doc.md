@@ -62,14 +62,14 @@ Ankabit LMS is designed as a modular, high-performance distributed web applicati
 ## 2. Multi-Tenant Isolation & Workspace Routing
 
 Every educational academy on Ankabit operates within its own dedicated namespace:
-- **Platform Subdomain**: `https://{subdomain}.ankabit.app` (e.g. `https://al-furqan.ankabit.app`)
-- **Custom Domain**: `https://portal.{academy}.edu` via CNAME pointing to `domains.ankabit.app`
+- **Platform Subdomain**: `https://{subdomain}.liwanlms.com` (e.g. `https://academy.liwanlms.com`)
+- **Custom Domain**: `https://portal.{academy}.edu` via CNAME pointing to `liwanlms.com`
 - **Development Routing**: Path-based simulation on localhost: `http://localhost:3000/{subdomain}`
 
 ### Subdomain Resolution Engine
 Tenant resolution occurs automatically in [`TenantContext.tsx`](src/context/TenantContext.tsx) and Next.js middleware:
 1. In development, URL path prefixes (`/al-bayaan`, `/emerald-academy`) resolve the tenant config from MySQL.
-2. In production, host header subdomains (`al-bayaan.ankabit.app`) are extracted.
+2. In production, host header subdomains (`academy.liwanlms.com`) are extracted.
 3. Unregistered or root domains cleanly serve the public SaaS platform landing page (`/`).
 
 ### Preventing Cross-Tenant Data Bleed
@@ -97,7 +97,7 @@ Users cannot cross-login into academies they do not belong to. Attempting to sig
 > *"This account belongs to [Academy Name]. Please sign in at your assigned academy URL."*
 
 ### SuperAdmin Account Provisioning
-- **Default Master Email**: `superadmin@ankabit.app`
+- **Default Master Email**: `superadmin@liwanlms.com`
 - **Initial Password**: Provisioned via `INITIAL_SUPERADMIN_PASSWORD` (or `INITIAL_ADMIN_PASSWORD` in `.env`). Administrators must rotate this password upon initial setup.
 - **Access Route**: `/super-admin` or `/login`
 

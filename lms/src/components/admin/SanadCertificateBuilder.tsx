@@ -43,7 +43,7 @@ export const SanadCertificateBuilder: React.FC = () => {
 
   const verificationUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/verify/${certificateId}`
-    : `https://${tenant.subdomain}.ankabit.app/verify/${certificateId}`;
+    : `https://${tenant.subdomain}.liwanlms.com/verify/${certificateId}`;
 
   // Theme styling palettes
   const themeStyles = {

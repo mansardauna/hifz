@@ -41,7 +41,7 @@ export const ImpersonationBanner: React.FC = () => {
           <UserCheck className="w-3.5 h-3.5 text-amber-200" />
         </span>
         <span>
-          Platform SuperAdmin Impersonation Mode: You are managing <strong className="underline decoration-amber-300">{impersonation.name}</strong> ({impersonation.subdomain}.ankabit.app)
+          Platform SuperAdmin Impersonation Mode: You are managing <strong className="underline decoration-amber-300">{impersonation.name}</strong> ({impersonation.subdomain}.liwanlms.com)
         </span>
       </div>
 

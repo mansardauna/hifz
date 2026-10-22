@@ -11,9 +11,9 @@ export interface LiveKitTokenParams {
 
 // Global SFU Edge Media Nodes Map
 const REGIONAL_MEDIA_ENDPOINTS: Record<string, string> = {
-  'me-south-1': process.env.LIVEKIT_URL_ME || 'wss://me-media.ankabit.app',
-  'eu-central-1': process.env.LIVEKIT_URL_EU || 'wss://eu-media.ankabit.app',
-  'us-east-1': process.env.LIVEKIT_URL_US || 'wss://us-media.ankabit.app',
+  'me-south-1': process.env.LIVEKIT_URL_ME || 'wss://me-media.liwanlms.com',
+  'eu-central-1': process.env.LIVEKIT_URL_EU || 'wss://eu-media.liwanlms.com',
+  'us-east-1': process.env.LIVEKIT_URL_US || 'wss://us-media.liwanlms.com',
 };
 
 export class LiveKitService {

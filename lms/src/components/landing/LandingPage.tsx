@@ -342,7 +342,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
     '@type': 'EducationalOrganization',
     name: tenant.name,
     description: tenant.tagline || tenant.aboutText,
-    url: `https://${tenant.subdomain}.ankabit.app`,
+    url: `https://${tenant.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost'}`,
     logo: tenant.logoUrl,
     address: {
       '@type': 'PostalAddress',

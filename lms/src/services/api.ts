@@ -64,7 +64,8 @@ class HifzApiClient {
       }
 
       // Default clean, unpopulated configuration for real signed-up user academies
-      const primaryColor = key.includes('code') ? '#2563eb' : key.includes('school') ? '#7c3aed' : '#059669';
+       const primaryColor = key.includes('code') ? '#2563eb' : key.includes('school') ? '#7c3aed' : '#059669';
+       const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || (typeof window !== 'undefined' ? window.location.hostname : 'localhost');
       const cleanTenant: TenantConfig = {
         id: `tenant-${key}`,
         name: key.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
@@ -72,7 +73,7 @@ class HifzApiClient {
         tagline: 'Autonomous Educational Institution',
         taglineAr: 'منصة تعليمية ذكية',
         subdomain: key,
-        customDomain: `${key}.ankabit.app`,
+        customDomain: `${key}.${rootDomain}`,
         niche: key.includes('code') ? 'coding' : key.includes('school') ? 'school' : 'madrasat',
         logoUrl: '',
         faviconUrl: '',
@@ -98,7 +99,7 @@ class HifzApiClient {
         forms: [],
         customFormFields: [],
         subscriptionPlan: 'free',
-        contactEmail: `admin@${key}.ankabit.app`,
+        contactEmail: `admin@${key}.${rootDomain}`,
         contactPhone: '',
         defaultDirection: 'ltr',
       };

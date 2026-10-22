@@ -30,7 +30,7 @@ export const TenantToolbar: React.FC = () => {
             >
               {Object.values(MOCK_TENANTS).map((t) => (
                 <option key={t.subdomain} value={t.subdomain}>
-                  {t.name} ({t.subdomain}.ankabit.app)
+                  {t.name} ({t.subdomain}.liwanlms.com)
                 </option>
               ))}
             </select>

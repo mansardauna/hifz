@@ -1,7 +1,7 @@
 {
   "name": "Ankabit LMS - Multi-Tenant Academy Operating System",
   "short_name": "Ankabit LMS",
-  "description": "The premier multi-tenant white-label academy LMS platform for Quran Madrasats, Code Bootcamps, and K-12 Schools.",
+  "description": "A multi-tenant white-label academy LMS platform for Quran Madrasats, Code Bootcamps, and K-12 Schools.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

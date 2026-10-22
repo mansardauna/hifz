@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     // Whitelist-validated origin to prevent open redirect vulnerabilities
     const getSafeOrigin = (): string => {
       const defaultOrigin = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, '');
-      const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase();
+       const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'liwanlms.com').toLowerCase();
       const rawOrigin = req.headers.get('origin');
       if (!rawOrigin) return defaultOrigin;
 

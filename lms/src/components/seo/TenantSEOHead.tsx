@@ -1,5 +1,6 @@
 import React from 'react';
 import { TenantConfig } from '../../types';
+import { getTenantDomain } from '../../lib/platformDomain';
 
 interface TenantSEOHeadProps {
   tenant: TenantConfig;
@@ -25,7 +26,7 @@ export const TenantSEOHead: React.FC<TenantSEOHeadProps> = ({
     tenant.aboutText ||
     `Join ${tenant.name} for authentic online learning, one-on-one live instruction, curriculum tracks, and verified certification.`;
 
-  const url = canonicalUrl || `https://${tenant.subdomain}.hifz.app`;
+  const url = canonicalUrl || `https://${getTenantDomain(tenant.subdomain)}`;
   const image = ogImage || tenant.logoUrl || 'https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=1200&q=80';
 
   // Schema.org Structured Data for EducationalOrganization

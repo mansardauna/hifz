@@ -19,7 +19,7 @@ export const HeroDashboardIllustration: React.FC<{ className?: string }> = ({ cl
     <circle cx="40" cy="22" r="5" fill="#F59E0B" />
     <circle cx="56" cy="22" r="5" fill="#10B981" />
     <rect x="220" y="12" width="360" height="20" rx="6" fill="#F1F5F9" />
-    <text x="270" y="26" fill="#475569" fontSize="10" fontFamily="monospace" fontWeight="600">hifz-academy.ankabit.app</text>
+      <text x="270" y="26" fill="#475569" fontSize="10" fontFamily="monospace" fontWeight="600">hifz-academy.liwanlms.com</text>
 
     {/* Left Sidebar */}
     <rect x="0" y="44" width="180" height="436" fill="#0F172A" />
@@ -124,21 +124,21 @@ export const MultiTenantNetworkIllustration: React.FC<{ className?: string }> = 
     <rect x="30" y="32" width="200" height="76" rx="10" fill="#F0FDF4" stroke="#86EFAC" />
     <circle cx="56" cy="70" r="14" fill="#10B981" />
     <text x="78" y="60" fill="#065F46" fontSize="11" fontFamily="sans-serif" fontWeight="700">Hifz Quran Academy</text>
-    <text x="78" y="74" fill="#047857" fontSize="9" fontFamily="sans-serif">hifz-academy.ankabit.app</text>
+      <text x="78" y="74" fill="#047857" fontSize="9" fontFamily="sans-serif">hifz-academy.liwanlms.com</text>
     <text x="78" y="88" fill="#64748B" fontSize="9" fontFamily="sans-serif">114 Surahs • 520 Students</text>
 
     {/* Tenant 2: Code Academy */}
     <rect x="370" y="32" width="200" height="76" rx="10" fill="#EFF6FF" stroke="#93C5FD" />
     <circle cx="396" cy="70" r="14" fill="#2563EB" />
     <text x="418" y="60" fill="#1E3A8A" fontSize="11" fontFamily="sans-serif" fontWeight="700">Code Academy</text>
-    <text x="418" y="74" fill="#2563EB" fontSize="9" fontFamily="sans-serif">code-academy.ankabit.app</text>
+      <text x="418" y="74" fill="#2563EB" fontSize="9" fontFamily="sans-serif">code-academy.liwanlms.com</text>
     <text x="418" y="88" fill="#64748B" fontSize="9" fontFamily="sans-serif">Web Dev Sandbox • 640 Students</text>
 
     {/* Tenant 3: Al-Furqan Islamic School */}
     <rect x="30" y="252" width="200" height="76" rx="10" fill="#F8FAFC" stroke="#CBD5E1" />
     <circle cx="56" cy="290" r="14" fill="#0D9488" />
     <text x="78" y="280" fill="#0F172A" fontSize="11" fontFamily="sans-serif" fontWeight="700">Al-Furqan Academy</text>
-    <text x="78" y="294" fill="#64748B" fontSize="9" fontFamily="sans-serif">al-furqan.ankabit.app</text>
+      <text x="78" y="294" fill="#64748B" fontSize="9" fontFamily="sans-serif">al-furqan.liwanlms.com</text>
     <text x="78" y="308" fill="#10B981" fontSize="9" fontFamily="sans-serif">Sanad Ijazah Verified</text>
 
     {/* Tenant 4: Bayyinah Arabic Institute */}
@@ -451,7 +451,7 @@ export const LaptopHeroMockupIllustration: React.FC<{ className?: string }> = ({
           </div>
           <div className="bg-slate-800/80 text-slate-400 text-[10px] font-mono px-6 py-1 rounded-full border border-slate-700/60 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            portal.ankabit.app/dashboard
+            portal.liwanlms.com/dashboard
           </div>
           <div className="w-10" />
         </div>
@@ -749,4 +749,3 @@ export const VocationalSisTrackIllustration: React.FC<{ className?: string; isDa
     </svg>
   </div>
 );
-

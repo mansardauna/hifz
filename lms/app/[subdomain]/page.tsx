@@ -4,6 +4,7 @@ import { MOCK_TENANTS } from '../../src/services/mockData';
 import { TenantLandingClient } from './TenantLandingClient';
 
 import { TenantService } from '../../src/server/services/tenantService';
+import { getTenantDomain } from '../../src/lib/platformDomain';
 
 interface Props {
   params: { subdomain: string };
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
     },
     alternates: {
-      canonical: `https://${subdomain}.hifz.app`,
+      canonical: `https://${getTenantDomain(subdomain)}`,
     },
   };
 }

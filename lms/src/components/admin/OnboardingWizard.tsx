@@ -193,7 +193,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
       return { status: 'taken', message: `"${trimmed}" is a reserved system route. Please choose another.` };
     }
     if (trimmed === tenant.subdomain) {
-      return { status: 'available', message: `Active academy address: https://${trimmed}.ankabit.app` };
+      return { status: 'available', message: `Active academy address: https://${trimmed}.liwanlms.com` };
     }
     if (typeof window !== 'undefined') {
       const exists = localStorage.getItem(`tenant_config_${trimmed}`);
@@ -201,7 +201,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
         return { status: 'taken', message: `Subdomain "${trimmed}" is already taken by another academy.` };
       }
     }
-    return { status: 'available', message: `https://${trimmed}.ankabit.app is ready & available!` };
+    return { status: 'available', message: `https://${trimmed}.liwanlms.com is ready & available!` };
   }, [subdomain, tenant.subdomain]);
 
   // Load draft from localStorage on initial render
@@ -349,7 +349,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
       onAddToast({
         type: 'success',
         title: 'Academy Setup Completed!',
-        message: `${academyName} is now fully configured and live at ${finalSubdomain}.ankabit.app.`,
+        message: `${academyName} is now fully configured and live at ${finalSubdomain}.liwanlms.com.`,
       });
       onComplete();
     }
@@ -570,7 +570,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                       className="flex-1 py-2.5 px-3 bg-white text-slate-900 font-semibold focus:outline-none tracking-wide"
                     />
                     <span className="px-3.5 py-2.5 bg-slate-50 border-l border-slate-200 text-slate-500 font-semibold select-none">
-                      .ankabit.app
+                       .liwanlms.com
                     </span>
                   </div>
 
@@ -638,7 +638,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                   <div className="flex items-center gap-2 pt-1 text-[11px] text-slate-500">
                     <span>Portal URL:</span>
                     <span className="font-mono font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
-                      https://{subdomain || 'academy'}.ankabit.app
+                      https://{subdomain || 'academy'}.liwanlms.com
                     </span>
                     <button
                       type="button"
@@ -943,7 +943,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onAddToast, 
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
                     <span className="text-slate-500">Subdomain Address:</span>
-                    <span className="font-semibold text-slate-900 font-mono">https://{subdomain || 'academy'}.ankabit.app</span>
+                    <span className="font-semibold text-slate-900 font-mono">https://{subdomain || 'academy'}.liwanlms.com</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-200/60">
                     <span className="text-slate-500">Curriculum Tracks:</span>

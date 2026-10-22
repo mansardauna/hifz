@@ -742,7 +742,7 @@ export const StaffRolesManager: React.FC = () => {
                 variant="outline"
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    `Welcome to ${tenant.name}!\nEmail: ${provisionedCredentials.email}\nTemporary Password: ${provisionedCredentials.temporaryPassword}\nLogin Portal: https://${tenant.subdomain}.ankabit.app`
+                     `Welcome to ${tenant.name}!\nEmail: ${provisionedCredentials.email}\nTemporary Password: ${provisionedCredentials.temporaryPassword}\nLogin Portal: https://${tenant.subdomain}.liwanlms.com`
                   );
                   success('Credentials Copied', 'Login details copied to clipboard.');
                 }}

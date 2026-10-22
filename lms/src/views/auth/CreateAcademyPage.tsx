@@ -124,7 +124,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
       }
     }
 
-    return { status: 'available', message: `${trimmed}.ankabit.app is available!` };
+    return { status: 'available', message: `${trimmed}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost'} is available!` };
   }, [subdomain]);
 
   // Real-time Email Availability Check
@@ -498,7 +498,7 @@ export const CreateAcademyPage: React.FC<CreateAcademyPageProps> = ({
                   className="w-full px-2 py-2.5 text-xs sm:text-sm text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-400 font-mono"
                 />
                 <span className="px-3 py-2.5 bg-slate-50 border-l border-slate-200 text-slate-500 text-xs sm:text-sm font-mono font-medium select-none shrink-0">
-                  .ankabit.app
+                  .{process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost'}
                 </span>
               </div>
 

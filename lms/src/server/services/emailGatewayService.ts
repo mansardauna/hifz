@@ -99,7 +99,7 @@ export const DEFAULT_EMAIL_PROVIDERS: EmailProviderConfig[] = [
     lastResetDate: new Date().toISOString().split('T')[0],
     status: 'unverified',
     isVerified: false,
-    fromEmail: 'noreply@ankabit.app',
+    fromEmail: 'noreply@liwanlms.com',
     fromName: 'Ankabit Academy OS',
     sendpulseMode: 'smtp',
     sendpulseSmtpUser: '',
@@ -116,7 +116,7 @@ export const DEFAULT_EMAIL_PROVIDERS: EmailProviderConfig[] = [
     lastResetDate: new Date().toISOString().split('T')[0],
     status: 'unverified',
     isVerified: false,
-    fromEmail: 'notifications@ankabit.app',
+    fromEmail: 'notifications@liwanlms.com',
     fromName: 'Ankabit Platform Mailer',
     smtpHost: 'smtp.gmail.com',
     smtpPort: 587,
@@ -376,7 +376,7 @@ export class EmailGatewayService {
       // 2. Attempt delivery through this provider
       try {
         console.log(`[EmailGatewayService] Attempting delivery via ${provider.name} (Priority ${provider.priority})`);
-        const fromAddress = payload.fromEmail || provider.fromEmail || 'noreply@ankabit.app';
+        const fromAddress = payload.fromEmail || provider.fromEmail || 'noreply@liwanlms.com';
         const fromDisplayName = payload.fromName || provider.fromName || 'Ankabit Academy OS';
         const formattedFrom = `"${fromDisplayName}" <${fromAddress}>`;
 

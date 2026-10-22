@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       return new NextResponse('Missing domain query parameter', { status: 400 });
     }
 
-    const rawRoot = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'ankabit.app').toLowerCase().trim();
+    const rawRoot = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || new URL(request.url).hostname).toLowerCase().trim();
     const rootDomain = rawRoot.replace(/['"]/g, '');
 
     // 1. Root domain and standard subdomains are always authorized
@@ -28,9 +28,6 @@ export async function GET(request: NextRequest) {
       domain === rootDomain ||
       domain === `www.${rootDomain}` ||
       domain.endsWith(`.${rootDomain}`) ||
-      domain === 'ankabit.app' ||
-      domain === 'www.ankabit.app' ||
-      domain.endsWith('.ankabit.app') ||
       domain.endsWith('.localhost') ||
       domain === 'localhost' ||
       domain === '127.0.0.1'

@@ -314,7 +314,7 @@ export const StaffAndStudentManager: React.FC = () => {
   // Copy Credentials
   const handleCopyCredentials = () => {
     if (!selectedCredentials) return;
-    const text = `Ankabit LMS Login Credentials:\nAcademy Portal: https://${tenant.subdomain}.ankabit.app/login\nEmail: ${selectedCredentials.email}\nPassword: ${selectedCredentials.password || 'Contact administrator'}\nRole: ${selectedCredentials.role}`;
+    const text = `Liwan LMS Login Credentials:\nAcademy Portal: https://${tenant.subdomain}.liwanlms.com/login\nEmail: ${selectedCredentials.email}\nPassword: ${selectedCredentials.password || 'Contact administrator'}\nRole: ${selectedCredentials.role}`;
     navigator.clipboard.writeText(text);
     setHasCopied(true);
     setTimeout(() => setHasCopied(false), 2000);
@@ -759,7 +759,7 @@ export const StaffAndStudentManager: React.FC = () => {
                 <label className="font-semibold text-slate-700">Email Address (Login) *</label>
                 <Input
                   type="email"
-                  placeholder="teacher@academy.ankabit.app"
+                  placeholder="teacher@academy.liwanlms.com"
                   value={staffForm.email}
                   onChange={(e) => setStaffForm({ ...staffForm, email: e.target.value })}
                   required
@@ -1001,7 +1001,7 @@ export const StaffAndStudentManager: React.FC = () => {
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5 font-mono">
               <div className="flex justify-between items-center py-1 border-b border-slate-200/80">
                 <span className="text-slate-500 font-sans">Login Portal:</span>
-                <span className="font-semibold text-slate-900 select-all">https://{tenant.subdomain}.ankabit.app/login</span>
+                <span className="font-semibold text-slate-900 select-all">https://{tenant.subdomain}.liwanlms.com/login</span>
               </div>
               <div className="flex justify-between items-center py-1 border-b border-slate-200/80">
                 <span className="text-slate-500 font-sans">Username / Email:</span>

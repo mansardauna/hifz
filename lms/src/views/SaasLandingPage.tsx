@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Button, Card, Badge } from '../components/ui';
 import { AnkabitLogo } from '../components/brand/AnkabitLogo';
+import { getPlatformRootDomain } from '../lib/platformDomain';
 import {
   LaptopHeroMockupIllustration,
   MadrasatQuranTrackIllustration,
@@ -47,6 +48,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
+  const platformRootDomain = getPlatformRootDomain();
 
   // Real Partner Academies on Ankabit LMS
   const partnerAcademies = [
@@ -94,7 +96,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       popular: false,
       features: [
         'Up to 100 Active Students',
-        'Single Subdomain (*.ankabit.app)',
+        `Single Subdomain (*.${platformRootDomain})`,
         'Medina Mushaf & Audio Looper',
         'Real-time LiveKit Classrooms',
         'Direct Gateway Payments (0% Fee)',
@@ -135,7 +137,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
   const faqs = [
     {
       q: 'How does Ankabit LMS power specialized academies?',
-      a: 'Ankabit LMS provides turn-key infrastructure. Your academy runs on your custom domain (e.g. learn.youracademy.com) or subdomain (*.ankabit.app) with custom branding, isolated student databases, and tailored curricula (Quran, Coding, or Vocational).',
+      a: `Ankabit LMS provides turn-key infrastructure. Your academy runs on your custom domain (e.g. learn.youracademy.com) or subdomain (*.${platformRootDomain}) with custom branding, isolated student databases, and tailored curricula (Quran, Coding, or Vocational).`,
     },
     {
       q: 'Are live video halaqahs built-in or dependent on third parties?',

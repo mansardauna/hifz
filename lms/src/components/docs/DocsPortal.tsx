@@ -193,7 +193,7 @@ export function DocsPortal() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
                 <span className="text-xs font-semibold text-emerald-700 capitalize tracking-wider block mb-1">Production Subdomain</span>
-                <code className="text-sm font-mono text-slate-800 font-semibold block mb-2">https://{'{subdomain}'}.ankabit.app</code>
+                <code className="text-sm font-mono text-slate-800 font-semibold block mb-2">https://{'{subdomain}'}.liwanlms.com</code>
                 <p className="text-xs text-slate-500">Extracted automatically from HTTP host headers by Next.js middleware.</p>
               </div>
 
@@ -215,7 +215,7 @@ export function DocsPortal() {
             <h3 className="font-semibold text-slate-900 text-base">Resolution Workflow & Prevention of State Bleed</h3>
             <ol className="list-decimal list-inside space-y-2 text-sm text-slate-700">
               <li><strong className="text-slate-900">URL Resolution:</strong> In development, URL path prefixes (<code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">/al-bayaan</code>) resolve the tenant config from MySQL.</li>
-              <li><strong className="text-slate-900">Edge Middleware Scoping:</strong> In production, host header subdomains (<code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">al-bayaan.ankabit.app</code>) are validated against registered tenants.</li>
+              <li><strong className="text-slate-900">Edge Middleware Scoping:</strong> In production, host header subdomains (<code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">academy.liwanlms.com</code>) are validated against registered tenants.</li>
               <li><strong className="text-slate-900">Clean Initialization:</strong> Newly created academies receive an authentic empty database state via <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">createCleanTenantConfig(subdomain)</code>.</li>
               <li><strong className="text-slate-900">Demo Isolation:</strong> Seeded demo data is strictly guarded with <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs">isDemoTenant(subdomain)</code>, ensuring demo records never appear in client academies.</li>
             </ol>
@@ -293,7 +293,7 @@ export function DocsPortal() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <span className="text-xs text-slate-500 block">SuperAdmin Email</span>
-                <span className="font-mono font-semibold text-slate-800">superadmin@ankabit.app</span>
+                <span className="font-mono font-semibold text-slate-800">superadmin@liwanlms.com</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <span className="text-xs text-slate-500 block">Default Password</span>
@@ -564,7 +564,7 @@ export function DocsPortal() {
           <div>
             <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">REST API Endpoints Reference</h2>
             <p className="text-slate-600 mt-1.5 leading-relaxed">
-              Base URL: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-semibold text-emerald-800">http://localhost:3000/api</code> or <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-semibold text-emerald-800">https://{'{subdomain}'}.ankabit.app/api</code>
+              Base URL: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-semibold text-emerald-800">http://localhost:3000/api</code> or <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono font-semibold text-emerald-800">https://{'{subdomain}'}.liwanlms.com/api</code>
             </p>
           </div>
 

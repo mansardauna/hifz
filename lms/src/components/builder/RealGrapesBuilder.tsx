@@ -357,7 +357,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
           <div class="hidden sm:flex items-center gap-4 text-emerald-100">
             <span>Call: +1 (800) 123-4567</span>
             <span>•</span>
-            <span>admissions@${tenant.subdomain}.ankabit.app</span>
+            <span>admissions@${tenant.subdomain}.liwanlms.com</span>
           </div>
         </header>
 
@@ -918,7 +918,7 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               </div>
               <div class="space-y-2">
                 <h4 class="font-semibold text-xs capitalize tracking-wider text-slate-800">Contact</h4>
-                <p class="text-xs text-slate-600">support@${tenant.subdomain}.ankabit.app</p>
+                <p class="text-xs text-slate-600">support@${tenant.subdomain}.liwanlms.com</p>
                 <p class="text-xs text-slate-500">© ${new Date().getFullYear()} ${tenant.name}. All rights reserved.</p>
               </div>
             </div>
@@ -1811,12 +1811,12 @@ export const RealGrapesBuilder: React.FC<RealGrapesBuilderProps> = ({ onAddToast
               <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <div className="font-semibold text-blue-900 text-xs">Direct Shareable Academy URL:</div>
-                  <div className="font-mono text-blue-700 text-[11px]">https://{tenant.subdomain}.ankabit.app</div>
+                  <div className="font-mono text-blue-700 text-[11px]">https://{tenant.subdomain}.liwanlms.com</div>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
-                    navigator.clipboard.writeText(`https://${tenant.subdomain}.ankabit.app`);
+                    navigator.clipboard.writeText(`https://${tenant.subdomain}.liwanlms.com`);
                     onAddToast({ type: 'success', title: 'Link Copied', message: 'Shareable academy URL copied to clipboard!' });
                   }}
                   className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 shrink-0 cursor-pointer"

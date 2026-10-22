@@ -62,7 +62,7 @@ export const storageService = {
     const r2AccessKey = process.env.R2_ACCESS_KEY_ID;
     const r2SecretKey = process.env.R2_SECRET_ACCESS_KEY;
     const r2Bucket = process.env.R2_BUCKET_NAME || 'ankabit-lms-assets';
-    const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'media.ankabit.app';
+     const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'media.liwanlms.com';
     const region = process.env.R2_REGION || 'auto';
 
     // Categories that contain sensitive student PII or oral recordings
@@ -229,7 +229,7 @@ export const storageService = {
    * Construct CDN asset URL for public assets (logos, icons, public avatars)
    */
   getPublicUrl(fileKey: string): string {
-    const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'media.ankabit.app';
+     const publicDomain = process.env.R2_PUBLIC_DOMAIN || 'media.liwanlms.com';
     if (fileKey.startsWith('http://') || fileKey.startsWith('https://') || fileKey.startsWith('data:')) {
       return fileKey;
     }

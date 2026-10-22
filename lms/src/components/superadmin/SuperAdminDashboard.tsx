@@ -575,7 +575,7 @@ export const SuperAdminDashboard: React.FC = () => {
       lastResetDate: new Date().toISOString().split('T')[0],
       status: 'unverified',
       isVerified: false,
-      fromEmail: 'notifications@ankabit.app',
+      fromEmail: 'notifications@liwanlms.com',
       fromName: 'Ankabit Academy OS',
       smtpHost: 'smtp.gmail.com',
       smtpPort: 587,
@@ -1335,7 +1335,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 type="email"
                 value={adminEmailInput}
                 onChange={(e) => setAdminEmailInput(e.target.value)}
-                placeholder="superadmin@ankabit.app"
+                placeholder="superadmin@liwanlms.com"
                 required
               />
             </div>
@@ -1353,7 +1353,7 @@ export const SuperAdminDashboard: React.FC = () => {
 
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-[11px] text-amber-800 flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Master Platform Creds: <strong className="font-mono">superadmin@ankabit.app</strong> / <strong className="font-mono">Admin12345!</strong></span>
+                <span>Master Platform Account: <strong className="font-mono">superadmin@liwanlms.com</strong></span>
             </div>
 
             <Button
@@ -1590,7 +1590,7 @@ export const SuperAdminDashboard: React.FC = () => {
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-semibold text-white truncate">SuperAdmin</div>
-                <div className="text-[10px] text-slate-400 truncate">superadmin@ankabit.app</div>
+                    <div className="text-[10px] text-slate-400 truncate">superadmin@liwanlms.com</div>
               </div>
             </div>
 
@@ -1925,7 +1925,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       <div className="flex items-start justify-between">
                         <div>
                           <div className="font-semibold text-slate-900 text-xs">{t.name}</div>
-                          <div className="text-[11px] font-mono text-slate-500">{t.subdomain}.ankabit.app</div>
+                          <div className="text-[11px] font-mono text-slate-500">{t.subdomain}.liwanlms.com</div>
                         </div>
                         <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
                           {t.planName}
@@ -2239,7 +2239,7 @@ export const SuperAdminDashboard: React.FC = () => {
                           <tr key={tenant.id} className="hover:bg-slate-50/70 transition-colors">
                             <td className="py-4 px-4">
                               <div className="font-semibold text-slate-900">{tenant.name}</div>
-                              <div className="text-slate-400 font-mono text-[11px]">{tenant.subdomain}.ankabit.app</div>
+                              <div className="text-slate-400 font-mono text-[11px]">{tenant.subdomain}.liwanlms.com</div>
                             </td>
                             <td className="py-4 px-4 font-medium text-slate-600">{tenant.ownerEmail}</td>
                             <td className="py-4 px-4">
@@ -2279,7 +2279,7 @@ export const SuperAdminDashboard: React.FC = () => {
                                   <span>Impersonate</span>
                                 </button>
                                 <a
-                                  href={`https://${tenant.subdomain}.ankabit.app`}
+                                  href={`https://${tenant.subdomain}.liwanlms.com`}
                                   target="_blank"
                                   rel="noreferrer"
                                   className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -3213,7 +3213,7 @@ export const SuperAdminDashboard: React.FC = () => {
                           <tr key={sub.id} className="hover:bg-slate-50/70 transition-colors">
                             <td className="py-4 px-4">
                               <div className="font-semibold text-slate-900">{sub.academyName}</div>
-                              <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.ankabit.app</div>
+                              <div className="text-slate-500 font-mono text-[11px]">{sub.subdomain}.liwanlms.com</div>
                             </td>
                             <td className="py-4 px-4 font-semibold text-slate-900">{sub.planName}</td>
                             <td className="py-4 px-4">
@@ -3370,7 +3370,7 @@ export const SuperAdminDashboard: React.FC = () => {
                               })
                             }
                             className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                            placeholder="db-cluster.internal.ankabit.app"
+                            placeholder="db-cluster.internal.liwanlms.com"
                           />
                         </div>
                         <div>
@@ -3451,7 +3451,7 @@ export const SuperAdminDashboard: React.FC = () => {
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                          placeholder="postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production?sslmode=require&connection_limit=25"
+                            placeholder="postgresql://liwan_admin:[PASSWORD]@db-cluster.internal.liwanlms.com:5432/liwanlms_production?sslmode=require&connection_limit=25"
                         />
                       </div>
 
@@ -3467,7 +3467,7 @@ export const SuperAdminDashboard: React.FC = () => {
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-emerald-600"
-                          placeholder="postgresql://ankabit_admin:[PASSWORD]@db-cluster.internal.ankabit.app:5432/ankabit_lms_production"
+                            placeholder="postgresql://liwan_admin:[PASSWORD]@db-cluster.internal.liwanlms.com:5432/liwanlms_production"
                         />
                       </div>
 
@@ -3570,7 +3570,7 @@ export const SuperAdminDashboard: React.FC = () => {
                               })
                             }
                             className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-rose-600"
-                            placeholder="redis-cache.internal.ankabit.app"
+                            placeholder="redis-cache.internal.liwanlms.com"
                           />
                         </div>
                         <div>
@@ -3618,7 +3618,7 @@ export const SuperAdminDashboard: React.FC = () => {
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-rose-600"
-                          placeholder="rediss://:[PASSWORD]@redis-cache.internal.ankabit.app:6379"
+                            placeholder="rediss://:[PASSWORD]@redis-cache.internal.liwanlms.com:6379"
                         />
                       </div>
 
@@ -3689,7 +3689,7 @@ export const SuperAdminDashboard: React.FC = () => {
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-teal-600"
-                          placeholder="wss://livekit.ankabit.app"
+                            placeholder="wss://livekit.liwanlms.com"
                         />
                       </div>
 
@@ -3877,7 +3877,7 @@ export const SuperAdminDashboard: React.FC = () => {
                             })
                           }
                           className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:border-sky-600"
-                          placeholder="https://cdn.ankabit.app"
+                            placeholder="https://cdn.liwanlms.com"
                         />
                       </div>
                     </div>
@@ -4527,7 +4527,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 value={editingStaff.email}
                 onChange={(e) => setEditingStaff({ ...editingStaff, email: e.target.value })}
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
-                placeholder="e.g. tariq@ankabit.app"
+                  placeholder="e.g. admin@liwanlms.com"
               />
             </div>
 
@@ -4677,7 +4677,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   value={editingEmailProvider.fromEmail}
                   onChange={(e) => setEditingEmailProvider({ ...editingEmailProvider, fromEmail: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-emerald-600"
-                  placeholder="notifications@ankabit.app"
+                  placeholder="notifications@liwanlms.com"
                 />
               </div>
               <div>

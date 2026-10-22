@@ -7,6 +7,14 @@ import { useRouter } from 'next/navigation';
 import { AnkabitLogo } from '../brand/AnkabitLogo';
 import { AuthLaptopSecurityIllustration } from '../illustrations/Illustrations2D';
 import Link from 'next/link';
+import { getPlatformRootDomain } from '../../lib/platformDomain';
+
+const DEMO_ACCOUNTS = [
+  { role: 'superadmin', label: 'Super Admin' },
+  { role: 'admin', label: 'Academy Admin' },
+  { role: 'teacher', label: 'Teacher' },
+  { role: 'student', label: 'Student' },
+] as const;
 
 interface SignInPageProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -35,6 +43,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({
     }
     return tenant?.subdomain || 'demo';
   }, [tenant?.subdomain]);
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -58,10 +67,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({
     return Object.keys(errors).length === 0;
   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const signInWithCredentials = async (credentialsEmail: string, credentialsPassword: string) => {
     setAuthError(null);
-    if (!validate()) return;
 
     setIsSubmitting(true);
     try {
@@ -69,8 +76,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: email.trim(),
-          password,
+          email: credentialsEmail.trim(),
+          password: credentialsPassword,
           subdomain: isPlatformLogin ? undefined : targetSubdomain,
         }),
       });
@@ -128,6 +135,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    await signInWithCredentials(email, password);
   };
 
   return (
@@ -194,6 +207,28 @@ export const SignInPage: React.FC<SignInPageProps> = ({
               If you are already a member you can login with your email address and password.
             </p>
           </div>
+
+          {isDemoMode && (
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-emerald-950">Demo mode</p>
+                <p className="text-xs text-emerald-800">Choose a role to enter the prepared workspace. Password: <code>password</code></p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {DEMO_ACCOUNTS.map((account) => (
+                  <button
+                    key={account.role}
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={() => void signInWithCredentials(`${account.role}@${getPlatformRootDomain()}`, 'password')}
+                    className="rounded-xl border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:border-emerald-400 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {account.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {authError && (
             <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2.5 animate-fadeIn">

@@ -62,6 +62,7 @@ export class TenantService {
           .split('-')
           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
           .join(' ');
+        const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost';
         tenantResult = {
           id: `tenant-${effectiveSubdomain}`,
           name,
@@ -69,7 +70,7 @@ export class TenantService {
           tagline: 'Autonomous Educational Institution',
           taglineAr: 'منصة تعليمية ذكية',
           subdomain: effectiveSubdomain,
-          customDomain: customDomain || `${effectiveSubdomain}.ankabit.app`,
+          customDomain: customDomain || `${effectiveSubdomain}.${rootDomain}`,
           niche: isCoding ? 'coding' : isSchool ? 'school' : 'madrasat',
           logoUrl: '',
           faviconUrl: '',
@@ -95,7 +96,7 @@ export class TenantService {
           forms: [],
           customFormFields: [],
           subscriptionPlan: 'free',
-          contactEmail: `admin@${effectiveSubdomain}.ankabit.app`,
+          contactEmail: `admin@${effectiveSubdomain}.${rootDomain}`,
           contactPhone: '',
           defaultDirection: 'ltr',
         };
