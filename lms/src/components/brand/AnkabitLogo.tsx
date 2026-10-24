@@ -6,6 +6,7 @@ interface AnkabitLogoProps {
   showText?: boolean;
   textColor?: string;
   spiderColor?: string;
+  inverted?: boolean;
 }
 
 export const AnkabitSpiderIcon: React.FC<{ className?: string; size?: number; color?: string }> = ({
@@ -114,8 +115,9 @@ export const AnkabitLogo: React.FC<AnkabitLogoProps> = ({
   className = '',
   size = 'md',
   showText = true,
-  textColor = 'text-slate-900',
+  textColor,
   spiderColor,
+  inverted = false,
 }) => {
   const sizeMap = {
     sm: { icon: 22, text: 'text-sm', badge: 'text-[9px]' },
@@ -125,21 +127,29 @@ export const AnkabitLogo: React.FC<AnkabitLogoProps> = ({
   };
 
   const config = sizeMap[size];
+  const finalTextColor = textColor || (inverted ? 'text-white' : 'text-slate-900');
+  const finalSpiderColor = spiderColor || (inverted ? '#34D399' : 'currentColor');
 
   return (
     <div className={`inline-flex items-center gap-2.5 font-sans select-none ${className}`}>
       {/* Spider Icon */}
-      <div className="shrink-0 text-emerald-600 transition-transform hover:scale-105">
-        <AnkabitSpiderIcon size={config.icon} color={spiderColor || 'currentColor'} />
+      <div className={`shrink-0 transition-transform hover:scale-105 ${inverted ? 'text-emerald-400' : 'text-emerald-600'}`}>
+        <AnkabitSpiderIcon size={config.icon} color={finalSpiderColor} />
       </div>
 
       {showText && (
         <div className="leading-tight">
           <div className="flex items-center gap-1.5">
-            <span className={`font-semibold tracking-tight ${textColor} ${config.text}`}>
+            <span className={`font-semibold tracking-tight ${finalTextColor} ${config.text}`}>
               Ankabit
             </span>
-            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 font-semibold capitalize tracking-wider text-[10px]">
+            <span
+              className={`px-1.5 py-0.5 rounded-md font-semibold capitalize tracking-wider text-[10px] ${
+                inverted
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-emerald-500/15 text-emerald-700'
+              }`}
+            >
               LMS
             </span>
           </div>

@@ -89,7 +89,7 @@ import {
 } from 'lucide-react';
 import { Button, Input, Card, Badge, Modal, DataTablePagination, StatCard } from '../ui';
 import { EmailProviderType, WhatsAppProviderType } from '../../types';
-import { AnkabitLogo } from '../brand/AnkabitLogo';
+import { AnkabitLogo, AnkabitSpiderIcon } from '../brand/AnkabitLogo';
 import { useTranslation } from '../../modules/i18n';
 import { useConfirm } from '../../context/ConfirmModalContext';
 
@@ -1402,11 +1402,13 @@ export const SuperAdminDashboard: React.FC = () => {
           {/* Sidebar Header / Branding */}
           <div className="p-5 border-b border-slate-800/80 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <AnkabitLogo size="md" />
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
+                <AnkabitSpiderIcon size={26} color="#34D399" />
+              </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-white text-base tracking-tight">Ankabit</span>
-                  <span className="text-[10px] capitalize tracking-wider font-semibold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <span className="font-bold text-white text-base tracking-tight">Ankabit</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                     SuperAdmin
                   </span>
                 </div>

@@ -647,7 +647,7 @@ export const SaasLandingPage: React.FC<SaasLandingPageProps> = ({
       <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-900 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <AnkabitLogo size="sm" />
+            <AnkabitLogo size="sm" inverted />
           </div>
           <p>© 2026 Ankabit LMS. All rights reserved.</p>
           <div className="flex items-center gap-6">

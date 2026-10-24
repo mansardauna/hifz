@@ -209,23 +209,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Top Header Logo */}
-        <div className="h-16 px-4 sm:px-5 border-b border-white/15 flex items-center justify-between shrink-0 bg-black/15">
-          {(!collapsed || isOpenOnMobile) && (
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center font-semibold text-white shadow-xs shrink-0">
-                {tenant.name.charAt(0)}
-              </div>
+        <div className="h-16 px-3.5 sm:px-4 border-b border-white/15 flex items-center justify-between shrink-0 bg-black/15">
+          {(!collapsed || isOpenOnMobile) ? (
+            <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+              {tenant.logoUrl ? (
+                <img
+                  src={tenant.logoUrl}
+                  alt={tenant.name}
+                  className="w-8 h-8 rounded-xl object-contain bg-white/10 p-0.5 border border-white/20 shrink-0 shadow-xs"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center font-bold text-white shadow-xs shrink-0">
+                  {tenant.name.charAt(0)}
+                </div>
+              )}
               <div className="min-w-0">
-                <h2 className="font-semibold text-sm text-white truncate">{tenant.name}</h2>
+                <h2 className="font-bold text-sm text-white truncate">{tenant.name}</h2>
                 <p className="text-[10px] text-white/70 truncate">{tenant.customDomain || `${tenant.subdomain}.edu`}</p>
               </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center w-8 h-8">
+              {tenant.logoUrl ? (
+                <img
+                  src={tenant.logoUrl}
+                  alt={tenant.name}
+                  className="w-8 h-8 rounded-xl object-contain bg-white/10 p-0.5 border border-white/20 shrink-0 shadow-xs"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center font-bold text-white shadow-xs shrink-0">
+                  {tenant.name.charAt(0)}
+                </div>
+              )}
             </div>
           )}
 
           {/* Desktop Collapse Toggle */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer outline-none"
+            className="hidden lg:flex p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer outline-none shrink-0"
             aria-label={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {collapsed ? <ChevronRight className="w-4 h-4 text-white" /> : <ChevronLeft className="w-4 h-4 text-white" />}

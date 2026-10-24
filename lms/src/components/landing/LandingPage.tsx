@@ -40,6 +40,7 @@ import {
   Hammer
 } from 'lucide-react';
 import { sanitizeHtml, sanitizeCss } from '../../utils/sanitizeHtml';
+import { AnkabitLogo } from '../brand/AnkabitLogo';
 
 interface LandingPageProps {
   onAddToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -1014,9 +1015,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
       {/* Semantic Accessible Footer */}
       <footer role="contentinfo" className="bg-slate-950 text-white py-12 border-t border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 text-center sm:text-left">
-            <p className="font-semibold text-sm text-white">{tenant.name}</p>
-            <p className="text-xs text-slate-400">{tenant.tagline}</p>
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            {tenant.logoUrl ? (
+              <img
+                src={tenant.logoUrl}
+                alt={tenant.name}
+                className="w-10 h-10 rounded-xl object-contain bg-white/10 p-1 border border-white/20 shrink-0 shadow-sm"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center font-bold text-white shadow-sm shrink-0">
+                {tenant.name.charAt(0)}
+              </div>
+            )}
+            <div className="space-y-0.5">
+              <p className="font-bold text-sm text-white">{tenant.name}</p>
+              <p className="text-xs text-slate-400">{tenant.tagline}</p>
+            </div>
           </div>
 
           <div className="flex items-center gap-6 text-xs text-slate-400">
@@ -1026,9 +1043,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAddToast, initialSer
             <a href={`/${tenant.subdomain}/login`} className="text-blue-400 font-semibold hover:underline">Student Portal</a>
           </div>
 
-          <p className="text-[11px] text-slate-500">
-            &copy; {new Date().getFullYear()} {tenant.name}. All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-[11px] text-slate-500">
+            <span>&copy; {new Date().getFullYear()} {tenant.name}. All rights reserved.</span>
+            <span className="hidden sm:inline">•</span>
+            <div className="inline-flex items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
+              <span>Powered by</span>
+              <AnkabitLogo size="sm" inverted />
+            </div>
+          </div>
         </div>
       </footer>
 

@@ -1,4 +1,24 @@
 import React from 'react';
+import {
+  LayoutDashboard,
+  Video,
+  BookOpen,
+  Award,
+  Users,
+  TrendingUp,
+  Radio,
+  Play,
+  Volume2,
+  Mic,
+  ShieldCheck,
+  Lock,
+  Search,
+  Bell,
+  CheckCircle2,
+  Sparkles,
+} from 'lucide-react';
+import { AnkabitSpiderIcon } from '../brand/AnkabitLogo';
+import { getPlatformRootDomain } from '../../lib/platformDomain';
 
 /**
  * Modern 2D Vector Illustrations & Visual Assets for TechMadrasah
@@ -417,109 +437,317 @@ export const AuthLaptopSecurityIllustration: React.FC<{ className?: string }> = 
 /**
  * Image 1 Vector Asset: 3D Laptop Mockup with Overlapping Floating Growth Card
  */
-export const LaptopHeroMockupIllustration: React.FC<{ className?: string }> = ({ className = "w-full max-w-4xl h-auto" }) => (
-  <div className={`relative mx-auto ${className}`}>
-    {/* Floating "Monthly Growth" Metric Card on Top Left */}
-    <div className="absolute -top-6 -left-4 sm:-top-8 sm:-left-8 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-200/80 dark:border-slate-800 transition-transform duration-300 hover:scale-105">
-      <div className="flex items-center justify-between gap-4 mb-2">
-        <span className="text-xs font-semibold capitalize tracking-wider text-slate-500 dark:text-slate-400">Monthly Growth</span>
-        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
-          +18.4% ↗
-        </span>
-      </div>
-      {/* Sparkline Waves */}
-      <svg width="140" height="42" viewBox="0 0 140 42" fill="none" className="overflow-visible">
-        <path d="M0 32 C20 32, 35 15, 55 22 C75 28, 90 8, 110 16 C125 22, 132 5, 140 2" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-        <path d="M0 38 C20 38, 40 25, 60 30 C80 34, 100 18, 120 22 C130 24, 136 12, 140 10" stroke="#3B82F6" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      </svg>
-      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-        <span>Active Learners</span>
-        <span className="font-semibold text-slate-900 dark:text-white">12,480</span>
-      </div>
-    </div>
+export const LaptopHeroMockupIllustration: React.FC<{ className?: string }> = ({ className = "w-full max-w-5xl h-auto" }) => {
+  const rootDomain = getPlatformRootDomain();
 
-    {/* Laptop Device Frame */}
-    <div className="relative mx-auto rounded-t-3xl bg-slate-900 p-3 sm:p-4 shadow-2xl ring-1 ring-slate-800 border-t border-x border-slate-700">
-      {/* Screen Bezel & Camera */}
-      <div className="relative rounded-2xl bg-slate-950 overflow-hidden ring-1 ring-slate-800">
-        {/* Screen Top Bar */}
-        <div className="bg-slate-900/90 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-          </div>
-          <div className="bg-slate-800/80 text-slate-400 text-[10px] font-mono px-6 py-1 rounded-full border border-slate-700/60 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            portal.liwanlms.com/dashboard
-          </div>
-          <div className="w-10" />
+  return (
+    <div className={`relative mx-auto ${className}`}>
+      {/* Floating "Monthly Growth" Metric Card on Top Left (From Template Image 1) */}
+      <div className="absolute -top-6 -left-3 sm:-top-8 sm:-left-6 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-200/80 dark:border-slate-800 transition-transform duration-300 hover:scale-105 select-none">
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Monthly Growth</span>
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+            +18.4% ↗
+          </span>
         </div>
+        {/* Sparkline Waves */}
+        <svg width="150" height="44" viewBox="0 0 150 44" fill="none" className="overflow-visible">
+          <path d="M0 34 C25 34, 40 16, 60 24 C80 30, 95 10, 115 18 C130 24, 140 6, 150 2" stroke="#10B981" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+          <path d="M0 40 C25 40, 45 28, 65 32 C85 36, 105 20, 125 24 C135 26, 142 14, 150 12" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeDasharray="4 2" fill="none" />
+        </svg>
+        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+          <span>Active Learners</span>
+          <span className="font-bold text-slate-900 dark:text-white">12,480</span>
+        </div>
+      </div>
 
-        {/* Dashboard Preview Inside Screen */}
-        <div className="p-4 sm:p-6 bg-slate-900 text-white min-h-[260px] sm:min-h-[380px] grid grid-cols-12 gap-4 select-none">
-          {/* Mini Left Sidebar */}
-          <div className="col-span-3 sm:col-span-2 space-y-2 hidden sm:block">
-            <div className="h-6 w-20 bg-blue-600 rounded-md" />
-            <div className="space-y-1.5 pt-3">
-              <div className="h-4 bg-slate-800 rounded w-full" />
-              <div className="h-4 bg-blue-600/30 text-blue-400 rounded w-full flex items-center px-2 text-[9px] font-semibold">Overview</div>
-              <div className="h-4 bg-slate-800/60 rounded w-full" />
-              <div className="h-4 bg-slate-800/60 rounded w-full" />
-              <div className="h-4 bg-slate-800/60 rounded w-full" />
+      {/* Floating Live WebRTC Session Pill on Top Right */}
+      <div className="hidden sm:flex items-center gap-2.5 absolute -top-4 -right-2 sm:-top-6 sm:-right-4 z-20 bg-slate-900/95 text-white backdrop-blur-xl rounded-full px-4 py-2 shadow-2xl border border-slate-700/80 transition-transform duration-300 hover:scale-105 select-none">
+        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="text-xs font-bold text-emerald-300">LiveKit 1080p SFU</span>
+        <span className="text-[10px] text-slate-400 font-mono">14ms latency</span>
+      </div>
+
+      {/* Laptop Device Frame (MacBook Space Black Chassis) */}
+      <div className="relative mx-auto rounded-t-3xl bg-slate-900 p-2.5 sm:p-4 shadow-2xl ring-1 ring-slate-800 border-t border-x border-slate-700/80">
+        {/* Screen Bezel with Camera Notch & Glossy Frame */}
+        <div className="relative rounded-2xl bg-slate-950 overflow-hidden ring-1 ring-slate-800">
+          {/* macOS Browser Chrome Bar */}
+          <div className="bg-slate-900/95 border-b border-slate-800 px-3.5 sm:px-5 py-2.5 flex items-center justify-between select-none">
+            {/* Window Controls */}
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-rose-500 shadow-xs shadow-rose-500/50" />
+              <div className="w-3 h-3 rounded-full bg-amber-500 shadow-xs shadow-amber-500/50" />
+              <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-xs shadow-emerald-500/50" />
+            </div>
+
+            {/* URL Address Bar */}
+            <div className="bg-slate-950/90 text-slate-300 text-[10px] sm:text-xs font-mono px-4 sm:px-6 py-1 rounded-full border border-slate-800 flex items-center gap-2 shadow-inner max-w-xs sm:max-w-md truncate">
+              <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+              <span className="text-emerald-400 font-semibold truncate">portal.{rootDomain}</span>
+              <span className="text-slate-500">/academy/overview</span>
+            </div>
+
+            {/* User Profile / Status */}
+            <div className="flex items-center gap-2.5">
+              <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                ONLINE
+              </div>
+              <div className="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center shadow-xs">
+                M
+              </div>
             </div>
           </div>
 
-          {/* Center Analytics */}
-          <div className="col-span-12 sm:col-span-10 space-y-4">
-            {/* Top KPI Cards */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-              <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
-                <div className="text-[10px] text-slate-400 font-medium">Students</div>
-                <div className="text-base sm:text-xl font-semibold text-white mt-1">2,840</div>
-              </div>
-              <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
-                <div className="text-[10px] text-slate-400 font-medium">Live Halaqahs</div>
-                <div className="text-base sm:text-xl font-semibold text-emerald-400 mt-1">18 Active</div>
-              </div>
-              <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-2.5 sm:p-3">
-                <div className="text-[10px] text-slate-400 font-medium">Tuition Yield</div>
-                <div className="text-base sm:text-xl font-semibold text-blue-400 mt-1">$48,290</div>
-              </div>
-            </div>
-
-            {/* Central Chart Mockup */}
-            <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3 sm:p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-xs font-semibold text-slate-200">Academy Engagement & Recitations</div>
-                <div className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded">Real-time</div>
-              </div>
-              {/* Bars */}
-              <div className="h-28 sm:h-40 flex items-end justify-between gap-1 sm:gap-2 pt-2 border-b border-slate-700/60">
-                {[45, 60, 35, 78, 92, 65, 84, 52, 95, 88, 70, 85].map((h, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-                    <div 
-                      className={`w-full rounded-t transition-all duration-300 ${i === 8 ? 'bg-blue-500' : 'bg-slate-700 hover:bg-slate-600'}`} 
-                      style={{ height: `${h}%` }}
-                    />
+          {/* REAL ANKABIT LMS DASHBOARD VIEWPORT */}
+          <div className="bg-slate-950 text-slate-100 min-h-[340px] sm:min-h-[460px] grid grid-cols-12 select-none overflow-hidden font-sans">
+            {/* REAL LMS Left Navigation Sidebar */}
+            <div className="col-span-3 lg:col-span-2 bg-slate-900/95 border-r border-slate-800/90 p-3 sm:p-4 space-y-4 hidden md:flex flex-col justify-between shrink-0">
+              <div className="space-y-4">
+                {/* Academy Header */}
+                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-800">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
+                    <AnkabitSpiderIcon size={20} color="#34D399" />
                   </div>
-                ))}
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-white truncate">Dar Al-Quran</div>
+                    <div className="text-[10px] text-emerald-400 font-mono truncate">hifz.{rootDomain}</div>
+                  </div>
+                </div>
+
+                {/* Nav Links with Direct Inline Icons */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-600/30">
+                    <div className="flex items-center gap-2">
+                      <LayoutDashboard className="w-3.5 h-3.5 text-white" />
+                      <span>Overview</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium">
+                    <div className="flex items-center gap-2">
+                      <Video className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Live Halaqahs</span>
+                    </div>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  </div>
+                  <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium">
+                    <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Medina Mushaf</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium">
+                    <Radio className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Audio Studio</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium">
+                    <Award className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Sanad Ijazah</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium">
+                    <TrendingUp className="w-3.5 h-3.5 text-rose-400" />
+                    <span>Revenue & Stripe</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between text-[9px] text-slate-500 font-mono mt-1.5">
-                <span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span>
+
+              {/* Sidebar Footer Tier Badge */}
+              <div className="p-2 rounded-xl bg-slate-800/70 border border-slate-700/60">
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold mb-1">
+                  <span>Plan Status</span>
+                  <span className="text-emerald-400 font-bold uppercase text-[9px]">Growth</span>
+                </div>
+                <div className="w-full bg-slate-700/60 rounded-full h-1.5">
+                  <div className="bg-emerald-500 h-1.5 rounded-full w-4/5" />
+                </div>
+              </div>
+            </div>
+
+            {/* REAL LMS Main Content Area */}
+            <div className="col-span-12 md:col-span-9 lg:col-span-10 p-3 sm:p-5 space-y-3.5 sm:space-y-4 overflow-hidden">
+              {/* Top Greeting & Operational State */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-800/60">
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                    <span>Welcome back, Ustadh Mansur</span>
+                    <span className="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      Super Admin
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-slate-400">14 Active Halaqahs • 1,248 Enrolled Students • WebRTC SFU 1080p Live</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 text-[10px] font-mono border border-slate-700/80">
+                    Stripe: Connected ✓
+                  </span>
+                </div>
+              </div>
+
+              {/* 4 Real Metric KPI Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                <div className="bg-slate-900/90 border border-slate-800/90 rounded-xl p-2.5 sm:p-3 shadow-sm hover:border-slate-700 transition-colors">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
+                    <span>Active Learners</span>
+                    <Users className="w-3.5 h-3.5 text-emerald-400" />
+                  </div>
+                  <div className="text-base sm:text-xl font-bold text-white mt-1">1,248</div>
+                  <div className="text-[10px] text-emerald-400 font-semibold mt-0.5">+14.2% this month</div>
+                </div>
+
+                <div className="bg-slate-900/90 border border-slate-800/90 rounded-xl p-2.5 sm:p-3 shadow-sm hover:border-slate-700 transition-colors">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
+                    <span>Tajweed Accuracy</span>
+                    <Award className="w-3.5 h-3.5 text-purple-400" />
+                  </div>
+                  <div className="text-base sm:text-xl font-bold text-purple-300 mt-1">98.6%</div>
+                  <div className="text-[10px] text-slate-400 font-semibold mt-0.5">Ghunnah & Madd Verified</div>
+                </div>
+
+                <div className="bg-slate-900/90 border border-slate-800/90 rounded-xl p-2.5 sm:p-3 shadow-sm hover:border-slate-700 transition-colors">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
+                    <span>Live Halaqahs</span>
+                    <Video className="w-3.5 h-3.5 text-blue-400" />
+                  </div>
+                  <div className="text-base sm:text-xl font-bold text-blue-400 mt-1 flex items-center gap-1.5">
+                    <span>14</span>
+                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/20 px-1.5 py-0.2 rounded">Live</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-semibold mt-0.5">18ms average latency</div>
+                </div>
+
+                <div className="bg-slate-900/90 border border-slate-800/90 rounded-xl p-2.5 sm:p-3 shadow-sm hover:border-slate-700 transition-colors">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
+                    <span>Tuition Yield</span>
+                    <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
+                  </div>
+                  <div className="text-base sm:text-xl font-bold text-emerald-400 mt-1">$24,850</div>
+                  <div className="text-[10px] text-slate-400 font-semibold mt-0.5">0% Ankabit Gateway Fee</div>
+                </div>
+              </div>
+
+              {/* DUAL WORKSPACE SHOWCASE: Quran Recitation Looper + WebRTC Video Classroom */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 pt-1">
+                {/* Left Card: Real Quran Recitation Looper Studio */}
+                <div className="lg:col-span-7 bg-slate-900/90 border border-slate-800/90 rounded-xl p-3 sm:p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="text-xs font-bold text-white">Oral Recitation Studio</span>
+                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 px-1.5 py-0.5 rounded">
+                        Mishary Rashid
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">128kbps HQ</span>
+                  </div>
+
+                  {/* Medina Mushaf Calligraphy Verse Line */}
+                  <div className="bg-slate-950/90 border border-emerald-900/40 rounded-xl p-3 text-right">
+                    <div className="text-emerald-400 text-sm sm:text-base font-serif font-bold tracking-wide leading-relaxed">
+                      تَبَارَكَ الَّذِي بِيَدِهِ الْمُلْكُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ
+                    </div>
+                    <div className="text-left text-[10px] text-slate-400 font-sans mt-1">
+                      Surah Al-Mulk (67:1) • Hafs 'an 'Asim
+                    </div>
+                  </div>
+
+                  {/* Audio Equalizer Waveform Animation */}
+                  <div className="bg-slate-950/60 rounded-lg p-2.5 border border-slate-800/80">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] text-slate-400 font-mono">01:24 / 03:48</span>
+                      <span className="text-[10px] text-emerald-400 font-mono">Pitch: 432Hz • Stable</span>
+                    </div>
+                    <div className="h-8 flex items-end justify-between gap-1">
+                      {[35, 55, 80, 45, 95, 70, 40, 85, 100, 65, 50, 90, 75, 60, 40, 85, 95, 70, 50, 80, 60, 45, 90, 75, 40, 65, 85, 55].map((h, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 rounded-full transition-all duration-300 ${
+                            i < 16 ? 'bg-emerald-500' : 'bg-slate-700'
+                          }`}
+                          style={{ height: `${h}%` }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Looper Controls */}
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <button className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs">
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                      </button>
+                      <button className="px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-white font-mono text-[10px]">
+                        Loop Ayah (3x)
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                      <Volume2 className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Speed: 1.0x</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Card: Live WebRTC Video Classroom */}
+                <div className="lg:col-span-5 bg-slate-900/90 border border-slate-800/90 rounded-xl p-3 sm:p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-xs font-bold text-white">Live Classroom SFU</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 px-1.5 py-0.5 rounded">
+                      2/15 Connected
+                    </span>
+                  </div>
+
+                  {/* Two Connected Video Tiles */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Tile 1: Instructor (Well-dressed male teacher) */}
+                    <div className="relative rounded-lg bg-slate-950 border border-slate-800 overflow-hidden aspect-video flex flex-col items-center justify-center p-2 group">
+                      <div className="w-10 h-10 rounded-full bg-emerald-600/30 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-300 text-xs mb-1">
+                        UM
+                      </div>
+                      <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center justify-between text-[9px] bg-slate-900/90 px-1.5 py-0.5 rounded backdrop-blur-sm">
+                        <span className="text-white font-medium truncate">Ustadh Mansur</span>
+                        <Mic className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                      </div>
+                    </div>
+
+                    {/* Tile 2: Student (Well-dressed male student) */}
+                    <div className="relative rounded-lg bg-slate-950 border border-slate-800 overflow-hidden aspect-video flex flex-col items-center justify-center p-2 group">
+                      <div className="w-10 h-10 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center font-bold text-blue-300 text-xs mb-1">
+                        ZA
+                      </div>
+                      <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center justify-between text-[9px] bg-slate-900/90 px-1.5 py-0.5 rounded backdrop-blur-sm">
+                        <span className="text-white font-medium truncate">Zayd Al-Ansari</span>
+                        <Mic className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Classroom Toolbar */}
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
+                    <div className="text-[10px] text-slate-400 font-mono">1080p HD • 18ms</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">
+                        Whiteboard
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[9px] font-medium">
+                        Mute All
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    {/* Laptop Base Lip / Keyboard Bottom */}
-    <div className="relative mx-auto w-full h-4 sm:h-5 bg-gradient-to-b from-slate-700 to-slate-800 rounded-b-xl shadow-xl flex items-center justify-center">
-      <div className="w-16 sm:w-24 h-1.5 bg-slate-600 rounded-full" />
+      {/* Laptop Base Lip / Keyboard Bottom */}
+      <div className="relative mx-auto w-full h-4 sm:h-5 bg-gradient-to-b from-slate-700 to-slate-800 rounded-b-xl shadow-xl flex items-center justify-center">
+        <div className="w-16 sm:w-24 h-1.5 bg-slate-600 rounded-full" />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /**
  * Image 2 Vector Asset: 3D Student Character Avatar with Cap and Floating Achievement Badges
