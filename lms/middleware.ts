@@ -23,6 +23,7 @@ export default async function middleware(req: NextRequest) {
 
   // Root domains that should serve the platform directly on main domain paths
   const isRootHost =
+    /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(currentHost) ||
     currentHost === 'localhost' ||
     currentHost === '127.0.0.1' ||
     currentHost === rootDomain ||
